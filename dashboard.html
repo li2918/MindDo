@@ -1,0 +1,710 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>运营看板 | Operations Dashboard</title>
+  <style>
+    :root {
+      --bg: #05070c;
+      --bg-2: #0a1222;
+      --card: rgba(12, 18, 32, 0.72);
+      --line: rgba(0, 255, 247, 0.24);
+      --text: #e7f4ff;
+      --muted: #97adc9;
+      --ok: #5bffa4;
+      --warn: #ffd36e;
+      --danger: #ff7a8a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 14% 10%, rgba(63, 123, 255, 0.2), transparent 40%),
+        radial-gradient(circle at 86% 90%, rgba(0, 246, 255, 0.16), transparent 42%),
+        linear-gradient(145deg, var(--bg), var(--bg-2));
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0, 255, 247, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 247, 0.06) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: radial-gradient(circle at center, black 35%, transparent 90%);
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 30px 20px 46px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar,
+    .filters,
+    .grid,
+    .bottom-grid { display: grid; gap: 12px; }
+
+    .topbar {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .nav-links,
+    .lang-switch { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn {
+      border: 1px solid rgba(0, 246, 255, 0.35);
+      background: rgba(0, 246, 255, 0.08);
+      color: #bdfdff;
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: none;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover,
+    .btn.active {
+      background: rgba(0, 246, 255, 0.2);
+      color: #ecfeff;
+      box-shadow: 0 0 12px rgba(0, 246, 255, 0.28);
+    }
+
+    .hero,
+    .panel,
+    .metric {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow:
+        inset 0 0 16px rgba(0, 246, 255, 0.05),
+        0 10px 20px rgba(0, 0, 0, 0.38);
+    }
+
+    .hero { padding: 20px; margin-bottom: 14px; }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 4vw, 34px);
+      text-shadow: 0 0 12px rgba(0, 246, 255, 0.35);
+    }
+
+    .muted { margin: 0; color: var(--muted); line-height: 1.6; }
+
+    .filters {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .range-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 14px;
+    }
+
+    .metric { padding: 14px; }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .metric .value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #d6f3ff;
+    }
+
+    .metric .sub {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #9ec1df;
+    }
+
+    .bottom-grid {
+      grid-template-columns: 1.2fr 1fr;
+      margin-bottom: 14px;
+    }
+
+    .panel { padding: 16px; }
+    .panel h2 { margin: 0 0 10px; font-size: 18px; color: #d6f3ff; }
+
+    .kv-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .kv-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid rgba(0, 246, 255, 0.16);
+      background: rgba(0, 246, 255, 0.04);
+      border-radius: 10px;
+      padding: 8px 10px;
+      color: #c8e4fb;
+      font-size: 13px;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 12px;
+      border: 1px solid rgba(0, 246, 255, 0.3);
+      color: #95fbff;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid rgba(0, 246, 255, 0.14);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid rgba(151, 173, 201, 0.2);
+      font-size: 13px;
+    }
+
+    th {
+      background: rgba(0, 246, 255, 0.08);
+      color: #d8fbff;
+    }
+
+    .pay-form {
+      display: grid;
+      grid-template-columns: 1fr 120px auto;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid rgba(0, 246, 255, 0.25);
+      background: rgba(3, 10, 20, 0.7);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 9px 10px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .status { margin-top: 8px; font-size: 12px; min-height: 18px; }
+    .ok { color: var(--ok); }
+    .err { color: var(--danger); }
+
+    @media (max-width: 1020px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .bottom-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .container { padding: 22px 14px 34px; }
+      .topbar, .filters { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .pay-form { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="topbar">
+      <div class="nav-links">
+        <a class="btn" href="index.html" data-i18n="backFlow"></a>
+        <a class="btn" href="signup.html" data-i18n="goSignup"></a>
+        <a class="btn" href="assessment.html" data-i18n="goAssessment"></a>
+      </div>
+      <div class="lang-switch">
+        <button class="btn" data-set-lang="zh-CN" type="button">中文</button>
+        <button class="btn" data-set-lang="en" type="button">English</button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <h1 data-i18n="title"></h1>
+      <p class="muted" data-i18n="desc"></p>
+    </section>
+
+    <div class="filters">
+      <div class="range-group" id="rangeGroup"></div>
+      <button class="btn" id="refreshBtn" data-i18n="refresh"></button>
+    </div>
+
+    <section class="grid" id="metricGrid"></section>
+
+    <section class="bottom-grid">
+      <article class="panel">
+        <h2 data-i18n="levelDist"></h2>
+        <ul class="kv-list" id="levelList"></ul>
+      </article>
+
+      <article class="panel">
+        <h2 data-i18n="extraMonitors"></h2>
+        <ul class="kv-list" id="extraList"></ul>
+      </article>
+    </section>
+
+    <section class="bottom-grid">
+      <article class="panel">
+        <h2 data-i18n="channelDist"></h2>
+        <ul class="kv-list" id="channelList"></ul>
+      </article>
+
+      <article class="panel">
+        <h2 data-i18n="paymentOps"></h2>
+        <p class="muted" data-i18n="paymentHint"></p>
+        <form id="paymentForm" class="pay-form">
+          <input id="payEmail" type="email" placeholder="student@email.com" required />
+          <input id="payAmount" type="number" min="0" step="0.01" placeholder="199" required />
+          <button class="btn" type="submit" data-i18n="markPaid"></button>
+        </form>
+        <div id="paymentStatus" class="status"></div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2 data-i18n="recentPayments"></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="colEmail"></th>
+              <th data-i18n="colAmount"></th>
+              <th data-i18n="colSource"></th>
+              <th data-i18n="colTime"></th>
+            </tr>
+          </thead>
+          <tbody id="paymentTable"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var I18N = {
+        "zh-CN": {
+          backFlow: "返回流程总览",
+          goSignup: "前往 Sign Up",
+          goAssessment: "前往 Assessment",
+          title: "运营数据看板",
+          desc: "覆盖注册、付费、评估与渠道转化，帮助追踪业务流程健康度。",
+          refresh: "刷新数据",
+          ranges: [
+            { key: "7", text: "近7天" },
+            { key: "30", text: "近30天" },
+            { key: "all", text: "全部" }
+          ],
+          metrics: {
+            registered: "注册人数",
+            paid: "付费人数",
+            conversion: "付费转化率",
+            revenue: "累计付费金额",
+            assessed: "评估提交人数",
+            assessRate: "评估完成率",
+            pending: "待评估人数",
+            arpu: "人均付费"
+          },
+          levelDist: "Level 学生分布",
+          extraMonitors: "关键监控",
+          channelDist: "获客渠道分布（Trial）",
+          paymentOps: "付费登记",
+          paymentHint: "用于模拟/补录付费数据，更新付费人数与营收统计。",
+          markPaid: "登记付费",
+          recentPayments: "最近付费记录",
+          colEmail: "邮箱",
+          colAmount: "金额",
+          colSource: "来源",
+          colTime: "时间",
+          noData: "暂无数据",
+          unknown: "未知",
+          successPaid: "付费记录已写入。",
+          errorPaid: "请填写有效邮箱和金额。",
+          extra: {
+            signupToday: "今日新增注册",
+            signupWeek: "7日新增注册",
+            googleShare: "Google 登录占比",
+            microsoftShare: "Microsoft 登录占比",
+            avgLeadToAssess: "试课线索转评估率"
+          },
+          provider: {
+            google: "Google",
+            microsoft: "Microsoft",
+            email: "邮箱注册"
+          }
+        },
+        en: {
+          backFlow: "Back To Workflow",
+          goSignup: "Go To Sign Up",
+          goAssessment: "Go To Assessment",
+          title: "Operations Dashboard",
+          desc: "Track registrations, payments, assessments, and channel conversion health in one place.",
+          refresh: "Refresh",
+          ranges: [
+            { key: "7", text: "Last 7 Days" },
+            { key: "30", text: "Last 30 Days" },
+            { key: "all", text: "All" }
+          ],
+          metrics: {
+            registered: "Registrations",
+            paid: "Paid Students",
+            conversion: "Payment Conversion",
+            revenue: "Total Revenue",
+            assessed: "Assessments Submitted",
+            assessRate: "Assessment Completion",
+            pending: "Pending Assessment",
+            arpu: "ARPU"
+          },
+          levelDist: "Student Distribution By Level",
+          extraMonitors: "Key Monitors",
+          channelDist: "Lead Source Distribution (Trial)",
+          paymentOps: "Payment Entry",
+          paymentHint: "Use this to simulate/backfill payment data for conversion and revenue metrics.",
+          markPaid: "Mark Paid",
+          recentPayments: "Recent Payment Records",
+          colEmail: "Email",
+          colAmount: "Amount",
+          colSource: "Source",
+          colTime: "Time",
+          noData: "No data",
+          unknown: "Unknown",
+          successPaid: "Payment record saved.",
+          errorPaid: "Please enter a valid email and amount.",
+          extra: {
+            signupToday: "New Signups Today",
+            signupWeek: "New Signups (7d)",
+            googleShare: "Google Sign-In Share",
+            microsoftShare: "Microsoft Sign-In Share",
+            avgLeadToAssess: "Trial Lead To Assessment"
+          },
+          provider: {
+            google: "Google",
+            microsoft: "Microsoft",
+            email: "Email Sign-Up"
+          }
+        }
+      };
+
+      var STORAGE = {
+        signups: "minddo_signup_users",
+        assessments: "minddo_assessments",
+        leads: "minddo_trial_leads",
+        payments: "minddo_payments"
+      };
+
+      var html = document.documentElement;
+      var buttons = document.querySelectorAll("[data-set-lang]");
+      var metricGrid = document.getElementById("metricGrid");
+      var levelList = document.getElementById("levelList");
+      var extraList = document.getElementById("extraList");
+      var channelList = document.getElementById("channelList");
+      var paymentTable = document.getElementById("paymentTable");
+      var rangeGroup = document.getElementById("rangeGroup");
+      var refreshBtn = document.getElementById("refreshBtn");
+      var paymentForm = document.getElementById("paymentForm");
+      var paymentStatus = document.getElementById("paymentStatus");
+
+      var state = {
+        lang: "zh-CN",
+        range: "30"
+      };
+
+      function readJson(key) {
+        try {
+          return JSON.parse(localStorage.getItem(key) || "[]");
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function safeDate(v) {
+        var d = new Date(v);
+        return Number.isNaN(d.getTime()) ? null : d;
+      }
+
+      function inRange(item, rangeKey) {
+        if (rangeKey === "all") return true;
+        var d = safeDate(item.createdAt);
+        if (!d) return false;
+        var days = parseInt(rangeKey, 10);
+        var from = new Date();
+        from.setHours(0, 0, 0, 0);
+        from.setDate(from.getDate() - days + 1);
+        return d >= from;
+      }
+
+      function pct(a, b) {
+        if (!b) return "0%";
+        return ((a / b) * 100).toFixed(1) + "%";
+      }
+
+      function money(n) {
+        return "$" + n.toFixed(2);
+      }
+
+      function normEmail(v) {
+        return String(v || "").trim().toLowerCase();
+      }
+
+      function mapLevel(raw, langPack) {
+        var v = String(raw || "").toLowerCase();
+        if (v.includes("初") || v.includes("begin")) return langPack === "zh-CN" ? "初阶" : "Beginner";
+        if (v.includes("中") || v.includes("inter")) return langPack === "zh-CN" ? "中阶" : "Intermediate";
+        if (v.includes("进") || v.includes("adv")) return langPack === "zh-CN" ? "进阶" : "Advanced";
+        return I18N[langPack].unknown;
+      }
+
+      function byCountDesc(a, b) { return b[1] - a[1]; }
+
+      function renderRangeButtons() {
+        var t = I18N[state.lang];
+        rangeGroup.innerHTML = t.ranges.map(function (r) {
+          var cls = "btn" + (state.range === r.key ? " active" : "");
+          return "<button class='" + cls + "' data-range='" + r.key + "' type='button'>" + r.text + "</button>";
+        }).join("");
+
+        rangeGroup.querySelectorAll("[data-range]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            state.range = btn.getAttribute("data-range");
+            render();
+          });
+        });
+      }
+
+      function renderKvList(el, items, noDataText) {
+        if (!items.length) {
+          el.innerHTML = "<li><span>" + noDataText + "</span><span class='badge'>0</span></li>";
+          return;
+        }
+
+        el.innerHTML = items.map(function (it) {
+          return "<li><span>" + it.label + "</span><span class='badge'>" + it.value + "</span></li>";
+        }).join("");
+      }
+
+      function renderMetrics(data, t) {
+        var items = [
+          { label: t.metrics.registered, value: data.registered, sub: "" },
+          { label: t.metrics.paid, value: data.paid, sub: t.metrics.conversion + ": " + data.conversion },
+          { label: t.metrics.revenue, value: money(data.revenue), sub: t.metrics.arpu + ": " + money(data.arpu) },
+          { label: t.metrics.assessed, value: data.assessed, sub: t.metrics.assessRate + ": " + data.assessRate },
+          { label: t.metrics.pending, value: data.pending, sub: "" },
+          { label: t.extra.signupToday, value: data.signupToday, sub: "" },
+          { label: t.extra.signupWeek, value: data.signupWeek, sub: "" },
+          { label: t.extra.avgLeadToAssess, value: data.leadToAssessRate, sub: "" }
+        ];
+
+        metricGrid.innerHTML = items.map(function (m) {
+          return "<article class='metric'><span class='label'>" + m.label + "</span><div class='value'>" + m.value + "</div><div class='sub'>" + (m.sub || "&nbsp;") + "</div></article>";
+        }).join("");
+      }
+
+      function renderPaymentsTable(payments, t) {
+        if (!payments.length) {
+          paymentTable.innerHTML = "<tr><td colspan='4'>" + t.noData + "</td></tr>";
+          return;
+        }
+
+        paymentTable.innerHTML = payments.slice().sort(function (a, b) {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        }).slice(0, 12).map(function (p) {
+          var source = t.provider[p.source] || p.source || t.unknown;
+          var time = safeDate(p.createdAt);
+          var timeText = time ? time.toLocaleString() : "-";
+          return "<tr><td>" + (p.email || "-") + "</td><td>" + money(Number(p.amount) || 0) + "</td><td>" + source + "</td><td>" + timeText + "</td></tr>";
+        }).join("");
+      }
+
+      function render() {
+        var t = I18N[state.lang];
+        html.setAttribute("lang", state.lang);
+        localStorage.setItem("minddo_lang", state.lang);
+
+        document.querySelectorAll("[data-i18n]").forEach(function (el) {
+          var key = el.getAttribute("data-i18n");
+          if (t[key]) el.textContent = t[key];
+        });
+
+        buttons.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-set-lang") === state.lang);
+        });
+
+        renderRangeButtons();
+
+        var signupsAll = readJson(STORAGE.signups);
+        var assessmentsAll = readJson(STORAGE.assessments);
+        var leadsAll = readJson(STORAGE.leads);
+        var paymentsAll = readJson(STORAGE.payments);
+
+        var signups = signupsAll.filter(function (x) { return inRange(x, state.range); });
+        var assessments = assessmentsAll.filter(function (x) { return inRange(x, state.range); });
+        var leads = leadsAll.filter(function (x) { return inRange(x, state.range); });
+        var payments = paymentsAll.filter(function (x) { return inRange(x, state.range); });
+
+        var registered = signups.length;
+
+        var paidEmailSet = new Set(payments.map(function (p) { return normEmail(p.email); }).filter(Boolean));
+        var paid = paidEmailSet.size;
+
+        var assessedEmailSet = new Set(assessments.map(function (a) { return normEmail(a.email); }).filter(Boolean));
+        var assessed = assessedEmailSet.size || assessments.length;
+
+        var signupEmailSet = new Set(signups.map(function (s) { return normEmail(s.email); }).filter(Boolean));
+        var pending = Math.max(signupEmailSet.size - assessedEmailSet.size, 0);
+
+        var revenue = payments.reduce(function (acc, p) {
+          return acc + (Number(p.amount) || 0);
+        }, 0);
+
+        var providers = signups.reduce(function (acc, s) {
+          var k = s.provider || "email";
+          acc[k] = (acc[k] || 0) + 1;
+          return acc;
+        }, {});
+
+        var levels = assessments.reduce(function (acc, a) {
+          var k = mapLevel(a.level, state.lang);
+          acc[k] = (acc[k] || 0) + 1;
+          return acc;
+        }, {});
+
+        var channels = leads.reduce(function (acc, l) {
+          var k = l.channel || t.unknown;
+          acc[k] = (acc[k] || 0) + 1;
+          return acc;
+        }, {});
+
+        var now = new Date();
+        var startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var start7 = new Date(startToday);
+        start7.setDate(start7.getDate() - 6);
+
+        var signupToday = signupsAll.filter(function (s) {
+          var d = safeDate(s.createdAt);
+          return d && d >= startToday;
+        }).length;
+
+        var signupWeek = signupsAll.filter(function (s) {
+          var d = safeDate(s.createdAt);
+          return d && d >= start7;
+        }).length;
+
+        var leadToAssessRate = pct(assessed, leads.length || 0);
+
+        renderMetrics({
+          registered: registered,
+          paid: paid,
+          conversion: pct(paid, registered),
+          revenue: revenue,
+          arpu: paid ? revenue / paid : 0,
+          assessed: assessed,
+          assessRate: pct(assessed, registered),
+          pending: pending,
+          signupToday: signupToday,
+          signupWeek: signupWeek,
+          leadToAssessRate: leadToAssessRate
+        }, t);
+
+        var levelItems = Object.entries(levels).sort(byCountDesc).map(function (x) {
+          return { label: x[0], value: x[1] };
+        });
+        renderKvList(levelList, levelItems, t.noData);
+
+        var channelItems = Object.entries(channels).sort(byCountDesc).map(function (x) {
+          return { label: x[0], value: x[1] };
+        });
+        renderKvList(channelList, channelItems, t.noData);
+
+        var googleShare = pct(providers.google || 0, registered);
+        var msShare = pct(providers.microsoft || 0, registered);
+
+        var extraItems = [
+          { label: t.extra.googleShare, value: googleShare },
+          { label: t.extra.microsoftShare, value: msShare },
+          { label: t.provider.email, value: providers.email || 0 }
+        ];
+        renderKvList(extraList, extraItems, t.noData);
+
+        renderPaymentsTable(payments, t);
+        document.title = t.title + " | Dashboard";
+      }
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          state.lang = btn.getAttribute("data-set-lang");
+          render();
+        });
+      });
+
+      refreshBtn.addEventListener("click", render);
+
+      paymentForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var t = I18N[state.lang];
+        var email = String(document.getElementById("payEmail").value || "").trim();
+        var amount = Number(document.getElementById("payAmount").value);
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !Number.isFinite(amount) || amount < 0) {
+          paymentStatus.className = "status err";
+          paymentStatus.textContent = t.errorPaid;
+          return;
+        }
+
+        var list = readJson(STORAGE.payments);
+
+        var existingUsers = readJson(STORAGE.signups);
+        var matched = existingUsers.find(function (u) {
+          return normEmail(u.email) === normEmail(email);
+        });
+
+        list.push({
+          email: email,
+          amount: amount,
+          source: matched && matched.provider ? matched.provider : "email",
+          createdAt: new Date().toISOString()
+        });
+
+        localStorage.setItem(STORAGE.payments, JSON.stringify(list));
+        paymentForm.reset();
+        paymentStatus.className = "status ok";
+        paymentStatus.textContent = t.successPaid;
+        render();
+      });
+
+      var saved = localStorage.getItem("minddo_lang");
+      state.lang = saved === "en" ? "en" : "zh-CN";
+      render();
+    })();
+  </script>
+</body>
+</html>
