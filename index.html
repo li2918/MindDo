@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI教育品牌业务流程</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-soft: #dbeafe;
+      --text: #0f172a;
+      --muted: #475569;
+      --line: #cbd5e1;
+      --success: #16a34a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px 64px;
+    }
+
+    .hero {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(24px, 4vw, 36px);
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+
+    .stage {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 16px;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+    }
+
+    .badge {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 4px 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .stage h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .stage ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .arrow {
+      display: none;
+    }
+
+    @media (min-width: 960px) {
+      .flow-grid {
+        grid-template-columns: 1fr auto 1fr auto 1fr;
+        gap: 12px;
+      }
+
+      .arrow {
+        display: grid;
+        place-items: center;
+        color: var(--primary);
+        font-size: 28px;
+        font-weight: 700;
+      }
+    }
+
+    .kpi {
+      background: var(--card);
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      padding: 20px;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+    }
+
+    .kpi h3 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #1e293b;
+      font-weight: 700;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    footer {
+      margin-top: 22px;
+      color: #64748b;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <h1>新AI教育品牌业务流程总览（试课 → 排课/选课 → 续课）</h1>
+      <p>
+        目标：把“获客、转化、交付、续费”串成可执行的标准动作。
+        下方流程可用于销售、教务、班主任和学管团队协同，帮助提升试听转化率和续课率。
+      </p>
+    </section>
+
+    <section class="flow-grid" aria-label="业务流程图">
+      <article class="stage">
+        <span class="badge">Step 01</span>
+        <h2>试课流程</h2>
+        <ul>
+          <li>线索进入：登记家长/学员基础信息与学习目标。</li>
+          <li>课前诊断：能力测评 + 学情访谈，输出试听策略。</li>
+          <li>试听执行：Demo教学 + 互动反馈 + 课堂亮点记录。</li>
+          <li>课后转化：24小时内发送测评报告并邀约选课。</li>
+        </ul>
+      </article>
+
+      <div class="arrow" aria-hidden="true">➜</div>
+
+      <article class="stage">
+        <span class="badge">Step 02</span>
+        <h2>排课（选课）流程</h2>
+        <ul>
+          <li>方案确认：按学段与目标定制课程包和阶段目标。</li>
+          <li>资源匹配：匹配主讲老师、时段、班型（1v1/小班）。</li>
+          <li>排课锁定：确认正式课表，生成开课日历与提醒机制。</li>
+          <li>服务建群：建立家校沟通群，明确周反馈节奏。</li>
+        </ul>
+      </article>
+
+      <div class="arrow" aria-hidden="true">➜</div>
+
+      <article class="stage">
+        <span class="badge">Step 03</span>
+        <h2>续课流程</h2>
+        <ul>
+          <li>过程跟踪：每周学习报告 + 作业达成 + 阶段测评。</li>
+          <li>续课预警：剩余课时 ≤ 20% 触发续课沟通。</li>
+          <li>价值复盘：展示成长曲线、目标达成与下一阶段路径。</li>
+          <li>续费成交：确认新课包、课表衔接与优惠政策。</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="kpi">
+      <h3>关键运营控制点（建议）</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>流程环节</th>
+            <th>关键动作</th>
+            <th>核心指标（KPI）</th>
+            <th>责任角色</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>试课</td>
+            <td>测评 + 试听 + 24小时跟进</td>
+            <td><span class="tag">试听到报名转化率</span></td>
+            <td>课程顾问 / 试听老师</td>
+          </tr>
+          <tr>
+            <td>排课（选课）</td>
+            <td>班型确认 + 师资匹配 + 课表落地</td>
+            <td><span class="tag">48小时排课完成率</span></td>
+            <td>教务 / 学管师</td>
+          </tr>
+          <tr>
+            <td>续课</td>
+            <td>阶段复盘 + 续费邀约 + 新计划签约</td>
+            <td><span class="tag">到期学员续课率</span></td>
+            <td>班主任 / 课程顾问</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      建议将以上流程接入CRM与教务系统，统一沉淀：线索标签、课消进度、续费节点、家长沟通记录。
+    </footer>
+  </main>
+</body>
+</html>
