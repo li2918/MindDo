@@ -2,6 +2,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch Home (Chrome)",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "preLaunchTask": "Start static server",
+      "url": "http://127.0.0.1:8123/index.html",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
       "name": "Debug Home (Edge)",
       "type": "pwa-msedge",
       "request": "launch",

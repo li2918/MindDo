@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>学期报告 | Semester Report</title>
+  <style>
+    :root {
+      --bg: #f6efe4;
+      --bg-soft: #fffaf2;
+      --card: rgba(255, 250, 242, 0.94);
+      --line: rgba(151, 84, 21, 0.14);
+      --line-strong: rgba(208, 129, 36, 0.3);
+      --primary: #f0a11f;
+      --primary-deep: #8c3d14;
+      --text: #4f2410;
+      --muted: #8b6e58;
+      --ok: #6f8f57;
+      --warn: #d89c36;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Avenir Next", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 204, 97, 0.3), transparent 30%),
+        radial-gradient(circle at 85% 18%, rgba(244, 162, 38, 0.14), transparent 24%),
+        linear-gradient(180deg, #fffdf9, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 24%, rgba(255, 208, 118, 0.16), transparent 24%),
+        radial-gradient(circle at 82% 78%, rgba(179, 76, 14, 0.08), transparent 28%);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 28px 20px 52px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      padding: 14px 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 252, 247, 0.82);
+      box-shadow: 0 18px 48px rgba(123, 72, 24, 0.08);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .brand-copy { display: grid; gap: 4px; }
+    .brand-copy strong { font-size: 19px; color: var(--primary-deep); }
+    .brand-copy span {
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #aa6a2b;
+    }
+
+    .nav-links, .lang-switch {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 247, 236, 0.96);
+      color: var(--primary-deep);
+      padding: 8px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover, .btn.active {
+      background: linear-gradient(135deg, #fff6de, #ffd977);
+      border-color: rgba(208, 129, 36, 0.5);
+      box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
+      color: var(--primary-deep);
+    }
+
+    .hero, .panel, .card {
+      background: linear-gradient(180deg, rgba(255, 252, 247, 0.96), rgba(252, 244, 232, 0.96));
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 24px 56px rgba(123, 72, 24, 0.08);
+    }
+
+    .hero { padding: 22px; margin-bottom: 14px; }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 4vw, 36px);
+      color: var(--primary-deep);
+    }
+    .muted { margin: 0; color: var(--muted); line-height: 1.6; }
+
+    .student-meta {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .meta {
+      border: 1px solid rgba(151, 84, 21, 0.12);
+      background: rgba(255, 248, 238, 0.8);
+      border-radius: 14px;
+      padding: 10px;
+    }
+
+    .meta .k { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .meta .v { font-size: 15px; font-weight: 700; color: var(--primary-deep); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .panel { padding: 16px; }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      color: var(--primary-deep);
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .kpi {
+      border: 1px solid rgba(151, 84, 21, 0.12);
+      background: rgba(255, 248, 238, 0.78);
+      border-radius: 14px;
+      padding: 10px;
+    }
+
+    .kpi .label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .kpi .value { font-size: 24px; font-weight: 700; color: var(--primary-deep); }
+    .kpi .sub { margin-top: 4px; color: #9a785d; font-size: 12px; }
+
+    .list {
+      margin: 0;
+      padding-left: 18px;
+      color: #6a4a35;
+      line-height: 1.7;
+    }
+
+    .skills {
+      display: grid;
+      gap: 10px;
+    }
+
+    .skill {
+      border: 1px solid rgba(151, 84, 21, 0.12);
+      background: rgba(255, 248, 238, 0.78);
+      border-radius: 14px;
+      padding: 10px;
+    }
+
+    .skill-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--primary-deep);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(151, 84, 21, 0.12);
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ffd977, #f0a11f);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card {
+      padding: 14px;
+      border-radius: 16px;
+      box-shadow: none;
+      background: rgba(255, 248, 238, 0.74);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(208, 129, 36, 0.24);
+      background: rgba(255, 204, 97, 0.18);
+      color: #9d5a18;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      color: var(--primary-deep);
+      font-size: 17px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid rgba(151, 84, 21, 0.12);
+      border-radius: 14px;
+      background: rgba(255, 248, 238, 0.76);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid rgba(151, 84, 21, 0.12);
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    th {
+      background: rgba(255, 208, 118, 0.14);
+      color: var(--primary-deep);
+    }
+
+    .badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid rgba(151, 84, 21, 0.22);
+    }
+
+    .ok { color: var(--ok); background: rgba(111, 143, 87, 0.14); }
+    .warn { color: #9a6b1f; background: rgba(216, 156, 54, 0.14); }
+
+    .footer-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 980px) {
+      .student-meta, .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 22px 14px 38px; }
+      .student-meta, .kpi-row { grid-template-columns: 1fr; }
+      .topbar, .nav-links, .lang-switch { justify-content: center; }
+      .hero, .panel, .card { border-radius: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="MindDo home">
+        <img src="assets/logo.png" alt="Mindo AI logo" />
+        <div class="brand-copy">
+          <span>Mindo AI</span>
+          <strong>Mindo AI</strong>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a class="btn" href="index.html"><span data-lang="zh">首页</span><span data-lang="en">Home</span></a>
+        <a class="btn" href="dashboard.html"><span data-lang="zh">运营看板</span><span data-lang="en">Dashboard</span></a>
+        <a class="btn" href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a>
+      </nav>
+
+      <div class="lang-switch">
+        <button class="btn active" type="button" data-set-lang="zh-CN">中文</button>
+        <button class="btn" type="button" data-set-lang="en">English</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1>
+        <span data-lang="zh">2026春季学期学习报告（模拟）</span>
+        <span data-lang="en">Spring 2026 Learning Report (Mock)</span>
+      </h1>
+      <p class="muted">
+        <span data-lang="zh">本报告用于向家长展示学生在一个完整学期内的学习投入、能力增长、项目成果与下学期建议，支持家校共育和续课决策。</span>
+        <span data-lang="en">This report summarizes semester engagement, growth, project outcomes, and next-term recommendations for parent communication and renewal decisions.</span>
+      </p>
+
+      <div class="student-meta">
+        <div class="meta"><span class="k" data-i18n="studentName"></span><span class="v" data-i18n="studentNameV"></span></div>
+        <div class="meta"><span class="k" data-i18n="studentId"></span><span class="v">MD2026-0417</span></div>
+        <div class="meta"><span class="k" data-i18n="grade"></span><span class="v" data-i18n="gradeV"></span></div>
+        <div class="meta"><span class="k" data-i18n="semester"></span><span class="v">2026 Spring</span></div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-bottom:12px;">
+      <h2><span data-lang="zh">学期表现总览</span><span data-lang="en">Semester Performance Overview</span></h2>
+      <div class="kpi-row">
+        <div class="kpi">
+          <span class="label" data-i18n="attend"></span>
+          <div class="value">95%</div>
+          <div class="sub"><span data-lang="zh">38 / 40 课时</span><span data-lang="en">38 / 40 classes</span></div>
+        </div>
+        <div class="kpi">
+          <span class="label" data-i18n="homework"></span>
+          <div class="value">92%</div>
+          <div class="sub"><span data-lang="zh">及时提交 23 / 25 次</span><span data-lang="en">On-time 23 / 25</span></div>
+        </div>
+        <div class="kpi">
+          <span class="label" data-i18n="project"></span>
+          <div class="value">4</div>
+          <div class="sub"><span data-lang="zh">其中 2 个优秀项目</span><span data-lang="en">2 outstanding projects</span></div>
+        </div>
+        <div class="kpi">
+          <span class="label" data-i18n="growth"></span>
+          <div class="value">+27%</div>
+          <div class="sub"><span data-lang="zh">综合能力提升指数</span><span data-lang="en">Overall capability growth</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2><span data-lang="zh">核心能力成长</span><span data-lang="en">Core Competency Growth</span></h2>
+        <div class="skills">
+          <div class="skill"><div class="skill-head"><span data-i18n="skill1"></span><span>86/100</span></div><div class="bar"><div class="fill" style="width:86%"></div></div></div>
+          <div class="skill"><div class="skill-head"><span data-i18n="skill2"></span><span>81/100</span></div><div class="bar"><div class="fill" style="width:81%"></div></div></div>
+          <div class="skill"><div class="skill-head"><span data-i18n="skill3"></span><span>84/100</span></div><div class="bar"><div class="fill" style="width:84%"></div></div></div>
+          <div class="skill"><div class="skill-head"><span data-i18n="skill4"></span><span>78/100</span></div><div class="bar"><div class="fill" style="width:78%"></div></div></div>
+          <div class="skill"><div class="skill-head"><span data-i18n="skill5"></span><span>83/100</span></div><div class="bar"><div class="fill" style="width:83%"></div></div></div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2><span data-lang="zh">教师观察与家长关注点</span><span data-lang="en">Teacher Observations & Parent Focus</span></h2>
+        <ul class="list">
+          <li data-i18n="obs1"></li>
+          <li data-i18n="obs2"></li>
+          <li data-i18n="obs3"></li>
+          <li data-i18n="obs4"></li>
+          <li data-i18n="obs5"></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="panel" style="margin-bottom:12px;">
+      <h2><span data-lang="zh">项目展示（Project Showcase）</span><span data-lang="en">Project Showcase</span></h2>
+      <div class="cards">
+        <article class="card">
+          <span class="tag"><span data-lang="zh">优秀项目 A</span><span data-lang="en">Outstanding Project A</span></span>
+          <h3><span data-lang="zh">校园垃圾分类智能助手</span><span data-lang="en">Smart Campus Sorting Assistant</span></h3>
+          <ul class="list">
+            <li data-i18n="pa1"></li>
+            <li data-i18n="pa2"></li>
+            <li data-i18n="pa3"></li>
+            <li data-i18n="pa4"></li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="tag"><span data-lang="zh">优秀项目 B</span><span data-lang="en">Outstanding Project B</span></span>
+          <h3><span data-lang="zh">历史人物多模态数字展板</span><span data-lang="en">Multimodal History Exhibit Board</span></h3>
+          <ul class="list">
+            <li data-i18n="pb1"></li>
+            <li data-i18n="pb2"></li>
+            <li data-i18n="pb3"></li>
+            <li data-i18n="pb4"></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2><span data-lang="zh">阶段评估记录与下学期建议</span><span data-lang="en">Milestone Records & Next-Term Plan</span></h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="thWeek"></th>
+              <th data-i18n="thTask"></th>
+              <th data-i18n="thResult"></th>
+              <th data-i18n="thTeacher"></th>
+              <th data-i18n="thParent"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Week 4</td>
+              <td data-i18n="w4t"></td>
+              <td><span class="badge ok" data-i18n="good"></span></td>
+              <td data-i18n="w4c"></td>
+              <td data-i18n="w4p"></td>
+            </tr>
+            <tr>
+              <td>Week 8</td>
+              <td data-i18n="w8t"></td>
+              <td><span class="badge ok" data-i18n="good"></span></td>
+              <td data-i18n="w8c"></td>
+              <td data-i18n="w8p"></td>
+            </tr>
+            <tr>
+              <td>Week 12</td>
+              <td data-i18n="w12t"></td>
+              <td><span class="badge warn" data-i18n="improve"></span></td>
+              <td data-i18n="w12c"></td>
+              <td data-i18n="w12p"></td>
+            </tr>
+            <tr>
+              <td>Week 16</td>
+              <td data-i18n="w16t"></td>
+              <td><span class="badge ok" data-i18n="good"></span></td>
+              <td data-i18n="w16c"></td>
+              <td data-i18n="w16p"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="footer-note" data-i18n="nextPlan"></p>
+      <p class="footer-note" data-i18n="homeAdvice"></p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var I18N = {
+        "zh-CN": {
+          studentName: "学生姓名",
+          studentNameV: "李若安",
+          studentId: "学号",
+          grade: "年级",
+          gradeV: "六年级",
+          semester: "学期",
+          attend: "出勤率",
+          homework: "作业完成率",
+          project: "项目完成数",
+          growth: "能力成长指数",
+          skill1: "AI提问与信息检索",
+          skill2: "编程逻辑与结构化思维",
+          skill3: "项目表达与展示能力",
+          skill4: "时间管理与任务拆解",
+          skill5: "团队协作与同伴反馈",
+          obs1: "课堂参与积极，愿意主动提问，能将抽象任务转化为可执行步骤。",
+          obs2: "在项目复盘中开始形成“问题-证据-结论”的表达结构。",
+          obs3: "遇到开放题时偶尔急于给答案，建议继续训练“先分析再生成”。",
+          obs4: "同伴协作意识明显提升，组内反馈更加具体可执行。",
+          obs5: "建议下学期增加跨学科研究型任务，强化持续迭代能力。",
+          pa1: "项目目标：用图文问答帮助校园垃圾分类宣传。",
+          pa2: "学生贡献：负责提示词设计、资料筛选和交互文案。",
+          pa3: "学习亮点：能够识别错误答案并进行二次验证。",
+          pa4: "家长可见成果：完整演示稿 + 课堂展示视频。",
+          pb1: "项目目标：将历史人物资料做成互动讲解页面。",
+          pb2: "学生贡献：负责脚本草稿与多模态素材编排。",
+          pb3: "学习亮点：叙事逻辑清晰，表达自信度显著提升。",
+          pb4: "家长可见成果：数字展板链接 + 讲解录屏。",
+          thWeek: "阶段",
+          thTask: "核心任务",
+          thResult: "结果",
+          thTeacher: "教师反馈",
+          thParent: "家长配合建议",
+          good: "达成良好",
+          improve: "可继续提升",
+          w4t: "基础提示词训练与信息筛选",
+          w4c: "已建立基本提问框架，准确率稳定。",
+          w4p: "每周2次复述课堂重点，巩固结构化表达。",
+          w8t: "小组项目协作与角色分工",
+          w8c: "能够按分工推进任务并及时同步进度。",
+          w8p: "家庭场景中可让孩子主导一次小型计划任务。",
+          w12t: "中期项目答辩",
+          w12c: "内容完整，但节奏略快，结论呈现可更聚焦。",
+          w12p: "鼓励孩子用“先结论后解释”练习表达。",
+          w16t: "学期结题展示",
+          w16c: "展示逻辑清楚，数据引用与案例支撑明显提升。",
+          w16p: "肯定过程努力，并与孩子共定下学期目标。",
+          nextPlan: "下学期建议：建议进入“AI创造进阶班”，重点提升模型思维、跨学科研究与公开表达能力；可配置1个长期项目（8-10周）+ 2个短项目（2-3周）。",
+          homeAdvice: "家庭支持建议：每周安排1次20分钟“项目回顾时间”，聚焦三个问题：本周完成了什么？遇到什么困难？下周准备如何改进？"
+        },
+        en: {
+          studentName: "Student Name",
+          studentNameV: "Leo Li",
+          studentId: "Student ID",
+          grade: "Grade",
+          gradeV: "Grade 6",
+          semester: "Semester",
+          attend: "Attendance Rate",
+          homework: "Homework Completion",
+          project: "Projects Completed",
+          growth: "Growth Index",
+          skill1: "AI Prompting & Information Retrieval",
+          skill2: "Programming Logic & Structured Thinking",
+          skill3: "Presentation & Communication",
+          skill4: "Time Management & Task Breakdown",
+          skill5: "Teamwork & Peer Feedback",
+          obs1: "The student engages actively and can convert abstract tasks into executable steps.",
+          obs2: "A stronger evidence-based expression pattern is visible during project reviews.",
+          obs3: "Sometimes rushes to answers in open-ended tasks; needs more analysis-first practice.",
+          obs4: "Collaboration awareness improved with more actionable peer feedback.",
+          obs5: "Recommend more interdisciplinary research tasks next semester.",
+          pa1: "Goal: Build a text-image Q&A helper for campus waste sorting education.",
+          pa2: "Student role: Prompt design, material filtering, and UX copy drafting.",
+          pa3: "Highlight: Can identify incorrect outputs and perform secondary validation.",
+          pa4: "Parent-visible output: Full presentation deck and class demo recording.",
+          pb1: "Goal: Create an interactive board for historical character storytelling.",
+          pb2: "Student role: Script drafting and multimodal content orchestration.",
+          pb3: "Highlight: Clear narrative structure and stronger confidence on stage.",
+          pb4: "Parent-visible output: Digital board link and narrated recording.",
+          thWeek: "Milestone",
+          thTask: "Core Task",
+          thResult: "Result",
+          thTeacher: "Teacher Feedback",
+          thParent: "Home Action",
+          good: "Good Progress",
+          improve: "Needs Improvement",
+          w4t: "Prompt fundamentals and information filtering",
+          w4c: "Basic questioning framework established with stable accuracy.",
+          w4p: "Run two weekly recap sessions to reinforce structured expression.",
+          w8t: "Team project collaboration and role ownership",
+          w8c: "Can push assigned tasks and sync progress on time.",
+          w8p: "Let the student lead one small home planning task weekly.",
+          w12t: "Mid-term project defense",
+          w12c: "Solid content; pacing can improve with sharper conclusions.",
+          w12p: "Practice conclusion-first speaking structure.",
+          w16t: "Final semester showcase",
+          w16c: "Clear logic and better data/case support in presentation.",
+          w16p: "Acknowledge effort and co-define next-term goals.",
+          nextPlan: "Next term: Move to the AI Creative Advanced track, focusing on model thinking, interdisciplinary research, and public communication. Suggested setup: 1 long project (8-10 weeks) + 2 short projects (2-3 weeks).",
+          homeAdvice: "Home support: Schedule one 20-minute weekly project reflection around three prompts: What was completed? What was difficult? What will be improved next week?"
+        }
+      };
+
+      var html = document.documentElement;
+      var buttons = document.querySelectorAll("[data-set-lang]");
+
+      function setLang(lang) {
+        var t = I18N[lang] || I18N["zh-CN"];
+        html.setAttribute("lang", lang);
+        localStorage.setItem("minddo_lang", lang);
+
+        document.querySelectorAll("[data-i18n]").forEach(function (el) {
+          var key = el.getAttribute("data-i18n");
+          if (t[key]) el.textContent = t[key];
+        });
+
+        document.querySelectorAll("[data-lang='zh']").forEach(function (el) {
+          el.style.display = lang === "zh-CN" ? "inline" : "none";
+        });
+        document.querySelectorAll("[data-lang='en']").forEach(function (el) {
+          el.style.display = lang === "en" ? "inline" : "none";
+        });
+
+        buttons.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
+        });
+      }
+
+      var saved = localStorage.getItem("minddo_lang");
+      setLang(saved === "en" ? "en" : "zh-CN");
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          setLang(btn.getAttribute("data-set-lang"));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>选课页面 | Course Selection</title>
+  <style>
+    :root {
+      --bg: #f6efe4;
+      --bg-soft: #fffaf2;
+      --card: rgba(255, 250, 242, 0.94);
+      --line: rgba(151, 84, 21, 0.14);
+      --line-strong: rgba(208, 129, 36, 0.3);
+      --primary: #f0a11f;
+      --primary-deep: #8c3d14;
+      --text: #4f2410;
+      --muted: #8b6e58;
+      --success: #6f8f57;
+      --error: #c46a4d;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Avenir Next", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 204, 97, 0.3), transparent 30%),
+        radial-gradient(circle at 85% 18%, rgba(244, 162, 38, 0.14), transparent 24%),
+        linear-gradient(180deg, #fffdf9, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 24%, rgba(255, 208, 118, 0.16), transparent 24%),
+        radial-gradient(circle at 82% 78%, rgba(179, 76, 14, 0.08), transparent 28%);
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 28px 20px 46px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding: 14px 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 252, 247, 0.82);
+      box-shadow: 0 18px 48px rgba(123, 72, 24, 0.08);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .brand-copy { display: grid; gap: 4px; }
+    .brand-copy strong { font-size: 19px; color: var(--primary-deep); }
+    .brand-copy span {
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #aa6a2b;
+    }
+
+    .nav-links, .lang-switch { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 247, 236, 0.96);
+      color: var(--primary-deep);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: none;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover, .btn.active {
+      background: linear-gradient(135deg, #fff6de, #ffd977);
+      border-color: rgba(208, 129, 36, 0.5);
+      color: var(--primary-deep);
+      box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
+    }
+
+    .hero, .panel, .membership {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: 0 18px 44px rgba(123, 72, 24, 0.08);
+    }
+
+    .hero { padding: 20px; margin-bottom: 14px; }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(24px, 4vw, 34px);
+      color: var(--primary-deep);
+    }
+    .muted { margin: 0; color: var(--muted); line-height: 1.6; }
+
+    .meta {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .meta-item {
+      border-radius: 14px;
+      border: 1px solid rgba(151, 84, 21, 0.12);
+      background: rgba(255, 248, 238, 0.78);
+      padding: 10px;
+    }
+
+    .meta-item .k { display: block; color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+    .meta-item .v { color: var(--primary-deep); font-size: 14px; font-weight: 700; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .panel { padding: 16px; }
+    .panel h2 { margin: 0 0 10px; font-size: 18px; color: var(--primary-deep); }
+
+    .membership-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .membership {
+      padding: 14px;
+      position: relative;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .membership:hover {
+      transform: translateY(-2px);
+      border-color: rgba(208, 129, 36, 0.45);
+    }
+
+    .membership input { position: absolute; opacity: 0; pointer-events: none; }
+    .membership.selected {
+      border-color: rgba(208, 129, 36, 0.55);
+      box-shadow: 0 14px 28px rgba(192, 123, 39, 0.18);
+      background: linear-gradient(180deg, rgba(255, 252, 247, 0.96), rgba(255, 244, 220, 0.9));
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      border: 1px solid rgba(208, 129, 36, 0.24);
+      background: rgba(255, 204, 97, 0.2);
+      color: #9d5a18;
+      padding: 2px 8px;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .membership h3 { margin: 0 0 8px; font-size: 17px; color: var(--primary-deep); }
+    .price { font-size: 28px; font-weight: 700; color: var(--primary-deep); line-height: 1; }
+    .sub { color: #9a785d; font-size: 12px; margin-top: 4px; }
+    .features { margin: 10px 0 0; padding-left: 18px; color: #6a4a35; font-size: 13px; line-height: 1.65; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    label { display: block; font-size: 13px; color: #7b5b43; margin-bottom: 6px; }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      border: 1px solid rgba(151, 84, 21, 0.16);
+      background: rgba(255, 252, 247, 0.88);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      border-color: rgba(208, 129, 36, 0.54);
+      box-shadow: 0 0 0 4px rgba(255, 204, 97, 0.2);
+    }
+
+    .addon-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .addon {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      border: 1px solid rgba(151, 84, 21, 0.12);
+      background: rgba(255, 248, 238, 0.72);
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-size: 13px;
+      color: #6a4a35;
+    }
+
+    .addon input { margin-top: 2px; }
+
+    .summary-kv {
+      display: grid;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid rgba(151, 84, 21, 0.12);
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: rgba(255, 248, 238, 0.72);
+      font-size: 13px;
+      color: #6a4a35;
+    }
+
+    .total {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(208, 129, 36, 0.28);
+      background: rgba(255, 226, 170, 0.35);
+      color: #8c3d14;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      font-size: 15px;
+    }
+
+    .actions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .result {
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      display: none;
+      margin-top: 10px;
+    }
+
+    .result.success {
+      display: block;
+      border: 1px solid rgba(111, 143, 87, 0.28);
+      background: rgba(111, 143, 87, 0.1);
+      color: var(--success);
+    }
+
+    .result.error {
+      display: block;
+      border: 1px solid rgba(196, 106, 77, 0.28);
+      background: rgba(196, 106, 77, 0.1);
+      color: var(--error);
+    }
+
+    .extra-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .list { margin: 0; padding-left: 18px; color: #6a4a35; line-height: 1.7; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid rgba(151, 84, 21, 0.12);
+      border-radius: 14px;
+      background: rgba(255, 248, 238, 0.7);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 540px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px;
+      border-bottom: 1px solid rgba(151, 84, 21, 0.12);
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    th { color: var(--primary-deep); background: rgba(255, 208, 118, 0.14); }
+
+    @media (max-width: 1020px) {
+      .layout { grid-template-columns: 1fr; }
+      .membership-grid { grid-template-columns: 1fr; }
+      .meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .extra-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .container { padding: 22px 14px 34px; }
+      .topbar { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .meta { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="MindDo home">
+        <img src="assets/logo.png" alt="Mindo AI logo" />
+        <div class="brand-copy">
+          <span>Mindo AI</span>
+          <strong>Mindo AI</strong>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a class="btn" href="index.html"><span data-lang="zh">首页</span><span data-lang="en">Home</span></a>
+        <a class="btn" href="trial.html"><span data-lang="zh">试课</span><span data-lang="en">Trial</span></a>
+        <a class="btn" href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a>
+        <a class="btn" href="semester-report.html"><span data-lang="zh">学期报告</span><span data-lang="en">Semester Report</span></a>
+      </nav>
+
+      <div class="lang-switch">
+        <button class="btn active" type="button" data-set-lang="zh-CN">中文</button>
+        <button class="btn" type="button" data-set-lang="en">English</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1><span data-lang="zh">选课与 Membership 方案</span><span data-lang="en">Course Selection & Membership Plans</span></h1>
+      <p class="muted">
+        <span data-lang="zh">学生可根据学习节奏选择每周 1 节、2 节或 3 节课。页面会自动汇总费用，并支持增值服务选择，帮助家长快速完成决策。</span>
+        <span data-lang="en">Students can choose 1, 2, or 3 classes per week. The page calculates pricing with optional add-ons to help parents make quick, informed decisions.</span>
+      </p>
+      <div class="meta">
+        <div class="meta-item"><span class="k" data-i18n="studentName"></span><span class="v" id="metaName">李若安</span></div>
+        <div class="meta-item"><span class="k" data-i18n="studentId"></span><span class="v" id="metaId">MD2026-0417</span></div>
+        <div class="meta-item"><span class="k" data-i18n="grade"></span><span class="v" id="metaGrade">六年级</span></div>
+        <div class="meta-item"><span class="k" data-i18n="goal"></span><span class="v" id="metaGoal">AI创造力提升</span></div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <article class="panel">
+        <h2><span data-lang="zh">选择 Membership</span><span data-lang="en">Choose Membership</span></h2>
+
+        <div class="membership-grid">
+          <label class="membership selected" data-plan="weekly1">
+            <input type="radio" name="membership" value="weekly1" checked />
+            <span class="badge"><span data-lang="zh">基础方案</span><span data-lang="en">Foundation</span></span>
+            <h3><span data-lang="zh">每周一节课</span><span data-lang="en">1 Class / Week</span></h3>
+            <div class="price">$199</div>
+            <div class="sub"><span data-lang="zh">每月（4课时）</span><span data-lang="en">Monthly (4 classes)</span></div>
+            <ul class="features">
+              <li><span data-lang="zh">适合建立学习习惯与稳态进步</span><span data-lang="en">Ideal for stable routines</span></li>
+              <li><span data-lang="zh">每周学习反馈 1 次</span><span data-lang="en">Weekly feedback report</span></li>
+            </ul>
+          </label>
+
+          <label class="membership" data-plan="weekly2">
+            <input type="radio" name="membership" value="weekly2" />
+            <span class="badge"><span data-lang="zh">推荐方案</span><span data-lang="en">Recommended</span></span>
+            <h3><span data-lang="zh">每周两节课</span><span data-lang="en">2 Classes / Week</span></h3>
+            <div class="price">$369</div>
+            <div class="sub"><span data-lang="zh">每月（8课时）</span><span data-lang="en">Monthly (8 classes)</span></div>
+            <ul class="features">
+              <li><span data-lang="zh">知识输入 + 项目训练并行</span><span data-lang="en">Balanced learning + projects</span></li>
+              <li><span data-lang="zh">双周能力成长评估</span><span data-lang="en">Bi-weekly growth review</span></li>
+            </ul>
+          </label>
+
+          <label class="membership" data-plan="weekly3">
+            <input type="radio" name="membership" value="weekly3" />
+            <span class="badge"><span data-lang="zh">进阶方案</span><span data-lang="en">Advanced</span></span>
+            <h3><span data-lang="zh">每周三节课</span><span data-lang="en">3 Classes / Week</span></h3>
+            <div class="price">$519</div>
+            <div class="sub"><span data-lang="zh">每月（12课时）</span><span data-lang="en">Monthly (12 classes)</span></div>
+            <ul class="features">
+              <li><span data-lang="zh">强化冲刺，适合竞赛/作品集目标</span><span data-lang="en">For competitions and portfolio goals</span></li>
+              <li><span data-lang="zh">每周导师复盘 + 个性化任务</span><span data-lang="en">Weekly mentor review</span></li>
+            </ul>
+          </label>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <label for="classMode" data-i18n="classMode"></label>
+            <select id="classMode">
+              <option value="1v1">1v1</option>
+              <option value="small">Small Group 1v4</option>
+            </select>
+          </div>
+          <div>
+            <label for="billingCycle" data-i18n="billingCycle"></label>
+            <select id="billingCycle">
+              <option value="monthly" data-i18n="monthly"></option>
+              <option value="term" data-i18n="term"></option>
+            </select>
+          </div>
+          <div>
+            <label for="weekday" data-i18n="preferredDay"></label>
+            <select id="weekday">
+              <option data-i18n="dayMon"></option>
+              <option data-i18n="dayTue"></option>
+              <option data-i18n="dayWed"></option>
+              <option data-i18n="dayThu"></option>
+              <option data-i18n="dayFri"></option>
+              <option data-i18n="daySat"></option>
+              <option data-i18n="daySun"></option>
+            </select>
+          </div>
+          <div>
+            <label for="timeSlot" data-i18n="preferredTime"></label>
+            <select id="timeSlot">
+              <option data-i18n="timeAfterSchool"></option>
+              <option data-i18n="timeEvening"></option>
+              <option data-i18n="timeWeekendAm"></option>
+              <option data-i18n="timeWeekendPm"></option>
+            </select>
+          </div>
+        </div>
+
+        <h2 style="margin-top:14px;"><span data-lang="zh">增值服务（可选）</span><span data-lang="en">Add-ons (Optional)</span></h2>
+        <div class="addon-list">
+          <label class="addon"><input type="checkbox" class="addon-check" value="mentor" /><span data-i18n="addonMentor"></span></label>
+          <label class="addon"><input type="checkbox" class="addon-check" value="project" /><span data-i18n="addonProject"></span></label>
+          <label class="addon"><input type="checkbox" class="addon-check" value="report" /><span data-i18n="addonReport"></span></label>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2><span data-lang="zh">费用汇总</span><span data-lang="en">Price Summary</span></h2>
+        <div class="summary-kv" id="summaryList"></div>
+        <div class="total"><span data-i18n="totalLabel"></span><span id="totalPrice">$0</span></div>
+
+        <div class="actions">
+          <button class="btn" id="submitBtn" type="button"><span data-lang="zh">提交选课</span><span data-lang="en">Submit Selection</span></button>
+          <button class="btn" id="resetBtn" type="button"><span data-lang="zh">重置</span><span data-lang="en">Reset</span></button>
+        </div>
+        <div id="result" class="result"></div>
+      </article>
+    </section>
+
+    <section class="extra-grid">
+      <article class="panel">
+        <h2><span data-lang="zh">页面附加信息（家长常问）</span><span data-lang="en">Additional Parent-Focused Info</span></h2>
+        <ul class="list">
+          <li><span data-lang="zh">每位学员将匹配固定主讲老师与学习顾问，保证沟通连续性。</span><span data-lang="en">Each student is assigned a fixed teacher and learning advisor.</span></li>
+          <li><span data-lang="zh">每 4 周生成阶段学习小结，每学期提供完整学期报告。</span><span data-lang="en">A milestone report is provided every 4 weeks, plus a full semester report.</span></li>
+          <li><span data-lang="zh">支持因病请假补课，需提前 24 小时申请。</span><span data-lang="en">Class make-up support is available with 24-hour notice.</span></li>
+          <li><span data-lang="zh">可随时升级 membership，系统按差价补收。</span><span data-lang="en">Membership can be upgraded anytime with prorated pricing.</span></li>
+        </ul>
+      </article>
+
+      <article class="panel">
+        <h2><span data-lang="zh">方案对比</span><span data-lang="en">Plan Comparison</span></h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th><span data-lang="zh">方案</span><span data-lang="en">Plan</span></th>
+                <th><span data-lang="zh">建议人群</span><span data-lang="en">Best For</span></th>
+                <th><span data-lang="zh">目标周期</span><span data-lang="en">Target Cycle</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span data-lang="zh">每周一节</span><span data-lang="en">1/week</span></td>
+                <td><span data-lang="zh">刚起步、强调习惯建立</span><span data-lang="en">Beginners building routine</span></td>
+                <td><span data-lang="zh">12-16 周</span><span data-lang="en">12-16 weeks</span></td>
+              </tr>
+              <tr>
+                <td><span data-lang="zh">每周两节</span><span data-lang="en">2/week</span></td>
+                <td><span data-lang="zh">希望稳步提分和项目并进</span><span data-lang="en">Balanced growth + project work</span></td>
+                <td><span data-lang="zh">8-12 周</span><span data-lang="en">8-12 weeks</span></td>
+              </tr>
+              <tr>
+                <td><span data-lang="zh">每周三节</span><span data-lang="en">3/week</span></td>
+                <td><span data-lang="zh">冲刺目标、竞赛、作品集</span><span data-lang="en">Intensive goals/competitions</span></td>
+                <td><span data-lang="zh">6-10 周</span><span data-lang="en">6-10 weeks</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var I18N = {
+        "zh-CN": {
+          studentName: "学生姓名",
+          studentId: "学号",
+          grade: "年级",
+          goal: "学习目标",
+          classMode: "班型",
+          billingCycle: "计费周期",
+          monthly: "按月（4周）",
+          term: "按学期（12周，95折）",
+          preferredDay: "偏好上课日",
+          preferredTime: "偏好时间段",
+          dayMon: "周一",
+          dayTue: "周二",
+          dayWed: "周三",
+          dayThu: "周四",
+          dayFri: "周五",
+          daySat: "周六",
+          daySun: "周日",
+          timeAfterSchool: "放学后 16:00-18:00",
+          timeEvening: "晚间 19:00-21:00",
+          timeWeekendAm: "周末上午",
+          timeWeekendPm: "周末下午",
+          addonMentor: "学业导师加餐（每月 +$39）：每周 1 次 20 分钟 1v1 学习策略指导",
+          addonProject: "项目工坊（每月 +$49）：每月 2 次项目打磨课",
+          addonReport: "家长深度报告（每月 +$29）：含学情趋势图与家庭建议",
+          totalLabel: "预计总价（每月）",
+          basePlan: "基础方案",
+          addOn: "增值服务",
+          cycle: "计费方式",
+          mode: "班型",
+          discount: "学期折扣",
+          submitSuccess: "选课提交成功，顾问将在24小时内确认排课。",
+          submitError: "请先选择 membership 方案。"
+        },
+        en: {
+          studentName: "Student Name",
+          studentId: "Student ID",
+          grade: "Grade",
+          goal: "Learning Goal",
+          classMode: "Class Type",
+          billingCycle: "Billing Cycle",
+          monthly: "Monthly (4 weeks)",
+          term: "Term (12 weeks, 5% off)",
+          preferredDay: "Preferred Day",
+          preferredTime: "Preferred Time Slot",
+          dayMon: "Monday",
+          dayTue: "Tuesday",
+          dayWed: "Wednesday",
+          dayThu: "Thursday",
+          dayFri: "Friday",
+          daySat: "Saturday",
+          daySun: "Sunday",
+          timeAfterSchool: "After school 16:00-18:00",
+          timeEvening: "Evening 19:00-21:00",
+          timeWeekendAm: "Weekend Morning",
+          timeWeekendPm: "Weekend Afternoon",
+          addonMentor: "Mentor Coaching (+$39/mo): 20-min 1v1 weekly strategy session",
+          addonProject: "Project Studio (+$49/mo): two project polishing sessions per month",
+          addonReport: "Parent Deep Report (+$29/mo): growth charts and home recommendations",
+          totalLabel: "Estimated Total (Monthly)",
+          basePlan: "Base Plan",
+          addOn: "Add-ons",
+          cycle: "Billing",
+          mode: "Class Type",
+          discount: "Term Discount",
+          submitSuccess: "Selection submitted. An advisor will confirm scheduling within 24 hours.",
+          submitError: "Please select a membership plan first."
+        }
+      };
+
+      var PLAN_PRICES = {
+        weekly1: 199,
+        weekly2: 369,
+        weekly3: 519
+      };
+
+      var ADDON_PRICES = {
+        mentor: 39,
+        project: 49,
+        report: 29
+      };
+
+      var html = document.documentElement;
+      var langButtons = document.querySelectorAll("[data-set-lang]");
+      var planCards = document.querySelectorAll(".membership");
+      var addonChecks = document.querySelectorAll(".addon-check");
+      var billingCycle = document.getElementById("billingCycle");
+      var classMode = document.getElementById("classMode");
+      var summaryList = document.getElementById("summaryList");
+      var totalPrice = document.getElementById("totalPrice");
+      var submitBtn = document.getElementById("submitBtn");
+      var resetBtn = document.getElementById("resetBtn");
+      var result = document.getElementById("result");
+
+      function currentLang() {
+        return html.getAttribute("lang") === "en" ? "en" : "zh-CN";
+      }
+
+      function selectedPlan() {
+        var checked = document.querySelector("input[name='membership']:checked");
+        return checked ? checked.value : "";
+      }
+
+      function selectedAddons() {
+        var values = [];
+        addonChecks.forEach(function (c) {
+          if (c.checked) values.push(c.value);
+        });
+        return values;
+      }
+
+      function formatMoney(n) {
+        return "$" + Number(n).toFixed(2);
+      }
+
+      function updateMembershipUI() {
+        planCards.forEach(function (card) {
+          var input = card.querySelector("input[type='radio']");
+          card.classList.toggle("selected", !!input.checked);
+        });
+      }
+
+      function updateSummary() {
+        var t = I18N[currentLang()];
+        var plan = selectedPlan();
+        if (!plan) {
+          summaryList.innerHTML = "";
+          totalPrice.textContent = "$0";
+          return;
+        }
+
+        var base = PLAN_PRICES[plan] || 0;
+        var addons = selectedAddons();
+        var addonTotal = addons.reduce(function (acc, item) {
+          return acc + (ADDON_PRICES[item] || 0);
+        }, 0);
+
+        var monthly = base + addonTotal;
+        var discount = 0;
+        if (billingCycle.value === "term") {
+          discount = monthly * 0.05;
+        }
+        var total = monthly - discount;
+
+        var modeLabel = classMode.options[classMode.selectedIndex].textContent;
+        var cycleLabel = billingCycle.options[billingCycle.selectedIndex].textContent;
+        var addonLabel = addons.length ? addons.map(function (key) {
+          return key + " (" + formatMoney(ADDON_PRICES[key]) + ")";
+        }).join(", ") : "-";
+
+        summaryList.innerHTML =
+          "<div class='summary-item'><span>" + t.basePlan + "</span><strong>" + formatMoney(base) + "</strong></div>" +
+          "<div class='summary-item'><span>" + t.addOn + "</span><strong>" + (addons.length ? formatMoney(addonTotal) : "$0.00") + "</strong></div>" +
+          "<div class='summary-item'><span>" + t.mode + "</span><strong>" + modeLabel + "</strong></div>" +
+          "<div class='summary-item'><span>" + t.cycle + "</span><strong>" + cycleLabel + "</strong></div>" +
+          "<div class='summary-item'><span>" + t.discount + "</span><strong>-" + formatMoney(discount) + "</strong></div>" +
+          "<div class='summary-item'><span>Add-on detail</span><strong>" + addonLabel + "</strong></div>";
+
+        totalPrice.textContent = formatMoney(total);
+      }
+
+      function setLang(lang) {
+        var t = I18N[lang] || I18N["zh-CN"];
+        html.setAttribute("lang", lang);
+        localStorage.setItem("minddo_lang", lang);
+
+        document.querySelectorAll("[data-i18n]").forEach(function (el) {
+          var key = el.getAttribute("data-i18n");
+          if (t[key]) el.textContent = t[key];
+        });
+
+        document.querySelectorAll("[data-lang='zh']").forEach(function (el) {
+          el.style.display = lang === "zh-CN" ? "inline" : "none";
+        });
+        document.querySelectorAll("[data-lang='en']").forEach(function (el) {
+          el.style.display = lang === "en" ? "inline" : "none";
+        });
+
+        langButtons.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
+        });
+
+        updateSummary();
+      }
+
+      function submitSelection() {
+        var t = I18N[currentLang()];
+        var plan = selectedPlan();
+        if (!plan) {
+          result.className = "result error";
+          result.textContent = t.submitError;
+          return;
+        }
+
+        var payload = {
+          plan: plan,
+          addons: selectedAddons(),
+          classMode: classMode.value,
+          billingCycle: billingCycle.value,
+          weekday: document.getElementById("weekday").value,
+          timeSlot: document.getElementById("timeSlot").value,
+          totalMonthly: totalPrice.textContent,
+          createdAt: new Date().toISOString()
+        };
+
+        var key = "minddo_membership_orders";
+        var list = JSON.parse(localStorage.getItem(key) || "[]");
+        list.push(payload);
+        localStorage.setItem(key, JSON.stringify(list));
+
+        result.className = "result success";
+        result.textContent = t.submitSuccess;
+      }
+
+      planCards.forEach(function (card) {
+        card.addEventListener("click", function () {
+          var input = card.querySelector("input[type='radio']");
+          input.checked = true;
+          updateMembershipUI();
+          updateSummary();
+        });
+      });
+
+      addonChecks.forEach(function (c) {
+        c.addEventListener("change", updateSummary);
+      });
+      billingCycle.addEventListener("change", updateSummary);
+      classMode.addEventListener("change", updateSummary);
+      submitBtn.addEventListener("click", submitSelection);
+      resetBtn.addEventListener("click", function () {
+        document.querySelector("input[name='membership'][value='weekly1']").checked = true;
+        addonChecks.forEach(function (c) { c.checked = false; });
+        billingCycle.value = "monthly";
+        classMode.value = "1v1";
+        updateMembershipUI();
+        updateSummary();
+        result.className = "result";
+        result.textContent = "";
+      });
+
+      langButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          setLang(btn.getAttribute("data-set-lang"));
+        });
+      });
+
+      var saved = localStorage.getItem("minddo_lang");
+      setLang(saved === "en" ? "en" : "zh-CN");
+      updateMembershipUI();
+      updateSummary();
+    })();
+  </script>
+</body>
+</html>

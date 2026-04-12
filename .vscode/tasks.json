@@ -4,11 +4,17 @@
     {
       "label": "Start static server",
       "type": "shell",
-      "command": "python",
+      "command": "powershell",
       "args": [
-        "-m",
-        "http.server",
-        "8123"
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\.vscode\\static-server.ps1",
+        "-Port",
+        "8123",
+        "-Root",
+        "${workspaceFolder}"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
