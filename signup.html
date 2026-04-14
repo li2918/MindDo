@@ -316,12 +316,14 @@
       </a>
       <div class="nav-links">
         <a class="chip" href="index.html" data-i18n="backFlow"></a>
-        <a class="chip" href="course-selection.html" data-i18n="goCourseSelection"></a>
-        <a class="chip" href="course-system.html" data-i18n="goCourseSystem"></a>
-        <a class="chip" href="semester-report.html" data-i18n="goSemesterReport"></a>
-        <a class="chip" href="assessment.html" data-i18n="goAssessment"></a>
-        <a class="chip" href="dashboard.html" data-i18n="goDashboard"></a>
         <a class="chip" href="trial.html" data-i18n="backTrial"></a>
+        <a class="chip" href="assessment.html" data-i18n="goAssessment"></a>
+        <a class="chip" href="student-account.html" data-i18n="goAccount"></a>
+        <a class="chip" href="course-system.html" data-i18n="goCourseSystem"></a>
+        <a class="chip" href="course-selection.html" data-i18n="goCourseSelection"></a>
+        <a class="chip" href="feedback.html" data-i18n="goFeedback"></a>
+        <a class="chip" href="semester-report.html" data-i18n="goSemesterReport"></a>
+        <a class="chip" href="dashboard.html" data-i18n="goDashboard"></a>
       </div>
       <div class="lang-switch" aria-label="language switch">
         <button class="lang-btn" type="button" data-set-lang="zh-CN">中文</button>
@@ -405,10 +407,12 @@
           goCourseSystem: "查看课程体系",
           goSemesterReport: "查看学期报告",
           goAssessment: "前往 Assessment",
+          goAccount: "前往学生档案",
+          goFeedback: "前往反馈",
           goDashboard: "前往看板",
           backTrial: "返回 Trial 页面",
           pageTitle: "Sign Up 注册页面",
-          pageDesc: "注册成功后，系统将发送注册成功邮件，并自动跳转到评估页面。",
+          pageDesc: "注册成功后，系统将发送注册成功邮件，并自动跳转到学生 profile 页面。",
           authTitle: "创建学员账户",
           authDesc: "支持邮箱注册、Google 登录和 Microsoft 登录。",
           or: "或使用邮箱注册",
@@ -417,18 +421,18 @@
           password: "密码",
           confirmPassword: "确认密码",
           consent: "我同意接收注册成功邮件，并用于后续学习评估通知。",
-          submit: "完成注册并进入评估",
+          submit: "完成注册并进入学生档案",
           rightTitle: "流程说明",
           rightDesc: "这是业务流程中的通用注册入口，适用于无需试课直接入评估的场景。",
           tips: [
-            "注册成功后默认跳转至 assessment 评估页面。",
+            "注册成功后默认跳转至学生 profile 页面。",
             "可在 CONFIG.emailApiUrl 接入真实邮件服务。",
             "可在 CONFIG.oauth 中填入 Google/Microsoft OAuth URL。"
           ],
           invalid: "请填写完整信息，且两次密码保持一致（至少6位）。",
           emailInvalid: "请输入有效的邮箱地址。",
-          success: "注册成功，邮件已发送，正在跳转评估页面...",
-          oauthSuccess: "登录成功，正在发送邮件并跳转评估页面...",
+          success: "注册成功，邮件已发送，正在跳转学生 profile 页面...",
+          oauthSuccess: "登录成功，正在发送邮件并跳转学生 profile 页面...",
           failed: "注册流程失败，请稍后重试。"
         },
         en: {
@@ -437,10 +441,12 @@
           goCourseSystem: "View Curriculum System",
           goSemesterReport: "View Semester Report",
           goAssessment: "Go To Assessment",
+          goAccount: "Go To Profile",
+          goFeedback: "Go To Feedback",
           goDashboard: "Go To Dashboard",
           backTrial: "Back To Trial",
           pageTitle: "Sign Up Page",
-          pageDesc: "After successful sign-up, a confirmation email is sent and users are redirected to the assessment page.",
+          pageDesc: "After successful sign-up, a confirmation email is sent and users are redirected to the student profile page.",
           authTitle: "Create Student Account",
           authDesc: "Supports email sign-up, Google login, and Microsoft login.",
           or: "or sign up with email",
@@ -449,18 +455,18 @@
           password: "Password",
           confirmPassword: "Confirm Password",
           consent: "I agree to receive registration confirmation emails and assessment notifications.",
-          submit: "Sign Up And Start Assessment",
+          submit: "Sign Up And Open Profile",
           rightTitle: "Process Notes",
           rightDesc: "This is a general registration entry for scenarios where trial classes are optional.",
           tips: [
-            "Successful sign-up redirects to the assessment page.",
+            "Successful sign-up redirects to the student profile page.",
             "Set CONFIG.emailApiUrl to connect a real email service.",
             "Set CONFIG.oauth URLs for Google and Microsoft OAuth."
           ],
           invalid: "Please complete all fields and keep both passwords matched (min 6 chars).",
           emailInvalid: "Please enter a valid email address.",
-          success: "Sign-up successful. Confirmation email sent. Redirecting to assessment...",
-          oauthSuccess: "Login successful. Sending email and redirecting to assessment...",
+          success: "Sign-up successful. Confirmation email sent. Redirecting to student profile...",
+          oauthSuccess: "Login successful. Sending email and redirecting to student profile...",
           failed: "Sign-up flow failed. Please try again later."
         }
       };
@@ -518,6 +524,10 @@
         localStorage.setItem(key, JSON.stringify(users));
       }
 
+      function setCurrentStudent(user) {
+        localStorage.setItem("minddo_current_student", JSON.stringify(user));
+      }
+
       function sendRegistrationEmail(payload) {
         if (!CONFIG.emailApiUrl) {
           return Promise.resolve({ mocked: true });
@@ -535,8 +545,8 @@
         });
       }
 
-      function redirectToAssessment(name, email) {
-        var target = "assessment.html?name=" + encodeURIComponent(name || "") + "&email=" + encodeURIComponent(email || "");
+      function redirectToStudentProfile(name, email) {
+        var target = "student-account.html?name=" + encodeURIComponent(name || "") + "&email=" + encodeURIComponent(email || "");
         setTimeout(function () {
           window.location.href = target;
         }, CONFIG.redirectDelayMs);
@@ -554,12 +564,14 @@
         var fakeName = provider === "google" ? "Google User" : "Microsoft User";
         var fakeEmail = provider === "google" ? "google.user@example.com" : "microsoft.user@example.com";
 
-        saveUser({
+        var oauthUser = {
           provider: provider,
           studentName: fakeName,
           email: fakeEmail,
           createdAt: new Date().toISOString()
-        });
+        };
+        saveUser(oauthUser);
+        setCurrentStudent(oauthUser);
 
         setResult("success", data.oauthSuccess);
         sendRegistrationEmail({
@@ -570,7 +582,7 @@
         }).catch(function () {
           // keep redirect path even if email API is unavailable
         }).finally(function () {
-          redirectToAssessment(fakeName, fakeEmail);
+          redirectToStudentProfile(fakeName, fakeEmail);
         });
       }
 
@@ -618,6 +630,7 @@
           createdAt: new Date().toISOString()
         };
         saveUser(userRecord);
+        setCurrentStudent(userRecord);
 
         sendRegistrationEmail({
           to: email,
@@ -626,7 +639,7 @@
           source: "signup-form"
         }).then(function () {
           setResult("success", data.success);
-          redirectToAssessment(studentName, email);
+          redirectToStudentProfile(studentName, email);
         }).catch(function () {
           setResult("error", data.failed);
         });

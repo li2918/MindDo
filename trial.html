@@ -241,6 +241,12 @@
       margin-bottom: 6px;
     }
 
+    .required-label::after {
+      content: " *";
+      color: var(--error);
+      font-weight: 700;
+    }
+
     input,
     select,
     textarea {
@@ -497,14 +503,14 @@
       </a>
       <div class="nav-links">
         <a class="link-btn" href="index.html" data-i18n="backFlow"></a>
-        <a class="link-btn" href="course-selection.html" data-i18n="goCourseSelection"></a>
-        <a class="link-btn" href="course-system.html" data-i18n="goCourseSystem"></a>
-        <a class="link-btn" href="semester-report.html" data-i18n="goSemesterReport"></a>
-        <a class="link-btn" href="student-account.html" data-i18n="goAccount"></a>
-        <a class="link-btn" href="feedback.html" data-i18n="goFeedback"></a>
         <a class="link-btn" href="assessment.html" data-i18n="goAssessment"></a>
-        <a class="link-btn" href="dashboard.html" data-i18n="goDashboard"></a>
         <a class="link-btn" href="signup.html" data-i18n="goSignup"></a>
+        <a class="link-btn" href="student-account.html" data-i18n="goAccount"></a>
+        <a class="link-btn" href="course-system.html" data-i18n="goCourseSystem"></a>
+        <a class="link-btn" href="course-selection.html" data-i18n="goCourseSelection"></a>
+        <a class="link-btn" href="feedback.html" data-i18n="goFeedback"></a>
+        <a class="link-btn" href="semester-report.html" data-i18n="goSemesterReport"></a>
+        <a class="link-btn" href="dashboard.html" data-i18n="goDashboard"></a>
       </div>
       <div class="lang-switch">
         <button class="lang-btn" type="button" data-set-lang="zh-CN">中文</button>
@@ -532,11 +538,11 @@
         <form id="trialForm" novalidate>
           <div class="row">
             <div>
-              <label for="studentName" data-i18n="studentName"></label>
+              <label for="studentName" class="required-label" data-i18n="studentName"></label>
               <input id="studentName" name="studentName" type="text" required />
             </div>
             <div>
-              <label for="grade" data-i18n="grade"></label>
+              <label for="grade" class="required-label" data-i18n="grade"></label>
               <input id="grade" name="grade" type="text" required />
             </div>
           </div>
@@ -547,14 +553,14 @@
               <input id="parentName" name="parentName" type="text" required />
             </div>
             <div>
-              <label for="phone" data-i18n="phone"></label>
+              <label for="phone" class="required-label" data-i18n="phone"></label>
               <input id="phone" name="phone" type="tel" required />
             </div>
           </div>
 
           <div class="row">
             <div>
-              <label for="city" data-i18n="city"></label>
+              <label for="city" class="required-label" data-i18n="city"></label>
               <input id="city" name="city" type="text" required />
             </div>
             <div>
