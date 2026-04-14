@@ -212,6 +212,18 @@
 
     form { display: grid; gap: 12px; }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     .row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -270,6 +282,128 @@
       min-width: 180px;
     }
 
+    .schedule-picker {
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(151, 84, 21, 0.12);
+      background: linear-gradient(180deg, rgba(255, 249, 239, 0.94), rgba(255, 244, 227, 0.88));
+    }
+
+    .schedule-head {
+      display: grid;
+      gap: 6px;
+    }
+
+    .schedule-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary-deep);
+    }
+
+    .schedule-scroll {
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: -4px;
+    }
+
+    .schedule-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .schedule-scroll::-webkit-scrollbar-thumb {
+      background: rgba(151, 84, 21, 0.18);
+      border-radius: 999px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(88px, 1fr);
+      gap: 10px;
+    }
+
+    .date-card,
+    .time-slot {
+      border: 1px solid rgba(151, 84, 21, 0.14);
+      background: rgba(255, 252, 247, 0.88);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .date-card {
+      min-height: 96px;
+      border-radius: 18px;
+      padding: 12px 10px;
+      display: grid;
+      gap: 6px;
+      text-align: left;
+      align-content: start;
+    }
+
+    .date-card:hover,
+    .time-slot:hover {
+      transform: translateY(-1px);
+      border-color: rgba(208, 129, 36, 0.46);
+      box-shadow: 0 12px 24px rgba(192, 123, 39, 0.12);
+    }
+
+    .date-card.active,
+    .time-slot.active {
+      background: linear-gradient(135deg, #fff4d3, #ffd977);
+      border-color: rgba(208, 129, 36, 0.52);
+      box-shadow: 0 14px 28px rgba(192, 123, 39, 0.18);
+      color: var(--primary-deep);
+    }
+
+    .date-card small {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #ad6d2b;
+    }
+
+    .date-main {
+      font-size: 21px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--primary-deep);
+    }
+
+    .date-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .time-slot {
+      border-radius: 14px;
+      padding: 11px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .time-slot[disabled] {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .schedule-summary {
+      min-height: 22px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
     .result {
       font-size: 13px;
       padding: 10px 12px;
@@ -297,6 +431,10 @@
       .metrics {
         grid-template-columns: 1fr;
       }
+
+      .time-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 640px) {
@@ -305,6 +443,16 @@
       .topbar {
         justify-content: center;
         border-radius: 18px;
+      }
+      .schedule-picker {
+        padding: 14px;
+        border-radius: 18px;
+      }
+      .calendar-grid {
+        grid-auto-columns: minmax(82px, 1fr);
+      }
+      .time-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
   </style>
@@ -387,15 +535,27 @@
             </div>
           </div>
 
-          <div class="row">
-            <div>
-              <label for="trialDate" data-i18n="trialDate"></label>
-              <input id="trialDate" name="trialDate" type="date" required />
+          <div class="schedule-picker">
+            <div class="schedule-head">
+              <span class="schedule-title" data-i18n="scheduleTitle"></span>
+              <p class="muted" data-i18n="scheduleDesc"></p>
             </div>
+
             <div>
-              <label for="trialTime" data-i18n="trialTime"></label>
-              <select id="trialTime" name="trialTime" required></select>
+              <label class="sr-only" for="trialDate" data-i18n="trialDate"></label>
+              <input id="trialDate" name="trialDate" type="date" required class="sr-only" />
+              <div class="schedule-scroll">
+                <div id="calendarGrid" class="calendar-grid" role="listbox" aria-label="Trial date options"></div>
+              </div>
             </div>
+
+            <div>
+              <label class="sr-only" for="trialTime" data-i18n="trialTime"></label>
+              <select id="trialTime" name="trialTime" required class="sr-only"></select>
+              <div id="timeGrid" class="time-grid" role="listbox" aria-label="Trial time options"></div>
+            </div>
+
+            <div id="scheduleSummary" class="schedule-summary" aria-live="polite"></div>
           </div>
 
           <div class="row">
@@ -464,12 +624,19 @@
           subject: "意向科目",
           trialDate: "试课日期",
           trialTime: "试课时间",
+          scheduleTitle: "像日历一样选择试课时间",
+          scheduleDesc: "先选日期，再点选可预约时间段。今天的过期时段会自动置灰。",
           channel: "获客渠道",
           timeNote: "时间备注（选填）",
           timeNotePlaceholder: "例如：放学后可上课 / 需要避开周三",
           goal: "学习目标（选填）",
           consent: "我同意用于课程咨询与试课安排的联系与信息记录。",
           submit: "提交 Trial 报名",
+          todayLabel: "今天",
+          tomorrowLabel: "明天",
+          chooseDateFirst: "请先选择一个试课日期。",
+          chooseTimeHint: "请选择一个可预约时间段。",
+          scheduleSelected: "已选择：{date} {time}",
           subjectOptions: [
             { value: "", label: "请选择" },
             { value: "ai", label: "AI启蒙" },
@@ -534,12 +701,19 @@
           subject: "Interested Subject",
           trialDate: "Trial Date",
           trialTime: "Trial Time",
+          scheduleTitle: "Choose a trial slot like a calendar",
+          scheduleDesc: "Pick a date first, then tap an available time slot. Expired times for today are disabled automatically.",
           channel: "Lead Source",
           timeNote: "Time Note (Optional)",
           timeNotePlaceholder: "Example: Available after school / Avoid Wednesdays",
           goal: "Learning Goal (Optional)",
           consent: "I agree to be contacted and have my information recorded for consultation and trial scheduling.",
           submit: "Submit Trial Registration",
+          todayLabel: "Today",
+          tomorrowLabel: "Tomorrow",
+          chooseDateFirst: "Please choose a trial date first.",
+          chooseTimeHint: "Please choose an available time slot.",
+          scheduleSelected: "Selected: {date} {time}",
           subjectOptions: [
             { value: "", label: "Please select" },
             { value: "ai", label: "AI Fundamentals" },
@@ -581,6 +755,10 @@
       var trialDate = document.getElementById("trialDate");
       var trialTime = document.getElementById("trialTime");
       var channel = document.getElementById("channel");
+      var calendarGrid = document.getElementById("calendarGrid");
+      var timeGrid = document.getElementById("timeGrid");
+      var scheduleSummary = document.getElementById("scheduleSummary");
+      var dateOptionCount = 12;
 
       function buildOptions(select, options) {
         select.innerHTML = options
@@ -608,6 +786,124 @@
         var now = new Date();
         var minDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split("T")[0];
         trialDate.min = minDate;
+      }
+
+      function pad(num) {
+        return String(num).padStart(2, "0");
+      }
+
+      function toDateValue(date) {
+        return date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate());
+      }
+
+      function parseLocalDate(dateValue) {
+        if (!dateValue) return null;
+        var parts = dateValue.split("-");
+        if (parts.length !== 3) return null;
+        return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      }
+
+      function isSameDay(a, b) {
+        return a.getFullYear() === b.getFullYear() &&
+          a.getMonth() === b.getMonth() &&
+          a.getDate() === b.getDate();
+      }
+
+      function getDateTag(date, data) {
+        var now = new Date();
+        if (isSameDay(date, now)) return data.todayLabel;
+
+        var tomorrow = new Date(now);
+        tomorrow.setDate(now.getDate() + 1);
+        if (isSameDay(date, tomorrow)) return data.tomorrowLabel;
+
+        return new Intl.DateTimeFormat(html.getAttribute("lang") === "en" ? "en-US" : "zh-CN", {
+          weekday: "short"
+        }).format(date);
+      }
+
+      function getDateMain(date) {
+        return new Intl.DateTimeFormat(html.getAttribute("lang") === "en" ? "en-US" : "zh-CN", {
+          month: "numeric",
+          day: "numeric"
+        }).format(date);
+      }
+
+      function getDateSub(date) {
+        return new Intl.DateTimeFormat(html.getAttribute("lang") === "en" ? "en-US" : "zh-CN", {
+          weekday: "long"
+        }).format(date);
+      }
+
+      function formatSelectedDate(dateValue) {
+        var date = parseLocalDate(dateValue);
+        if (!date) return "";
+        return new Intl.DateTimeFormat(html.getAttribute("lang") === "en" ? "en-US" : "zh-CN", {
+          month: "short",
+          day: "numeric",
+          weekday: "short"
+        }).format(date);
+      }
+
+      function isTimeExpired(dateValue, timeValue) {
+        if (!dateValue || !timeValue) return false;
+        var chosen = new Date(dateValue + "T" + timeValue + ":00");
+        return !Number.isNaN(chosen.getTime()) && chosen.getTime() <= Date.now();
+      }
+
+      function renderScheduleSummary(data) {
+        if (!trialDate.value) {
+          scheduleSummary.textContent = data.chooseDateFirst;
+          return;
+        }
+
+        if (!trialTime.value) {
+          scheduleSummary.textContent = data.chooseTimeHint;
+          return;
+        }
+
+        scheduleSummary.textContent = data.scheduleSelected
+          .replace("{date}", formatSelectedDate(trialDate.value))
+          .replace("{time}", form.trialTime.dataset.label || trialTime.value);
+      }
+
+      function renderCalendar(data) {
+        var items = [];
+        var today = new Date();
+
+        for (var i = 0; i < dateOptionCount; i += 1) {
+          var date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+          var value = toDateValue(date);
+          var active = trialDate.value === value ? " active" : "";
+          items.push(
+            "<button type=\"button\" class=\"date-card" + active + "\" data-date=\"" + value + "\" aria-selected=\"" + (trialDate.value === value ? "true" : "false") + "\">" +
+              "<small>" + getDateTag(date, data) + "</small>" +
+              "<span class=\"date-main\">" + getDateMain(date) + "</span>" +
+              "<span class=\"date-sub\">" + getDateSub(date) + "</span>" +
+            "</button>"
+          );
+        }
+
+        calendarGrid.innerHTML = items.join("");
+      }
+
+      function renderTimeGrid(data) {
+        var options = data.trialTimeOptions.filter(function (item) { return item.value; });
+        var selectedDate = trialDate.value;
+
+        timeGrid.innerHTML = options.map(function (item) {
+          var disabled = !selectedDate || isTimeExpired(selectedDate, item.value);
+          var active = !disabled && trialTime.value === item.value ? " active" : "";
+          return "<button type=\"button\" class=\"time-slot" + active + "\" data-time=\"" + item.value + "\" " +
+            (disabled ? "disabled aria-disabled=\"true\"" : "") + ">" + item.label + "</button>";
+        }).join("");
+
+        if (trialTime.value && isTimeExpired(selectedDate, trialTime.value)) {
+          trialTime.value = "";
+          form.trialTime.dataset.label = "";
+        }
+
+        renderScheduleSummary(data);
       }
 
       function isFutureTrial(dateValue, timeValue) {
@@ -652,6 +948,8 @@
         buildOptions(trialTime, data.trialTimeOptions);
         buildOptions(channel, data.channelOptions);
         syncTranslatedFields(data);
+        renderCalendar(data);
+        renderTimeGrid(data);
 
         buttons.forEach(function (btn) {
           btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
@@ -681,7 +979,34 @@
         field.addEventListener("change", function () {
           var lang = html.getAttribute("lang") === "en" ? "en" : "zh-CN";
           syncTranslatedFields(I18N[lang]);
+          renderScheduleSummary(I18N[lang]);
         });
+      });
+
+      calendarGrid.addEventListener("click", function (e) {
+        var target = e.target.closest("[data-date]");
+        if (!target) return;
+
+        trialDate.value = target.getAttribute("data-date");
+
+        if (trialTime.value && isTimeExpired(trialDate.value, trialTime.value)) {
+          trialTime.value = "";
+          form.trialTime.dataset.label = "";
+        }
+
+        var lang = html.getAttribute("lang") === "en" ? "en" : "zh-CN";
+        renderCalendar(I18N[lang]);
+        renderTimeGrid(I18N[lang]);
+      });
+
+      timeGrid.addEventListener("click", function (e) {
+        var target = e.target.closest("[data-time]");
+        if (!target || target.disabled) return;
+
+        trialTime.value = target.getAttribute("data-time");
+        var lang = html.getAttribute("lang") === "en" ? "en" : "zh-CN";
+        syncTranslatedFields(I18N[lang]);
+        renderTimeGrid(I18N[lang]);
       });
 
       buttons.forEach(function (btn) {
