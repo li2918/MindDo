@@ -359,7 +359,7 @@
 
     .journey-flow {
       display: grid;
-      grid-template-columns: repeat(11, minmax(0, 1fr));
+      grid-template-columns: repeat(9, minmax(0, 1fr));
       gap: 10px;
       align-items: center;
       margin-top: 18px;
@@ -373,11 +373,6 @@
       border: 1px solid rgba(108, 61, 21, 0.1);
       background: rgba(255, 251, 246, 0.9);
       box-shadow: 0 18px 34px rgba(101, 58, 22, 0.08);
-    }
-
-    .journey-node strong,
-    .journey-node span {
-      display: block;
     }
 
     .journey-kicker {
@@ -403,15 +398,6 @@
       color: var(--muted);
     }
 
-    .journey-meta {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px dashed rgba(148, 70, 29, 0.2);
-      font-size: 12px;
-      line-height: 1.6;
-      color: #9a6b4e;
-    }
-
     .journey-arrow {
       display: grid;
       place-items: center;
@@ -423,14 +409,25 @@
     }
 
     .journey-summary {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
       margin-top: 18px;
     }
 
-    .journey-summary .point {
+    .journey-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(108, 61, 21, 0.09);
       background: rgba(255, 251, 246, 0.92);
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
     }
 
     .loop-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -619,9 +616,7 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .journey-summary {
-        grid-template-columns: 1fr;
-      }
+      .journey-summary { gap: 8px; }
     }
 
     @media (max-width: 760px) {
@@ -961,83 +956,60 @@
           <div>
             <div class="section-tag">Business Flow Diagram</div>
             <h2>
-              <span data-lang="zh">按业务流程，一眼看清首页主路径</span>
-              <span data-lang="en">See the homepage business path at a glance</span>
+              <span data-lang="zh">首页业务流程总览</span>
+              <span data-lang="en">Homepage Business Flow Overview</span>
             </h2>
             <p>
-              <span data-lang="zh">这张流程图把业务真正发生的顺序摊开来看：先承接线索，再完成试课与转化，然后进入支付、排课、交付，最后回到续费与召回。</span>
-              <span data-lang="en">This flow diagram lays out the actual operating order: capture leads first, convert through trials, then move into payment, scheduling, delivery, and finally renewal or win-back.</span>
+              <span data-lang="zh">只保留业务主线，让访问者快速理解 MindDo 是怎么从获客一路走到交付和续费的。</span>
+              <span data-lang="en">This keeps only the core path so visitors can quickly understand how MindDo moves from lead capture to delivery and renewal.</span>
             </p>
           </div>
         </div>
 
         <div class="journey-flow">
           <article class="journey-node">
-            <span class="journey-kicker">01 Lead</span>
+            <span class="journey-kicker">01</span>
             <h3><span data-lang="zh">获客进入</span><span data-lang="en">Lead Intake</span></h3>
-            <p><span data-lang="zh">官网、广告、转介绍进入系统，自动建档、打标、分流。</span><span data-lang="en">Website, ads, and referrals enter the system for auto-creation, tagging, and routing.</span></p>
-            <div class="journey-meta"><span data-lang="zh">入口页：`index.html` / `trial.html`</span><span data-lang="en">Entry pages: `index.html` / `trial.html`</span></div>
+            <p><span data-lang="zh">承接线索，建立家长与学生信息。</span><span data-lang="en">Capture the lead and create the family profile.</span></p>
           </article>
 
           <div class="journey-arrow" aria-hidden="true">→</div>
 
           <article class="journey-node">
-            <span class="journey-kicker">02 Trial</span>
-            <h3><span data-lang="zh">试课评估</span><span data-lang="en">Trial Assessment</span></h3>
-            <p><span data-lang="zh">家长自助预约试课，系统完成提醒、问卷、评估报告和推荐。</span><span data-lang="en">Parents self-book a trial while the system handles reminders, questionnaires, reports, and recommendations.</span></p>
-            <div class="journey-meta"><span data-lang="zh">核心页：`trial.html` / `assessment.html`</span><span data-lang="en">Core pages: `trial.html` / `assessment.html`</span></div>
+            <span class="journey-kicker">02</span>
+            <h3><span data-lang="zh">试课转化</span><span data-lang="en">Trial Conversion</span></h3>
+            <p><span data-lang="zh">通过试听和评估建立报名意愿。</span><span data-lang="en">Use trials and assessment to build enrollment intent.</span></p>
           </article>
 
           <div class="journey-arrow" aria-hidden="true">→</div>
 
           <article class="journey-node">
-            <span class="journey-kicker">03 Payment</span>
+            <span class="journey-kicker">03</span>
             <h3><span data-lang="zh">报名支付</span><span data-lang="en">Signup & Payment</span></h3>
-            <p><span data-lang="zh">系统执行先支付后排课，确认首单后开通会员资格与排课权限。</span><span data-lang="en">The system enforces pay before scheduling and unlocks membership plus schedule access after the first payment.</span></p>
-            <div class="journey-meta"><span data-lang="zh">承接页：`signup.html`</span><span data-lang="en">Conversion page: `signup.html`</span></div>
+            <p><span data-lang="zh">完成首单支付，进入正式服务阶段。</span><span data-lang="en">Complete first payment and enter formal service.</span></p>
           </article>
 
           <div class="journey-arrow" aria-hidden="true">→</div>
 
           <article class="journey-node">
-            <span class="journey-kicker">04 Schedule</span>
-            <h3><span data-lang="zh">排课开班</span><span data-lang="en">Scheduling</span></h3>
-            <p><span data-lang="zh">家长锁定时段，系统匹配老师、确认资源，并在异常时自动重排。</span><span data-lang="en">Parents lock a time slot while the system assigns teachers, confirms resources, and auto-reassigns on exceptions.</span></p>
-            <div class="journey-meta"><span data-lang="zh">排课页：`course-system.html` / `course-selection.html`</span><span data-lang="en">Scheduling pages: `course-system.html` / `course-selection.html`</span></div>
+            <span class="journey-kicker">04</span>
+            <h3><span data-lang="zh">排课交付</span><span data-lang="en">Scheduling & Delivery</span></h3>
+            <p><span data-lang="zh">安排课程、进入上课、持续输出反馈。</span><span data-lang="en">Schedule classes, deliver learning, and keep feedback flowing.</span></p>
           </article>
 
           <div class="journey-arrow" aria-hidden="true">→</div>
 
           <article class="journey-node">
-            <span class="journey-kicker">05 Delivery</span>
-            <h3><span data-lang="zh">教学交付</span><span data-lang="en">Learning Delivery</span></h3>
-            <p><span data-lang="zh">课堂记录、作业、反馈和阶段报告持续回写，形成家长可感知的学习成果。</span><span data-lang="en">Class logs, homework, feedback, and reports continuously write back into visible learning progress for parents.</span></p>
-            <div class="journey-meta"><span data-lang="zh">交付页：`feedback.html` / `semester-report.html` / `student-account.html`</span><span data-lang="en">Delivery pages: `feedback.html` / `semester-report.html` / `student-account.html`</span></div>
-          </article>
-
-          <div class="journey-arrow" aria-hidden="true">→</div>
-
-          <article class="journey-node">
-            <span class="journey-kicker">06 Renewal</span>
+            <span class="journey-kicker">05</span>
             <h3><span data-lang="zh">续费召回</span><span data-lang="en">Renewal & Win-back</span></h3>
-            <p><span data-lang="zh">系统根据剩余课时和活跃度自动发起续费，沉默用户转入召回池再激活。</span><span data-lang="en">The system launches renewal from remaining sessions and activity signals, then routes silent users into win-back.</span></p>
-            <div class="journey-meta"><span data-lang="zh">监控页：`dashboard.html`</span><span data-lang="en">Monitoring page: `dashboard.html`</span></div>
+            <p><span data-lang="zh">根据学习进展推动续费，并召回沉默用户。</span><span data-lang="en">Drive renewal from progress and reactivate silent users.</span></p>
           </article>
         </div>
 
         <div class="journey-summary">
-          <div class="point">
-            <strong><span data-lang="zh">默认节奏</span><span data-lang="en">Default Rhythm</span></strong>
-            <span><span data-lang="zh">线索进入后，流程会沿着“试课 -> 支付 -> 排课 -> 交付 -> 续费”自动推进。</span><span data-lang="en">Once a lead enters, the path automatically advances through trial, payment, scheduling, delivery, and renewal.</span></span>
-          </div>
-          <div class="point">
-            <strong><span data-lang="zh">人工介入点</span><span data-lang="en">Human Touchpoints</span></strong>
-            <span><span data-lang="zh">只在高意向成交、支付异常、资源冲突、学习风险等少数节点由人工接手。</span><span data-lang="en">Human support appears only at a few nodes such as high-intent conversion, payment issues, resource conflicts, and learning risk.</span></span>
-          </div>
-          <div class="point">
-            <strong><span data-lang="zh">首页职责</span><span data-lang="en">Homepage Role</span></strong>
-            <span><span data-lang="zh">首页不只是展示页面，而是把整条业务链路压缩成一张可读的运营地图。</span><span data-lang="en">The homepage is no longer just a showcase. It compresses the full business chain into one readable operating map.</span></span>
-          </div>
+          <span class="journey-pill"><span data-lang="zh">主线更清晰</span><span data-lang="en">Clearer main path</span></span>
+          <span class="journey-pill"><span data-lang="zh">信息更少</span><span data-lang="en">Less information</span></span>
+          <span class="journey-pill"><span data-lang="zh">更适合首页总览</span><span data-lang="en">Better for homepage overview</span></span>
         </div>
       </div>
     </section>
