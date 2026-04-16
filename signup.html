@@ -181,9 +181,9 @@
 
     .oauth-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 6px;
     }
 
     .oauth-btn {
@@ -191,6 +191,75 @@
       text-align: center;
       font-weight: 600;
       padding: 10px 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 48px;
+    }
+
+    .oauth-logo {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 22px;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(151, 84, 21, 0.1);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .oauth-logo.google {
+      color: #db4437;
+    }
+
+    .oauth-logo.microsoft {
+      border-radius: 6px;
+      background:
+        linear-gradient(90deg, #f25022 0 50%, #7fba00 50% 100%),
+        linear-gradient(180deg, #00a4ef 0 50%, #ffb900 50% 100%);
+      background-blend-mode: multiply;
+      position: relative;
+      overflow: hidden;
+      font-size: 0;
+    }
+
+    .oauth-logo.microsoft::before,
+    .oauth-logo.microsoft::after {
+      content: "";
+      position: absolute;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .oauth-logo.microsoft::before {
+      width: 1px;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .oauth-logo.microsoft::after {
+      height: 1px;
+      left: 0;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .oauth-logo.apple {
+      color: #111111;
+      font-size: 15px;
+      background: rgba(255, 255, 255, 0.96);
+    }
+
+    .oauth-label {
+      display: inline-block;
     }
 
     .divider {
@@ -339,13 +408,6 @@
       <article class="card stack">
         <h2 data-i18n="authTitle"></h2>
 
-        <div class="oauth-row">
-          <button type="button" class="oauth-btn" id="googleBtn">Google</button>
-          <button type="button" class="oauth-btn" id="microsoftBtn">Microsoft</button>
-        </div>
-
-        <div class="divider" data-i18n="or"></div>
-
         <form id="signupForm" novalidate>
           <div class="row">
             <div>
@@ -377,6 +439,23 @@
           <button class="submit-btn" type="submit" data-i18n="submit"></button>
           <div id="submitResult" class="result" role="status" aria-live="polite"></div>
         </form>
+
+        <div class="divider" data-i18n="or"></div>
+
+        <div class="oauth-row">
+          <button type="button" class="oauth-btn" id="googleBtn">
+            <span class="oauth-logo google" aria-hidden="true">G</span>
+            <span class="oauth-label" data-i18n="google"></span>
+          </button>
+          <button type="button" class="oauth-btn" id="microsoftBtn">
+            <span class="oauth-logo microsoft" aria-hidden="true"></span>
+            <span class="oauth-label" data-i18n="microsoft"></span>
+          </button>
+          <button type="button" class="oauth-btn" id="appleBtn">
+            <span class="oauth-logo apple" aria-hidden="true">A</span>
+            <span class="oauth-label" data-i18n="apple"></span>
+          </button>
+        </div>
       </article>
     </section>
   </main>
@@ -388,7 +467,8 @@
         emailApiUrl: "",
         oauth: {
           google: "",
-          microsoft: ""
+          microsoft: "",
+          apple: ""
         },
         redirectDelayMs: 1500
       };
@@ -406,7 +486,10 @@
           backTrial: "返回 Trial 页面",
           pageTitle: "Sign Up 注册页面",
           authTitle: "创建学员账户",
-          or: "或使用邮箱注册",
+          or: "或使用以下方式继续",
+          google: "Google",
+          microsoft: "Microsoft",
+          apple: "Apple",
           studentName: "学生姓名",
           email: "邮箱",
           password: "密码",
@@ -431,7 +514,10 @@
           backTrial: "Back To Trial",
           pageTitle: "Sign Up Page",
           authTitle: "Create Student Account",
-          or: "or sign up with email",
+          or: "or continue with",
+          google: "Google",
+          microsoft: "Microsoft",
+          apple: "Apple",
           studentName: "Student Name",
           email: "Email",
           password: "Password",
@@ -452,6 +538,7 @@
       var result = document.getElementById("submitResult");
       var googleBtn = document.getElementById("googleBtn");
       var microsoftBtn = document.getElementById("microsoftBtn");
+      var appleBtn = document.getElementById("appleBtn");
 
       function currentLang() {
         return html.getAttribute("lang") === "en" ? "en" : "zh-CN";
@@ -539,8 +626,18 @@
           return;
         }
 
-        var fakeName = provider === "google" ? "Google User" : "Microsoft User";
-        var fakeEmail = provider === "google" ? "google.user@example.com" : "microsoft.user@example.com";
+        var fakeNameMap = {
+          google: "Google User",
+          microsoft: "Microsoft User",
+          apple: "Apple User"
+        };
+        var fakeEmailMap = {
+          google: "google.user@example.com",
+          microsoft: "microsoft.user@example.com",
+          apple: "apple.user@example.com"
+        };
+        var fakeName = fakeNameMap[provider] || "Social User";
+        var fakeEmail = fakeEmailMap[provider] || "social.user@example.com";
 
         var oauthUser = {
           provider: provider,
@@ -582,6 +679,10 @@
 
       microsoftBtn.addEventListener("click", function () {
         handleOAuth("microsoft");
+      });
+
+      appleBtn.addEventListener("click", function () {
+        handleOAuth("apple");
       });
 
       form.addEventListener("submit", function (e) {
