@@ -127,6 +127,7 @@
     }
 
     .hero,
+    .alert-strip,
     .panel,
     .metric {
       background: var(--card);
@@ -136,6 +137,65 @@
     }
 
     .hero { padding: 20px; margin-bottom: 14px; }
+
+    .alert-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .alert-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(208, 129, 36, 0.2);
+      background: linear-gradient(180deg, rgba(255, 245, 220, 0.96), rgba(255, 251, 242, 0.96));
+      display: grid;
+      gap: 10px;
+    }
+
+    .alert-card.is-strong {
+      border-color: rgba(196, 106, 77, 0.32);
+      box-shadow: 0 14px 30px rgba(196, 106, 77, 0.12);
+    }
+
+    .alert-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .alert-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary-deep);
+    }
+
+    .alert-copy {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .alert-count {
+      min-width: 54px;
+      text-align: center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #fff6de, #ffd977);
+      color: var(--primary-deep);
+      font-size: 18px;
+      font-weight: 700;
+      border: 1px solid rgba(208, 129, 36, 0.24);
+    }
+
+    .alert-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
     .hero h1 {
       margin: 0 0 8px;
@@ -303,6 +363,8 @@
       <h1 data-i18n="title"></h1>
     </section>
 
+    <section class="alert-strip" id="alertStrip"></section>
+
     <div class="filters">
       <div class="range-group" id="rangeGroup"></div>
       <button class="btn" id="refreshBtn" data-i18n="refresh"></button>
@@ -367,10 +429,19 @@
           goCourseSelection: "选课",
           goCourseSystem: "课程体系",
           goSemesterReport: "学期报告",
+          goNewTrials: "新试课列表",
+          goNewStudents: "新学员列表",
           goSignup: "前往 Sign Up",
           goAssessment: "前往 Assessment",
           title: "运营数据看板",
           refresh: "刷新数据",
+          alertTrialTitle: "新注册试课提醒",
+          alertTrialCopy: "新试课线索需要尽快确认时间、来源和跟进优先级，避免试课资源被延误。",
+          alertSignupTitle: "新注册学员提醒",
+          alertSignupCopy: "新学员注册后建议尽快确认是否完成评估、付费和后续排课动作。",
+          alertEmpty: "当前没有新的提醒。",
+          openList: "查看列表",
+          openPage: "打开页面",
           ranges: [
             { key: "7", text: "近7天" },
             { key: "30", text: "近30天" },
@@ -419,10 +490,19 @@
           goCourseSelection: "Course Selection",
           goCourseSystem: "Curriculum",
           goSemesterReport: "Semester Report",
+          goNewTrials: "New Trial List",
+          goNewStudents: "New Student List",
           goSignup: "Go To Sign Up",
           goAssessment: "Go To Assessment",
           title: "Operations Dashboard",
           refresh: "Refresh",
+          alertTrialTitle: "New Trial Registration Alert",
+          alertTrialCopy: "Fresh trial leads should be reviewed quickly for time confirmation, source quality, and follow-up priority.",
+          alertSignupTitle: "New Student Registration Alert",
+          alertSignupCopy: "New signups should be checked quickly for assessment status, payment progress, and scheduling readiness.",
+          alertEmpty: "There are no fresh alerts right now.",
+          openList: "View List",
+          openPage: "Open Page",
           ranges: [
             { key: "7", text: "Last 7 Days" },
             { key: "30", text: "Last 30 Days" },
@@ -477,6 +557,7 @@
       var html = document.documentElement;
       var buttons = document.querySelectorAll("[data-set-lang]");
       var metricGrid = document.getElementById("metricGrid");
+      var alertStrip = document.getElementById("alertStrip");
       var levelList = document.getElementById("levelList");
       var extraList = document.getElementById("extraList");
       var channelList = document.getElementById("channelList");
@@ -561,6 +642,41 @@
 
         el.innerHTML = items.map(function (it) {
           return "<li><span>" + it.label + "</span><span class='badge'>" + it.value + "</span></li>";
+        }).join("");
+      }
+
+      function renderAlerts(data, t) {
+        var alertItems = [
+          {
+            title: t.alertTrialTitle,
+            copy: data.newTrials > 0 ? t.alertTrialCopy : t.alertEmpty,
+            count: data.newTrials,
+            href: "new-trials.html",
+            pageHref: "trial.html"
+          },
+          {
+            title: t.alertSignupTitle,
+            copy: data.newStudents > 0 ? t.alertSignupCopy : t.alertEmpty,
+            count: data.newStudents,
+            href: "new-students.html",
+            pageHref: "signup.html"
+          }
+        ];
+
+        alertStrip.innerHTML = alertItems.map(function (item) {
+          var strongClass = item.count > 0 ? "alert-card is-strong" : "alert-card";
+          return [
+            "<article class='" + strongClass + "'>",
+            "<div class='alert-top'>",
+            "<div><div class='alert-title'>" + item.title + "</div><div class='alert-copy'>" + item.copy + "</div></div>",
+            "<div class='alert-count'>" + item.count + "</div>",
+            "</div>",
+            "<div class='alert-actions'>",
+            "<a class='btn' href='" + item.href + "'>" + t.openList + "</a>",
+            "<a class='btn' href='" + item.pageHref + "'>" + t.openPage + "</a>",
+            "</div>",
+            "</article>"
+          ].join("");
         }).join("");
       }
 
@@ -666,6 +782,16 @@
           return d && d >= startToday;
         }).length;
 
+        var newTrials = leadsAll.filter(function (l) {
+          var d = safeDate(l.createdAt);
+          return d && d >= startToday;
+        }).length;
+
+        var newStudents = signupsAll.filter(function (s) {
+          var d = safeDate(s.createdAt);
+          return d && d >= startToday;
+        }).length;
+
         var signupWeek = signupsAll.filter(function (s) {
           var d = safeDate(s.createdAt);
           return d && d >= start7;
@@ -685,6 +811,11 @@
           signupToday: signupToday,
           signupWeek: signupWeek,
           leadToAssessRate: leadToAssessRate
+        }, t);
+
+        renderAlerts({
+          newTrials: newTrials,
+          newStudents: newStudents
         }, t);
 
         var levelItems = Object.entries(levels).sort(byCountDesc).map(function (x) {

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新注册学员列表 | New Student Registrations</title>
+  <style>
+    :root {
+      --bg: #f6efe4;
+      --card: rgba(255, 250, 242, 0.94);
+      --line: rgba(151, 84, 21, 0.14);
+      --primary-deep: #8c3d14;
+      --muted: #8b6e58;
+      --text: #4f2410;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Avenir Next", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 204, 97, 0.3), transparent 30%),
+        radial-gradient(circle at 85% 18%, rgba(244, 162, 38, 0.14), transparent 24%),
+        linear-gradient(180deg, #fffdf9, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 42px;
+    }
+    .topbar, .hero, .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: 0 18px 44px rgba(123, 72, 24, 0.08);
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 14px 18px;
+      margin-bottom: 14px;
+    }
+    .brand, .nav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .brand { text-decoration: none; color: inherit; }
+    .brand img { width: 56px; height: 56px; object-fit: contain; }
+    .brand strong { color: var(--primary-deep); font-size: 18px; }
+    .btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 247, 236, 0.96);
+      color: var(--primary-deep);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .hero, .panel { padding: 18px; }
+    .hero { margin-bottom: 14px; }
+    .hero h1, .panel h2 { margin: 0 0 8px; color: var(--primary-deep); }
+    .muted { margin: 0; color: var(--muted); line-height: 1.6; }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid rgba(151, 84, 21, 0.12);
+      border-radius: 14px;
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th, td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid rgba(151, 84, 21, 0.12);
+      font-size: 13px;
+    }
+    th {
+      background: rgba(255, 208, 118, 0.14);
+      color: var(--primary-deep);
+    }
+
+    .new-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #fff0cb, #ffd978);
+      color: var(--primary-deep);
+      border: 1px solid rgba(151, 84, 21, 0.16);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="topbar">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.png" alt="Mindo AI logo" />
+        <strong>MindDo</strong>
+      </a>
+      <div class="nav">
+        <a class="btn" href="dashboard.html">Dashboard</a>
+        <a class="btn" href="signup.html">Sign Up</a>
+      </div>
+    </div>
+
+    <section class="hero">
+      <h1>新注册学员列表</h1>
+      <p class="muted">展示今天新增的学员注册记录，方便运营快速跟进评估、付费和排课动作。</p>
+    </section>
+
+    <section class="panel">
+      <h2>Today</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>标注</th>
+              <th>学生</th>
+              <th>邮箱</th>
+              <th>注册方式</th>
+              <th>学生 ID</th>
+              <th>创建时间</th>
+            </tr>
+          </thead>
+          <tbody id="studentTable"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      function readJson(key) {
+        try { return JSON.parse(localStorage.getItem(key) || "[]"); }
+        catch (_) { return []; }
+      }
+      function safeDate(v) {
+        var d = new Date(v);
+        return Number.isNaN(d.getTime()) ? null : d;
+      }
+      function providerName(provider) {
+        var v = String(provider || "email").toLowerCase();
+        if (v === "google") return "Google";
+        if (v === "microsoft") return "Microsoft";
+        if (v === "apple") return "Apple";
+        return "Email";
+      }
+      var startToday = new Date();
+      startToday.setHours(0, 0, 0, 0);
+      var rows = readJson("minddo_signup_users").filter(function (item) {
+        var d = safeDate(item.createdAt);
+        return d && d >= startToday;
+      }).sort(function (a, b) {
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      });
+      var tbody = document.getElementById("studentTable");
+      tbody.innerHTML = rows.length ? rows.map(function (item) {
+        var created = safeDate(item.createdAt);
+        return "<tr><td><span class='new-badge'>NEW</span></td><td>" + (item.studentName || item.name || "-") + "</td><td>" + (item.email || "-") + "</td><td>" + providerName(item.provider) + "</td><td>" + (item.studentId || "-") + "</td><td>" + (created ? created.toLocaleString() : "-") + "</td></tr>";
+      }).join("") : "<tr><td colspan='6'>今天暂无新注册学员。</td></tr>";
+    })();
+  </script>
+</body>
+</html>
