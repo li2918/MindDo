@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -7,33 +7,28 @@
   <style>
     :root {
       --bg: #f6efe4;
-      --bg-soft: #fffaf2;
       --card: rgba(255, 250, 242, 0.94);
       --line: rgba(151, 84, 21, 0.14);
-      --line-strong: rgba(208, 129, 36, 0.3);
       --primary: #f0a11f;
+      --primary-soft: #ffd978;
       --primary-deep: #8c3d14;
       --text: #4f2410;
       --muted: #8b6e58;
       --success: #6f8f57;
       --error: #c46a4d;
+      --shadow: 0 24px 56px rgba(123, 72, 24, 0.08);
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: "Avenir Next", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
       background:
         radial-gradient(circle at top left, rgba(255, 204, 97, 0.3), transparent 30%),
         radial-gradient(circle at 85% 18%, rgba(244, 162, 38, 0.14), transparent 24%),
-        linear-gradient(180deg, #fffdf9, var(--bg));
+        linear-gradient(180deg, #fffdf9, #f6efe4);
       color: var(--text);
       min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
     }
-
     body::before {
       content: "";
       position: fixed;
@@ -44,15 +39,13 @@
         radial-gradient(circle at 82% 78%, rgba(179, 76, 14, 0.08), transparent 28%);
       z-index: 0;
     }
-
     .container {
       position: relative;
       z-index: 1;
-      max-width: 980px;
+      max-width: 1180px;
       margin: 0 auto;
       padding: 28px 20px 52px;
     }
-
     .topbar {
       display: flex;
       justify-content: space-between;
@@ -67,49 +60,36 @@
       box-shadow: 0 18px 48px rgba(123, 72, 24, 0.08);
       backdrop-filter: blur(12px);
     }
-
     .brand {
       display: flex;
       align-items: center;
       gap: 14px;
       text-decoration: none;
       color: inherit;
+      min-width: 0;
     }
-
     .brand img {
       width: 72px;
       height: 72px;
       object-fit: contain;
       flex-shrink: 0;
     }
-
-    .brand-copy {
-      display: grid;
-      gap: 4px;
-    }
-
-    .brand-copy strong {
-      font-size: 19px;
-      color: var(--primary-deep);
-    }
-
+    .brand-copy { display: grid; gap: 4px; }
+    .brand-copy strong { font-size: 19px; color: var(--primary-deep); }
     .brand-copy span {
       font-size: 12px;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: #aa6a2b;
     }
-
     .toolbar {
       display: flex;
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
+      justify-content: flex-end;
     }
-
-    .chip,
-    .lang-btn,
-    .submit-btn {
+    .chip, .lang-btn, .submit-btn, .ghost-btn {
       border: 1px solid var(--line);
       background: rgba(255, 247, 236, 0.96);
       color: var(--primary-deep);
@@ -120,59 +100,75 @@
       text-decoration: none;
       transition: all 0.2s ease;
     }
-
-    .chip:hover,
-    .lang-btn:hover,
-    .lang-btn.active,
-    .submit-btn:hover {
+    .chip:hover, .lang-btn:hover, .lang-btn.active, .submit-btn:hover, .ghost-btn:hover {
       background: linear-gradient(135deg, #fff6de, #ffd977);
       border-color: rgba(208, 129, 36, 0.5);
       box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
       color: var(--primary-deep);
     }
-
+    .submit-btn { background: linear-gradient(135deg, #fff4cf, var(--primary)); font-weight: 700; }
     .lang-switch { display: flex; gap: 10px; }
-
-    .hero,
-    .card {
+    .hero, .card {
       background: linear-gradient(180deg, rgba(255, 252, 247, 0.96), rgba(252, 244, 232, 0.96));
       border: 1px solid var(--line);
       border-radius: 24px;
-      box-shadow: 0 24px 56px rgba(123, 72, 24, 0.08);
+      box-shadow: var(--shadow);
       padding: 22px;
     }
-
-    .hero { margin-bottom: 16px; }
-
-    h1 {
-      margin: 0 0 10px;
-      font-size: clamp(24px, 4vw, 34px);
-      color: var(--primary-deep);
-    }
-
-    h2 {
-      margin: 0 0 10px;
-      color: var(--primary-deep);
-      font-size: 20px;
-    }
-
-    p { margin: 0; }
-    .muted { color: var(--muted); line-height: 1.6; }
-
-    form { display: grid; gap: 12px; }
-    .row {
+    .hero {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+      gap: 16px;
+      margin-bottom: 16px;
     }
-
-    label {
+    .hero-copy h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 38px);
+      color: var(--primary-deep);
+      line-height: 1.08;
+    }
+    .hero-copy p, .section-head p, .mini-card span, .summary-card span, .quiz-card p, .choice span, .helper, .rubric-item span, .recommendation span {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .hero-points, .main-stack, .side-stack, form, .quiz-list, .summary-grid, .rubric { display: grid; gap: 16px; }
+    .hero-point, .mini-card, .summary-card, .quiz-card {
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(151, 84, 21, 0.1);
+      background: rgba(255, 251, 245, 0.9);
+    }
+    .hero-point strong, .mini-card strong, .summary-card strong, .recommendation strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--primary-deep);
+      font-size: 14px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 16px;
+      align-items: start;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .section-head h2, .quiz-card h3 { margin: 0; color: var(--primary-deep); }
+    .section-head h2 { font-size: 21px; }
+    .intro-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    label, .field-title {
       display: block;
       font-size: 13px;
       color: #7b5b43;
       margin-bottom: 6px;
+      font-weight: 600;
     }
-
     input, select, textarea {
       width: 100%;
       border: 1px solid rgba(151, 84, 21, 0.16);
@@ -182,48 +178,97 @@
       padding: 10px 12px;
       font-size: 14px;
       outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-
-    textarea { min-height: 90px; resize: vertical; }
-
+    textarea { min-height: 104px; resize: vertical; }
     input:focus, select:focus, textarea:focus {
       border-color: rgba(208, 129, 36, 0.54);
       box-shadow: 0 0 0 4px rgba(255, 204, 97, 0.2);
     }
-
+    .choice-group { display: grid; gap: 10px; }
+    .choice {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      border: 1px solid rgba(151, 84, 21, 0.12);
+      border-radius: 16px;
+      background: rgba(255, 251, 245, 0.88);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .choice:hover {
+      transform: translateY(-1px);
+      border-color: rgba(208, 129, 36, 0.34);
+      box-shadow: 0 12px 24px rgba(123, 72, 24, 0.08);
+    }
+    .choice input { width: 16px; margin-top: 3px; flex: 0 0 auto; }
+    .choice strong { display: block; margin-bottom: 4px; font-size: 14px; color: var(--text); }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .result {
       font-size: 13px;
-      padding: 10px 12px;
+      padding: 12px 14px;
       border-radius: 14px;
       display: none;
+      line-height: 1.6;
     }
-
     .result.success {
       display: block;
       border: 1px solid rgba(111, 143, 87, 0.28);
       background: rgba(111, 143, 87, 0.1);
       color: var(--success);
     }
-
     .result.error {
       display: block;
       border: 1px solid rgba(196, 106, 77, 0.28);
       background: rgba(196, 106, 77, 0.1);
       color: var(--error);
     }
-
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 92px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(208, 129, 36, 0.24);
+      background: linear-gradient(135deg, #fff5d9, var(--primary-soft));
+      color: var(--primary-deep);
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .rubric-item {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+    .rubric-item b {
+      display: inline-flex;
+      justify-content: center;
+      padding: 8px 10px;
+      border-radius: 14px;
+      background: rgba(255, 236, 189, 0.8);
+      color: var(--primary-deep);
+      font-size: 12px;
+    }
+    .recommendation {
+      padding: 14px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 246, 225, 0.92), rgba(255, 251, 243, 0.92));
+      border: 1px solid rgba(208, 129, 36, 0.18);
+    }
+    @media (max-width: 980px) {
+      .hero, .layout { grid-template-columns: 1fr; }
+      .intro-grid { grid-template-columns: 1fr 1fr; }
+    }
     @media (max-width: 640px) {
       .container { padding: 22px 14px 38px; }
-      .row { grid-template-columns: 1fr; }
-      .topbar {
-        justify-content: center;
-        border-radius: 18px;
-      }
-      .toolbar {
-        width: 100%;
-        justify-content: space-between;
-      }
+      .topbar { justify-content: center; border-radius: 18px; }
+      .toolbar { width: 100%; justify-content: space-between; }
+      .row, .intro-grid { grid-template-columns: 1fr; }
+      .hero, .card { border-radius: 20px; padding: 18px; }
+      .actions { flex-direction: column; align-items: stretch; }
+      .submit-btn, .ghost-btn { width: 100%; }
     }
   </style>
 </head>
@@ -255,34 +300,112 @@
     </div>
 
     <section class="hero">
-      <h1 data-i18n="title"></h1>
-      <p class="muted" id="welcomeText"></p>
+      <div class="hero-copy">
+        <h1 data-i18n="title"></h1>
+        <p id="welcomeText"></p>
+      </div>
+      <div class="hero-points">
+        <div class="hero-point"><strong data-i18n="heroPointOneTitle"></strong><span data-i18n="heroPointOneText"></span></div>
+        <div class="hero-point"><strong data-i18n="heroPointTwoTitle"></strong><span data-i18n="heroPointTwoText"></span></div>
+        <div class="hero-point"><strong data-i18n="heroPointThreeTitle"></strong><span data-i18n="heroPointThreeText"></span></div>
+      </div>
     </section>
 
-    <section class="card">
-      <h2 data-i18n="formTitle"></h2>
-
-      <form id="assessmentForm" novalidate>
-        <div class="row">
-          <div>
-            <label for="level" data-i18n="level"></label>
-            <select id="level" name="level" required></select>
+    <div class="layout">
+      <div class="main-stack">
+        <section class="card">
+          <div class="section-head">
+            <div>
+              <h2 data-i18n="overviewTitle"></h2>
+              <p data-i18n="overviewIntro"></p>
+            </div>
           </div>
-          <div>
-            <label for="goal" data-i18n="goal"></label>
-            <select id="goal" name="goal" required></select>
+          <div class="intro-grid">
+            <article class="mini-card"><strong data-i18n="dimensionOneTitle"></strong><span data-i18n="dimensionOneText"></span></article>
+            <article class="mini-card"><strong data-i18n="dimensionTwoTitle"></strong><span data-i18n="dimensionTwoText"></span></article>
+            <article class="mini-card"><strong data-i18n="dimensionThreeTitle"></strong><span data-i18n="dimensionThreeText"></span></article>
           </div>
-        </div>
+        </section>
 
-        <div>
-          <label for="notes" data-i18n="notes"></label>
-          <textarea id="notes" name="notes"></textarea>
-        </div>
+        <section class="card">
+          <div class="section-head">
+            <div>
+              <h2 data-i18n="formTitle"></h2>
+              <p data-i18n="formIntro"></p>
+            </div>
+          </div>
+          <form id="assessmentForm" novalidate>
+            <div class="row">
+              <div><label for="level" data-i18n="level"></label><select id="level" name="level" required></select></div>
+              <div><label for="goal" data-i18n="goal"></label><select id="goal" name="goal" required></select></div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="confidence" data-i18n="confidence"></label>
+                <select id="confidence" name="confidence" required></select>
+                <div class="helper" data-i18n="confidenceHint"></div>
+              </div>
+              <div><label for="learningStyle" data-i18n="learningStyle"></label><select id="learningStyle" name="learningStyle" required></select></div>
+            </div>
+            <div>
+              <label for="notes" data-i18n="notes"></label>
+              <textarea id="notes" name="notes"></textarea>
+              <div class="helper" data-i18n="notesHint"></div>
+            </div>
+            <div class="section-head">
+              <div>
+                <h2 data-i18n="quizTitle"></h2>
+                <p data-i18n="quizIntro"></p>
+              </div>
+              <div class="score-badge" id="scoreBadge">0 / 3</div>
+            </div>
+            <div class="quiz-list" id="quizList"></div>
+            <div class="actions">
+              <button class="submit-btn" type="submit" data-i18n="submit"></button>
+              <button class="ghost-btn" type="button" id="fillSampleBtn" data-i18n="fillSample"></button>
+            </div>
+            <div id="result" class="result" role="status" aria-live="polite"></div>
+          </form>
+        </section>
+      </div>
 
-        <button class="submit-btn" type="submit" data-i18n="submit"></button>
-        <div id="result" class="result" role="status" aria-live="polite"></div>
-      </form>
-    </section>
+      <aside class="side-stack">
+        <section class="card">
+          <div class="section-head">
+            <div>
+              <h2 data-i18n="summaryTitle"></h2>
+              <p data-i18n="summaryIntro"></p>
+            </div>
+          </div>
+          <div class="summary-grid">
+            <article class="summary-card"><strong data-i18n="summaryTimeTitle"></strong><span data-i18n="summaryTimeText"></span></article>
+            <article class="summary-card"><strong data-i18n="summaryScoringTitle"></strong><span data-i18n="summaryScoringText"></span></article>
+            <article class="summary-card"><strong data-i18n="summaryNextTitle"></strong><span data-i18n="summaryNextText"></span></article>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="section-head">
+            <div>
+              <h2 data-i18n="rubricTitle"></h2>
+              <p data-i18n="rubricIntro"></p>
+            </div>
+          </div>
+          <div class="rubric">
+            <div class="rubric-item"><b>01</b><span data-i18n="rubricOne"></span></div>
+            <div class="rubric-item"><b>02</b><span data-i18n="rubricTwo"></span></div>
+            <div class="rubric-item"><b>03</b><span data-i18n="rubricThree"></span></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="recommendation">
+            <strong data-i18n="recommendTitle"></strong>
+            <span id="recommendationText"></span>
+          </div>
+        </section>
+      </aside>
+    </div>
   </main>
 
   <script src="assets/minddo-flow.js"></script>
@@ -299,18 +422,89 @@
           goSemesterReport: "查看学期报告",
           goDashboard: "前往看板",
           backSignup: "返回 Sign Up",
-          title: "学习评估页面",
+          title: "学习评估与模拟测评",
+          welcome: "欢迎你，{name}（{email}）。下面这份评估会帮助我们判断当前基础、题型反应和适合的课程节奏。",
+          welcomeNoUser: "欢迎来到评估环节。我们先用一组简化信息和模拟题，快速判断学生当前的学习基础与推荐路径。",
+          heroPointOneTitle: "评估目标",
+          heroPointOneText: "不是只看对错，而是同步观察信息提取、表达清晰度和解题路径。",
+          heroPointTwoTitle: "模拟题结构",
+          heroPointTwoText: "本页包含 3 道演示题，适合在试听后快速补充判断，不依赖老师手工整理。",
+          heroPointThreeTitle: "输出结果",
+          heroPointThreeText: "系统会保存基础档位、答题得分和建议结论，方便后续接报名与报告页。",
+          overviewTitle: "评估重点",
+          overviewIntro: "这不是一张单纯的登记表，而是一张带有判断逻辑的轻量评估页。",
+          dimensionOneTitle: "基础认知",
+          dimensionOneText: "判断学生对题意、条件和关键词的抓取是否稳定。",
+          dimensionTwoTitle: "策略表达",
+          dimensionTwoText: "观察学生是否能解释原因，而不是只给出答案。",
+          dimensionThreeTitle: "课程匹配",
+          dimensionThreeText: "结合目标和答题表现，给出适合的课程难度与跟进节奏。",
           formTitle: "基础评估信息",
+          formIntro: "先记录学生定位，再完成下方模拟题。",
           level: "当前水平",
           goal: "短期目标",
+          confidence: "学习自信度",
+          confidenceHint: "用于区分学生是“不会”还是“会但不敢答”。",
+          learningStyle: "偏好学习方式",
           notes: "补充说明（选填）",
+          notesHint: "可填写试听表现、家长反馈、专注度或表达情况。",
+          quizTitle: "模拟题目",
+          quizIntro: "每题 1 分，主要演示页面结构与基础评分逻辑。",
           submit: "提交评估",
-          welcome: "欢迎你，{name}（{email}）。请完成以下评估。",
-          welcomeNoUser: "欢迎来到评估环节，请完成以下评估。",
+          fillSample: "一键填充示例",
+          summaryTitle: "评估摘要",
+          summaryIntro: "右侧可直接对家长或顾问说明这次评估在看什么。",
+          summaryTimeTitle: "建议时长",
+          summaryTimeText: "5 到 8 分钟，适合试听课结束后的即时补录和二次确认。",
+          summaryScoringTitle: "评分方式",
+          summaryScoringText: "模拟题总分 3 分，同时结合基础档位、自信度和学习目标做建议。",
+          summaryNextTitle: "下一步动作",
+          summaryNextText: "提交后可继续跳转报名、选课或报告页面，形成完整转化链路。",
+          rubricTitle: "观察维度",
+          rubricIntro: "如果后面要继续细化，这几个维度可以直接扩成正式题库。",
+          rubricOne: "信息提取：能否抓住题目条件，避免被干扰信息带偏。",
+          rubricTwo: "逻辑推理：面对简单规则时，是否能按步骤判断而不是凭感觉作答。",
+          rubricThree: "语言表达：能否用简洁语言复述结论，后续可扩成口语或写作任务。",
+          recommendTitle: "当前建议",
+          recommendationLow: "建议先从基础启发式课程切入，重点补足理解题意和稳定答题节奏。",
+          recommendationMid: "建议进入标准进阶路径，用更多结构化练习巩固正确率与表达完整度。",
+          recommendationHigh: "建议安排更有挑战的项目或竞赛型内容，保持学生成就感与输出密度。",
           levels: ["请选择", "初阶", "中阶", "进阶"],
           goals: ["请选择", "提分", "竞赛", "兴趣学习", "升学准备"],
-          success: "评估已提交，顾问将与你确认下一步排课安排。",
-          invalid: "请先完成必填评估项。"
+          confidences: ["请选择", "需要很多鼓励", "基本敢回答", "回答积极且稳定"],
+          learningStyles: ["请选择", "喜欢老师带着做", "喜欢步骤拆解", "喜欢项目式探索"],
+          invalid: "请先完成必填项，并为每道模拟题选择答案。",
+          scoreLabel: "模拟题得分：{score}/{total}",
+          resultWithAdvice: "评估已提交。得分 {score}/{total}。建议：{recommendation}",
+          questions: [
+            {
+              title: "题目 1：信息提取",
+              prompt: "阅读句子：\"小明周一和周三上机器人课，周五上编程课。\" 如果本周只能选一天复习机器人，最合适的是哪一天？",
+              options: [
+                { label: "A", text: "周一或周三", value: "correct" },
+                { label: "B", text: "只有周五", value: "wrong" },
+                { label: "C", text: "任何一天都不行", value: "wrong" }
+              ]
+            },
+            {
+              title: "题目 2：逻辑判断",
+              prompt: "如果所有完成试听评估的学生都能收到课程建议，小雨已经收到课程建议。以下哪项最合理？",
+              options: [
+                { label: "A", text: "可以确定小雨一定完成了试听评估", value: "wrong" },
+                { label: "B", text: "至少说明小雨进入了课程建议流程", value: "correct" },
+                { label: "C", text: "说明小雨已经正式报名", value: "wrong" }
+              ]
+            },
+            {
+              title: "题目 3：表达选择",
+              prompt: "家长问：\"孩子试听表现怎么样？\" 哪种反馈最适合作为评估页里的简短结论？",
+              options: [
+                { label: "A", text: "还行吧。", value: "wrong" },
+                { label: "B", text: "孩子整体配合不错，理解快，但表达时还需要一些提示。", value: "correct" },
+                { label: "C", text: "以后再说。", value: "wrong" }
+              ]
+            }
+          ]
         },
         en: {
           backFlow: "Back To Workflow",
@@ -322,18 +516,89 @@
           goSemesterReport: "View Semester Report",
           goDashboard: "Go To Dashboard",
           backSignup: "Back To Sign Up",
-          title: "Assessment Page",
-          formTitle: "Basic Assessment Information",
+          title: "Assessment With Sample Quiz",
+          welcome: "Welcome, {name} ({email}). This quick assessment helps us judge current foundation, response pattern, and a suitable course pace.",
+          welcomeNoUser: "Welcome to the assessment stage. This page uses a lightweight profile plus sample questions to estimate current readiness and course fit.",
+          heroPointOneTitle: "Assessment Goal",
+          heroPointOneText: "We are not only checking correctness. We also observe information extraction, clarity, and problem-solving path.",
+          heroPointTwoTitle: "Quiz Structure",
+          heroPointTwoText: "This page contains 3 demo questions for quick post-trial evaluation.",
+          heroPointThreeTitle: "Output",
+          heroPointThreeText: "The system stores level, quiz score, and a recommendation so the next pages can continue the flow.",
+          overviewTitle: "What This Page Evaluates",
+          overviewIntro: "This is no longer a plain form. It is a lightweight assessment surface with visible judgment logic.",
+          dimensionOneTitle: "Foundational Reading",
+          dimensionOneText: "Check whether the student can capture conditions, intent, and keywords reliably.",
+          dimensionTwoTitle: "Strategy Expression",
+          dimensionTwoText: "Observe whether the student can explain reasoning instead of only giving an answer.",
+          dimensionThreeTitle: "Course Fit",
+          dimensionThreeText: "Combine goal and quiz performance to recommend difficulty and follow-up pace.",
+          formTitle: "Assessment Intake",
+          formIntro: "Record the student profile first, then complete the sample quiz below.",
           level: "Current Level",
           goal: "Short-Term Goal",
+          confidence: "Learning Confidence",
+          confidenceHint: "Useful for separating 'doesn't know yet' from 'knows but hesitates to answer'.",
+          learningStyle: "Preferred Learning Style",
           notes: "Additional Notes (Optional)",
+          notesHint: "Use this for trial observations, parent feedback, focus level, or expression notes.",
+          quizTitle: "Sample Questions",
+          quizIntro: "Each question is worth 1 point and demonstrates the page structure plus basic scoring logic.",
           submit: "Submit Assessment",
-          welcome: "Welcome, {name} ({email}). Please complete the assessment below.",
-          welcomeNoUser: "Welcome to the assessment stage. Please complete the form below.",
+          fillSample: "Auto Fill Sample",
+          summaryTitle: "Assessment Summary",
+          summaryIntro: "Use this sidebar to explain to parents or consultants what the evaluation is measuring.",
+          summaryTimeTitle: "Suggested Time",
+          summaryTimeText: "About 5 to 8 minutes, ideal for immediate post-trial input and confirmation.",
+          summaryScoringTitle: "Scoring Logic",
+          summaryScoringText: "The quiz totals 3 points, then combines with level, confidence, and goal to form a recommendation.",
+          summaryNextTitle: "Next Step",
+          summaryNextText: "After submission, the flow can continue to signup, course selection, or reporting.",
+          rubricTitle: "Observation Rubric",
+          rubricIntro: "If expanded later, these dimensions can turn directly into a fuller question bank.",
+          rubricOne: "Information extraction: can the student identify the real conditions and avoid distractions?",
+          rubricTwo: "Logical reasoning: can the student follow simple rules step by step instead of guessing?",
+          rubricThree: "Language output: can the student summarize a conclusion clearly?",
+          recommendTitle: "Current Recommendation",
+          recommendationLow: "Start with a foundational guided course path and focus on understanding prompts plus steadier response rhythm.",
+          recommendationMid: "Move into a standard growth path with structured practice to stabilize accuracy and complete explanations.",
+          recommendationHigh: "Offer more challenging project or competition-style content to maintain momentum and output intensity.",
           levels: ["Please select", "Beginner", "Intermediate", "Advanced"],
           goals: ["Please select", "Score Improvement", "Competition", "Interest Learning", "Admission Prep"],
-          success: "Assessment submitted. A consultant will confirm your next scheduling step.",
-          invalid: "Please complete required assessment fields first."
+          confidences: ["Please select", "Needs a lot of encouragement", "Usually willing to answer", "Actively answers with stability"],
+          learningStyles: ["Please select", "Prefers guided instruction", "Prefers step-by-step breakdown", "Prefers project exploration"],
+          invalid: "Please complete the required fields and choose one answer for each sample question.",
+          scoreLabel: "Quiz Score: {score}/{total}",
+          resultWithAdvice: "Assessment submitted. Score {score}/{total}. Recommendation: {recommendation}",
+          questions: [
+            {
+              title: "Question 1: Information Extraction",
+              prompt: "Read: \"Ming attends robotics on Monday and Wednesday, and programming on Friday.\" If only one day can be chosen to review robotics, which choice fits best?",
+              options: [
+                { label: "A", text: "Monday or Wednesday", value: "correct" },
+                { label: "B", text: "Friday only", value: "wrong" },
+                { label: "C", text: "No day works", value: "wrong" }
+              ]
+            },
+            {
+              title: "Question 2: Logic",
+              prompt: "If every student who completes the trial assessment receives a course recommendation, and Xiaoyu has received a recommendation, which statement is most reasonable?",
+              options: [
+                { label: "A", text: "We can be certain Xiaoyu completed the trial assessment", value: "wrong" },
+                { label: "B", text: "At least Xiaoyu has entered the recommendation process", value: "correct" },
+                { label: "C", text: "This means Xiaoyu has already enrolled", value: "wrong" }
+              ]
+            },
+            {
+              title: "Question 3: Expression",
+              prompt: "A parent asks, \"How did my child do in the trial?\" Which response works best as a short written assessment conclusion?",
+              options: [
+                { label: "A", text: "It was okay.", value: "wrong" },
+                { label: "B", text: "The student followed well and understood quickly, but still needs prompts when explaining ideas.", value: "correct" },
+                { label: "C", text: "Let's talk later.", value: "wrong" }
+              ]
+            }
+          ]
         }
       };
 
@@ -341,22 +606,74 @@
       var buttons = document.querySelectorAll("[data-set-lang]");
       var levelSelect = document.getElementById("level");
       var goalSelect = document.getElementById("goal");
+      var confidenceSelect = document.getElementById("confidence");
+      var learningStyleSelect = document.getElementById("learningStyle");
       var form = document.getElementById("assessmentForm");
       var result = document.getElementById("result");
       var welcomeText = document.getElementById("welcomeText");
-
+      var quizList = document.getElementById("quizList");
+      var scoreBadge = document.getElementById("scoreBadge");
+      var fillSampleBtn = document.getElementById("fillSampleBtn");
+      var recommendationText = document.getElementById("recommendationText");
       var params = new URLSearchParams(window.location.search);
-      var currentStudent = window.MindDoFlow && window.MindDoFlow.getCurrentStudent
-        ? window.MindDoFlow.getCurrentStudent()
-        : null;
+      var currentStudent = window.MindDoFlow && window.MindDoFlow.getCurrentStudent ? window.MindDoFlow.getCurrentStudent() : null;
       var name = params.get("name") || (currentStudent && (currentStudent.studentName || currentStudent.name)) || "";
       var email = params.get("email") || (currentStudent && currentStudent.email) || "";
 
+      function getLang() {
+        return html.getAttribute("lang") === "en" ? "en" : "zh-CN";
+      }
+
       function buildOptions(select, options) {
         select.innerHTML = options.map(function (item, idx) {
-          var selected = idx === 0 ? " selected" : "";
-          return "<option value=\"" + item + "\"" + selected + ">" + item + "</option>";
+          return "<option value=\"" + item + "\"" + (idx === 0 ? " selected" : "") + ">" + item + "</option>";
         }).join("");
+      }
+
+      function renderQuiz(lang) {
+        var t = I18N[lang];
+        quizList.innerHTML = t.questions.map(function (question, questionIndex) {
+          var choices = question.options.map(function (option, optionIndex) {
+            var inputId = "q" + questionIndex + "_" + optionIndex;
+            return "<label class=\"choice\" for=\"" + inputId + "\"><input id=\"" + inputId + "\" type=\"radio\" name=\"question_" + questionIndex + "\" value=\"" + option.value + "\" /><span><strong>" + option.label + "</strong><span>" + option.text + "</span></span></label>";
+          }).join("");
+          return "<article class=\"quiz-card\"><h3>" + question.title + "</h3><p>" + question.prompt + "</p><div class=\"choice-group\">" + choices + "</div></article>";
+        }).join("");
+        quizList.querySelectorAll("input[type='radio']").forEach(function (input) {
+          input.addEventListener("change", updateScorePreview);
+        });
+      }
+
+      function getSelectedAnswers() {
+        var t = I18N[getLang()];
+        var answers = [];
+        for (var i = 0; i < t.questions.length; i += 1) {
+          var checked = form.querySelector("input[name='question_" + i + "']:checked");
+          answers.push(checked ? checked.value : "");
+        }
+        return answers;
+      }
+
+      function getQuizScore() {
+        return getSelectedAnswers().reduce(function (sum, value) {
+          return sum + (value === "correct" ? 1 : 0);
+        }, 0);
+      }
+
+      function getRecommendation(score, total, lang) {
+        var t = I18N[lang];
+        if (score <= 1) return t.recommendationLow;
+        if (score < total) return t.recommendationMid;
+        return t.recommendationHigh;
+      }
+
+      function updateScorePreview() {
+        var lang = getLang();
+        var t = I18N[lang];
+        var total = t.questions.length;
+        var score = getQuizScore();
+        scoreBadge.textContent = t.scoreLabel.replace("{score}", score).replace("{total}", total);
+        recommendationText.textContent = getRecommendation(score, total, lang);
       }
 
       function setLang(lang) {
@@ -364,27 +681,22 @@
         html.setAttribute("lang", lang);
         localStorage.setItem("minddo_lang", lang);
         document.title = t.title + " | Assessment";
-
         document.querySelectorAll("[data-i18n]").forEach(function (el) {
           var key = el.getAttribute("data-i18n");
-          if (t[key]) {
-            el.textContent = t[key];
-          }
+          if (t[key]) el.textContent = t[key];
         });
-
-        if (name || email) {
-          welcomeText.textContent = t.welcome.replace("{name}", name || "Student").replace("{email}", email || "-");
-        } else {
-          welcomeText.textContent = t.welcomeNoUser;
-        }
-
+        welcomeText.textContent = name || email
+          ? t.welcome.replace("{name}", name || "Student").replace("{email}", email || "-")
+          : t.welcomeNoUser;
         buildOptions(levelSelect, t.levels);
         buildOptions(goalSelect, t.goals);
-
+        buildOptions(confidenceSelect, t.confidences);
+        buildOptions(learningStyleSelect, t.learningStyles);
+        renderQuiz(lang);
+        updateScorePreview();
         buttons.forEach(function (btn) {
           btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
         });
-
         result.className = "result";
         result.textContent = "";
       }
@@ -398,21 +710,52 @@
         });
       });
 
+      fillSampleBtn.addEventListener("click", function () {
+        var lang = getLang();
+        var t = I18N[lang];
+        levelSelect.value = t.levels[2];
+        goalSelect.value = t.goals[1];
+        confidenceSelect.value = t.confidences[2];
+        learningStyleSelect.value = t.learningStyles[2];
+        form.notes.value = lang === "en"
+          ? "The student responds quickly, but sometimes needs help turning thoughts into complete explanations."
+          : "学生反应较快，但在把想法说完整时还需要一些引导。";
+        ["correct", "correct", "correct"].forEach(function (value, index) {
+          var input = form.querySelector("input[name='question_" + index + "'][value='" + value + "']");
+          if (input) input.checked = true;
+        });
+        updateScorePreview();
+      });
+
       form.addEventListener("submit", function (e) {
         e.preventDefault();
-        var lang = html.getAttribute("lang") === "en" ? "en" : "zh-CN";
+        var lang = getLang();
         var t = I18N[lang];
-
+        var answers = getSelectedAnswers();
+        var total = t.questions.length;
+        var score = getQuizScore();
         var payload = {
           name: name,
           email: email,
           level: levelSelect.value,
           goal: goalSelect.value,
+          confidence: confidenceSelect.value,
+          learningStyle: learningStyleSelect.value,
           notes: form.notes.value.trim(),
+          quizAnswers: answers,
+          quizScore: score,
+          quizTotal: total,
+          recommendation: getRecommendation(score, total, lang),
           createdAt: new Date().toISOString()
         };
 
-        if (payload.level === t.levels[0] || payload.goal === t.goals[0]) {
+        if (
+          payload.level === t.levels[0] ||
+          payload.goal === t.goals[0] ||
+          payload.confidence === t.confidences[0] ||
+          payload.learningStyle === t.learningStyles[0] ||
+          answers.some(function (item) { return !item; })
+        ) {
           result.className = "result error";
           result.textContent = t.invalid;
           return;
@@ -427,14 +770,19 @@
           localStorage.setItem(key, JSON.stringify(list));
         }
 
+        var resultText = t.resultWithAdvice
+          .replace("{score}", payload.quizScore)
+          .replace("{total}", payload.quizTotal)
+          .replace("{recommendation}", payload.recommendation);
+
         form.reset();
         setLang(lang);
+        recommendationText.textContent = payload.recommendation;
+        scoreBadge.textContent = t.scoreLabel.replace("{score}", payload.quizScore).replace("{total}", payload.quizTotal);
         result.className = "result success";
-        result.textContent = t.success;
+        result.textContent = resultText;
       });
     })();
   </script>
 </body>
 </html>
-
-
