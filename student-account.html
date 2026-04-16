@@ -295,9 +295,36 @@
       line-height: 1.6;
     }
 
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .schedule-list {
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .schedule-list li {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255, 248, 238, 0.8);
+      border: 1px solid rgba(151, 84, 21, 0.12);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
     @media (max-width: 980px) {
       .hero,
-      .layout {
+      .layout,
+      .schedule-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -308,6 +335,10 @@
       .hero-meta,
       .action-grid {
         grid-template-columns: 1fr;
+      }
+      .schedule-list li {
+        flex-direction: column;
+        align-items: flex-start;
       }
       .profile-list li,
       .summary-list li,
@@ -452,6 +483,18 @@
         </div>
       </article>
     </section>
+
+    <section class="schedule-grid">
+      <article class="panel">
+        <h2 data-i18n="myCourseTitle"></h2>
+        <ul class="schedule-list" id="courseList"></ul>
+      </article>
+
+      <article class="panel">
+        <h2 data-i18n="myScheduleTitle"></h2>
+        <ul class="schedule-list" id="scheduleList"></ul>
+      </article>
+    </section>
   </main>
 
   <script src="assets/minddo-flow.js"></script>
@@ -496,6 +539,8 @@
           logoutTag: "Logout",
           logoutTitle: "退出当前账户",
           logoutCopy: "退出后会清除当前登录学生，并返回注册/登录页面。",
+          myCourseTitle: "我的课程",
+          myScheduleTitle: "我的排课",
           profileItems: [
             { label: "学生姓名", fallback: "未知学生" },
             { label: "账号邮箱", fallback: "未绑定" },
@@ -509,6 +554,16 @@
             { label: "最近试课时间", fallback: "尚未预约" },
             { label: "最近评估等级", fallback: "尚未评估" },
             { label: "最近反馈状态", fallback: "尚未提交" }
+          ],
+          courseItems: [
+            { label: "当前方案", fallback: "尚未选课" },
+            { label: "班型", fallback: "未设置" },
+            { label: "计费周期", fallback: "未设置" }
+          ],
+          scheduleItems: [
+            { label: "上课日", fallback: "尚未安排" },
+            { label: "时间段", fallback: "尚未安排" },
+            { label: "增值服务", fallback: "无" }
           ],
           statusItems: {
             noTrial: "还没有试课预约，建议先完成 Trial 报名。",
@@ -568,6 +623,8 @@
           logoutTag: "Logout",
           logoutTitle: "Log Out Of This Account",
           logoutCopy: "Logging out clears the active student and returns to the sign-up/login page.",
+          myCourseTitle: "My Courses",
+          myScheduleTitle: "My Schedule",
           profileItems: [
             { label: "Student Name", fallback: "Unknown Student" },
             { label: "Account Email", fallback: "Not linked" },
@@ -581,6 +638,16 @@
             { label: "Latest Trial Time", fallback: "Not scheduled" },
             { label: "Latest Assessment Level", fallback: "Not assessed" },
             { label: "Latest Feedback", fallback: "Not submitted" }
+          ],
+          courseItems: [
+            { label: "Current Plan", fallback: "Not selected" },
+            { label: "Class Type", fallback: "Not set" },
+            { label: "Billing Cycle", fallback: "Not set" }
+          ],
+          scheduleItems: [
+            { label: "Class Day", fallback: "Not scheduled" },
+            { label: "Time Slot", fallback: "Not scheduled" },
+            { label: "Add-ons", fallback: "None" }
           ],
           statusItems: {
             noTrial: "No trial is scheduled yet. Completing the Trial form is the best next step.",
@@ -609,6 +676,8 @@
       var profileList = document.getElementById("profileList");
       var summaryList = document.getElementById("summaryList");
       var statusList = document.getElementById("statusList");
+      var courseList = document.getElementById("courseList");
+      var scheduleList = document.getElementById("scheduleList");
       var heroTitle = document.getElementById("heroTitle");
       var heroStudentIdValue = document.getElementById("heroStudentIdValue");
       var heroGoalValue = document.getElementById("heroGoalValue");
@@ -642,6 +711,25 @@
         if (raw === "microsoft") return "Microsoft";
         if (raw === "apple") return "Apple";
         return raw.charAt(0).toUpperCase() + raw.slice(1);
+      }
+
+      function formatPlan(plan, lang) {
+        var v = String(plan || "").toLowerCase();
+        if (v === "weekly1") return lang === "en" ? "1 Class / Week" : "每周一节课";
+        if (v === "weekly2") return lang === "en" ? "2 Classes / Week" : "每周两节课";
+        if (v === "weekly3") return lang === "en" ? "3 Classes / Week" : "每周三节课";
+        return "";
+      }
+
+      function formatAddons(addons, lang) {
+        var list = Array.isArray(addons) ? addons : [];
+        if (!list.length) return "";
+        var map = {
+          mentor: lang === "en" ? "Mentor Coaching" : "学业导师加餐",
+          project: lang === "en" ? "Project Studio" : "项目工坊",
+          report: lang === "en" ? "Parent Deep Report" : "家长深度报告"
+        };
+        return list.map(function (item) { return map[item] || item; }).join(", ");
       }
 
       function syncCurrentStudentFromQuery() {
@@ -687,6 +775,7 @@
         var latestLead = snapshot && snapshot.lead ? snapshot.lead : latestByDate(readJson("minddo_trial_leads"));
         var latestAssessment = snapshot && snapshot.assessment ? snapshot.assessment : latestByDate(readJson("minddo_assessments"));
         var latestFeedback = snapshot && snapshot.feedback ? snapshot.feedback : latestByDate(readJson("minddo_feedback"));
+        var latestMembership = snapshot && snapshot.membership ? snapshot.membership : latestByDate(readJson("minddo_membership_orders"));
         var stage = getStage(snapshot);
 
         html.setAttribute("lang", lang);
@@ -737,6 +826,26 @@
 
         summaryList.innerHTML = t.summaryItems.map(function (item, index) {
           return "<li><span>" + item.label + "</span><strong>" + summaryValues[index] + "</strong></li>";
+        }).join("");
+
+        var courseValues = [
+          latestMembership ? (formatPlan(latestMembership.plan, lang) || t.courseItems[0].fallback) : t.courseItems[0].fallback,
+          latestMembership ? (latestMembership.classMode || t.courseItems[1].fallback) : t.courseItems[1].fallback,
+          latestMembership ? (latestMembership.billingCycle || t.courseItems[2].fallback) : t.courseItems[2].fallback
+        ];
+
+        courseList.innerHTML = t.courseItems.map(function (item, index) {
+          return "<li><span>" + item.label + "</span><strong>" + courseValues[index] + "</strong></li>";
+        }).join("");
+
+        var scheduleValues = [
+          latestMembership ? (latestMembership.weekday || t.scheduleItems[0].fallback) : t.scheduleItems[0].fallback,
+          latestMembership ? (latestMembership.timeSlot || t.scheduleItems[1].fallback) : t.scheduleItems[1].fallback,
+          latestMembership ? (formatAddons(latestMembership.addons, lang) || t.scheduleItems[2].fallback) : t.scheduleItems[2].fallback
+        ];
+
+        scheduleList.innerHTML = t.scheduleItems.map(function (item, index) {
+          return "<li><span>" + item.label + "</span><strong>" + scheduleValues[index] + "</strong></li>";
         }).join("");
 
         var statuses = [
