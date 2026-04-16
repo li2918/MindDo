@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>申请处理中心 | Request Center</title>
+  <style>
+    :root {
+      --bg: #f6efe4;
+      --card: rgba(255, 250, 242, 0.94);
+      --line: rgba(151, 84, 21, 0.14);
+      --primary: #f0a11f;
+      --primary-deep: #8c3d14;
+      --text: #4f2410;
+      --muted: #8b6e58;
+      --ok: #6f8f57;
+      --warn: #d89c36;
+      --danger: #c46a4d;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Avenir Next", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 204, 97, 0.3), transparent 30%),
+        radial-gradient(circle at 85% 18%, rgba(244, 162, 38, 0.14), transparent 24%),
+        linear-gradient(180deg, #fffdf9, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 28px 20px 46px;
+    }
+
+    .topbar,
+    .hero,
+    .panel,
+    .request-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 18px 44px rgba(123, 72, 24, 0.08);
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+    }
+
+    .brand-copy { display: grid; gap: 4px; }
+    .brand-copy strong { font-size: 19px; color: var(--primary-deep); }
+    .brand-copy span {
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #aa6a2b;
+    }
+
+    .nav-links,
+    .lang-switch,
+    .filter-row,
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn,
+    .search-input,
+    .filter-select {
+      border: 1px solid var(--line);
+      background: rgba(255, 247, 236, 0.96);
+      color: var(--primary-deep);
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      text-decoration: none;
+      outline: none;
+    }
+
+    .btn {
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover,
+    .btn.active {
+      background: linear-gradient(135deg, #fff6de, #ffd977);
+      border-color: rgba(208, 129, 36, 0.5);
+      box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
+    }
+
+    .btn.ok {
+      color: var(--ok);
+    }
+
+    .btn.warn {
+      color: var(--warn);
+    }
+
+    .btn.danger {
+      color: var(--danger);
+    }
+
+    .hero,
+    .panel {
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .hero h1,
+    .panel h2,
+    .request-card h3 {
+      margin: 0 0 10px;
+      color: var(--primary-deep);
+    }
+
+    .muted { margin: 0; color: var(--muted); line-height: 1.6; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .metric {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 248, 238, 0.84);
+      border: 1px solid rgba(151, 84, 21, 0.12);
+    }
+
+    .metric span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .metric strong {
+      font-size: 22px;
+      color: var(--primary-deep);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.2fr) minmax(180px, 0.8fr) auto;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .request-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .request-card {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .card-top,
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid rgba(151, 84, 21, 0.14);
+      background: rgba(255, 255, 255, 0.86);
+    }
+
+    .status-badge.pending { color: var(--warn); }
+    .status-badge.approved { color: var(--ok); }
+    .status-badge.completed { color: var(--primary-deep); }
+    .status-badge.rejected { color: var(--danger); }
+
+    .kv-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .kv-row {
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(255, 248, 238, 0.76);
+      border: 1px solid rgba(151, 84, 21, 0.1);
+      font-size: 13px;
+    }
+
+    .empty {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 248, 238, 0.84);
+      border: 1px dashed rgba(151, 84, 21, 0.2);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .topbar { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .filter-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .container { padding: 22px 14px 34px; }
+      .metrics { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="topbar">
+      <a class="brand" href="index.html" aria-label="MindDo home">
+        <img src="assets/logo.png" alt="Mindo AI logo" />
+        <div class="brand-copy">
+          <span>Mindo AI</span>
+          <strong>Mindo AI</strong>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a class="btn" href="dashboard.html" data-i18n="goDashboard"></a>
+        <a class="btn" href="student-management.html" data-i18n="goStudents"></a>
+        <a class="btn" href="new-trials.html" data-i18n="goTrials"></a>
+      </div>
+      <div class="lang-switch">
+        <button class="btn" type="button" data-set-lang="zh-CN">中文</button>
+        <button class="btn" type="button" data-set-lang="en">English</button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <h1 data-i18n="title"></h1>
+      <p class="muted" data-i18n="intro"></p>
+      <div class="metrics" id="metrics"></div>
+    </section>
+
+    <section class="panel">
+      <h2 data-i18n="filterTitle"></h2>
+      <div class="filter-grid">
+        <input class="search-input" id="searchInput" type="search" data-placeholder-i18n="searchPlaceholder" />
+        <select class="filter-select" id="statusFilter">
+          <option value="all">all</option>
+          <option value="pending">pending</option>
+          <option value="approved">approved</option>
+          <option value="rejected">rejected</option>
+          <option value="completed">completed</option>
+        </select>
+        <button class="btn" type="button" id="refreshBtn" data-i18n="refresh"></button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="filter-row">
+        <h2 style="margin:0;" data-i18n="listTitle"></h2>
+        <span class="status-badge pending" id="listCount">0</span>
+      </div>
+      <div class="request-list" id="requestList"></div>
+    </section>
+  </main>
+
+  <script src="assets/minddo-flow.js"></script>
+  <script>
+    (function () {
+      var I18N = {
+        "zh-CN": {
+          goDashboard: "返回看板",
+          goStudents: "学员管理",
+          goTrials: "新试课列表",
+          title: "请假 / 改期申请处理中心",
+          intro: "教务或运营可以在这里统一查看学员请假、改期申请，并直接更新处理状态。",
+          filterTitle: "筛选申请",
+          searchPlaceholder: "搜索姓名、邮箱或课程信息",
+          refresh: "刷新列表",
+          listTitle: "申请记录",
+          metrics: {
+            total: "全部申请",
+            pending: "待处理",
+            approved: "已批准",
+            completed: "已完成"
+          },
+          statusMap: {
+            pending: "待处理",
+            approved: "已批准",
+            rejected: "已拒绝",
+            completed: "已完成"
+          },
+          statusFilter: {
+            all: "全部状态",
+            pending: "仅待处理",
+            approved: "仅已批准",
+            rejected: "仅已拒绝",
+            completed: "仅已完成"
+          },
+          typeMap: {
+            leave: "请假",
+            reschedule: "改期"
+          },
+          labels: {
+            student: "学员",
+            email: "邮箱",
+            target: "目标课程",
+            reason: "申请说明",
+            time: "提交时间",
+            updated: "最新处理"
+          },
+          actions: {
+            approve: "批准",
+            reject: "拒绝",
+            complete: "完成"
+          },
+          noData: "当前没有符合条件的申请记录。"
+        },
+        en: {
+          goDashboard: "Back To Dashboard",
+          goStudents: "Student Management",
+          goTrials: "New Trial List",
+          title: "Leave / Reschedule Request Center",
+          intro: "Operations can review student leave and reschedule requests here and update handling status directly.",
+          filterTitle: "Filter Requests",
+          searchPlaceholder: "Search by name, email, or class info",
+          refresh: "Refresh",
+          listTitle: "Request Records",
+          metrics: {
+            total: "All Requests",
+            pending: "Pending",
+            approved: "Approved",
+            completed: "Completed"
+          },
+          statusMap: {
+            pending: "Pending",
+            approved: "Approved",
+            rejected: "Rejected",
+            completed: "Completed"
+          },
+          statusFilter: {
+            all: "All Statuses",
+            pending: "Pending Only",
+            approved: "Approved Only",
+            rejected: "Rejected Only",
+            completed: "Completed Only"
+          },
+          typeMap: {
+            leave: "Leave",
+            reschedule: "Reschedule"
+          },
+          labels: {
+            student: "Student",
+            email: "Email",
+            target: "Target Class",
+            reason: "Reason",
+            time: "Submitted",
+            updated: "Latest Update"
+          },
+          actions: {
+            approve: "Approve",
+            reject: "Reject",
+            complete: "Complete"
+          },
+          noData: "There are no request records matching this filter."
+        }
+      };
+
+      var html = document.documentElement;
+      var buttons = document.querySelectorAll("[data-set-lang]");
+      var metrics = document.getElementById("metrics");
+      var searchInput = document.getElementById("searchInput");
+      var statusFilter = document.getElementById("statusFilter");
+      var refreshBtn = document.getElementById("refreshBtn");
+      var requestList = document.getElementById("requestList");
+      var listCount = document.getElementById("listCount");
+
+      var state = {
+        lang: localStorage.getItem("minddo_lang") === "en" ? "en" : "zh-CN",
+        query: "",
+        filter: "all"
+      };
+
+      function readRequests() {
+        if (window.MindDoFlow && window.MindDoFlow.getScheduleRequests) {
+          return window.MindDoFlow.getScheduleRequests();
+        }
+        try {
+          return JSON.parse(localStorage.getItem("minddo_schedule_requests") || "[]");
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function updateStatus(index, status) {
+        if (window.MindDoFlow && window.MindDoFlow.updateScheduleRequestStatus) {
+          window.MindDoFlow.updateScheduleRequestStatus(index, status);
+          return;
+        }
+
+        var list = readRequests();
+        if (!list[index]) return;
+        list[index].status = status;
+        list[index].updatedAt = new Date().toISOString();
+        localStorage.setItem("minddo_schedule_requests", JSON.stringify(list));
+      }
+
+      function norm(v) {
+        return String(v || "").trim().toLowerCase();
+      }
+
+      function formatTime(value) {
+        var d = new Date(value);
+        return Number.isNaN(d.getTime()) ? "-" : d.toLocaleString();
+      }
+
+      function render() {
+        var t = I18N[state.lang];
+        html.setAttribute("lang", state.lang);
+        localStorage.setItem("minddo_lang", state.lang);
+        document.title = t.title + " | MindDo";
+
+        document.querySelectorAll("[data-i18n]").forEach(function (el) {
+          var key = el.getAttribute("data-i18n");
+          if (t[key]) el.textContent = t[key];
+        });
+
+        searchInput.placeholder = t.searchPlaceholder;
+
+        Array.from(statusFilter.options).forEach(function (option) {
+          option.textContent = t.statusFilter[option.value] || option.value;
+        });
+
+        buttons.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-set-lang") === state.lang);
+        });
+
+        var allRequests = readRequests()
+          .map(function (item, index) {
+            return { item: item, index: index };
+          })
+          .sort(function (a, b) {
+            return new Date(b.item.createdAt || 0) - new Date(a.item.createdAt || 0);
+          });
+
+        var filtered = allRequests.filter(function (entry) {
+          var item = entry.item;
+          var q = norm(state.query);
+          var matchesQuery = !q || [item.studentName, item.email, item.targetLabel, item.reason].some(function (part) {
+            return norm(part).indexOf(q) >= 0;
+          });
+          var matchesFilter = state.filter === "all" || (item.status || "pending") === state.filter;
+          return matchesQuery && matchesFilter;
+        });
+
+        var metricData = [
+          { label: t.metrics.total, value: allRequests.length },
+          { label: t.metrics.pending, value: allRequests.filter(function (entry) { return (entry.item.status || "pending") === "pending"; }).length },
+          { label: t.metrics.approved, value: allRequests.filter(function (entry) { return entry.item.status === "approved"; }).length },
+          { label: t.metrics.completed, value: allRequests.filter(function (entry) { return entry.item.status === "completed"; }).length }
+        ];
+
+        metrics.innerHTML = metricData.map(function (item) {
+          return "<article class='metric'><span>" + item.label + "</span><strong>" + item.value + "</strong></article>";
+        }).join("");
+
+        listCount.textContent = filtered.length;
+        listCount.className = "status-badge pending";
+
+        if (!filtered.length) {
+          requestList.innerHTML = "<div class='empty'>" + t.noData + "</div>";
+          return;
+        }
+
+        requestList.innerHTML = filtered.map(function (entry) {
+          var item = entry.item;
+          var status = item.status || "pending";
+          var updatedText = item.updatedAt ? formatTime(item.updatedAt) : "-";
+          return [
+            "<article class='request-card'>",
+            "<div class='card-top'>",
+            "<div>",
+            "<h3>" + (t.typeMap[item.type] || item.type || "-") + " · " + (item.studentName || "-") + "</h3>",
+            "<p class='muted'>" + (item.studentId || "-") + "</p>",
+            "</div>",
+            "<span class='status-badge " + status + "'>" + (t.statusMap[status] || status) + "</span>",
+            "</div>",
+            "<div class='kv-list'>",
+            "<div class='kv-row'><span>" + t.labels.student + "</span><strong>" + (item.studentName || "-") + "</strong></div>",
+            "<div class='kv-row'><span>" + t.labels.email + "</span><strong>" + (item.email || "-") + "</strong></div>",
+            "<div class='kv-row'><span>" + t.labels.target + "</span><strong>" + (item.targetLabel || "-") + "</strong></div>",
+            "<div class='kv-row'><span>" + t.labels.reason + "</span><strong>" + (item.reason || "-") + "</strong></div>",
+            "<div class='kv-row'><span>" + t.labels.time + "</span><strong>" + formatTime(item.createdAt) + "</strong></div>",
+            "<div class='kv-row'><span>" + t.labels.updated + "</span><strong>" + updatedText + "</strong></div>",
+            "</div>",
+            "<div class='card-actions'>",
+            "<button class='btn ok' type='button' data-index='" + entry.index + "' data-status='approved'>" + t.actions.approve + "</button>",
+            "<button class='btn danger' type='button' data-index='" + entry.index + "' data-status='rejected'>" + t.actions.reject + "</button>",
+            "<button class='btn warn' type='button' data-index='" + entry.index + "' data-status='completed'>" + t.actions.complete + "</button>",
+            "</div>",
+            "</article>"
+          ].join("");
+        }).join("");
+
+        requestList.querySelectorAll("[data-status]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            updateStatus(Number(btn.getAttribute("data-index")), btn.getAttribute("data-status"));
+            render();
+          });
+        });
+      }
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          state.lang = btn.getAttribute("data-set-lang");
+          render();
+        });
+      });
+
+      searchInput.addEventListener("input", function () {
+        state.query = searchInput.value;
+        render();
+      });
+
+      statusFilter.addEventListener("change", function () {
+        state.filter = statusFilter.value;
+        render();
+      });
+
+      refreshBtn.addEventListener("click", render);
+
+      render();
+    })();
+  </script>
+</body>
+</html>

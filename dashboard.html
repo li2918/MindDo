@@ -352,6 +352,8 @@
         <a class="btn" href="course-system.html" data-i18n="goCourseSystem"></a>
         <a class="btn" href="course-selection.html" data-i18n="goCourseSelection"></a>
         <a class="btn" href="semester-report.html" data-i18n="goSemesterReport"></a>
+        <a class="btn" href="student-management.html" data-i18n="goStudentManagement"></a>
+        <a class="btn" href="request-center.html" data-i18n="goRequestCenter"></a>
       </div>
       <div class="lang-switch">
         <button class="btn" data-set-lang="zh-CN" type="button">中文</button>
@@ -428,6 +430,7 @@
               <th data-i18n="colStudent"></th>
               <th data-i18n="colTarget"></th>
               <th data-i18n="colReason"></th>
+              <th data-i18n="colRequestStatus"></th>
               <th data-i18n="colTime"></th>
             </tr>
           </thead>
@@ -447,6 +450,8 @@
           goCourseSelection: "选课",
           goCourseSystem: "课程体系",
           goSemesterReport: "学期报告",
+          goStudentManagement: "学员管理",
+          goRequestCenter: "申请处理",
           goNewTrials: "新试课列表",
           goNewStudents: "新学员列表",
           goSignup: "前往 Sign Up",
@@ -490,6 +495,7 @@
           colStudent: "学生",
           colTarget: "目标课程",
           colReason: "说明",
+          colRequestStatus: "状态",
           noData: "暂无数据",
           unknown: "未知",
           successPaid: "付费记录已写入。",
@@ -514,6 +520,8 @@
           goCourseSelection: "Course Selection",
           goCourseSystem: "Curriculum",
           goSemesterReport: "Semester Report",
+          goStudentManagement: "Student Management",
+          goRequestCenter: "Request Center",
           goNewTrials: "New Trial List",
           goNewStudents: "New Student List",
           goSignup: "Go To Sign Up",
@@ -557,6 +565,7 @@
           colStudent: "Student",
           colTarget: "Target Class",
           colReason: "Reason",
+          colRequestStatus: "Status",
           noData: "No data",
           unknown: "Unknown",
           successPaid: "Payment record saved.",
@@ -748,7 +757,7 @@
 
       function renderRequestTable(requests, t) {
         if (!requests.length) {
-          requestTable.innerHTML = "<tr><td colspan='5'>" + t.noData + "</td></tr>";
+          requestTable.innerHTML = "<tr><td colspan='6'>" + t.noData + "</td></tr>";
           return;
         }
 
@@ -756,7 +765,7 @@
           return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
         }).slice(0, 12).map(function (item) {
           var time = safeDate(item.createdAt);
-          return "<tr><td>" + (item.type || "-") + "</td><td>" + (item.studentName || "-") + "</td><td>" + (item.targetLabel || "-") + "</td><td>" + (item.reason || "-") + "</td><td>" + (time ? time.toLocaleString() : "-") + "</td></tr>";
+          return "<tr><td>" + (item.type || "-") + "</td><td>" + (item.studentName || "-") + "</td><td>" + (item.targetLabel || "-") + "</td><td>" + (item.reason || "-") + "</td><td>" + (item.status || "pending") + "</td><td>" + (time ? time.toLocaleString() : "-") + "</td></tr>";
         }).join("");
       }
 

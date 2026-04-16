@@ -6,7 +6,8 @@
     leads: "minddo_trial_leads",
     payments: "minddo_payments",
     feedback: "minddo_feedback",
-    memberships: "minddo_membership_orders"
+    memberships: "minddo_membership_orders",
+    requests: "minddo_schedule_requests"
   };
 
   function readJson(key, fallback) {
@@ -205,6 +206,37 @@
     }));
   }
 
+  function getScheduleRequests() {
+    return readJson(KEYS.requests, []);
+  }
+
+  function saveScheduleRequest(request) {
+    var current = setCurrentStudent({
+      studentName: request.studentName || request.name,
+      name: request.studentName || request.name,
+      email: request.email
+    });
+
+    return appendRecord(KEYS.requests, Object.assign({
+      status: "pending"
+    }, request, {
+      email: request.email || current.email,
+      studentName: request.studentName || request.name || current.studentName,
+      studentId: request.studentId || current.studentId
+    }));
+  }
+
+  function updateScheduleRequestStatus(index, status, extra) {
+    var list = getScheduleRequests();
+    if (index < 0 || index >= list.length) return null;
+    list[index] = Object.assign({}, list[index], extra || {}, {
+      status: status,
+      updatedAt: new Date().toISOString()
+    });
+    writeJson(KEYS.requests, list);
+    return list[index];
+  }
+
   function prefillTrialForm(form) {
     var current = getCurrentStudent();
     if (!form || !current) return;
@@ -356,6 +388,17 @@
       suggestion: "Move into the formal weekly track.",
       createdAt: daysAgo(1)
     }]);
+
+    writeJson(KEYS.requests, [{
+      type: "reschedule",
+      targetLabel: "每周两节课 · 周三 · 晚间 19:00-21:00",
+      reason: "本周学校活动冲突，希望顺延到周四同一时间。",
+      email: student.email,
+      studentName: student.studentName,
+      studentId: student.studentId,
+      status: "pending",
+      createdAt: daysAgo(0)
+    }]);
   }
 
   function currentLang() {
@@ -489,6 +532,9 @@
     savePayment: savePayment,
     saveMembershipOrder: saveMembershipOrder,
     saveFeedback: saveFeedback,
+    getScheduleRequests: getScheduleRequests,
+    saveScheduleRequest: saveScheduleRequest,
+    updateScheduleRequestStatus: updateScheduleRequestStatus,
     prefillTrialForm: prefillTrialForm,
     prefillSignupForm: prefillSignupForm,
     populateCourseMeta: populateCourseMeta,

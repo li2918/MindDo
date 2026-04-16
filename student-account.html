@@ -544,6 +544,7 @@
         <a class="chip" href="index.html" data-i18n="backFlow"></a>
         <a class="chip" href="assessment.html" data-i18n="goAssessment"></a>
         <a class="chip" href="course-selection.html" data-i18n="goCourseSelection"></a>
+        <a class="chip" href="student-management.html" data-i18n="goStudentManagement"></a>
         <button class="logout-btn" type="button" id="logoutBtn" data-i18n="logout"></button>
         <div class="lang-switch">
           <button class="lang-btn" type="button" data-set-lang="zh-CN">中文</button>
@@ -727,6 +728,7 @@
           backFlow: "返回流程总览",
           goAssessment: "前往评估",
           goCourseSelection: "前往选课",
+          goStudentManagement: "学员管理",
           logout: "退出登录",
           title: "学生主页",
           heroIntro: "登录后你会先看到这张完整的学员页面，后续 profile、选课、评估、反馈和学习状态都会围绕同一个账号继续。",
@@ -825,6 +827,7 @@
           backFlow: "Back To Workflow",
           goAssessment: "Go To Assessment",
           goCourseSelection: "Course Selection",
+          goStudentManagement: "Student Management",
           logout: "Log Out",
           title: "Student Home",
           heroIntro: "After login, the student should land on a complete home page with profile, course selection, assessment, feedback, and current status.",
@@ -1018,7 +1021,11 @@
       }
 
       function readRequestHistory(current) {
-        return readJson("minddo_schedule_requests").filter(function (item) {
+        var requestList = window.MindDoFlow && window.MindDoFlow.getScheduleRequests
+          ? window.MindDoFlow.getScheduleRequests()
+          : readJson("minddo_schedule_requests");
+
+        return requestList.filter(function (item) {
           return matchCurrentStudent(item, current);
         }).sort(function (a, b) {
           return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
@@ -1215,7 +1222,7 @@
 
         requestHistory.innerHTML = requests.length
           ? requests.slice(0, 4).map(function (item) {
-              return "<li><span>" + item.type + " · " + item.targetLabel + "</span><strong>" + item.reason + "</strong></li>";
+              return "<li><span>" + item.type + " · " + item.targetLabel + "</span><strong>" + item.reason + " · " + (item.status || "pending") + "</strong></li>";
             }).join("")
           : "<li><span>" + t.requestEmpty + "</span><strong>-</strong></li>";
 
@@ -1304,9 +1311,13 @@
           createdAt: new Date().toISOString()
         };
 
-        var list = readJson("minddo_schedule_requests");
-        list.push(payload);
-        localStorage.setItem("minddo_schedule_requests", JSON.stringify(list));
+        if (window.MindDoFlow && window.MindDoFlow.saveScheduleRequest) {
+          window.MindDoFlow.saveScheduleRequest(payload);
+        } else {
+          var list = readJson("minddo_schedule_requests");
+          list.push(Object.assign({ status: "pending" }, payload));
+          localStorage.setItem("minddo_schedule_requests", JSON.stringify(list));
+        }
 
         requestForm.reset();
         requestResult.className = "request-result success";
