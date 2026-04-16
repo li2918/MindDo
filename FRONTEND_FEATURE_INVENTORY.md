@@ -34,16 +34,25 @@ The current frontend prototype now covers a usable end-to-end education operatio
 ### `index.html`
 
 Purpose:
-Business overview / landing page / workflow introduction.
+Main system landing page / unified entry hub.
 
 Primary users:
-Parents, operators, internal stakeholders.
+Parents, students, operators, internal stakeholders.
 
 Key role in system:
-Explains the full business loop and links into trial, assessment, sign-up, student, and dashboard pages.
+Acts as the main front door for the full frontend system and links into the high-frequency pages by role and usage.
+
+Current implemented capabilities:
+
+1. Landing-style hero section
+2. Primary launch dock for common pages
+3. Role-based portals for visitor, student, and operations
+4. Full page library for all available prototype pages
+5. Bilingual switching consistent with the rest of the site
+6. No project explanation blocks; this page now focuses only on entry and navigation
 
 Safe removal note:
-If only the landing showcase is not needed, this file can be simplified without breaking the local data flow logic.
+If only the front-door landing is not needed, this file can be simplified or replaced without breaking the shared local data flow logic.
 
 ### `trial.html`
 

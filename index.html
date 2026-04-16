@@ -3,827 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MindDo 业务闭环总览 | MindDo Business Loop</title>
+  <title>MindDo | Front Door</title>
   <style>
     :root {
-      --bg: #f6efe5;
-      --bg-strong: #efe2cf;
-      --card: rgba(255, 251, 245, 0.9);
-      --line: rgba(115, 66, 24, 0.12);
-      --ink: #48210f;
-      --muted: #856754;
-      --gold: #efab32;
-      --gold-soft: #f8d48c;
-      --clay: #94461d;
-      --shadow: 0 24px 56px rgba(101, 58, 22, 0.11);
+      --bg:#f5efe4; --card:rgba(255,251,244,.9); --line:rgba(124,70,22,.12); --line-strong:rgba(191,122,39,.28);
+      --ink:#4f2410; --muted:#8a6a55; --gold:#f0aa26; --gold-soft:#f7d994; --clay:#8d3d14; --olive:#6d8753; --danger:#be6a50;
+      --shadow:0 24px 56px rgba(101,58,22,.11);
     }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
     body {
-      margin: 0;
-      font-family: "Avenir Next", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
-      color: var(--ink);
+      margin:0; font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--ink);
       background:
-        radial-gradient(circle at top left, rgba(255, 213, 123, 0.28), transparent 28%),
-        radial-gradient(circle at 85% 14%, rgba(193, 105, 32, 0.16), transparent 24%),
-        linear-gradient(180deg, #fffdf9, var(--bg) 58%, var(--bg-strong));
-      min-height: 100vh;
-      overflow-x: hidden;
+        radial-gradient(circle at top left, rgba(255,213,123,.28), transparent 26%),
+        radial-gradient(circle at 84% 16%, rgba(193,105,32,.12), transparent 22%),
+        linear-gradient(180deg, #fffdfa, var(--bg) 56%, #efe3d1);
+      min-height:100vh; overflow-x:hidden;
     }
-
     body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(151, 84, 21, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(151, 84, 21, 0.03) 1px, transparent 1px);
-      background-size: 28px 28px;
-      mask-image: radial-gradient(circle at center, black 35%, transparent 88%);
-      opacity: 0.45;
+      content:""; position:fixed; inset:0; pointer-events:none;
+      background-image:linear-gradient(rgba(151,84,21,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(151,84,21,.03) 1px, transparent 1px);
+      background-size:28px 28px; mask-image:radial-gradient(circle at center, black 30%, transparent 82%); opacity:.4;
     }
-
-    a { color: inherit; }
-    [data-lang], [data-lang-block] { display: none; }
-    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display: inline; }
-    html[lang="zh-CN"] [data-lang-block="zh"], html[lang="en"] [data-lang-block="en"] { display: block; }
-
-    .container {
-      position: relative;
-      z-index: 1;
-      width: min(1240px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 26px 0 70px;
+    a { color:inherit; }
+    [data-lang], [data-lang-block] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+    html[lang="zh-CN"] [data-lang-block="zh"], html[lang="en"] [data-lang-block="en"] { display:block; }
+    .container { position:relative; z-index:1; width:min(1240px, calc(100% - 32px)); margin:0 auto; padding:26px 0 72px; }
+    .glass { border:1px solid var(--line); background:var(--card); box-shadow:var(--shadow); backdrop-filter:blur(12px); }
+    .topbar,.section-head,.hero-actions,.topbar-side,.lang-switch,.card-actions,.entry-links,.pill-row,.portal-points { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .topbar { justify-content:space-between; padding:14px 18px; border-radius:24px; margin-bottom:18px; }
+    .brand { display:flex; gap:14px; align-items:center; text-decoration:none; min-width:0; }
+    .brand img { width:72px; height:72px; object-fit:contain; flex-shrink:0; }
+    .brand-copy { display:grid; gap:4px; }
+    .brand-kicker { font-size:12px; text-transform:uppercase; letter-spacing:.18em; color:#aa6a2b; }
+    .brand-title { font-size:24px; font-weight:800; color:var(--clay); }
+    .brand-subtitle { font-size:13px; color:var(--muted); line-height:1.5; }
+    .lang-btn,.cta,.link-pill,.nav-link { border-radius:999px; transition:.2s ease; border:1px solid var(--line); font-size:13px; font-weight:700; text-decoration:none; }
+    .lang-btn { background:rgba(255,247,236,.94); color:var(--clay); padding:8px 14px; cursor:pointer; }
+    .cta,.link-pill,.nav-link { display:inline-flex; align-items:center; justify-content:center; padding:11px 17px; }
+    .cta { color:#4f260f; background:linear-gradient(135deg,#ffe39d,var(--gold)); box-shadow:0 18px 32px rgba(176,112,39,.22); }
+    .link-pill,.nav-link { background:rgba(255,248,239,.96); color:var(--clay); }
+    .lang-btn:hover,.lang-btn.active,.link-pill:hover,.nav-link:hover { background:linear-gradient(135deg,#fff4db,#f4c964); border-color:var(--line-strong); box-shadow:0 12px 24px rgba(176,112,39,.18); }
+    .eyebrow,.section-tag,.entry-tag,.portal-kicker {
+      display:inline-flex; padding:7px 12px; border-radius:999px; background:rgba(255,214,138,.16);
+      border:1px solid rgba(176,112,39,.18); color:#9c5a1d; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
     }
-
-    .glass {
-      border: 1px solid var(--line);
-      background: var(--card);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      padding: 14px 18px;
-      border-radius: 24px;
-      margin-bottom: 18px;
-    }
-
-    .brand {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      text-decoration: none;
-      min-width: 0;
-    }
-
-    .brand img {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-
-    .brand-copy { display: grid; gap: 4px; }
-    .brand-kicker {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: #aa6a2b;
-    }
-    .brand-title {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--clay);
-    }
-    .brand-subtitle {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.5;
-      max-width: 540px;
-    }
-
-    .topbar-side {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .lang-switch { display: flex; gap: 10px; flex-wrap: wrap; }
-    .lang-btn, .cta, .link-pill { border-radius: 999px; transition: all 0.2s ease; }
-    .lang-btn {
-      border: 1px solid var(--line);
-      background: rgba(255, 247, 236, 0.94);
-      color: var(--clay);
-      padding: 8px 14px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .lang-btn:hover, .lang-btn.active {
-      background: linear-gradient(135deg, #fff4db, #f4c964);
-      box-shadow: 0 10px 22px rgba(176, 112, 39, 0.18);
-    }
-
-    .link-pill, .cta {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 18px;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 700;
-      border: 1px solid var(--line);
-    }
-
-    .cta {
-      color: #4f260f;
-      background: linear-gradient(135deg, #ffe39d, var(--gold));
-      box-shadow: 0 16px 30px rgba(176, 112, 39, 0.2);
-    }
-
-    .link-pill {
-      background: rgba(255, 248, 239, 0.96);
-      color: var(--clay);
-    }
-
-    .link-pill:hover, .cta:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 18px 34px rgba(176, 112, 39, 0.16);
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-
-    .hero-main, .hero-side {
-      border-radius: 30px;
-      padding: 28px;
-    }
-
+    .hero { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr); gap:18px; margin-bottom:18px; }
+    .hero-main,.hero-side,.panel,.portal-card,.entry-card { border-radius:30px; padding:24px; }
     .hero-main {
-      background:
-        radial-gradient(circle at top left, rgba(255, 214, 138, 0.24), transparent 28%),
-        linear-gradient(180deg, rgba(255, 252, 247, 0.98), rgba(250, 241, 228, 0.96));
+      background:radial-gradient(circle at top left, rgba(255,214,138,.22), transparent 26%), linear-gradient(180deg, rgba(255,252,247,.98), rgba(250,241,228,.96));
     }
-
-    .eyebrow, .section-tag, .module-tag {
-      display: inline-flex;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: rgba(255, 214, 138, 0.16);
-      border: 1px solid rgba(176, 112, 39, 0.18);
-      color: #9c5a1d;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .hero-main h1 {
-      margin: 16px 0 0;
-      max-width: 760px;
-      font-size: clamp(34px, 5vw, 56px);
-      line-height: 1.04;
-      letter-spacing: -0.03em;
-      color: var(--clay);
-    }
-
-    .hero-main p {
-      margin: 16px 0 0;
-      max-width: 760px;
-      font-size: 16px;
-      line-height: 1.78;
-      color: var(--muted);
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 22px;
-    }
-
-    .hero-stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 26px;
-    }
-
-    .stat {
-      padding: 16px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: rgba(255, 250, 244, 0.88);
-    }
-
-    .stat-label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #a86a2a;
-      font-weight: 800;
-    }
-
-    .stat-value {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--clay);
-    }
-
-    .stat-copy {
-      font-size: 13px;
-      line-height: 1.6;
-      color: var(--muted);
-    }
-
     .hero-side {
-      color: #fff5ea;
-      background: linear-gradient(180deg, rgba(84, 46, 18, 0.98), rgba(111, 62, 26, 0.95));
-      box-shadow: 0 28px 60px rgba(88, 48, 19, 0.24);
+      color:#fff6eb; background:radial-gradient(circle at top right, rgba(255,227,171,.12), transparent 30%), linear-gradient(180deg, rgba(84,46,18,.98), rgba(111,62,26,.96));
+      box-shadow:0 28px 60px rgba(88,48,19,.24);
     }
-
-    .hero-side h2 {
-      margin: 0 0 14px;
-      font-size: 23px;
-      line-height: 1.2;
-      color: #fff6eb;
+    .hero-main h1 { margin:16px 0 0; max-width:760px; font-size:clamp(36px,5vw,62px); line-height:1.02; letter-spacing:-.04em; color:var(--clay); }
+    .hero-main p,.entry-copy,.portal-copy,.hero-side p,.panel-copy { color:var(--muted); line-height:1.7; }
+    .hero-main p { margin:16px 0 0; max-width:760px; font-size:16px; }
+    .hero-metrics,.portal-grid,.entry-grid,.launch-grid { display:grid; gap:16px; }
+    .hero-metrics { grid-template-columns:repeat(3,minmax(0,1fr)); margin-top:24px; }
+    .metric,.launch-card,.portal-note,.entry-note { padding:16px; border-radius:18px; border:1px solid var(--line); background:rgba(255,250,244,.88); }
+    .metric-label { display:block; margin-bottom:8px; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:#a86a2a; font-weight:800; }
+    .metric-value { display:block; margin-bottom:6px; font-size:28px; font-weight:800; color:var(--clay); }
+    .metric-copy { font-size:13px; color:var(--muted); line-height:1.6; }
+    .hero-side h2,.panel h2,.portal-card h3,.entry-card h3 { margin:0 0 10px; }
+    .hero-side h2 { font-size:24px; color:#fff6eb; }
+    .side-stack { display:grid; gap:12px; margin-top:18px; }
+    .side-item { display:grid; gap:6px; padding:14px; border-radius:18px; background:rgba(255,249,241,.08); border:1px solid rgba(255,237,215,.1); }
+    .side-item strong { color:#fff6eb; font-size:15px; }
+    .side-item span { color:rgba(255,241,225,.82); font-size:13px; line-height:1.6; }
+    .section { margin-top:18px; }
+    .section-head { justify-content:space-between; align-items:flex-end; margin-bottom:14px; }
+    .section-head h2 { margin:10px 0 0; font-size:clamp(25px,3vw,34px); line-height:1.1; color:var(--clay); }
+    .panel { margin-bottom:18px; }
+    .launch-grid { grid-template-columns:repeat(4,minmax(0,1fr)); margin-top:16px; }
+    .launch-card,.portal-card,.entry-card { text-decoration:none; transition:.2s ease; }
+    .launch-card:hover,.portal-card:hover,.entry-card:hover { transform:translateY(-3px); border-color:var(--line-strong); box-shadow:0 20px 34px rgba(101,58,22,.12); }
+    .launch-icon { width:48px; height:48px; display:grid; place-items:center; border-radius:16px; background:linear-gradient(135deg,#fff2d5,var(--gold-soft)); color:var(--clay); font-size:22px; font-weight:800; margin-bottom:12px; }
+    .launch-card strong,.portal-card h3,.entry-card h3 { color:var(--clay); }
+    .launch-card strong { display:block; font-size:18px; margin-bottom:8px; }
+    .launch-card span { color:var(--muted); font-size:13px; line-height:1.65; }
+    .portal-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .portal-card { position:relative; overflow:hidden; }
+    .portal-card::after {
+      content:""; position:absolute; right:-34px; bottom:-40px; width:124px; height:124px; border-radius:50%;
+      background:radial-gradient(circle, rgba(239,171,50,.14), transparent 70%);
     }
-
-    .loop-stack {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 16px;
+    .portal-card h3 { font-size:22px; margin-top:12px; }
+    .portal-copy { font-size:14px; margin:0 0 16px; }
+    .portal-points { display:grid; gap:10px; }
+    .portal-note,.entry-note { font-size:13px; line-height:1.6; color:var(--muted); }
+    .entry-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+    .entry-card h3 { font-size:20px; margin-top:12px; }
+    .entry-copy { font-size:13px; margin:0 0 16px; }
+    .entry-links { display:grid; gap:10px; }
+    .nav-link { justify-content:flex-start; }
+    .footer-bar {
+      display:flex; justify-content:space-between; gap:14px; align-items:center; margin-top:18px; padding:16px 18px; border-radius:24px;
+      color:var(--muted); font-size:13px; line-height:1.6;
     }
-
-    .loop-step {
-      display: grid;
-      grid-template-columns: 42px 1fr;
-      gap: 12px;
-      padding: 12px;
-      border-radius: 16px;
-      background: rgba(255, 250, 244, 0.08);
-      border: 1px solid rgba(255, 237, 215, 0.1);
+    .status-pill { display:inline-flex; align-items:center; justify-content:center; min-height:36px; padding:8px 12px; border-radius:999px; border:1px solid var(--line); background:rgba(255,248,239,.96); font-size:12px; font-weight:700; }
+    .status-pill.ok { color:var(--olive); } .status-pill.warn { color:var(--gold); } .status-pill.alert { color:var(--danger); }
+    @media (max-width:1120px) {
+      .hero,.portal-grid,.entry-grid,.launch-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .hero { grid-template-columns:1fr; }
     }
-
-    .loop-num {
-      width: 42px;
-      height: 42px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #ffd77c, var(--gold));
-      color: #4f260f;
-      font-size: 14px;
-      font-weight: 800;
+    @media (max-width:880px) {
+      .container { width:min(100% - 24px, 1240px); }
+      .hero-main,.hero-side,.panel,.portal-card,.entry-card { padding:22px; }
+      .hero-metrics { grid-template-columns:1fr 1fr; }
     }
-
-    .loop-step strong {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 14px;
-      color: #fff6eb;
+    @media (max-width:760px) {
+      .container { width:min(100% - 20px, 1240px); padding:18px 0 40px; }
+      .topbar,.footer-bar { flex-direction:column; align-items:flex-start; }
+      .topbar-side,.lang-switch { width:100%; }
+      .lang-btn { flex:1 1 0; min-height:42px; }
+      .launch-grid,.portal-grid,.entry-grid,.hero-metrics { grid-template-columns:1fr; }
+      .hero-main h1 { font-size:clamp(30px,10vw,42px); }
+      .hero-actions .cta,.hero-actions .link-pill,.entry-links .nav-link { width:100%; }
     }
-
-    .loop-step span {
-      color: rgba(255, 241, 225, 0.8);
-      font-size: 13px;
-      line-height: 1.58;
-    }
-
-    .exception {
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: rgba(255, 249, 241, 0.09);
-      border: 1px solid rgba(255, 237, 215, 0.12);
-      font-size: 13px;
-      line-height: 1.72;
-      color: rgba(255, 241, 225, 0.84);
-    }
-
-    .section { margin-top: 18px; }
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 18px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
-
-    .section-head h2 {
-      margin: 10px 0 0;
-      font-size: clamp(25px, 3vw, 34px);
-      line-height: 1.1;
-      color: var(--clay);
-    }
-
-    .section-head p {
-      margin: 8px 0 0;
-      max-width: 720px;
-      color: var(--muted);
-      line-height: 1.72;
-      font-size: 15px;
-    }
-
-    .loop-grid, .spine-grid, .module-grid, .rules-grid, .entries-grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .journey-map {
-      border-radius: 30px;
-      padding: 24px;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at top right, rgba(255, 214, 138, 0.22), transparent 28%),
-        linear-gradient(180deg, rgba(255, 252, 247, 0.98), rgba(249, 240, 226, 0.96));
-    }
-
-    .journey-flow {
-      display: grid;
-      grid-template-columns: repeat(9, minmax(0, 1fr));
-      gap: 10px;
-      align-items: center;
-      margin-top: 18px;
-    }
-
-    .journey-node {
-      position: relative;
-      min-height: 172px;
-      padding: 18px;
-      border-radius: 24px;
-      border: 1px solid rgba(108, 61, 21, 0.1);
-      background: rgba(255, 251, 246, 0.9);
-      box-shadow: 0 18px 34px rgba(101, 58, 22, 0.08);
-    }
-
-    .journey-kicker {
-      margin-bottom: 10px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #a86a2a;
-    }
-
-    .journey-node h3 {
-      margin: 0 0 8px;
-      font-size: 19px;
-      color: var(--clay);
-      line-height: 1.2;
-    }
-
-    .journey-node p {
-      margin: 0;
-      font-size: 13px;
-      line-height: 1.7;
-      color: var(--muted);
-    }
-
-    .journey-arrow {
-      display: grid;
-      place-items: center;
-      min-height: 172px;
-      color: #b67834;
-      font-size: 28px;
-      font-weight: 800;
-      opacity: 0.8;
-    }
-
-    .journey-summary {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .journey-pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      padding: 10px 16px;
-      border-radius: 999px;
-      border: 1px solid rgba(108, 61, 21, 0.09);
-      background: rgba(255, 251, 246, 0.92);
-      font-size: 13px;
-      line-height: 1.5;
-      color: var(--muted);
-    }
-
-    .loop-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-
-    .phase-card, .spine-card, .module-card, .rule-card, .entry-card, .footer-note {
-      border-radius: 24px;
-      padding: 20px;
-    }
-
-    .phase-card {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .phase-card::after {
-      content: "";
-      position: absolute;
-      right: -28px;
-      bottom: -34px;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(239, 171, 50, 0.14), transparent 70%);
-    }
-
-    .phase-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: flex-start;
-      margin-bottom: 14px;
-    }
-
-    .phase-pill {
-      display: inline-flex;
-      min-width: 70px;
-      justify-content: center;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      background: rgba(255, 214, 138, 0.16);
-      color: #9c5a1d;
-      border: 1px solid rgba(176, 112, 39, 0.16);
-    }
-
-    .phase-note {
-      font-size: 12px;
-      line-height: 1.55;
-      color: var(--muted);
-      text-align: right;
-      max-width: 160px;
-    }
-
-    .phase-card h3, .module-card h3, .rule-card h3, .entry-card h3 {
-      margin: 0 0 10px;
-      color: var(--clay);
-    }
-
-    .phase-card h3 { font-size: 22px; }
-    .module-card h3, .rule-card h3, .entry-card h3 { font-size: 19px; }
-
-    .phase-card p, .module-card p, .rule-card p {
-      margin: 0 0 14px;
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 14px;
-    }
-
-    .point-list, .entry-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .point, .entry-list a {
-      display: block;
-      padding: 12px 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(108, 61, 21, 0.09);
-      background: rgba(255, 250, 244, 0.82);
-      text-decoration: none;
-    }
-
-    .point strong {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 14px;
-      color: var(--ink);
-    }
-
-    .point span, .entry-list a {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .entry-list a { font-weight: 700; color: var(--clay); }
-    .entry-list a:hover {
-      background: linear-gradient(135deg, #fff2d5, var(--gold-soft));
-      border-color: rgba(176, 112, 39, 0.24);
-    }
-
-    .spine {
-      padding: 24px;
-      border-radius: 30px;
-    }
-
-    .spine-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-    .spine-card {
-      position: relative;
-      border: 1px solid rgba(108, 61, 21, 0.1);
-      background: rgba(255, 252, 247, 0.86);
-    }
-
-    .spine-card::after {
-      content: "";
-      position: absolute;
-      top: 24px;
-      right: -12px;
-      width: 24px;
-      height: 2px;
-      background: linear-gradient(90deg, rgba(176, 112, 39, 0.4), transparent);
-    }
-
-    .spine-card:last-child::after { display: none; }
-    .spine-card strong {
-      display: block;
-      margin-bottom: 8px;
-      color: var(--clay);
-      font-size: 15px;
-    }
-    .spine-card span {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.58;
-    }
-
-    .module-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .rules-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .entries-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-
-    .footer-note {
-      margin-top: 18px;
-      font-size: 14px;
-      line-height: 1.72;
-      color: var(--muted);
-    }
-
-    @media (max-width: 1100px) {
-      .hero, .loop-grid, .module-grid, .rules-grid, .entries-grid, .spine-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-      .hero { grid-template-columns: 1fr; }
-      .journey-flow {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-      .journey-arrow {
-        min-height: auto;
-        padding: 4px 0;
-        transform: rotate(90deg);
-      }
-    }
-
-    @media (max-width: 980px) {
-      .container {
-        width: min(100% - 24px, 1240px);
-      }
-
-      .brand-subtitle,
-      .hero-main p,
-      .section-head p {
-        max-width: none;
-      }
-
-      .hero-main, .hero-side {
-        padding: 24px;
-      }
-
-      .hero-stats {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .rules-grid,
-      .entries-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .journey-summary { gap: 8px; }
-    }
-
-    @media (max-width: 760px) {
-      .container { width: min(100% - 20px, 1240px); padding: 18px 0 44px; }
-      body::before {
-        background-size: 22px 22px;
-        opacity: 0.28;
-      }
-      .topbar {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 16px;
-        border-radius: 20px;
-      }
-      .brand {
-        width: 100%;
-        align-items: flex-start;
-      }
-      .brand-copy {
-        min-width: 0;
-      }
-      .brand-title {
-        font-size: 20px;
-      }
-      .brand-subtitle {
-        font-size: 12px;
-      }
-      .topbar-side {
-        width: 100%;
-        justify-content: flex-start;
-      }
-      .lang-switch {
-        width: 100%;
-      }
-      .lang-btn {
-        flex: 1 1 0;
-        min-height: 42px;
-      }
-      .hero {
-        gap: 14px;
-      }
-      .hero-main, .hero-side, .phase-card, .spine, .module-card, .rule-card, .entry-card, .footer-note {
-        border-radius: 20px;
-        padding: 20px;
-      }
-      .journey-map {
-        border-radius: 20px;
-        padding: 20px;
-      }
-      .hero-main h1 {
-        margin-top: 14px;
-      }
-      .hero-main p {
-        font-size: 15px;
-        line-height: 1.72;
-      }
-      .hero-actions {
-        flex-direction: column;
-      }
-      .hero-actions .cta,
-      .hero-actions .link-pill,
-      .topbar-side > .link-pill {
-        width: 100%;
-      }
-      .brand img { width: 62px; height: 62px; }
-      .hero-stats, .loop-grid, .module-grid, .rules-grid, .entries-grid, .spine-grid {
-        grid-template-columns: 1fr;
-      }
-      .journey-flow {
-        grid-template-columns: 1fr;
-      }
-      .journey-arrow {
-        transform: rotate(90deg);
-        min-height: 30px;
-      }
-      .section-head {
-        align-items: flex-start;
-        margin-bottom: 12px;
-      }
-      .section-head h2 {
-        margin-top: 8px;
-      }
-      .phase-top {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .phase-note {
-        max-width: none;
-        text-align: left;
-      }
-      .spine-card::after {
-        top: auto;
-        right: auto;
-        left: 24px;
-        bottom: -10px;
-        width: 2px;
-        height: 20px;
-        background: linear-gradient(180deg, rgba(176, 112, 39, 0.4), transparent);
-      }
-    }
-
-    @media (max-width: 520px) {
-      .container {
-        width: min(100% - 16px, 1240px);
-        padding: 14px 0 36px;
-      }
-
-      .topbar,
-      .hero-main,
-      .hero-side,
-      .phase-card,
-      .spine,
-      .journey-map,
-      .module-card,
-      .rule-card,
-      .entry-card,
-      .footer-note {
-        padding: 16px;
-        border-radius: 18px;
-      }
-
-      .brand {
-        gap: 10px;
-      }
-
-      .brand img {
-        width: 54px;
-        height: 54px;
-      }
-
-      .brand-kicker,
-      .eyebrow,
-      .section-tag,
-      .module-tag,
-      .phase-pill {
-        font-size: 11px;
-        letter-spacing: 0.06em;
-      }
-
-      .hero-main h1 {
-        font-size: clamp(28px, 10vw, 38px);
-        line-height: 1.08;
-      }
-
-      .hero-main p,
-      .section-head p,
-      .phase-card p,
-      .module-card p,
-      .rule-card p,
-      .footer-note {
-        font-size: 14px;
-      }
-
-      .hero-stats {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-top: 20px;
-      }
-
-      .stat {
-        padding: 14px;
-        border-radius: 16px;
-      }
-
-      .stat-value {
-        font-size: 24px;
-      }
-
-      .hero-side h2,
-      .phase-card h3 {
-        font-size: 20px;
-      }
-
-      .module-card h3,
-      .rule-card h3,
-      .entry-card h3 {
-        font-size: 18px;
-      }
-
-      .loop-step {
-        grid-template-columns: 36px 1fr;
-        gap: 10px;
-        padding: 10px;
-      }
-
-      .loop-num {
-        width: 36px;
-        height: 36px;
-        font-size: 13px;
-      }
-
-      .point,
-      .entry-list a,
-      .exception {
-        padding: 11px 12px;
-        border-radius: 14px;
-      }
-
-      .journey-node {
-        min-height: auto;
-        padding: 16px;
-        border-radius: 18px;
-      }
-
-      .spine-card {
-        padding: 16px;
-      }
+    @media (max-width:520px) {
+      .container { width:min(100% - 16px, 1240px); padding:14px 0 32px; }
+      .topbar,.hero-main,.hero-side,.panel,.portal-card,.entry-card,.footer-bar { padding:16px; border-radius:18px; }
+      .brand { gap:10px; } .brand img { width:56px; height:56px; }
     }
   </style>
 </head>
@@ -833,21 +136,16 @@
       <a class="brand" href="index.html" aria-label="MindDo home">
         <img src="assets/logo.png" alt="MindDo logo" />
         <div class="brand-copy">
-          <span class="brand-kicker">MindDo Loop OS</span>
+          <span class="brand-kicker">MindDo Front Door</span>
           <span class="brand-title">MindDo</span>
-          <span class="brand-subtitle">
-            <span data-lang="zh">围绕“获客、转化、交付、续费、召回”的自动化教育业务闭环。</span>
-            <span data-lang="en">An automated education business loop across acquisition, conversion, delivery, renewal, and win-back.</span>
-          </span>
+          <span class="brand-subtitle"><span data-lang="zh">统一进入系统的主页面</span><span data-lang="en">The central front door for the system</span></span>
         </div>
       </a>
       <div class="topbar-side">
-        <a class="link-pill" href="#entries">
-          <span data-lang="zh">页面入口</span>
-          <span data-lang="en">Page Entry</span>
-        </a>
-        <div class="lang-switch" aria-label="language switch">
-          <button class="lang-btn active" type="button" data-set-lang="zh-CN">中文</button>
+        <a class="link-pill" href="#portals"><span data-lang="zh">角色入口</span><span data-lang="en">Role Portals</span></a>
+        <a class="link-pill" href="#entries"><span data-lang="zh">全部页面</span><span data-lang="en">All Pages</span></a>
+        <div class="lang-switch">
+          <button class="lang-btn" type="button" data-set-lang="zh-CN">中文</button>
           <button class="lang-btn" type="button" data-set-lang="en">English</button>
         </div>
       </div>
@@ -855,354 +153,153 @@
 
     <section class="hero">
       <article class="hero-main glass">
-        <div class="eyebrow">Business Loop Overview</div>
-        <h1>
-          <span data-lang="zh">把零散页面，重组成一套真正能自动运转的业务闭环。</span>
-          <span data-lang="en">Turn scattered screens into one automated operating loop.</span>
-        </h1>
-        <p>
-          <span data-lang="zh">首页这次不再只是解释流程，而是把 MindDo 已有原型重新组织成一张业务控制地图。它清楚展示系统默认负责什么、人工什么时候进入，以及每个页面在闭环中的真实职责。</span>
-          <span data-lang="en">This homepage no longer only explains a process. It reorganizes the existing MindDo prototype into a business control map that shows what the system owns by default, when humans step in, and what role each screen plays inside the loop.</span>
-        </p>
+        <div class="eyebrow">System Home</div>
+        <h1><span data-lang="zh">从这里进入整个 MindDo 前端系统</span><span data-lang="en">Enter the full MindDo frontend system from one place</span></h1>
+        <p><span data-lang="zh">把学员、试课、评估、选课、反馈、运营看板和处理中心组织成统一入口，让访问路径更直接，也更像一个完整产品首页。</span><span data-lang="en">Bring student, trial, assessment, course, feedback, dashboard, and operations pages into one direct landing experience.</span></p>
         <div class="hero-actions">
-          <a class="cta" href="#loop">
-            <span data-lang="zh">查看闭环主链路</span>
-            <span data-lang="en">View The Core Loop</span>
-          </a>
-          <a class="link-pill" href="trial.html">
-            <span data-lang="zh">试课入口</span>
-            <span data-lang="en">Trial Entry</span>
-          </a>
-          <a class="link-pill" href="signup.html">
-            <span data-lang="zh">注册入口</span>
-            <span data-lang="en">Sign Up</span>
-          </a>
-          <a class="link-pill" href="dashboard.html">
-            <span data-lang="zh">运营看板</span>
-            <span data-lang="en">Dashboard</span>
-          </a>
+          <a class="cta" href="signup.html"><span data-lang="zh">进入注册 / 登录</span><span data-lang="en">Open Sign Up / Login</span></a>
+          <a class="link-pill" href="student-account.html"><span data-lang="zh">进入学员主页</span><span data-lang="en">Open Student Home</span></a>
+          <a class="link-pill" href="dashboard.html"><span data-lang="zh">进入运营看板</span><span data-lang="en">Open Dashboard</span></a>
         </div>
-        <div class="hero-stats">
-          <div class="stat">
-            <span class="stat-label"><span data-lang="zh">主链路</span><span data-lang="en">Main Loop</span></span>
-            <span class="stat-value">6</span>
-            <span class="stat-copy"><span data-lang="zh">从获客到召回的六段式闭环。</span><span data-lang="en">Six connected stages from lead intake to win-back.</span></span>
-          </div>
-          <div class="stat">
-            <span class="stat-label"><span data-lang="zh">自动化</span><span data-lang="en">Automation</span></span>
-            <span class="stat-value">80%+</span>
-            <span class="stat-copy"><span data-lang="zh">标准动作默认由系统推进。</span><span data-lang="en">Routine actions are system-led by default.</span></span>
-          </div>
-          <div class="stat">
-            <span class="stat-label"><span data-lang="zh">人工介入</span><span data-lang="en">Human Touch</span></span>
-            <span class="stat-value">4</span>
-            <span class="stat-copy"><span data-lang="zh">只保留成交、异常、风险、续费挽回四类节点。</span><span data-lang="en">Humans focus on conversion, exceptions, risk, and critical renewals.</span></span>
-          </div>
+        <div class="hero-metrics">
+          <div class="metric"><span class="metric-label">Public</span><span class="metric-value">03</span><span class="metric-copy"><span data-lang="zh">试课、评估、注册入口</span><span data-lang="en">Trial, assessment, and sign-up entries</span></span></div>
+          <div class="metric"><span class="metric-label">Student</span><span class="metric-value">05</span><span class="metric-copy"><span data-lang="zh">学员使用与学习交付页面</span><span data-lang="en">Student-facing learning and delivery pages</span></span></div>
+          <div class="metric"><span class="metric-label">Ops</span><span class="metric-value">04</span><span class="metric-copy"><span data-lang="zh">运营、管理和处理中心入口</span><span data-lang="en">Operations, management, and processing centers</span></span></div>
         </div>
       </article>
 
       <aside class="hero-side glass">
-        <h2>
-          <span data-lang="zh">闭环不是单次转化，而是会持续回流的运营系统。</span>
-          <span data-lang="en">The loop is not a one-time funnel. It is a recurring operating system.</span>
-        </h2>
-        <div class="loop-stack">
-          <div class="loop-step">
-            <div class="loop-num">01</div>
-            <div>
-              <strong><span data-lang="zh">获客进入</span><span data-lang="en">Lead Intake</span></strong>
-              <span><span data-lang="zh">自动建档、打标、分流。</span><span data-lang="en">Auto-create, tag, and route leads.</span></span>
-            </div>
-          </div>
-          <div class="loop-step">
-            <div class="loop-num">02</div>
-            <div>
-              <strong><span data-lang="zh">试课转化</span><span data-lang="en">Trial Conversion</span></strong>
-              <span><span data-lang="zh">试课、评估、报告、报名推动。</span><span data-lang="en">Trial, assessment, report, and conversion push.</span></span>
-            </div>
-          </div>
-          <div class="loop-step">
-            <div class="loop-num">03</div>
-            <div>
-              <strong><span data-lang="zh">支付门禁</span><span data-lang="en">Payment Gate</span></strong>
-              <span><span data-lang="zh">先支付，再进入正式排课。</span><span data-lang="en">Pay first, then unlock scheduling.</span></span>
-            </div>
-          </div>
-          <div class="loop-step">
-            <div class="loop-num">04</div>
-            <div>
-              <strong><span data-lang="zh">自动交付</span><span data-lang="en">Delivery</span></strong>
-              <span><span data-lang="zh">排课、确认、课堂记录、反馈同步。</span><span data-lang="en">Scheduling, confirmation, class logs, and feedback.</span></span>
-            </div>
-          </div>
-          <div class="loop-step">
-            <div class="loop-num">05</div>
-            <div>
-              <strong><span data-lang="zh">续费与召回</span><span data-lang="en">Renewal & Win-back</span></strong>
-              <span><span data-lang="zh">课时不足自动推进下一轮经营。</span><span data-lang="en">Low sessions automatically trigger the next cycle.</span></span>
-            </div>
-          </div>
+        <h2><span data-lang="zh">快速进入高频页面</span><span data-lang="en">Jump into the highest-traffic pages</span></h2>
+        <div class="side-stack">
+          <div class="side-item"><strong><span data-lang="zh">试课与注册</span><span data-lang="en">Trial and Sign-Up</span></strong><span><span data-lang="zh">适合从外部入口直接开始体验流程。</span><span data-lang="en">Best for starting the visitor-to-student flow.</span></span></div>
+          <div class="side-item"><strong><span data-lang="zh">学员主页</span><span data-lang="en">Student Home</span></strong><span><span data-lang="zh">查看 profile、选课、课程、排课和请假改期。</span><span data-lang="en">Open profile, courses, scheduling, and request actions.</span></span></div>
+          <div class="side-item"><strong><span data-lang="zh">运营工作区</span><span data-lang="en">Operations Workspace</span></strong><span><span data-lang="zh">进入看板、学员管理、新注册提醒和申请处理。</span><span data-lang="en">Open dashboard, student management, alerts, and request handling.</span></span></div>
         </div>
-        <div class="exception">
-          <span data-lang="zh">人工只在四种情况进入：高意向成交、支付或排课异常、学习风险预警、系统多次触达后仍沉默的续费用户。</span>
-          <span data-lang="en">Humans step in only for high-intent conversion, payment or scheduling exceptions, learning risk alerts, and silent renewal accounts after repeated automated touches.</span>
+        <div class="card-actions" style="margin-top:18px;">
+          <a class="link-pill" href="trial.html"><span data-lang="zh">试课报名</span><span data-lang="en">Trial</span></a>
+          <a class="link-pill" href="assessment.html"><span data-lang="zh">评估页面</span><span data-lang="en">Assessment</span></a>
+          <a class="link-pill" href="request-center.html"><span data-lang="zh">申请处理</span><span data-lang="en">Requests</span></a>
         </div>
       </aside>
     </section>
 
-    <section class="section">
-      <div class="journey-map glass">
-        <div class="section-head">
-          <div>
-            <div class="section-tag">Business Flow Diagram</div>
-            <h2>
-              <span data-lang="zh">首页业务流程总览</span>
-              <span data-lang="en">Homepage Business Flow Overview</span>
-            </h2>
-            <p>
-              <span data-lang="zh">只保留业务主线，让访问者快速理解 MindDo 是怎么从获客一路走到交付和续费的。</span>
-              <span data-lang="en">This keeps only the core path so visitors can quickly understand how MindDo moves from lead capture to delivery and renewal.</span>
-            </p>
-          </div>
-        </div>
-
-        <div class="journey-flow">
-          <article class="journey-node">
-            <span class="journey-kicker">01</span>
-            <h3><span data-lang="zh">获客进入</span><span data-lang="en">Lead Intake</span></h3>
-            <p><span data-lang="zh">承接线索，建立家长与学生信息。</span><span data-lang="en">Capture the lead and create the family profile.</span></p>
-          </article>
-
-          <div class="journey-arrow" aria-hidden="true">→</div>
-
-          <article class="journey-node">
-            <span class="journey-kicker">02</span>
-            <h3><span data-lang="zh">试课转化</span><span data-lang="en">Trial Conversion</span></h3>
-            <p><span data-lang="zh">通过试听和评估建立报名意愿。</span><span data-lang="en">Use trials and assessment to build enrollment intent.</span></p>
-          </article>
-
-          <div class="journey-arrow" aria-hidden="true">→</div>
-
-          <article class="journey-node">
-            <span class="journey-kicker">03</span>
-            <h3><span data-lang="zh">报名支付</span><span data-lang="en">Signup & Payment</span></h3>
-            <p><span data-lang="zh">完成首单支付，进入正式服务阶段。</span><span data-lang="en">Complete first payment and enter formal service.</span></p>
-          </article>
-
-          <div class="journey-arrow" aria-hidden="true">→</div>
-
-          <article class="journey-node">
-            <span class="journey-kicker">04</span>
-            <h3><span data-lang="zh">排课交付</span><span data-lang="en">Scheduling & Delivery</span></h3>
-            <p><span data-lang="zh">安排课程、进入上课、持续输出反馈。</span><span data-lang="en">Schedule classes, deliver learning, and keep feedback flowing.</span></p>
-          </article>
-
-          <div class="journey-arrow" aria-hidden="true">→</div>
-
-          <article class="journey-node">
-            <span class="journey-kicker">05</span>
-            <h3><span data-lang="zh">续费召回</span><span data-lang="en">Renewal & Win-back</span></h3>
-            <p><span data-lang="zh">根据学习进展推动续费，并召回沉默用户。</span><span data-lang="en">Drive renewal from progress and reactivate silent users.</span></p>
-          </article>
-        </div>
-
-        <div class="journey-summary">
-          <span class="journey-pill"><span data-lang="zh">主线更清晰</span><span data-lang="en">Clearer main path</span></span>
-          <span class="journey-pill"><span data-lang="zh">信息更少</span><span data-lang="en">Less information</span></span>
-          <span class="journey-pill"><span data-lang="zh">更适合首页总览</span><span data-lang="en">Better for homepage overview</span></span>
-        </div>
-      </div>
-    </section>
-
-    <section id="loop" class="section">
+    <section class="panel glass">
       <div class="section-head">
         <div>
-          <div class="section-tag">Closed Loop Map</div>
-          <h2>
-            <span data-lang="zh">六段式闭环主链路</span>
-            <span data-lang="en">Six-Part Core Loop</span>
-          </h2>
-          <p>
-            <span data-lang="zh">每个阶段都同时回答三个问题：业务要达成什么、系统自动做什么、人工什么时候才需要出现。</span>
-            <span data-lang="en">Each stage answers three questions at once: what the business wants, what the system automates, and when human intervention is actually needed.</span>
-          </p>
+          <div class="section-tag">Launch Dock</div>
+          <h2><span data-lang="zh">主入口快捷启动区</span><span data-lang="en">Primary launch dock</span></h2>
         </div>
       </div>
-
-      <div class="loop-grid">
-        <article class="phase-card glass">
-          <div class="phase-top"><span class="phase-pill">01</span><span class="phase-note"><span data-lang="zh">Traffic / Lead</span><span data-lang="en">Traffic / Lead</span></span></div>
-          <h3><span data-lang="zh">获客进入</span><span data-lang="en">Lead Intake</span></h3>
-          <p><span data-lang="zh">用户从官网、广告或推荐入口进入后，系统自动创建线索并完成基础标签和意向分层。</span><span data-lang="en">Users entering from web, ads, or referrals are converted into structured leads with tags and intent scoring.</span></p>
-          <div class="point-list">
-            <div class="point"><strong><span data-lang="zh">系统动作</span><span data-lang="en">System</span></strong><span><span data-lang="zh">建档、去重、打标、自动分流。</span><span data-lang="en">Create, deduplicate, tag, and route.</span></span></div>
-            <div class="point"><strong><span data-lang="zh">人工只在</span><span data-lang="en">Human Only If</span></strong><span><span data-lang="zh">大客户或特殊线索需要重点跟进。</span><span data-lang="en">A premium account needs direct handling.</span></span></div>
-          </div>
-        </article>
-
-        <article class="phase-card glass">
-          <div class="phase-top"><span class="phase-pill">02</span><span class="phase-note"><span data-lang="zh">Trial / Assessment</span><span data-lang="en">Trial / Assessment</span></span></div>
-          <h3><span data-lang="zh">试课转化</span><span data-lang="en">Trial Conversion</span></h3>
-          <p><span data-lang="zh">家长自助预约试课，系统自动完成提醒、问卷、评估报告和报名推进。</span><span data-lang="en">Parents self-book trials while the system handles reminders, feedback capture, assessment, and signup push.</span></p>
-          <div class="point-list">
-            <div class="point"><strong><span data-lang="zh">系统动作</span><span data-lang="en">System</span></strong><span><span data-lang="zh">自动预约、自动报告、自动跟进。</span><span data-lang="en">Auto-booking, reporting, and follow-up.</span></span></div>
-            <div class="point"><strong><span data-lang="zh">人工只在</span><span data-lang="en">Human Only If</span></strong><span><span data-lang="zh">高意向或反馈复杂时人工推进成交。</span><span data-lang="en">High-intent or complex cases need human conversion support.</span></span></div>
-          </div>
-        </article>
-
-        <article class="phase-card glass">
-          <div class="phase-top"><span class="phase-pill">03</span><span class="phase-note"><span data-lang="zh">Payment / Membership</span><span data-lang="en">Payment / Membership</span></span></div>
-          <h3><span data-lang="zh">支付门禁</span><span data-lang="en">Payment Gate</span></h3>
-          <p><span data-lang="zh">系统执行“先支付、后排课”，用 membership 把报名、续费和排课资格连成一体。</span><span data-lang="en">The system enforces pay-first scheduling and uses membership to connect signup, renewal, and schedule access.</span></p>
-          <div class="point-list">
-            <div class="point"><strong><span data-lang="zh">系统动作</span><span data-lang="en">System</span></strong><span><span data-lang="zh">确认首单支付、开启自动续费、更新排课资格。</span><span data-lang="en">Confirm first payment, enable auto-renew, and unlock schedule eligibility.</span></span></div>
-            <div class="point"><strong><span data-lang="zh">人工只在</span><span data-lang="en">Human Only If</span></strong><span><span data-lang="zh">支付失败、退款或特殊方案协商时进入。</span><span data-lang="en">Payment failure or special plan negotiation occurs.</span></span></div>
-          </div>
-        </article>
-
-        <article class="phase-card glass">
-          <div class="phase-top"><span class="phase-pill">04</span><span class="phase-note"><span data-lang="zh">Scheduling / Delivery</span><span data-lang="en">Scheduling / Delivery</span></span></div>
-          <h3><span data-lang="zh">自动排课与交付</span><span data-lang="en">Scheduling & Delivery</span></h3>
-          <p><span data-lang="zh">家长自助锁定时段，系统匹配老师、写入课表，并在超时未确认时自动提醒或重分配。</span><span data-lang="en">Parents lock slots themselves while the system assigns teachers, writes schedules, and reassigns on timeout.</span></p>
-          <div class="point-list">
-            <div class="point"><strong><span data-lang="zh">系统动作</span><span data-lang="en">System</span></strong><span><span data-lang="zh">Ready Pool 准入、锁时间、老师确认、自动重排。</span><span data-lang="en">Ready Pool gating, slot lock, teacher confirmation, and auto-reassignment.</span></span></div>
-            <div class="point"><strong><span data-lang="zh">人工只在</span><span data-lang="en">Human Only If</span></strong><span><span data-lang="zh">出现复杂资源冲突或特殊班型。</span><span data-lang="en">Complex resource conflicts or special classes appear.</span></span></div>
-          </div>
-        </article>
-
-        <article class="phase-card glass">
-          <div class="phase-top"><span class="phase-pill">05</span><span class="phase-note"><span data-lang="zh">Learning / Risk</span><span data-lang="en">Learning / Risk</span></span></div>
-          <h3><span data-lang="zh">在读运营</span><span data-lang="en">In-Progress Ops</span></h3>
-          <p><span data-lang="zh">课堂记录、作业、满意度、报告和风险提醒都回到统一数据层，持续推动家长感知和学习稳定性。</span><span data-lang="en">Attendance, homework, satisfaction, reports, and risk flags feed one student record that sustains parent confidence and learning stability.</span></p>
-          <div class="point-list">
-            <div class="point"><strong><span data-lang="zh">系统动作</span><span data-lang="en">System</span></strong><span><span data-lang="zh">自动记录、节点报告、连续缺课和低满意度预警。</span><span data-lang="en">Auto-logging, milestone reporting, and absence or satisfaction alerts.</span></span></div>
-            <div class="point"><strong><span data-lang="zh">人工只在</span><span data-lang="en">Human Only If</span></strong><span><span data-lang="zh">学生进入风险状态，需要人工修复关系。</span><span data-lang="en">The student enters a risk state and needs direct intervention.</span></span></div>
-          </div>
-        </article>
-
-        <article class="phase-card glass">
-          <div class="phase-top"><span class="phase-pill">06</span><span class="phase-note"><span data-lang="zh">Renewal / Win-back</span><span data-lang="en">Renewal / Win-back</span></span></div>
-          <h3><span data-lang="zh">续费与召回</span><span data-lang="en">Renewal & Win-back</span></h3>
-          <p><span data-lang="zh">系统按剩余课时阈值自动发起续费，未响应则进入召回池，尽量让用户重新回到下一轮经营循环。</span><span data-lang="en">The system triggers renewal by remaining-session thresholds and moves silent accounts into win-back so they can re-enter the next cycle.</span></p>
-          <div class="point-list">
-            <div class="point"><strong><span data-lang="zh">系统动作</span><span data-lang="en">System</span></strong><span><span data-lang="zh">推荐下一阶段课程、自动提醒、沉默转召回。</span><span data-lang="en">Recommend next-stage courses, remind automatically, and route silence to win-back.</span></span></div>
-            <div class="point"><strong><span data-lang="zh">人工只在</span><span data-lang="en">Human Only If</span></strong><span><span data-lang="zh">多轮自动触达无效，才进行重点挽回。</span><span data-lang="en">Manual rescue is justified only after automation fails repeatedly.</span></span></div>
-          </div>
-        </article>
+      <div class="launch-grid">
+        <a class="launch-card" href="trial.html"><div class="launch-icon">01</div><strong><span data-lang="zh">试课报名</span><span data-lang="en">Trial Registration</span></strong><span><span data-lang="zh">快速进入 trial 表单与线索录入。</span><span data-lang="en">Jump directly into trial booking and lead capture.</span></span></a>
+        <a class="launch-card" href="signup.html"><div class="launch-icon">02</div><strong><span data-lang="zh">注册 / 登录</span><span data-lang="en">Sign Up / Login</span></strong><span><span data-lang="zh">进入邮箱注册、已有账户登录和第三方登录。</span><span data-lang="en">Access email sign-up, existing login, and social sign-in.</span></span></a>
+        <a class="launch-card" href="student-account.html"><div class="launch-icon">03</div><strong><span data-lang="zh">学员主页</span><span data-lang="en">Student Home</span></strong><span><span data-lang="zh">进入 profile、选课、排课和学习状态页面。</span><span data-lang="en">Open profile, course, scheduling, and student status views.</span></span></a>
+        <a class="launch-card" href="dashboard.html"><div class="launch-icon">04</div><strong><span data-lang="zh">运营看板</span><span data-lang="en">Dashboard</span></strong><span><span data-lang="zh">查看新注册提醒、支付、评估和申请动态。</span><span data-lang="en">Review alerts, payments, assessment, and request activity.</span></span></a>
       </div>
     </section>
 
-    <section class="section">
-      <div class="spine glass">
-        <div class="section-head">
-          <div>
-            <div class="section-tag">Automation Spine</div>
-            <h2>
-              <span data-lang="zh">让闭环跑起来的，是这条中间脊柱</span>
-              <span data-lang="en">This is the spine that makes the loop run</span>
-            </h2>
-          </div>
-        </div>
-        <div class="spine-grid">
-          <div class="spine-card"><strong><span data-lang="zh">统一主数据</span><span data-lang="en">Unified Data</span></strong><span><span data-lang="zh">Lead、Student、Payment、Enrollment 统一回写。</span><span data-lang="en">Leads, students, payments, and enrollments write back to one source.</span></span></div>
-          <div class="spine-card"><strong><span data-lang="zh">状态机</span><span data-lang="en">State Machine</span></strong><span><span data-lang="zh">每个对象的下一步动作都由状态决定。</span><span data-lang="en">Every next action is driven by explicit state.</span></span></div>
-          <div class="spine-card"><strong><span data-lang="zh">事件触发</span><span data-lang="en">Events</span></strong><span><span data-lang="zh">试课完成、支付成功、老师超时都会触发规则。</span><span data-lang="en">Trial completion, payment success, and timeouts trigger rules.</span></span></div>
-          <div class="spine-card"><strong><span data-lang="zh">消息触达</span><span data-lang="en">Messaging</span></strong><span><span data-lang="zh">邮件、短信、微信或站内消息按统一节奏发送。</span><span data-lang="en">Messages run on a consistent cadence across channels.</span></span></div>
-          <div class="spine-card"><strong><span data-lang="zh">例外升级</span><span data-lang="en">Escalation</span></strong><span><span data-lang="zh">规则失败后才把任务交给人工处理。</span><span data-lang="en">Work escalates to humans only when automation fails.</span></span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
+    <section id="portals" class="section">
       <div class="section-head">
         <div>
-          <div class="section-tag">System Modules</div>
-          <h2>
-            <span data-lang="zh">当前原型页面，被重新归入业务模块</span>
-            <span data-lang="en">The current prototype is regrouped into business modules</span>
-          </h2>
+          <div class="section-tag">Role Portals</div>
+          <h2><span data-lang="zh">按角色进入系统</span><span data-lang="en">Enter by role</span></h2>
         </div>
       </div>
-      <div class="module-grid">
-        <article class="module-card glass"><div class="module-tag">Module 01</div><h3><span data-lang="zh">线索承接</span><span data-lang="en">Lead Capture</span></h3><p><span data-lang="zh">`index.html`、`trial.html`、`signup.html` 负责承接流量并建立用户对象。</span><span data-lang="en">`index.html`, `trial.html`, and `signup.html` capture traffic and create user objects.</span></p></article>
-        <article class="module-card glass"><div class="module-tag">Module 02</div><h3><span data-lang="zh">评估转化</span><span data-lang="en">Assessment</span></h3><p><span data-lang="zh">`assessment.html` 把试课结果转成推荐课程和报名推动。</span><span data-lang="en">`assessment.html` turns trial outcomes into recommendations and conversion momentum.</span></p></article>
-        <article class="module-card glass"><div class="module-tag">Module 03</div><h3><span data-lang="zh">课程与排课</span><span data-lang="en">Scheduling</span></h3><p><span data-lang="zh">`course-system.html` 与 `course-selection.html` 负责课程认知和选课排课。</span><span data-lang="en">`course-system.html` and `course-selection.html` cover curriculum and scheduling.</span></p></article>
-        <article class="module-card glass"><div class="module-tag">Module 04</div><h3><span data-lang="zh">学生经营</span><span data-lang="en">Student Ops</span></h3><p><span data-lang="zh">`student-account.html` 承接账号、课时、状态和家长感知。</span><span data-lang="en">`student-account.html` holds account state, sessions, and parent visibility.</span></p></article>
-        <article class="module-card glass"><div class="module-tag">Module 05</div><h3><span data-lang="zh">反馈与报告</span><span data-lang="en">Reporting</span></h3><p><span data-lang="zh">`feedback.html`、`semester-report.html` 负责阶段反馈和续费前信任材料。</span><span data-lang="en">`feedback.html` and `semester-report.html` support milestone feedback and renewal trust.</span></p></article>
-        <article class="module-card glass"><div class="module-tag">Module 06</div><h3><span data-lang="zh">经营总控</span><span data-lang="en">Control</span></h3><p><span data-lang="zh">`dashboard.html` 负责监控转化、排课、风险和续费健康度。</span><span data-lang="en">`dashboard.html` monitors conversion, scheduling, risk, and renewal health.</span></p></article>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <div class="section-tag">Control Rules</div>
-          <h2>
-            <span data-lang="zh">四个关键控制规则</span>
-            <span data-lang="en">Four key control rules</span>
-          </h2>
-        </div>
-      </div>
-      <div class="rules-grid">
-        <article class="rule-card glass"><h3><span data-lang="zh">支付门禁</span><span data-lang="en">Payment Gate</span></h3><p><span data-lang="zh">首单支付未完成，不允许进入正式排课。</span><span data-lang="en">No first payment means no formal scheduling access.</span></p></article>
-        <article class="rule-card glass"><h3><span data-lang="zh">老师确认</span><span data-lang="en">Teacher Confirmation</span></h3><p><span data-lang="zh">老师超时未确认，系统自动提醒并重分配。</span><span data-lang="en">Teacher confirmation timeout triggers reminders and reassignment.</span></p></article>
-        <article class="rule-card glass"><h3><span data-lang="zh">学习风险</span><span data-lang="en">Learning Risk</span></h3><p><span data-lang="zh">缺课、满意度、作业异常自动升级为风险状态。</span><span data-lang="en">Absence, satisfaction, and homework issues auto-upgrade risk state.</span></p></article>
-        <article class="rule-card glass"><h3><span data-lang="zh">续费节奏</span><span data-lang="en">Renewal Cadence</span></h3><p><span data-lang="zh">剩余课时不足时自动发起续费，沉默则转入召回池。</span><span data-lang="en">Low sessions trigger renewal automatically; silence routes to win-back.</span></p></article>
+      <div class="portal-grid">
+        <a class="portal-card glass" href="trial.html">
+          <div class="portal-kicker">Visitor / Parent</div>
+          <h3><span data-lang="zh">家长与访客入口</span><span data-lang="en">Parent and visitor portal</span></h3>
+          <p class="portal-copy"><span data-lang="zh">从试课、评估、注册页面开始，直接进入首次体验路径。</span><span data-lang="en">Start the first-time visitor flow through trial, assessment, and sign-up.</span></p>
+          <div class="portal-points">
+            <div class="portal-note"><span data-lang="zh">试课预约与信息录入</span><span data-lang="en">Trial booking and intake</span></div>
+            <div class="portal-note"><span data-lang="zh">模拟评估和课程推荐</span><span data-lang="en">Assessment and recommendation</span></div>
+            <div class="portal-note"><span data-lang="zh">注册、登录和入学</span><span data-lang="en">Sign-up, login, and onboarding</span></div>
+          </div>
+        </a>
+        <a class="portal-card glass" href="student-account.html">
+          <div class="portal-kicker">Student</div>
+          <h3><span data-lang="zh">学员入口</span><span data-lang="en">Student portal</span></h3>
+          <p class="portal-copy"><span data-lang="zh">进入完整学员页面，查看 profile、选课、排课、反馈和请假改期。</span><span data-lang="en">Open the complete student page for profile, course, schedule, feedback, and requests.</span></p>
+          <div class="portal-points">
+            <div class="portal-note"><span data-lang="zh">Profile 与学习概览</span><span data-lang="en">Profile and learning overview</span></div>
+            <div class="portal-note"><span data-lang="zh">课程、课表与提醒</span><span data-lang="en">Courses, schedule, and reminders</span></div>
+            <div class="portal-note"><span data-lang="zh">请假 / 改期申请</span><span data-lang="en">Leave / reschedule requests</span></div>
+          </div>
+        </a>
+        <a class="portal-card glass" href="dashboard.html">
+          <div class="portal-kicker">Operations</div>
+          <h3><span data-lang="zh">运营入口</span><span data-lang="en">Operations portal</span></h3>
+          <p class="portal-copy"><span data-lang="zh">从看板进入学员管理、新试课、新学员和申请处理中心。</span><span data-lang="en">Start from the dashboard and move into student management, alerts, and request processing.</span></p>
+          <div class="portal-points">
+            <div class="portal-note"><span data-lang="zh">运营看板与关键提醒</span><span data-lang="en">Dashboard and alert views</span></div>
+            <div class="portal-note"><span data-lang="zh">学员管理与状态筛选</span><span data-lang="en">Student management and filters</span></div>
+            <div class="portal-note"><span data-lang="zh">请假 / 改期处理中心</span><span data-lang="en">Leave / reschedule request center</span></div>
+          </div>
+        </a>
       </div>
     </section>
 
     <section id="entries" class="section">
       <div class="section-head">
         <div>
-          <div class="section-tag">Page Entry Points</div>
-          <h2>
-            <span data-lang="zh">页面入口按职责组织</span>
-            <span data-lang="en">Entry points organized by role</span>
-          </h2>
+          <div class="section-tag">Page Library</div>
+          <h2><span data-lang="zh">全部页面入口</span><span data-lang="en">All page entry points</span></h2>
         </div>
       </div>
-      <div class="entries-grid">
+      <div class="entry-grid">
         <article class="entry-card glass">
-          <h3><span data-lang="zh">01 获客进入</span><span data-lang="en">01 Intake</span></h3>
-          <div class="entry-list">
-            <a href="trial.html"><span data-lang="zh">试课报名</span><span data-lang="en">Trial Registration</span></a>
+          <div class="entry-tag">01</div>
+          <h3><span data-lang="zh">获客入口</span><span data-lang="en">Intake</span></h3>
+          <p class="entry-copy"><span data-lang="zh">对外或首次触达最常用的页面。</span><span data-lang="en">Public-facing entry pages for first-touch visits.</span></p>
+          <div class="entry-links">
+            <a class="nav-link" href="trial.html"><span data-lang="zh">试课报名</span><span data-lang="en">Trial Registration</span></a>
+            <a class="nav-link" href="assessment.html"><span data-lang="zh">评估页面</span><span data-lang="en">Assessment</span></a>
+            <a class="nav-link" href="signup.html"><span data-lang="zh">注册 / 登录</span><span data-lang="en">Sign Up / Login</span></a>
           </div>
         </article>
         <article class="entry-card glass">
-          <h3><span data-lang="zh">02 评估转化</span><span data-lang="en">02 Assessment</span></h3>
-          <div class="entry-list">
-            <a href="assessment.html"><span data-lang="zh">评估页</span><span data-lang="en">Assessment</span></a>
+          <div class="entry-tag">02</div>
+          <h3><span data-lang="zh">学员端</span><span data-lang="en">Student</span></h3>
+          <p class="entry-copy"><span data-lang="zh">学员注册后进入的核心页面集合。</span><span data-lang="en">Core student pages after sign-up and login.</span></p>
+          <div class="entry-links">
+            <a class="nav-link" href="student-account.html"><span data-lang="zh">学员主页</span><span data-lang="en">Student Home</span></a>
+            <a class="nav-link" href="course-selection.html"><span data-lang="zh">选课排课</span><span data-lang="en">Course Selection</span></a>
+            <a class="nav-link" href="feedback.html"><span data-lang="zh">学习反馈</span><span data-lang="en">Feedback</span></a>
+            <a class="nav-link" href="semester-report.html"><span data-lang="zh">学期报告</span><span data-lang="en">Semester Report</span></a>
           </div>
         </article>
         <article class="entry-card glass">
-          <h3><span data-lang="zh">03 注册与建档</span><span data-lang="en">03 Sign Up & Profile</span></h3>
-          <div class="entry-list">
-            <a href="signup.html"><span data-lang="zh">报名注册</span><span data-lang="en">Sign Up</span></a>
-            <a href="student-account.html"><span data-lang="zh">学生账户</span><span data-lang="en">Student Account</span></a>
+          <div class="entry-tag">03</div>
+          <h3><span data-lang="zh">课程与交付</span><span data-lang="en">Delivery</span></h3>
+          <p class="entry-copy"><span data-lang="zh">课程展示与选课决策相关页面。</span><span data-lang="en">Pages for curriculum display and course decisions.</span></p>
+          <div class="entry-links">
+            <a class="nav-link" href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Course System</span></a>
+            <a class="nav-link" href="course-selection.html"><span data-lang="zh">正式选课</span><span data-lang="en">Course Selection</span></a>
           </div>
         </article>
         <article class="entry-card glass">
-          <h3><span data-lang="zh">04 课程与交付</span><span data-lang="en">04 Delivery</span></h3>
-          <div class="entry-list">
-            <a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum System</span></a>
-            <a href="course-selection.html"><span data-lang="zh">选课排课</span><span data-lang="en">Course Selection</span></a>
-            <a href="feedback.html"><span data-lang="zh">学习反馈</span><span data-lang="en">Feedback</span></a>
-            <a href="semester-report.html"><span data-lang="zh">学期报告</span><span data-lang="en">Semester Report</span></a>
-          </div>
-        </article>
-        <article class="entry-card glass">
-          <h3><span data-lang="zh">05 经营总控</span><span data-lang="en">05 Control</span></h3>
-          <div class="entry-list">
-            <a href="dashboard.html"><span data-lang="zh">运营看板</span><span data-lang="en">Dashboard</span></a>
+          <div class="entry-tag">04</div>
+          <h3><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></h3>
+          <p class="entry-copy"><span data-lang="zh">运营、教务和处理动作的集中入口。</span><span data-lang="en">Central tools for operations, management, and processing.</span></p>
+          <div class="entry-links">
+            <a class="nav-link" href="dashboard.html"><span data-lang="zh">运营看板</span><span data-lang="en">Dashboard</span></a>
+            <a class="nav-link" href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Student Management</span></a>
+            <a class="nav-link" href="new-trials.html"><span data-lang="zh">新试课列表</span><span data-lang="en">New Trials</span></a>
+            <a class="nav-link" href="new-students.html"><span data-lang="zh">新学员列表</span><span data-lang="en">New Students</span></a>
+            <a class="nav-link" href="request-center.html"><span data-lang="zh">申请处理中心</span><span data-lang="en">Request Center</span></a>
           </div>
         </article>
       </div>
     </section>
 
-    <section class="footer-note glass">
-      <span data-lang="zh">这一版首页的重点，是把“页面展示”升级为“业务闭环总控视图”。如果下一步继续深化，最合适的是把各阶段状态机和真实数据接进这些版块，让首页开始具备真实业务系统的感觉。</span>
-      <span data-lang="en">This redesign upgrades the homepage from a page showcase into a closed-loop control view. The next natural step is to connect real states and live data so the screen starts to feel like a true operating system.</span>
-    </section>
+    <div class="footer-bar glass">
+      <div><span data-lang="zh">这个首页现在只承担系统入口角色，不再放项目解释内容。</span><span data-lang="en">This homepage now acts purely as the system front door without project explanation content.</span></div>
+      <div class="pill-row">
+        <span class="status-pill ok">Landing Ready</span>
+        <span class="status-pill warn">Role Based</span>
+        <span class="status-pill alert">All Entrances Linked</span>
+      </div>
+    </div>
   </main>
 
   <script src="assets/minddo-flow.js"></script>
@@ -1212,7 +309,6 @@
       var buttons = document.querySelectorAll("[data-set-lang]");
       var saved = localStorage.getItem("minddo_lang");
       var initialLang = saved === "en" ? "en" : "zh-CN";
-
       function setLang(lang) {
         html.setAttribute("lang", lang);
         localStorage.setItem("minddo_lang", lang);
@@ -1220,9 +316,7 @@
           btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
         });
       }
-
       setLang(initialLang);
-
       buttons.forEach(function (btn) {
         btn.addEventListener("click", function () {
           setLang(btn.getAttribute("data-set-lang"));
