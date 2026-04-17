@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -6,137 +6,92 @@
   <title>运营看板 | Operations Dashboard</title>
   <style>
     :root {
-      --bg: #f6efe4;
-      --bg-soft: #fffaf2;
-      --card: rgba(255, 250, 242, 0.94);
-      --line: rgba(151, 84, 21, 0.14);
-      --line-strong: rgba(208, 129, 36, 0.3);
-      --primary: #f0a11f;
-      --primary-deep: #8c3d14;
-      --text: #4f2410;
-      --muted: #8b6e58;
-      --ok: #6f8f57;
-      --warn: #d89c36;
-      --danger: #c46a4d;
+      --bg: #fbf7ef; --sand: #f2e4c9; --card: rgba(255,252,246,0.94);
+      --line: rgba(126,77,29,0.14); --text: #45200d; --muted: #826956;
+      --gold: #ecab2f; --gold-deep: #d79016; --clay: #8f3c16; --brown: #5f2c12;
+      --shadow: 0 24px 60px rgba(100,58,22,0.12);
+      --ok: #6f8f57; --warn: #d89c36; --danger: #c46a4d;
     }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color: var(--text); background: var(--bg); }
+    a { color: inherit; text-decoration: none; }
+    [data-lang] { display: none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display: inline; }
 
-    * { box-sizing: border-box; }
+    /* NAVBAR */
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(255,252,246,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .nav-brand { display: flex; align-items: center; gap: 12px; }
+    .nav-brand img { width: 44px; height: 44px; object-fit: contain; }
+    .nav-brand-name { font-size: 22px; font-weight: 800; color: var(--clay); }
+    .nav-menu { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-menu a { padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--muted); transition: 0.15s; }
+    .nav-menu a:hover { color: var(--clay); background: rgba(143,60,22,0.06); }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .lang-btn { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--clay); font-family: inherit; transition: 0.15s; }
+    .lang-btn:hover, .lang-btn.active { background: var(--sand); border-color: var(--gold); }
+    .btn-primary { background: linear-gradient(135deg,#ffe5a7,var(--gold)); color: #4b250f; border: none; border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.2s; box-shadow: 0 4px 14px rgba(215,144,22,0.28); display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+    .btn-primary:hover { transform: translateY(-2px); }
 
-    body {
-      margin: 0;
-      font-family: "Avenir Next", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(255, 204, 97, 0.3), transparent 30%),
-        radial-gradient(circle at 85% 18%, rgba(244, 162, 38, 0.14), transparent 24%),
-        linear-gradient(180deg, #fffdf9, var(--bg));
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
+    /* PAGE HERO */
+    .page-hero { background: linear-gradient(145deg,#3a1a08 0%,#5f2c12 50%,#8f3c16 100%); padding: 52px 0; }
+    .page-hero-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+    .page-tag { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: rgba(236,171,47,0.18); border: 1px solid rgba(236,171,47,0.3); color: #ffd98e; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
+    .page-hero h1 { font-size: clamp(28px,3.5vw,44px); font-weight: 900; color: #fff8ef; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .page-hero p { font-size: 15px; color: rgba(255,241,220,0.75); line-height: 1.7; }
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 20% 24%, rgba(255, 208, 118, 0.16), transparent 24%),
-        radial-gradient(circle at 82% 78%, rgba(179, 76, 14, 0.08), transparent 28%);
-      z-index: 0;
-    }
+    /* CONTENT */
+    .page-content { padding: 48px 0 80px; }
+    .content-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
 
-    .container {
-      max-width: 1220px;
-      margin: 0 auto;
-      padding: 28px 20px 46px;
-      position: relative;
-      z-index: 1;
-    }
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,245,230,0.78); padding: 60px 48px 32px; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+    .footer-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .footer-logo-row img { width: 36px; height: 36px; object-fit: contain; filter: brightness(2) saturate(0.2); }
+    .footer-logo-row span { font-size: 18px; font-weight: 800; color: #fff8ef; }
+    .footer-brand p { font-size: 13px; line-height: 1.7; margin-bottom: 16px; }
+    .footer-hours { background: rgba(255,245,230,0.07); border: 1px solid rgba(255,237,215,0.1); border-radius: 12px; padding: 14px 16px; font-size: 12px; line-height: 1.8; }
+    .footer-col h4 { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,237,215,0.5); margin-bottom: 16px; }
+    .footer-col ul { list-style: none; display: grid; gap: 10px; }
+    .footer-col ul a { font-size: 14px; color: rgba(255,245,230,0.72); transition: 0.15s; }
+    .footer-col ul a:hover { color: #fff8ef; }
+    .footer-bottom { max-width: 1280px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255,237,215,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: rgba(255,245,230,0.45); }
 
-    .topbar,
+    /* COMPONENT STYLES */
     .filters,
     .grid,
     .bottom-grid { display: grid; gap: 12px; }
 
-    .topbar {
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      margin-bottom: 14px;
-      padding: 14px 18px;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      background: rgba(255, 252, 247, 0.82);
-      box-shadow: 0 18px 48px rgba(123, 72, 24, 0.08);
-      backdrop-filter: blur(12px);
-    }
-
-    .nav-links,
-    .lang-switch { display: flex; gap: 10px; flex-wrap: wrap; }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .brand img {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-
-    .brand-copy {
-      display: grid;
-      gap: 4px;
-    }
-
-    .brand-copy strong {
-      font-size: 19px;
-      color: var(--primary-deep);
-    }
-
-    .brand-copy span {
-      font-size: 12px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: #aa6a2b;
-    }
-
     .btn {
       border: 1px solid var(--line);
-      background: rgba(255, 247, 236, 0.96);
-      color: var(--primary-deep);
+      background: rgba(255,247,236,0.96);
+      color: var(--clay);
       padding: 8px 12px;
       border-radius: 999px;
       cursor: pointer;
       font-size: 13px;
       text-decoration: none;
       transition: 0.2s ease;
+      font-family: inherit;
     }
 
     .btn:hover,
     .btn.active {
-      background: linear-gradient(135deg, #fff6de, #ffd977);
-      border-color: rgba(208, 129, 36, 0.5);
-      color: var(--primary-deep);
-      box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
+      background: linear-gradient(135deg,#fff6de,#ffd977);
+      border-color: rgba(208,129,36,0.5);
+      color: var(--clay);
+      box-shadow: 0 10px 24px rgba(192,123,39,0.18);
     }
 
-    .hero,
     .alert-strip,
     .panel,
     .metric {
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 22px;
-      box-shadow: 0 18px 44px rgba(123, 72, 24, 0.08);
+      box-shadow: 0 18px 44px rgba(123,72,24,0.08);
     }
-
-    .hero { padding: 20px; margin-bottom: 14px; }
 
     .alert-strip {
       display: grid;
@@ -149,15 +104,15 @@
     .alert-card {
       padding: 16px;
       border-radius: 18px;
-      border: 1px solid rgba(208, 129, 36, 0.2);
-      background: linear-gradient(180deg, rgba(255, 245, 220, 0.96), rgba(255, 251, 242, 0.96));
+      border: 1px solid rgba(208,129,36,0.2);
+      background: linear-gradient(180deg,rgba(255,245,220,0.96),rgba(255,251,242,0.96));
       display: grid;
       gap: 10px;
     }
 
     .alert-card.is-strong {
-      border-color: rgba(196, 106, 77, 0.32);
-      box-shadow: 0 14px 30px rgba(196, 106, 77, 0.12);
+      border-color: rgba(196,106,77,0.32);
+      box-shadow: 0 14px 30px rgba(196,106,77,0.12);
     }
 
     .alert-top {
@@ -170,7 +125,7 @@
     .alert-title {
       font-size: 15px;
       font-weight: 700;
-      color: var(--primary-deep);
+      color: var(--clay);
     }
 
     .alert-copy {
@@ -184,23 +139,17 @@
       text-align: center;
       padding: 8px 10px;
       border-radius: 999px;
-      background: linear-gradient(135deg, #fff6de, #ffd977);
-      color: var(--primary-deep);
+      background: linear-gradient(135deg,#fff6de,#ffd977);
+      color: var(--clay);
       font-size: 18px;
       font-weight: 700;
-      border: 1px solid rgba(208, 129, 36, 0.24);
+      border: 1px solid rgba(208,129,36,0.24);
     }
 
     .alert-actions {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
-    }
-
-    .hero h1 {
-      margin: 0 0 8px;
-      font-size: clamp(24px, 4vw, 34px);
-      color: var(--primary-deep);
     }
 
     .muted { margin: 0; color: var(--muted); line-height: 1.6; }
@@ -214,7 +163,7 @@
     .range-group { display: flex; gap: 8px; flex-wrap: wrap; }
 
     .grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(4,minmax(0,1fr));
       margin-bottom: 14px;
     }
 
@@ -230,7 +179,7 @@
     .metric .value {
       font-size: 24px;
       font-weight: 700;
-      color: var(--primary-deep);
+      color: var(--clay);
     }
 
     .metric .sub {
@@ -245,7 +194,7 @@
     }
 
     .panel { padding: 16px; }
-    .panel h2 { margin: 0 0 10px; font-size: 18px; color: var(--primary-deep); }
+    .panel h2 { margin: 0 0 10px; font-size: 18px; color: var(--clay); }
 
     .kv-list {
       display: grid;
@@ -259,8 +208,8 @@
       display: flex;
       justify-content: space-between;
       gap: 10px;
-      border: 1px solid rgba(151, 84, 21, 0.12);
-      background: rgba(255, 248, 238, 0.72);
+      border: 1px solid rgba(151,84,21,0.12);
+      background: rgba(255,248,238,0.72);
       border-radius: 14px;
       padding: 8px 10px;
       color: #6a4a35;
@@ -271,13 +220,13 @@
       border-radius: 999px;
       padding: 2px 8px;
       font-size: 12px;
-      border: 1px solid rgba(208, 129, 36, 0.24);
+      border: 1px solid rgba(208,129,36,0.24);
       color: #9d5a18;
     }
 
     .table-wrap {
       overflow-x: auto;
-      border: 1px solid rgba(151, 84, 21, 0.12);
+      border: 1px solid rgba(151,84,21,0.12);
       border-radius: 14px;
     }
 
@@ -290,13 +239,13 @@
     th, td {
       text-align: left;
       padding: 10px;
-      border-bottom: 1px solid rgba(151, 84, 21, 0.12);
+      border-bottom: 1px solid rgba(151,84,21,0.12);
       font-size: 13px;
     }
 
     th {
-      background: rgba(255, 208, 118, 0.14);
-      color: var(--primary-deep);
+      background: rgba(255,208,118,0.14);
+      color: var(--clay);
     }
 
     .pay-form {
@@ -308,8 +257,8 @@
 
     input {
       width: 100%;
-      border: 1px solid rgba(151, 84, 21, 0.16);
-      background: rgba(255, 252, 247, 0.88);
+      border: 1px solid rgba(151,84,21,0.16);
+      background: rgba(255,252,247,0.88);
       color: var(--text);
       border-radius: 14px;
       padding: 9px 10px;
@@ -322,123 +271,183 @@
     .err { color: var(--danger); }
 
     @media (max-width: 1020px) {
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
       .bottom-grid { grid-template-columns: 1fr; }
     }
 
+    @media (max-width: 900px) {
+      .navbar { padding: 0 24px; }
+      .nav-menu { display: none; }
+      .page-hero-inner, .content-inner { padding: 0 24px; }
+      .footer-inner { grid-template-columns: repeat(2,1fr); }
+    }
+
     @media (max-width: 680px) {
-      .container { padding: 22px 14px 34px; }
-      .topbar, .filters { grid-template-columns: 1fr; }
+      .filters { grid-template-columns: 1fr; }
       .grid { grid-template-columns: 1fr; }
       .pay-form { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .footer-inner { grid-template-columns: 1fr; }
+      .footer { padding: 48px 24px 28px; }
     }
   </style>
 </head>
 <body>
-  <main class="container">
-    <div class="topbar">
-      <a class="brand" href="index.html" aria-label="MindDo home">
-        <img src="assets/logo.png" alt="Mindo AI logo" />
-        <div class="brand-copy">
-          <span>Mindo AI</span>
-          <strong>Mindo AI</strong>
-        </div>
-      </a>
-      <div class="nav-links">
-        <a class="btn" href="index.html" data-i18n="backFlow"></a>
-        <a class="btn" href="trial.html" data-i18n="goTrial"></a>
-        <a class="btn" href="assessment.html" data-i18n="goAssessment"></a>
-        <a class="btn" href="signup.html" data-i18n="goSignup"></a>
-        <a class="btn" href="course-system.html" data-i18n="goCourseSystem"></a>
-        <a class="btn" href="course-selection.html" data-i18n="goCourseSelection"></a>
-        <a class="btn" href="semester-report.html" data-i18n="goSemesterReport"></a>
-        <a class="btn" href="student-management.html" data-i18n="goStudentManagement"></a>
-        <a class="btn" href="request-center.html" data-i18n="goRequestCenter"></a>
-      </div>
-      <div class="lang-switch">
-        <button class="btn" data-set-lang="zh-CN" type="button">中文</button>
-        <button class="btn" data-set-lang="en" type="button">English</button>
-      </div>
-    </div>
 
-    <section class="hero">
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <ul class="nav-menu">
+      <li><a href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a></li>
+      <li><a href="new-trials.html"><span data-lang="zh">新试课</span><span data-lang="en">New Trials</span></a></li>
+      <li><a href="new-students.html"><span data-lang="zh">新学员</span><span data-lang="en">New Students</span></a></li>
+      <li><a href="request-center.html"><span data-lang="zh">请假中心</span><span data-lang="en">Requests</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="lang-btn active" type="button" data-set-lang="zh-CN">中文</button>
+      <button class="lang-btn" type="button" data-set-lang="en">English</button>
+      <a class="btn-primary" href="trial.html"><span data-lang="zh">新试课</span><span data-lang="en">New Trial</span></a>
+    </div>
+  </nav>
+
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-tag"><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></div>
       <h1 data-i18n="title"></h1>
-    </section>
-
-    <section class="alert-strip" id="alertStrip"></section>
-
-    <div class="filters">
-      <div class="range-group" id="rangeGroup"></div>
-      <button class="btn" id="refreshBtn" data-i18n="refresh"></button>
+      <p><span data-lang="zh">实时查看学员注册、付费、评估和申请数据，快速识别需要跟进的关键事项。</span><span data-lang="en">Monitor registrations, payments, assessments, and requests in real time to act on what matters.</span></p>
     </div>
+  </div>
 
-    <section class="grid" id="metricGrid"></section>
+  <div class="page-content">
+    <div class="content-inner">
 
-    <section class="bottom-grid">
-      <article class="panel">
-        <h2 data-i18n="levelDist"></h2>
-        <ul class="kv-list" id="levelList"></ul>
-      </article>
+      <section class="alert-strip" id="alertStrip"></section>
 
-      <article class="panel">
-        <h2 data-i18n="extraMonitors"></h2>
-        <ul class="kv-list" id="extraList"></ul>
-      </article>
-    </section>
-
-    <section class="bottom-grid">
-      <article class="panel">
-        <h2 data-i18n="channelDist"></h2>
-        <ul class="kv-list" id="channelList"></ul>
-      </article>
-
-      <article class="panel">
-        <h2 data-i18n="paymentOps"></h2>
-        <form id="paymentForm" class="pay-form">
-          <input id="payEmail" type="email" placeholder="student@email.com" required />
-          <input id="payAmount" type="number" min="0" step="0.01" placeholder="199" required />
-          <button class="btn" type="submit" data-i18n="markPaid"></button>
-        </form>
-        <div id="paymentStatus" class="status"></div>
-      </article>
-    </section>
-
-    <section class="panel">
-      <h2 data-i18n="recentPayments"></h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th data-i18n="colEmail"></th>
-              <th data-i18n="colAmount"></th>
-              <th data-i18n="colSource"></th>
-              <th data-i18n="colTime"></th>
-            </tr>
-          </thead>
-          <tbody id="paymentTable"></tbody>
-        </table>
+      <div class="filters">
+        <div class="range-group" id="rangeGroup"></div>
+        <button class="btn" id="refreshBtn" data-i18n="refresh"></button>
       </div>
-    </section>
 
-    <section class="panel" style="margin-top:14px;">
-      <h2 data-i18n="recentRequests"></h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th data-i18n="colRequestType"></th>
-              <th data-i18n="colStudent"></th>
-              <th data-i18n="colTarget"></th>
-              <th data-i18n="colReason"></th>
-              <th data-i18n="colRequestStatus"></th>
-              <th data-i18n="colTime"></th>
-            </tr>
-          </thead>
-          <tbody id="requestTable"></tbody>
-        </table>
+      <section class="grid" id="metricGrid"></section>
+
+      <section class="bottom-grid">
+        <article class="panel">
+          <h2 data-i18n="levelDist"></h2>
+          <ul class="kv-list" id="levelList"></ul>
+        </article>
+
+        <article class="panel">
+          <h2 data-i18n="extraMonitors"></h2>
+          <ul class="kv-list" id="extraList"></ul>
+        </article>
+      </section>
+
+      <section class="bottom-grid">
+        <article class="panel">
+          <h2 data-i18n="channelDist"></h2>
+          <ul class="kv-list" id="channelList"></ul>
+        </article>
+
+        <article class="panel">
+          <h2 data-i18n="paymentOps"></h2>
+          <form id="paymentForm" class="pay-form">
+            <input id="payEmail" type="email" placeholder="student@email.com" required />
+            <input id="payAmount" type="number" min="0" step="0.01" placeholder="199" required />
+            <button class="btn" type="submit" data-i18n="markPaid"></button>
+          </form>
+          <div id="paymentStatus" class="status"></div>
+        </article>
+      </section>
+
+      <section class="panel">
+        <h2 data-i18n="recentPayments"></h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="colEmail"></th>
+                <th data-i18n="colAmount"></th>
+                <th data-i18n="colSource"></th>
+                <th data-i18n="colTime"></th>
+              </tr>
+            </thead>
+            <tbody id="paymentTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" style="margin-top: 14px;">
+        <h2 data-i18n="recentRequests"></h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="colRequestType"></th>
+                <th data-i18n="colStudent"></th>
+                <th data-i18n="colTarget"></th>
+                <th data-i18n="colReason"></th>
+                <th data-i18n="colRequestStatus"></th>
+                <th data-i18n="colTime"></th>
+              </tr>
+            </thead>
+            <tbody id="requestTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand footer-col">
+        <div class="footer-logo-row">
+          <img src="assets/logo.png" alt="MindDo logo" />
+          <span>MindDo</span>
+        </div>
+        <p><span data-lang="zh">专注 5–18 岁 AI 与编程教育，帮助每个孩子在智能时代找到自己的路。</span><span data-lang="en">AI &amp; coding education for ages 5–18, helping every child thrive in the intelligent era.</span></p>
+        <div class="footer-hours">
+          <span data-lang="zh">📅 周一至周五 15:00–20:00<br>📅 周末 9:00–18:00</span>
+          <span data-lang="en">📅 Mon–Fri 3:00 PM–8:00 PM<br>📅 Weekends 9:00 AM–6:00 PM</span>
+        </div>
       </div>
-    </section>
-  </main>
+      <div class="footer-col">
+        <h4><span data-lang="zh">课程</span><span data-lang="en">Programs</span></h4>
+        <ul>
+          <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+          <li><a href="course-selection.html"><span data-lang="zh">选课</span><span data-lang="en">Course Selection</span></a></li>
+          <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+          <li><a href="semester-report.html"><span data-lang="zh">学期报告</span><span data-lang="en">Semester Report</span></a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">学员</span><span data-lang="en">Students</span></h4>
+        <ul>
+          <li><a href="student-account.html"><span data-lang="zh">学员中心</span><span data-lang="en">Student Hub</span></a></li>
+          <li><a href="assessment.html"><span data-lang="zh">入学评估</span><span data-lang="en">Assessment</span></a></li>
+          <li><a href="feedback.html"><span data-lang="zh">课堂反馈</span><span data-lang="en">Feedback</span></a></li>
+          <li><a href="signup.html"><span data-lang="zh">注册登录</span><span data-lang="en">Sign Up</span></a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">运营</span><span data-lang="en">Operations</span></h4>
+        <ul>
+          <li><a href="dashboard.html"><span data-lang="zh">运营后台</span><span data-lang="en">Dashboard</span></a></li>
+          <li><a href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a></li>
+          <li><a href="new-trials.html"><span data-lang="zh">新试课列表</span><span data-lang="en">New Trials</span></a></li>
+          <li><a href="request-center.html"><span data-lang="zh">请假管理</span><span data-lang="en">Requests</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 MindDo AI Learning Center</span>
+      <span><span data-lang="zh">让每个孩子都能驾驭 AI</span><span data-lang="en">Empowering every child with AI</span></span>
+    </div>
+  </footer>
 
   <script src="assets/minddo-flow.js"></script>
   <script>
@@ -958,5 +967,3 @@
   </script>
 </body>
 </html>
-
-

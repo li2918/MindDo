@@ -6,108 +6,61 @@
   <title>Assessment | 学习评估</title>
   <style>
     :root {
-      --bg: #f6efe4;
-      --card: rgba(255, 250, 242, 0.94);
-      --line: rgba(151, 84, 21, 0.14);
-      --primary: #f0a11f;
-      --primary-soft: #ffd978;
-      --primary-deep: #8c3d14;
-      --text: #4f2410;
-      --muted: #8b6e58;
-      --success: #6f8f57;
-      --error: #c46a4d;
-      --shadow: 0 24px 56px rgba(123, 72, 24, 0.08);
+      --bg: #fbf7ef; --sand: #f2e4c9; --card: rgba(255,252,246,0.94);
+      --line: rgba(126,77,29,0.14); --text: #45200d; --muted: #826956;
+      --gold: #ecab2f; --gold-deep: #d79016; --clay: #8f3c16; --brown: #5f2c12;
+      --shadow: 0 24px 60px rgba(100,58,22,0.12);
+      --success: #6f8f57; --error: #c46a4d;
     }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "Avenir Next", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(255, 204, 97, 0.3), transparent 30%),
-        radial-gradient(circle at 85% 18%, rgba(244, 162, 38, 0.14), transparent 24%),
-        linear-gradient(180deg, #fffdf9, #f6efe4);
-      color: var(--text);
-      min-height: 100vh;
-    }
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 20% 24%, rgba(255, 208, 118, 0.16), transparent 24%),
-        radial-gradient(circle at 82% 78%, rgba(179, 76, 14, 0.08), transparent 28%);
-      z-index: 0;
-    }
-    .container {
-      position: relative;
-      z-index: 1;
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 28px 20px 52px;
-    }
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      padding: 14px 18px;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      background: rgba(255, 252, 247, 0.82);
-      box-shadow: 0 18px 48px rgba(123, 72, 24, 0.08);
-      backdrop-filter: blur(12px);
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      text-decoration: none;
-      color: inherit;
-      min-width: 0;
-    }
-    .brand img {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-    .brand-copy { display: grid; gap: 4px; }
-    .brand-copy strong { font-size: 19px; color: var(--primary-deep); }
-    .brand-copy span {
-      font-size: 12px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: #aa6a2b;
-    }
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-    .chip, .lang-btn, .submit-btn, .ghost-btn {
-      border: 1px solid var(--line);
-      background: rgba(255, 247, 236, 0.96);
-      color: var(--primary-deep);
-      padding: 8px 14px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-size: 13px;
-      text-decoration: none;
-      transition: all 0.2s ease;
-    }
-    .chip:hover, .lang-btn:hover, .lang-btn.active, .submit-btn:hover, .ghost-btn:hover {
-      background: linear-gradient(135deg, #fff6de, #ffd977);
-      border-color: rgba(208, 129, 36, 0.5);
-      box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
-      color: var(--primary-deep);
-    }
-    .submit-btn { background: linear-gradient(135deg, #fff4cf, var(--primary)); font-weight: 700; }
-    .lang-switch { display: flex; gap: 10px; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color: var(--text); background: var(--bg); }
+    a { color: inherit; text-decoration: none; }
+    [data-lang] { display: none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display: inline; }
+
+    /* NAVBAR */
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(255,252,246,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .nav-brand { display: flex; align-items: center; gap: 12px; }
+    .nav-brand img { width: 44px; height: 44px; object-fit: contain; }
+    .nav-brand-name { font-size: 22px; font-weight: 800; color: var(--clay); }
+    .nav-menu { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-menu a { padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--muted); transition: 0.15s; }
+    .nav-menu a:hover { color: var(--clay); background: rgba(143,60,22,0.06); }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .lang-btn { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--clay); font-family: inherit; transition: 0.15s; }
+    .lang-btn:hover, .lang-btn.active { background: var(--sand); border-color: var(--gold); }
+    .btn-primary { background: linear-gradient(135deg,#ffe5a7,var(--gold)); color: #4b250f; border: none; border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.2s; box-shadow: 0 4px 14px rgba(215,144,22,0.28); display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+    .btn-primary:hover { transform: translateY(-2px); }
+
+    /* PAGE HERO */
+    .page-hero { background: linear-gradient(145deg,#3a1a08 0%,#5f2c12 50%,#8f3c16 100%); padding: 52px 0; }
+    .page-hero-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+    .page-tag { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: rgba(236,171,47,0.18); border: 1px solid rgba(236,171,47,0.3); color: #ffd98e; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
+    .page-hero h1 { font-size: clamp(28px,3.5vw,44px); font-weight: 900; color: #fff8ef; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .page-hero p { font-size: 15px; color: rgba(255,241,220,0.75); line-height: 1.7; }
+
+    /* CONTENT */
+    .page-content { padding: 48px 0 80px; }
+    .content-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,245,230,0.78); padding: 60px 48px 32px; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+    .footer-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .footer-logo-row img { width: 36px; height: 36px; object-fit: contain; filter: brightness(2) saturate(0.2); }
+    .footer-logo-row span { font-size: 18px; font-weight: 800; color: #fff8ef; }
+    .footer-brand p { font-size: 13px; line-height: 1.7; margin-bottom: 16px; }
+    .footer-hours { background: rgba(255,245,230,0.07); border: 1px solid rgba(255,237,215,0.1); border-radius: 12px; padding: 14px 16px; font-size: 12px; line-height: 1.8; }
+    .footer-col h4 { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,237,215,0.5); margin-bottom: 16px; }
+    .footer-col ul { list-style: none; display: grid; gap: 10px; }
+    .footer-col ul a { font-size: 14px; color: rgba(255,245,230,0.72); transition: 0.15s; }
+    .footer-col ul a:hover { color: #fff8ef; }
+    .footer-bottom { max-width: 1280px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255,237,215,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: rgba(255,245,230,0.45); }
+    @media (max-width: 900px) { .navbar { padding: 0 24px; } .nav-menu { display: none; } .page-hero-inner, .content-inner { padding: 0 24px; } .footer-inner { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 640px) { .footer-inner { grid-template-columns: 1fr; } .footer { padding: 48px 24px 28px; } }
+
+    /* PAGE-SPECIFIC COMPONENT STYLES */
     .hero, .card {
       background: linear-gradient(180deg, rgba(255, 252, 247, 0.96), rgba(252, 244, 232, 0.96));
       border: 1px solid var(--line);
@@ -124,7 +77,7 @@
     .hero-copy h1 {
       margin: 0 0 10px;
       font-size: clamp(28px, 4vw, 38px);
-      color: var(--primary-deep);
+      color: var(--clay);
       line-height: 1.08;
     }
     .hero-copy p, .section-head p, .mini-card span, .summary-card span, .quiz-card p, .choice span, .helper, .rubric-item span, .recommendation span {
@@ -141,7 +94,7 @@
     .hero-point strong, .mini-card strong, .summary-card strong, .recommendation strong {
       display: block;
       margin-bottom: 6px;
-      color: var(--primary-deep);
+      color: var(--clay);
       font-size: 14px;
     }
     .layout {
@@ -158,7 +111,7 @@
       margin-bottom: 14px;
       flex-wrap: wrap;
     }
-    .section-head h2, .quiz-card h3 { margin: 0; color: var(--primary-deep); }
+    .section-head h2, .quiz-card h3 { margin: 0; color: var(--clay); }
     .section-head h2 { font-size: 21px; }
     .intro-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -204,6 +157,24 @@
     .choice input { width: 16px; margin-top: 3px; flex: 0 0 auto; }
     .choice strong { display: block; margin-bottom: 4px; font-size: 14px; color: var(--text); }
     .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .submit-btn, .ghost-btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 247, 236, 0.96);
+      color: var(--clay);
+      padding: 8px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .submit-btn:hover, .ghost-btn:hover {
+      background: linear-gradient(135deg, #fff6de, #ffd977);
+      border-color: rgba(208, 129, 36, 0.5);
+      box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
+      color: var(--clay);
+    }
+    .submit-btn { background: linear-gradient(135deg, #fff4cf, var(--gold)); font-weight: 700; }
     .result {
       font-size: 13px;
       padding: 12px 14px;
@@ -231,8 +202,8 @@
       padding: 10px 14px;
       border-radius: 999px;
       border: 1px solid rgba(208, 129, 36, 0.24);
-      background: linear-gradient(135deg, #fff5d9, var(--primary-soft));
-      color: var(--primary-deep);
+      background: linear-gradient(135deg, #fff5d9, #ffd978);
+      color: var(--clay);
       font-weight: 700;
       font-size: 13px;
     }
@@ -248,7 +219,7 @@
       padding: 8px 10px;
       border-radius: 14px;
       background: rgba(255, 236, 189, 0.8);
-      color: var(--primary-deep);
+      color: var(--clay);
       font-size: 12px;
     }
     .recommendation {
@@ -262,9 +233,6 @@
       .intro-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 640px) {
-      .container { padding: 22px 14px 38px; }
-      .topbar { justify-content: center; border-radius: 18px; }
-      .toolbar { width: 100%; justify-content: space-between; }
       .row, .intro-grid { grid-template-columns: 1fr; }
       .hero, .card { border-radius: 20px; padding: 18px; }
       .actions { flex-direction: column; align-items: stretch; }
@@ -273,31 +241,34 @@
   </style>
 </head>
 <body>
-  <main class="container">
-    <div class="topbar">
-      <a class="brand" href="index.html" aria-label="MindDo home">
-        <img src="assets/logo.png" alt="Mindo AI logo" />
-        <div class="brand-copy">
-          <span>Mindo AI</span>
-          <strong>Mindo AI</strong>
-        </div>
-      </a>
-      <div class="toolbar">
-        <a class="chip" href="index.html" data-i18n="backFlow"></a>
-        <a class="chip" href="trial.html" data-i18n="goTrial"></a>
-        <a class="chip" href="signup.html" data-i18n="backSignup"></a>
-        <a class="chip" href="student-account.html" data-i18n="goAccount"></a>
-        <a class="chip" href="course-system.html" data-i18n="goCourseSystem"></a>
-        <a class="chip" href="course-selection.html" data-i18n="goCourseSelection"></a>
-        <a class="chip" href="feedback.html" data-i18n="goFeedback"></a>
-        <a class="chip" href="semester-report.html" data-i18n="goSemesterReport"></a>
-        <a class="chip" href="dashboard.html" data-i18n="goDashboard"></a>
-        <div class="lang-switch">
-          <button class="lang-btn" type="button" data-set-lang="zh-CN">中文</button>
-          <button class="lang-btn" type="button" data-set-lang="en">English</button>
-        </div>
-      </div>
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <ul class="nav-menu">
+      <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+      <li><a href="signup.html"><span data-lang="zh">注册登录</span><span data-lang="en">Sign Up</span></a></li>
+      <li><a href="course-selection.html"><span data-lang="zh">选课</span><span data-lang="en">Enroll</span></a></li>
+      <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="lang-btn active" type="button" data-set-lang="zh-CN">中文</button>
+      <button class="lang-btn" type="button" data-set-lang="en">English</button>
+      <a class="btn-primary" href="student-account.html"><span data-lang="zh">学员中心</span><span data-lang="en">My Account</span></a>
     </div>
+  </nav>
+
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-tag"><span data-lang="zh">入学评估</span><span data-lang="en">Assessment</span></div>
+      <h1><span data-lang="zh">学习评估</span><span data-lang="en">Learning Assessment</span></h1>
+      <p><span data-lang="zh">通过简短的问卷和能力测试，了解孩子的编程基础与学习目标，为后续课程提供个性化建议。</span><span data-lang="en">A brief questionnaire and skills check to understand coding background and learning goals for a personalized course recommendation.</span></p>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="content-inner">
 
     <section class="hero">
       <div class="hero-copy">
@@ -406,7 +377,56 @@
         </section>
       </aside>
     </div>
-  </main>
+
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand footer-col">
+        <div class="footer-logo-row">
+          <img src="assets/logo.png" alt="MindDo logo" />
+          <span>MindDo</span>
+        </div>
+        <p><span data-lang="zh">专注 5–18 岁 AI 与编程教育，帮助每个孩子在智能时代找到自己的路。</span><span data-lang="en">AI &amp; coding education for ages 5–18, helping every child thrive in the intelligent era.</span></p>
+        <div class="footer-hours">
+          <span data-lang="zh">📅 周一至周五 15:00–20:00<br>📅 周末 9:00–18:00</span>
+          <span data-lang="en">📅 Mon–Fri 3:00 PM–8:00 PM<br>📅 Weekends 9:00 AM–6:00 PM</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">课程</span><span data-lang="en">Programs</span></h4>
+        <ul>
+          <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+          <li><a href="course-selection.html"><span data-lang="zh">选课</span><span data-lang="en">Course Selection</span></a></li>
+          <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+          <li><a href="semester-report.html"><span data-lang="zh">学期报告</span><span data-lang="en">Semester Report</span></a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">学员</span><span data-lang="en">Students</span></h4>
+        <ul>
+          <li><a href="student-account.html"><span data-lang="zh">学员中心</span><span data-lang="en">Student Hub</span></a></li>
+          <li><a href="assessment.html"><span data-lang="zh">入学评估</span><span data-lang="en">Assessment</span></a></li>
+          <li><a href="feedback.html"><span data-lang="zh">课堂反馈</span><span data-lang="en">Feedback</span></a></li>
+          <li><a href="signup.html"><span data-lang="zh">注册登录</span><span data-lang="en">Sign Up</span></a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">运营</span><span data-lang="en">Operations</span></h4>
+        <ul>
+          <li><a href="dashboard.html"><span data-lang="zh">运营后台</span><span data-lang="en">Dashboard</span></a></li>
+          <li><a href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a></li>
+          <li><a href="new-trials.html"><span data-lang="zh">新试课列表</span><span data-lang="en">New Trials</span></a></li>
+          <li><a href="request-center.html"><span data-lang="zh">请假管理</span><span data-lang="en">Requests</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 MindDo AI Learning Center</span>
+      <span><span data-lang="zh">让每个孩子都能驾驭 AI</span><span data-lang="en">Empowering every child with AI</span></span>
+    </div>
+  </footer>
 
   <script src="assets/minddo-flow.js"></script>
   <script>
@@ -444,7 +464,7 @@
           level: "当前水平",
           goal: "短期目标",
           confidence: "学习自信度",
-          confidenceHint: "用于区分学生是“不会”还是“会但不敢答”。",
+          confidenceHint: "用于区分学生是"不会"还是"会但不敢答"。",
           learningStyle: "偏好学习方式",
           notes: "补充说明（选填）",
           notesHint: "可填写试听表现、家长反馈、专注度或表达情况。",

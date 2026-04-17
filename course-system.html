@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -6,467 +6,272 @@
   <title>课程体系 | Curriculum System</title>
   <style>
     :root {
-      --bg: #f6efe4;
-      --bg-soft: #fffaf2;
-      --card: rgba(255, 250, 242, 0.94);
-      --line: rgba(151, 84, 21, 0.14);
-      --line-strong: rgba(208, 129, 36, 0.3);
-      --primary: #f0a11f;
-      --primary-deep: #8c3d14;
-      --text: #4f2410;
-      --muted: #8b6e58;
+      --bg: #fbf7ef; --sand: #f2e4c9; --card: rgba(255,252,246,0.94);
+      --line: rgba(126,77,29,0.14); --text: #45200d; --muted: #826956;
+      --gold: #ecab2f; --gold-deep: #d79016; --clay: #8f3c16; --brown: #5f2c12;
+      --shadow: 0 24px 60px rgba(100,58,22,0.12);
     }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: "Avenir Next", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(255, 204, 97, 0.3), transparent 30%),
-        radial-gradient(circle at 85% 18%, rgba(244, 162, 38, 0.14), transparent 24%),
-        linear-gradient(180deg, #fffdf9, var(--bg));
-      color: var(--text);
-      min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 20% 24%, rgba(255, 208, 118, 0.16), transparent 24%),
-        radial-gradient(circle at 82% 78%, rgba(179, 76, 14, 0.08), transparent 28%);
-      z-index: 0;
-    }
-
-    .container {
-      position: relative;
-      z-index: 1;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 28px 20px 52px;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      padding: 14px 18px;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      background: rgba(255, 252, 247, 0.82);
-      box-shadow: 0 18px 48px rgba(123, 72, 24, 0.08);
-      backdrop-filter: blur(12px);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .brand img {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-
-    .brand-copy {
-      display: grid;
-      gap: 4px;
-    }
-
-    .brand-copy strong {
-      font-size: 19px;
-      color: var(--primary-deep);
-    }
-
-    .brand-copy span {
-      font-size: 12px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: #aa6a2b;
-    }
-
-    .nav-links,
-    .lang-switch {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .btn,
-    .lang-btn {
-      border: 1px solid var(--line);
-      background: rgba(255, 247, 236, 0.96);
-      color: var(--primary-deep);
-      padding: 8px 14px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-size: 13px;
-      text-decoration: none;
-      transition: all 0.2s ease;
-    }
-
-    .btn:hover,
-    .lang-btn:hover,
-    .lang-btn.active {
-      background: linear-gradient(135deg, #fff6de, #ffd977);
-      border-color: rgba(208, 129, 36, 0.5);
-      box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
-      color: var(--primary-deep);
-    }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color: var(--text); background: var(--bg); }
+    a { color: inherit; text-decoration: none; }
     [data-lang] { display: none; }
-
-    html[lang="zh-CN"] [data-lang="zh"],
-    html[lang="en"] [data-lang="en"] {
-      display: inline;
-    }
-
-    html[lang="zh-CN"] [data-lang-block="zh"],
-    html[lang="en"] [data-lang-block="en"] {
-      display: block;
-    }
-
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display: inline; }
+    html[lang="zh-CN"] [data-lang-block="zh"], html[lang="en"] [data-lang-block="en"] { display: block; }
     [data-lang-block] { display: none; }
 
-    .hero,
-    .panel,
-    .stage,
-    .card {
-      background: linear-gradient(180deg, rgba(255, 252, 247, 0.96), rgba(252, 244, 232, 0.96));
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      box-shadow: 0 24px 56px rgba(123, 72, 24, 0.08);
-    }
+    /* NAVBAR */
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(255,252,246,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .nav-brand { display: flex; align-items: center; gap: 12px; }
+    .nav-brand img { width: 44px; height: 44px; object-fit: contain; }
+    .nav-brand-name { font-size: 22px; font-weight: 800; color: var(--clay); }
+    .nav-menu { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-menu a { padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--muted); transition: 0.15s; }
+    .nav-menu a:hover { color: var(--clay); background: rgba(143,60,22,0.06); }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .lang-btn { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--clay); font-family: inherit; transition: 0.15s; }
+    .lang-btn:hover, .lang-btn.active { background: var(--sand); border-color: var(--gold); }
+    .btn-primary { background: linear-gradient(135deg,#ffe5a7,var(--gold)); color: #4b250f; border: none; border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.2s; box-shadow: 0 4px 14px rgba(215,144,22,0.28); display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+    .btn-primary:hover { transform: translateY(-2px); }
 
-    .hero {
-      padding: 24px;
-      margin-bottom: 18px;
-    }
+    /* PAGE HERO */
+    .page-hero { background: linear-gradient(145deg,#3a1a08 0%,#5f2c12 50%,#8f3c16 100%); padding: 60px 0; }
+    .page-hero-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+    .page-tag { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: rgba(236,171,47,0.18); border: 1px solid rgba(236,171,47,0.3); color: #ffd98e; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
+    .page-hero h1 { font-size: clamp(28px,3.5vw,44px); font-weight: 900; color: #fff8ef; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .page-hero p { font-size: 15px; color: rgba(255,241,220,0.75); line-height: 1.7; max-width: 720px; }
+    .hero-chips { margin-top: 24px; display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+    .hero-chip { background: rgba(255,245,230,0.08); border: 1px solid rgba(255,237,215,0.15); border-radius: 12px; padding: 12px 14px; font-size: 13px; color: rgba(255,241,220,0.82); line-height: 1.5; }
 
-    .hero h1 {
-      margin: 0 0 10px;
-      font-size: clamp(24px, 4vw, 36px);
-      letter-spacing: 0.02em;
-      color: var(--primary-deep);
-    }
+    /* CONTENT */
+    .page-content { padding: 48px 0 80px; }
+    .content-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; display: grid; gap: 20px; }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); padding: 28px; }
+    .panel h2 { font-size: 22px; font-weight: 800; color: var(--clay); margin-bottom: 20px; }
 
-    .hero p,
-    .muted {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.65;
-    }
+    .path-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+    .stage { background: var(--sand); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+    .stage strong { display: block; margin-bottom: 8px; color: var(--clay); font-size: 14px; font-weight: 800; }
+    .stage p { font-size: 13px; color: var(--muted); line-height: 1.65; }
 
-    .chip-row {
-      margin-top: 14px;
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
+    .module-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
+    .module-card { background: var(--sand); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+    .module-tag { display: inline-flex; padding: 4px 10px; border-radius: 999px; background: rgba(236,171,47,0.2); border: 1px solid rgba(236,171,47,0.35); color: var(--clay); font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
+    .module-card h3 { font-size: 16px; font-weight: 800; color: var(--clay); margin-bottom: 10px; }
+    .module-card ul { padding-left: 18px; color: var(--muted); line-height: 1.75; font-size: 13px; }
 
-    .chip {
-      border-radius: 14px;
-      border: 1px solid rgba(151, 84, 21, 0.12);
-      background: rgba(255, 248, 238, 0.84);
-      padding: 10px;
-      color: #6a4a35;
-      font-size: 13px;
-    }
+    .timeline-list { border: 1px solid var(--line); border-radius: 14px; background: var(--sand); padding: 18px 20px; }
+    .timeline-list ul { padding-left: 20px; color: var(--muted); line-height: 1.85; font-size: 14px; }
 
-    .section {
-      margin-bottom: 14px;
-      padding: 18px;
-    }
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,245,230,0.78); padding: 60px 48px 32px; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+    .footer-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .footer-logo-row img { width: 36px; height: 36px; object-fit: contain; filter: brightness(2) saturate(0.2); }
+    .footer-logo-row span { font-size: 18px; font-weight: 800; color: #fff8ef; }
+    .footer-brand p { font-size: 13px; line-height: 1.7; margin-bottom: 16px; }
+    .footer-hours { background: rgba(255,245,230,0.07); border: 1px solid rgba(255,237,215,0.1); border-radius: 12px; padding: 14px 16px; font-size: 12px; line-height: 1.8; }
+    .footer-col h4 { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,237,215,0.5); margin-bottom: 16px; }
+    .footer-col ul { list-style: none; display: grid; gap: 10px; }
+    .footer-col ul a { font-size: 14px; color: rgba(255,245,230,0.72); transition: 0.15s; }
+    .footer-col ul a:hover { color: #fff8ef; }
+    .footer-bottom { max-width: 1280px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255,237,215,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: rgba(255,245,230,0.45); }
 
-    .section h2 {
-      margin: 0 0 12px;
-      font-size: 20px;
-      color: var(--primary-deep);
-    }
-
-    .path-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .stage {
-      padding: 14px;
-      border-radius: 16px;
-      box-shadow: none;
-      background: rgba(255, 248, 238, 0.72);
-    }
-
-    .stage strong {
-      display: block;
-      margin-bottom: 6px;
-      color: var(--primary-deep);
-      font-size: 14px;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .card {
-      padding: 14px;
-      border-radius: 16px;
-      box-shadow: none;
-      background: rgba(255, 248, 238, 0.72);
-    }
-
-    .card h3 {
-      margin: 0 0 8px;
-      color: var(--primary-deep);
-      font-size: 17px;
-    }
-
-    .tag {
-      display: inline-block;
-      margin-bottom: 8px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(255, 204, 97, 0.18);
-      color: #9d5a18;
-      border: 1px solid rgba(208, 129, 36, 0.24);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .card ul,
-    .timeline ul {
-      margin: 0;
-      padding-left: 18px;
-      color: #6a4a35;
-      line-height: 1.72;
-    }
-
-    .timeline {
-      padding: 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(151, 84, 21, 0.12);
-      background: rgba(255, 248, 238, 0.72);
-    }
-
-    .footer {
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-      text-align: center;
-    }
-
-    @media (max-width: 980px) {
-      .chip-row,
-      .path-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .cards {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .container {
-        padding: 22px 14px 40px;
-      }
-
-      .topbar,
-      .nav-links,
-      .lang-switch {
-        justify-content: center;
-      }
-
-      .topbar {
-        align-items: flex-start;
-      }
-
-      .hero,
-      .panel,
-      .stage,
-      .card {
-        border-radius: 18px;
-      }
-
-      .chip-row,
-      .path-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+    @media (max-width: 1000px) { .path-grid, .hero-chips { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 900px) { .navbar { padding: 0 24px; } .nav-menu { display: none; } .page-hero-inner, .content-inner { padding: 0 24px; } .module-grid { grid-template-columns: 1fr; } .footer-inner { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 640px) { .path-grid, .hero-chips { grid-template-columns: 1fr; } .footer-inner { grid-template-columns: 1fr; } .footer { padding: 48px 24px 28px; } }
   </style>
 </head>
 <body>
-  <main class="container">
-    <header class="topbar">
-      <a class="brand" href="index.html" aria-label="MindDo home">
-        <img src="assets/logo.png" alt="Mindo AI logo" />
-        <div class="brand-copy">
-          <span>Mindo AI</span>
-          <strong>Mindo AI</strong>
-          <span data-lang="zh">课程体系页面</span>
-          <span data-lang="en">Curriculum Page</span>
-        </div>
-      </a>
 
-      <nav class="nav-links" aria-label="primary links">
-        <a class="btn" href="index.html"><span data-lang="zh">首页</span><span data-lang="en">Home</span></a>
-        <a class="btn" href="trial.html"><span data-lang="zh">试课</span><span data-lang="en">Trial</span></a>
-        <a class="btn" href="assessment.html"><span data-lang="zh">评估</span><span data-lang="en">Assessment</span></a>
-        <a class="btn" href="signup.html"><span data-lang="zh">注册</span><span data-lang="en">Sign Up</span></a>
-        <a class="btn" href="course-selection.html"><span data-lang="zh">选课</span><span data-lang="en">Course Selection</span></a>
-        <a class="btn" href="semester-report.html"><span data-lang="zh">学期报告</span><span data-lang="en">Semester Report</span></a>
-        <a class="btn" href="dashboard.html"><span data-lang="zh">看板</span><span data-lang="en">Dashboard</span></a>
-      </nav>
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <ul class="nav-menu">
+      <li><a href="index.html"><span data-lang="zh">首页</span><span data-lang="en">Home</span></a></li>
+      <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+      <li><a href="course-selection.html"><span data-lang="zh">选课</span><span data-lang="en">Enroll</span></a></li>
+      <li><a href="semester-report.html"><span data-lang="zh">学期报告</span><span data-lang="en">Reports</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="lang-btn active" type="button" data-set-lang="zh-CN">中文</button>
+      <button class="lang-btn" type="button" data-set-lang="en">English</button>
+      <a class="btn-primary" href="trial.html"><span data-lang="zh">免费试课</span><span data-lang="en">Free Trial</span></a>
+    </div>
+  </nav>
 
-      <div class="lang-switch" aria-label="language switch">
-        <button class="lang-btn active" type="button" data-set-lang="zh-CN">中文</button>
-        <button class="lang-btn" type="button" data-set-lang="en">English</button>
-      </div>
-    </header>
-
-    <section class="hero panel">
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-tag"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></div>
       <h1>
         <span data-lang="zh">AI时代孩子成长路径课程体系</span>
-        <span data-lang="en">Child Growth Curriculum System in the AI Era</span>
+        <span data-lang="en">Child Growth Curriculum in the AI Era</span>
       </h1>
       <p>
-        <span data-lang="zh">以“会用、会思考、会创造、会负责”为主线，围绕认知力、工具力、实践力与社会责任，形成从启蒙到创新的连续课程路径。</span>
-        <span data-lang="en">Built on the path of using, thinking, creating, and taking responsibility, the curriculum develops cognition, tool mastery, practice, and social ethics from foundation to innovation.</span>
+        <span data-lang="zh">以"会用、会思考、会创造、会负责"为主线，围绕认知力、工具力、实践力与社会责任，形成从启蒙到创新的连续课程路径。</span>
+        <span data-lang="en">Built on using, thinking, creating, and taking responsibility — developing cognition, tool mastery, practice, and social ethics from foundation to innovation.</span>
       </p>
-      <div class="chip-row">
-        <div class="chip"><span data-lang="zh">课程主轴：AI素养 + 学科融合 + 项目实战</span><span data-lang="en">Core: AI literacy + interdisciplinary learning + project practice</span></div>
-        <div class="chip"><span data-lang="zh">培养目标：技术理解、问题解决、表达协作</span><span data-lang="en">Goals: technical understanding, problem-solving, communication</span></div>
-        <div class="chip"><span data-lang="zh">学习方式：探究任务、作品驱动、反思复盘</span><span data-lang="en">Learning mode: inquiry tasks, product-driven work, reflection</span></div>
-        <div class="chip"><span data-lang="zh">成果形式：数字作品、研究报告、成长档案</span><span data-lang="en">Outcomes: digital products, reports, growth portfolios</span></div>
+      <div class="hero-chips">
+        <div class="hero-chip"><span data-lang="zh">课程主轴：AI素养 + 学科融合 + 项目实战</span><span data-lang="en">Core: AI literacy + interdisciplinary learning + project practice</span></div>
+        <div class="hero-chip"><span data-lang="zh">培养目标：技术理解、问题解决、表达协作</span><span data-lang="en">Goals: technical understanding, problem-solving, communication</span></div>
+        <div class="hero-chip"><span data-lang="zh">学习方式：探究任务、作品驱动、反思复盘</span><span data-lang="en">Learning mode: inquiry tasks, product-driven work, reflection</span></div>
+        <div class="hero-chip"><span data-lang="zh">成果形式：数字作品、研究报告、成长档案</span><span data-lang="en">Outcomes: digital products, reports, growth portfolios</span></div>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <section class="section panel">
-      <h2><span data-lang="zh">四阶段成长路径</span><span data-lang="en">Four-Stage Growth Path</span></h2>
-      <div class="path-grid">
-        <article class="stage">
-          <strong><span data-lang="zh">阶段一：AI启蒙（6-8岁）</span><span data-lang="en">Stage 1: AI Foundation (Ages 6-8)</span></strong>
-          <span data-lang="zh">感知“智能”如何帮助生活，建立规则意识与信息辨识的初步能力。</span>
-          <span data-lang="en">Understand how AI supports daily life and build early awareness of rules and information quality.</span>
-        </article>
-        <article class="stage">
-          <strong><span data-lang="zh">阶段二：AI应用（9-11岁）</span><span data-lang="en">Stage 2: AI Application (Ages 9-11)</span></strong>
-          <span data-lang="zh">学会使用基础AI工具完成学习任务，强化提问、检索和表达能力。</span>
-          <span data-lang="en">Use AI tools for school tasks and strengthen questioning, research, and expression skills.</span>
-        </article>
-        <article class="stage">
-          <strong><span data-lang="zh">阶段三：AI创造（12-14岁）</span><span data-lang="en">Stage 3: AI Creation (Ages 12-14)</span></strong>
-          <span data-lang="zh">通过跨学科项目完成从“使用工具”到“设计方案”的跃迁。</span>
-          <span data-lang="en">Transition from tool users to solution designers through interdisciplinary projects.</span>
-        </article>
-        <article class="stage">
-          <strong><span data-lang="zh">阶段四：AI创新（15-18岁）</span><span data-lang="en">Stage 4: AI Innovation (Ages 15-18)</span></strong>
-          <span data-lang="zh">在真实议题中构建项目，形成责任意识、批判思维与领导力。</span>
-          <span data-lang="en">Build projects around real-world issues and develop ethics, critical thinking, and leadership.</span>
-        </article>
+  <div class="page-content">
+    <div class="content-inner">
+
+      <div class="panel">
+        <h2><span data-lang="zh">四阶段成长路径</span><span data-lang="en">Four-Stage Growth Path</span></h2>
+        <div class="path-grid">
+          <div class="stage">
+            <strong><span data-lang="zh">阶段一：AI启蒙（6-8岁）</span><span data-lang="en">Stage 1: AI Foundation (Ages 6-8)</span></strong>
+            <p><span data-lang="zh">感知"智能"如何帮助生活，建立规则意识与信息辨识的初步能力。</span><span data-lang="en">Understand how AI supports daily life and build early awareness of rules and information quality.</span></p>
+          </div>
+          <div class="stage">
+            <strong><span data-lang="zh">阶段二：AI应用（9-11岁）</span><span data-lang="en">Stage 2: AI Application (Ages 9-11)</span></strong>
+            <p><span data-lang="zh">学会使用基础AI工具完成学习任务，强化提问、检索和表达能力。</span><span data-lang="en">Use AI tools for school tasks and strengthen questioning, research, and expression skills.</span></p>
+          </div>
+          <div class="stage">
+            <strong><span data-lang="zh">阶段三：AI创造（12-14岁）</span><span data-lang="en">Stage 3: AI Creation (Ages 12-14)</span></strong>
+            <p><span data-lang="zh">通过跨学科项目完成从"使用工具"到"设计方案"的跃迁。</span><span data-lang="en">Transition from tool users to solution designers through interdisciplinary projects.</span></p>
+          </div>
+          <div class="stage">
+            <strong><span data-lang="zh">阶段四：AI创新（15-18岁）</span><span data-lang="en">Stage 4: AI Innovation (Ages 15-18)</span></strong>
+            <p><span data-lang="zh">在真实议题中构建项目，形成责任意识、批判思维与领导力。</span><span data-lang="en">Build projects around real-world issues and develop ethics, critical thinking, and leadership.</span></p>
+          </div>
+        </div>
       </div>
-    </section>
 
-    <section class="section panel">
-      <h2><span data-lang="zh">课程模块设计</span><span data-lang="en">Curriculum Modules</span></h2>
-      <div class="cards">
-        <article class="card">
-          <span class="tag"><span data-lang="zh">模块A</span><span data-lang="en">Module A</span></span>
-          <h3><span data-lang="zh">AI认知与数字素养</span><span data-lang="en">AI Cognition and Digital Literacy</span></h3>
-          <ul>
-            <li><span data-lang="zh">AI基础概念与发展脉络</span><span data-lang="en">AI fundamentals and development context</span></li>
-            <li><span data-lang="zh">信息判断、事实核验与风险识别</span><span data-lang="en">Information verification and risk awareness</span></li>
-            <li><span data-lang="zh">数字公民意识与网络行为规范</span><span data-lang="en">Digital citizenship and online behavior norms</span></li>
-          </ul>
-        </article>
-
-        <article class="card">
-          <span class="tag"><span data-lang="zh">模块B</span><span data-lang="en">Module B</span></span>
-          <h3><span data-lang="zh">AI工具与学习效率</span><span data-lang="en">AI Tools and Learning Efficiency</span></h3>
-          <ul>
-            <li><span data-lang="zh">提示词结构与高质量提问</span><span data-lang="en">Prompt structure and high-quality questioning</span></li>
-            <li><span data-lang="zh">文图音视频协同创作</span><span data-lang="en">Multimodal creation with text, image, audio, and video</span></li>
-            <li><span data-lang="zh">任务拆解、学习计划与复盘</span><span data-lang="en">Task breakdown, planning, and review</span></li>
-          </ul>
-        </article>
-
-        <article class="card">
-          <span class="tag"><span data-lang="zh">模块C</span><span data-lang="en">Module C</span></span>
-          <h3><span data-lang="zh">项目式学习与问题解决</span><span data-lang="en">Project-Based Learning and Problem Solving</span></h3>
-          <ul>
-            <li><span data-lang="zh">真实问题定义与需求分析</span><span data-lang="en">Problem definition and requirement analysis</span></li>
-            <li><span data-lang="zh">数据收集、方案设计、原型迭代</span><span data-lang="en">Data collection, solution design, and prototype iteration</span></li>
-            <li><span data-lang="zh">协作展示与反馈优化</span><span data-lang="en">Collaboration, presentation, and feedback optimization</span></li>
-          </ul>
-        </article>
-
-        <article class="card">
-          <span class="tag"><span data-lang="zh">模块D</span><span data-lang="en">Module D</span></span>
-          <h3><span data-lang="zh">AI伦理与未来能力</span><span data-lang="en">AI Ethics and Future Skills</span></h3>
-          <ul>
-            <li><span data-lang="zh">隐私保护、算法偏见与公平讨论</span><span data-lang="en">Privacy, algorithm bias, and fairness</span></li>
-            <li><span data-lang="zh">批判性思维与创造性表达</span><span data-lang="en">Critical thinking and creative expression</span></li>
-            <li><span data-lang="zh">职业认知、社会参与与责任担当</span><span data-lang="en">Career awareness, social participation, and responsibility</span></li>
-          </ul>
-        </article>
+      <div class="panel">
+        <h2><span data-lang="zh">课程模块设计</span><span data-lang="en">Curriculum Modules</span></h2>
+        <div class="module-grid">
+          <div class="module-card">
+            <div class="module-tag"><span data-lang="zh">模块A</span><span data-lang="en">Module A</span></div>
+            <h3><span data-lang="zh">AI认知与数字素养</span><span data-lang="en">AI Cognition and Digital Literacy</span></h3>
+            <ul>
+              <li><span data-lang="zh">AI基础概念与发展脉络</span><span data-lang="en">AI fundamentals and development context</span></li>
+              <li><span data-lang="zh">信息判断、事实核验与风险识别</span><span data-lang="en">Information verification and risk awareness</span></li>
+              <li><span data-lang="zh">数字公民意识与网络行为规范</span><span data-lang="en">Digital citizenship and online behavior norms</span></li>
+            </ul>
+          </div>
+          <div class="module-card">
+            <div class="module-tag"><span data-lang="zh">模块B</span><span data-lang="en">Module B</span></div>
+            <h3><span data-lang="zh">AI工具与学习效率</span><span data-lang="en">AI Tools and Learning Efficiency</span></h3>
+            <ul>
+              <li><span data-lang="zh">提示词结构与高质量提问</span><span data-lang="en">Prompt structure and high-quality questioning</span></li>
+              <li><span data-lang="zh">文图音视频协同创作</span><span data-lang="en">Multimodal creation with text, image, audio, and video</span></li>
+              <li><span data-lang="zh">任务拆解、学习计划与复盘</span><span data-lang="en">Task breakdown, planning, and review</span></li>
+            </ul>
+          </div>
+          <div class="module-card">
+            <div class="module-tag"><span data-lang="zh">模块C</span><span data-lang="en">Module C</span></div>
+            <h3><span data-lang="zh">项目式学习与问题解决</span><span data-lang="en">Project-Based Learning and Problem Solving</span></h3>
+            <ul>
+              <li><span data-lang="zh">真实问题定义与需求分析</span><span data-lang="en">Problem definition and requirement analysis</span></li>
+              <li><span data-lang="zh">数据收集、方案设计、原型迭代</span><span data-lang="en">Data collection, solution design, and prototype iteration</span></li>
+              <li><span data-lang="zh">协作展示与反馈优化</span><span data-lang="en">Collaboration, presentation, and feedback optimization</span></li>
+            </ul>
+          </div>
+          <div class="module-card">
+            <div class="module-tag"><span data-lang="zh">模块D</span><span data-lang="en">Module D</span></div>
+            <h3><span data-lang="zh">AI伦理与未来能力</span><span data-lang="en">AI Ethics and Future Skills</span></h3>
+            <ul>
+              <li><span data-lang="zh">隐私保护、算法偏见与公平讨论</span><span data-lang="en">Privacy, algorithm bias, and fairness</span></li>
+              <li><span data-lang="zh">批判性思维与创造性表达</span><span data-lang="en">Critical thinking and creative expression</span></li>
+              <li><span data-lang="zh">职业认知、社会参与与责任担当</span><span data-lang="en">Career awareness, social participation, and responsibility</span></li>
+            </ul>
+          </div>
+        </div>
       </div>
-    </section>
 
-    <section class="section panel">
-      <h2><span data-lang="zh">教学实施节奏（每学期）</span><span data-lang="en">Semester Delivery Rhythm</span></h2>
-      <div class="timeline">
+      <div class="panel">
+        <h2><span data-lang="zh">教学实施节奏（每学期）</span><span data-lang="en">Semester Delivery Rhythm</span></h2>
+        <div class="timeline-list">
+          <ul>
+            <li><span data-lang="zh">第1-3周：主题导入 + 关键能力训练</span><span data-lang="en">Weeks 1-3: theme kickoff and core skill training</span></li>
+            <li><span data-lang="zh">第4-8周：分层任务学习 + 作品小迭代</span><span data-lang="en">Weeks 4-8: leveled tasks and product iterations</span></li>
+            <li><span data-lang="zh">第9-14周：跨学科项目实践</span><span data-lang="en">Weeks 9-14: interdisciplinary project practice</span></li>
+            <li><span data-lang="zh">第15-16周：成果发布 + 成长评估</span><span data-lang="en">Weeks 15-16: showcase and growth assessment</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2><span data-lang="zh">评估体系</span><span data-lang="en">Assessment System</span></h2>
+        <div class="module-grid">
+          <div class="module-card">
+            <div class="module-tag"><span data-lang="zh">形成性评价</span><span data-lang="en">Formative</span></div>
+            <p style="font-size:13px;color:var(--muted);line-height:1.7"><span data-lang="zh">课堂参与、任务完成度、合作质量、阶段反思日志。</span><span data-lang="en">Class participation, task completion, collaboration quality, and reflection logs.</span></p>
+          </div>
+          <div class="module-card">
+            <div class="module-tag"><span data-lang="zh">总结性评价</span><span data-lang="en">Summative</span></div>
+            <p style="font-size:13px;color:var(--muted);line-height:1.7"><span data-lang="zh">项目成果展示、问题解决过程、表达与答辩能力。</span><span data-lang="en">Project outcomes, problem-solving process, communication, and defense performance.</span></p>
+          </div>
+          <div class="module-card">
+            <div class="module-tag"><span data-lang="zh">成长性档案</span><span data-lang="en">Portfolio</span></div>
+            <p style="font-size:13px;color:var(--muted);line-height:1.7"><span data-lang="zh">作品集、能力雷达图、导师评语与下一阶段目标。</span><span data-lang="en">Portfolio, skill radar, mentor feedback, and next-stage goals.</span></p>
+          </div>
+          <div class="module-card">
+            <div class="module-tag"><span data-lang="zh">多元主体反馈</span><span data-lang="en">Multi-Source</span></div>
+            <p style="font-size:13px;color:var(--muted);line-height:1.7"><span data-lang="zh">学生自评、同伴互评、教师评价、家长观察报告。</span><span data-lang="en">Self-evaluation, peer review, teacher assessment, and parent observations.</span></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand footer-col">
+        <div class="footer-logo-row">
+          <img src="assets/logo.png" alt="MindDo logo" />
+          <span>MindDo</span>
+        </div>
+        <p><span data-lang="zh">专注 5–18 岁 AI 与编程教育，帮助每个孩子在智能时代找到自己的路。</span><span data-lang="en">AI & coding education for ages 5–18, helping every child thrive in the intelligent era.</span></p>
+        <div class="footer-hours">
+          <span data-lang="zh">📅 周一至周五 15:00–20:00<br>📅 周末 9:00–18:00</span>
+          <span data-lang="en">📅 Mon–Fri 3:00 PM–8:00 PM<br>📅 Weekends 9:00 AM–6:00 PM</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">课程</span><span data-lang="en">Programs</span></h4>
         <ul>
-          <li><span data-lang="zh">第1-3周：主题导入 + 关键能力训练</span><span data-lang="en">Weeks 1-3: theme kickoff and core skill training</span></li>
-          <li><span data-lang="zh">第4-8周：分层任务学习 + 作品小迭代</span><span data-lang="en">Weeks 4-8: leveled tasks and product iterations</span></li>
-          <li><span data-lang="zh">第9-14周：跨学科项目实践</span><span data-lang="en">Weeks 9-14: interdisciplinary project practice</span></li>
-          <li><span data-lang="zh">第15-16周：成果发布 + 成长评估</span><span data-lang="en">Weeks 15-16: showcase and growth assessment</span></li>
+          <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+          <li><a href="course-selection.html"><span data-lang="zh">选课</span><span data-lang="en">Course Selection</span></a></li>
+          <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+          <li><a href="semester-report.html"><span data-lang="zh">学期报告</span><span data-lang="en">Semester Report</span></a></li>
         </ul>
       </div>
-    </section>
-
-    <section class="section panel">
-      <h2><span data-lang="zh">评估体系</span><span data-lang="en">Assessment System</span></h2>
-      <div class="cards">
-        <article class="card">
-          <span class="tag"><span data-lang="zh">形成性评价</span><span data-lang="en">Formative</span></span>
-          <p class="muted"><span data-lang="zh">课堂参与、任务完成度、合作质量、阶段反思日志。</span><span data-lang="en">Class participation, task completion, collaboration quality, and reflection logs.</span></p>
-        </article>
-        <article class="card">
-          <span class="tag"><span data-lang="zh">总结性评价</span><span data-lang="en">Summative</span></span>
-          <p class="muted"><span data-lang="zh">项目成果展示、问题解决过程、表达与答辩能力。</span><span data-lang="en">Project outcomes, problem-solving process, communication, and defense performance.</span></p>
-        </article>
-        <article class="card">
-          <span class="tag"><span data-lang="zh">成长性档案</span><span data-lang="en">Portfolio</span></span>
-          <p class="muted"><span data-lang="zh">作品集、能力雷达图、导师评语与下一阶段目标。</span><span data-lang="en">Portfolio, skill radar, mentor feedback, and next-stage goals.</span></p>
-        </article>
-        <article class="card">
-          <span class="tag"><span data-lang="zh">多元主体反馈</span><span data-lang="en">Multi-Source Feedback</span></span>
-          <p class="muted"><span data-lang="zh">学生自评、同伴互评、教师评价、家长观察报告。</span><span data-lang="en">Self-evaluation, peer review, teacher assessment, and parent observations.</span></p>
-        </article>
+      <div class="footer-col">
+        <h4><span data-lang="zh">学员</span><span data-lang="en">Students</span></h4>
+        <ul>
+          <li><a href="student-account.html"><span data-lang="zh">学员中心</span><span data-lang="en">Student Hub</span></a></li>
+          <li><a href="assessment.html"><span data-lang="zh">入学评估</span><span data-lang="en">Assessment</span></a></li>
+          <li><a href="feedback.html"><span data-lang="zh">课堂反馈</span><span data-lang="en">Feedback</span></a></li>
+          <li><a href="signup.html"><span data-lang="zh">注册登录</span><span data-lang="en">Sign Up</span></a></li>
+        </ul>
       </div>
-    </section>
-
-    <p class="footer">
-      <span data-lang="zh">建议后续按你PDF原文条目逐条映射课程模块，我可以继续帮你做精确版。</span>
-      <span data-lang="en">We can next map each module exactly to your PDF outline for a precise final version.</span>
-    </p>
-  </main>
+      <div class="footer-col">
+        <h4><span data-lang="zh">了解更多</span><span data-lang="en">Learn More</span></h4>
+        <ul>
+          <li><a href="dashboard.html"><span data-lang="zh">运营后台</span><span data-lang="en">Dashboard</span></a></li>
+          <li><a href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a></li>
+          <li><a href="new-trials.html"><span data-lang="zh">新试课列表</span><span data-lang="en">New Trials</span></a></li>
+          <li><a href="request-center.html"><span data-lang="zh">请假管理</span><span data-lang="en">Requests</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 MindDo AI Learning Center</span>
+      <span><span data-lang="zh">让每个孩子都能驾驭 AI</span><span data-lang="en">Empowering every child with AI</span></span>
+    </div>
+  </footer>
 
   <script src="assets/minddo-flow.js"></script>
   <script>
@@ -495,5 +300,3 @@
   </script>
 </body>
 </html>
-
-

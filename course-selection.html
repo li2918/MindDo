@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -6,129 +6,65 @@
   <title>选课页面 | Course Selection</title>
   <style>
     :root {
-      --bg: #f6efe4;
-      --bg-soft: #fffaf2;
-      --card: rgba(255, 250, 242, 0.94);
-      --line: rgba(151, 84, 21, 0.14);
-      --line-strong: rgba(208, 129, 36, 0.3);
-      --primary: #f0a11f;
-      --primary-deep: #8c3d14;
-      --text: #4f2410;
-      --muted: #8b6e58;
-      --success: #6f8f57;
-      --error: #c46a4d;
+      --bg: #fbf7ef; --sand: #f2e4c9; --card: rgba(255,252,246,0.94);
+      --line: rgba(126,77,29,0.14); --text: #45200d; --muted: #826956;
+      --gold: #ecab2f; --gold-deep: #d79016; --clay: #8f3c16; --brown: #5f2c12;
+      --shadow: 0 24px 60px rgba(100,58,22,0.12);
+      --success: #6f8f57; --error: #c46a4d;
     }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color: var(--text); background: var(--bg); }
+    a { color: inherit; text-decoration: none; }
+    [data-lang] { display: none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display: inline; }
 
-    * { box-sizing: border-box; }
+    /* NAVBAR */
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(255,252,246,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .nav-brand { display: flex; align-items: center; gap: 12px; }
+    .nav-brand img { width: 44px; height: 44px; object-fit: contain; }
+    .nav-brand-name { font-size: 22px; font-weight: 800; color: var(--clay); }
+    .nav-menu { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-menu a { padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--muted); transition: 0.15s; }
+    .nav-menu a:hover { color: var(--clay); background: rgba(143,60,22,0.06); }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .lang-btn { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--clay); font-family: inherit; transition: 0.15s; }
+    .lang-btn:hover, .lang-btn.active { background: var(--sand); border-color: var(--gold); }
+    .btn-primary { background: linear-gradient(135deg,#ffe5a7,var(--gold)); color: #4b250f; border: none; border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.2s; box-shadow: 0 4px 14px rgba(215,144,22,0.28); display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+    .btn-primary:hover { transform: translateY(-2px); }
 
-    body {
-      margin: 0;
-      font-family: "Avenir Next", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(255, 204, 97, 0.3), transparent 30%),
-        radial-gradient(circle at 85% 18%, rgba(244, 162, 38, 0.14), transparent 24%),
-        linear-gradient(180deg, #fffdf9, var(--bg));
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
+    /* PAGE HERO */
+    .page-hero { background: linear-gradient(145deg,#3a1a08 0%,#5f2c12 50%,#8f3c16 100%); padding: 52px 0; }
+    .page-hero-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+    .page-tag { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: rgba(236,171,47,0.18); border: 1px solid rgba(236,171,47,0.3); color: #ffd98e; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
+    .page-hero h1 { font-size: clamp(28px,3.5vw,44px); font-weight: 900; color: #fff8ef; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .page-hero p { font-size: 15px; color: rgba(255,241,220,0.75); line-height: 1.7; }
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 20% 24%, rgba(255, 208, 118, 0.16), transparent 24%),
-        radial-gradient(circle at 82% 78%, rgba(179, 76, 14, 0.08), transparent 28%);
-      z-index: 0;
-    }
+    /* CONTENT */
+    .page-content { padding: 48px 0 80px; }
+    .content-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
 
-    .container {
-      max-width: 1220px;
-      margin: 0 auto;
-      padding: 28px 20px 46px;
-      position: relative;
-      z-index: 1;
-    }
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,245,230,0.78); padding: 60px 48px 32px; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+    .footer-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .footer-logo-row img { width: 36px; height: 36px; object-fit: contain; filter: brightness(2) saturate(0.2); }
+    .footer-logo-row span { font-size: 18px; font-weight: 800; color: #fff8ef; }
+    .footer-brand p { font-size: 13px; line-height: 1.7; margin-bottom: 16px; }
+    .footer-hours { background: rgba(255,245,230,0.07); border: 1px solid rgba(255,237,215,0.1); border-radius: 12px; padding: 14px 16px; font-size: 12px; line-height: 1.8; }
+    .footer-col h4 { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,237,215,0.5); margin-bottom: 16px; }
+    .footer-col ul { list-style: none; display: grid; gap: 10px; }
+    .footer-col ul a { font-size: 14px; color: rgba(255,245,230,0.72); transition: 0.15s; }
+    .footer-col ul a:hover { color: #fff8ef; }
+    .footer-bottom { max-width: 1280px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255,237,215,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: rgba(255,245,230,0.45); }
+    @media (max-width: 900px) { .navbar { padding: 0 24px; } .nav-menu { display: none; } .page-hero-inner, .content-inner { padding: 0 24px; } .footer-inner { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 640px) { .footer-inner { grid-template-columns: 1fr; } .footer { padding: 48px 24px 28px; } }
 
-    .topbar {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-      padding: 14px 18px;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      background: rgba(255, 252, 247, 0.82);
-      box-shadow: 0 18px 48px rgba(123, 72, 24, 0.08);
-      backdrop-filter: blur(12px);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .brand img {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-
-    .brand-copy { display: grid; gap: 4px; }
-    .brand-copy strong { font-size: 19px; color: var(--primary-deep); }
-    .brand-copy span {
-      font-size: 12px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: #aa6a2b;
-    }
-
-    .nav-links, .lang-switch { display: flex; gap: 10px; flex-wrap: wrap; }
-
-    .btn {
-      border: 1px solid var(--line);
-      background: rgba(255, 247, 236, 0.96);
-      color: var(--primary-deep);
-      padding: 8px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-size: 13px;
-      text-decoration: none;
-      transition: 0.2s ease;
-    }
-
-    .btn:hover, .btn.active {
-      background: linear-gradient(135deg, #fff6de, #ffd977);
-      border-color: rgba(208, 129, 36, 0.5);
-      color: var(--primary-deep);
-      box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
-    }
-
-    .hero, .panel, .membership {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      box-shadow: 0 18px 44px rgba(123, 72, 24, 0.08);
-    }
-
-    .hero { padding: 20px; margin-bottom: 14px; }
-    .hero h1 {
-      margin: 0 0 8px;
-      font-size: clamp(24px, 4vw, 34px);
-      color: var(--primary-deep);
-    }
-    .muted { margin: 0; color: var(--muted); line-height: 1.6; }
+    /* PAGE-SPECIFIC COMPONENTS */
 
     .meta {
-      margin-top: 12px;
+      margin-top: 0;
+      margin-bottom: 24px;
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
@@ -136,13 +72,13 @@
 
     .meta-item {
       border-radius: 14px;
-      border: 1px solid rgba(151, 84, 21, 0.12);
+      border: 1px solid rgba(126,77,29,0.12);
       background: rgba(255, 248, 238, 0.78);
       padding: 10px;
     }
 
     .meta-item .k { display: block; color: var(--muted); font-size: 12px; margin-bottom: 4px; }
-    .meta-item .v { color: var(--primary-deep); font-size: 14px; font-weight: 700; }
+    .meta-item .v { color: var(--clay); font-size: 14px; font-weight: 700; }
 
     .layout {
       display: grid;
@@ -151,8 +87,15 @@
       margin-bottom: 12px;
     }
 
+    .panel, .membership {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: 0 18px 44px rgba(123, 72, 24, 0.08);
+    }
+
     .panel { padding: 16px; }
-    .panel h2 { margin: 0 0 10px; font-size: 18px; color: var(--primary-deep); }
+    .panel h2 { margin: 0 0 10px; font-size: 18px; color: var(--clay); }
 
     .membership-grid {
       display: grid;
@@ -190,8 +133,8 @@
       margin-bottom: 8px;
     }
 
-    .membership h3 { margin: 0 0 8px; font-size: 17px; color: var(--primary-deep); }
-    .price { font-size: 28px; font-weight: 700; color: var(--primary-deep); line-height: 1; }
+    .membership h3 { margin: 0 0 8px; font-size: 17px; color: var(--clay); }
+    .price { font-size: 28px; font-weight: 700; color: var(--clay); line-height: 1; }
     .sub { color: #9a785d; font-size: 12px; margin-top: 4px; }
     .features { margin: 10px 0 0; padding-left: 18px; color: #6a4a35; font-size: 13px; line-height: 1.65; }
 
@@ -206,7 +149,7 @@
     input[type="text"],
     select {
       width: 100%;
-      border: 1px solid rgba(151, 84, 21, 0.16);
+      border: 1px solid rgba(126, 77, 29, 0.16);
       background: rgba(255, 252, 247, 0.88);
       color: var(--text);
       border-radius: 14px;
@@ -231,7 +174,7 @@
       display: flex;
       align-items: flex-start;
       gap: 8px;
-      border: 1px solid rgba(151, 84, 21, 0.12);
+      border: 1px solid rgba(126, 77, 29, 0.12);
       background: rgba(255, 248, 238, 0.72);
       border-radius: 12px;
       padding: 8px 10px;
@@ -251,7 +194,7 @@
       display: flex;
       justify-content: space-between;
       gap: 10px;
-      border: 1px solid rgba(151, 84, 21, 0.12);
+      border: 1px solid rgba(126, 77, 29, 0.12);
       border-radius: 12px;
       padding: 8px 10px;
       background: rgba(255, 248, 238, 0.72);
@@ -265,11 +208,31 @@
       border-radius: 12px;
       border: 1px solid rgba(208, 129, 36, 0.28);
       background: rgba(255, 226, 170, 0.35);
-      color: #8c3d14;
+      color: var(--clay);
       font-weight: 700;
       display: flex;
       justify-content: space-between;
       font-size: 15px;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 247, 236, 0.96);
+      color: var(--clay);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: none;
+      transition: 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn:hover, .btn.active {
+      background: linear-gradient(135deg, #fff6de, #ffd977);
+      border-color: rgba(208, 129, 36, 0.5);
+      color: var(--clay);
+      box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
     }
 
     .actions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
@@ -306,7 +269,7 @@
 
     .table-wrap {
       overflow-x: auto;
-      border: 1px solid rgba(151, 84, 21, 0.12);
+      border: 1px solid rgba(126, 77, 29, 0.12);
       border-radius: 14px;
       background: rgba(255, 248, 238, 0.7);
     }
@@ -320,12 +283,12 @@
     th, td {
       text-align: left;
       padding: 9px;
-      border-bottom: 1px solid rgba(151, 84, 21, 0.12);
+      border-bottom: 1px solid rgba(126, 77, 29, 0.12);
       font-size: 13px;
       vertical-align: top;
     }
 
-    th { color: var(--primary-deep); background: rgba(255, 208, 118, 0.14); }
+    th { color: var(--clay); background: rgba(255, 208, 118, 0.14); }
 
     @media (max-width: 1020px) {
       .layout { grid-template-columns: 1fr; }
@@ -335,195 +298,242 @@
     }
 
     @media (max-width: 680px) {
-      .container { padding: 22px 14px 34px; }
-      .topbar { grid-template-columns: 1fr; }
       .form-grid { grid-template-columns: 1fr; }
       .meta { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <main class="container">
-    <header class="topbar">
-      <a class="brand" href="index.html" aria-label="MindDo home">
-        <img src="assets/logo.png" alt="Mindo AI logo" />
-        <div class="brand-copy">
-          <span>Mindo AI</span>
-          <strong>Mindo AI</strong>
-        </div>
-      </a>
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <ul class="nav-menu">
+      <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+      <li><a href="assessment.html"><span data-lang="zh">入学评估</span><span data-lang="en">Assessment</span></a></li>
+      <li><a href="signup.html"><span data-lang="zh">注册登录</span><span data-lang="en">Sign Up</span></a></li>
+      <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="lang-btn active" type="button" data-set-lang="zh-CN">中文</button>
+      <button class="lang-btn" type="button" data-set-lang="en">English</button>
+      <a class="btn-primary" href="student-account.html"><span data-lang="zh">学员中心</span><span data-lang="en">My Account</span></a>
+    </div>
+  </nav>
 
-      <nav class="nav-links">
-        <a class="btn" href="index.html"><span data-lang="zh">首页</span><span data-lang="en">Home</span></a>
-        <a class="btn" href="trial.html"><span data-lang="zh">试课</span><span data-lang="en">Trial</span></a>
-        <a class="btn" href="assessment.html"><span data-lang="zh">评估</span><span data-lang="en">Assessment</span></a>
-        <a class="btn" href="signup.html"><span data-lang="zh">注册</span><span data-lang="en">Sign Up</span></a>
-        <a class="btn" href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a>
-        <a class="btn" href="semester-report.html"><span data-lang="zh">学期报告</span><span data-lang="en">Semester Report</span></a>
-        <a class="btn" href="dashboard.html"><span data-lang="zh">看板</span><span data-lang="en">Dashboard</span></a>
-      </nav>
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-tag"><span data-lang="zh">选课报名</span><span data-lang="en">Enrollment</span></div>
+      <h1><span data-lang="zh">选择你的学习方案</span><span data-lang="en">Choose Your Learning Plan</span></h1>
+      <p><span data-lang="zh">根据评估结果和学习目标，选择最适合的课程套餐、班型和排课时间。</span><span data-lang="en">Based on your assessment results and goals, choose the right course package, class format, and schedule.</span></p>
+    </div>
+  </div>
 
-      <div class="lang-switch">
-        <button class="btn active" type="button" data-set-lang="zh-CN">中文</button>
-        <button class="btn" type="button" data-set-lang="en">English</button>
-      </div>
-    </header>
+  <div class="page-content">
+    <div class="content-inner">
 
-    <section class="hero">
-      <h1><span data-lang="zh">选课与 Membership 方案</span><span data-lang="en">Course Selection & Membership Plans</span></h1>
       <div class="meta">
         <div class="meta-item"><span class="k" data-i18n="studentName"></span><span class="v" id="metaName">李若安</span></div>
         <div class="meta-item"><span class="k" data-i18n="studentId"></span><span class="v" id="metaId">MD2026-0417</span></div>
         <div class="meta-item"><span class="k" data-i18n="grade"></span><span class="v" id="metaGrade">六年级</span></div>
         <div class="meta-item"><span class="k" data-i18n="goal"></span><span class="v" id="metaGoal">AI创造力提升</span></div>
       </div>
-    </section>
 
-    <section class="layout">
-      <article class="panel">
-        <h2><span data-lang="zh">选择 Membership</span><span data-lang="en">Choose Membership</span></h2>
+      <section class="layout">
+        <article class="panel">
+          <h2><span data-lang="zh">选择 Membership</span><span data-lang="en">Choose Membership</span></h2>
 
-        <div class="membership-grid">
-          <label class="membership selected" data-plan="weekly1">
-            <input type="radio" name="membership" value="weekly1" checked />
-            <span class="badge"><span data-lang="zh">基础方案</span><span data-lang="en">Foundation</span></span>
-            <h3><span data-lang="zh">每周一节课</span><span data-lang="en">1 Class / Week</span></h3>
-            <div class="price">$199</div>
-            <div class="sub"><span data-lang="zh">每月（4课时）</span><span data-lang="en">Monthly (4 classes)</span></div>
-            <ul class="features">
-              <li><span data-lang="zh">适合建立学习习惯与稳态进步</span><span data-lang="en">Ideal for stable routines</span></li>
-              <li><span data-lang="zh">每周学习反馈 1 次</span><span data-lang="en">Weekly feedback report</span></li>
-            </ul>
-          </label>
+          <div class="membership-grid">
+            <label class="membership selected" data-plan="weekly1">
+              <input type="radio" name="membership" value="weekly1" checked />
+              <span class="badge"><span data-lang="zh">基础方案</span><span data-lang="en">Foundation</span></span>
+              <h3><span data-lang="zh">每周一节课</span><span data-lang="en">1 Class / Week</span></h3>
+              <div class="price">$199</div>
+              <div class="sub"><span data-lang="zh">每月（4课时）</span><span data-lang="en">Monthly (4 classes)</span></div>
+              <ul class="features">
+                <li><span data-lang="zh">适合建立学习习惯与稳态进步</span><span data-lang="en">Ideal for stable routines</span></li>
+                <li><span data-lang="zh">每周学习反馈 1 次</span><span data-lang="en">Weekly feedback report</span></li>
+              </ul>
+            </label>
 
-          <label class="membership" data-plan="weekly2">
-            <input type="radio" name="membership" value="weekly2" />
-            <span class="badge"><span data-lang="zh">推荐方案</span><span data-lang="en">Recommended</span></span>
-            <h3><span data-lang="zh">每周两节课</span><span data-lang="en">2 Classes / Week</span></h3>
-            <div class="price">$369</div>
-            <div class="sub"><span data-lang="zh">每月（8课时）</span><span data-lang="en">Monthly (8 classes)</span></div>
-            <ul class="features">
-              <li><span data-lang="zh">知识输入 + 项目训练并行</span><span data-lang="en">Balanced learning + projects</span></li>
-              <li><span data-lang="zh">双周能力成长评估</span><span data-lang="en">Bi-weekly growth review</span></li>
-            </ul>
-          </label>
+            <label class="membership" data-plan="weekly2">
+              <input type="radio" name="membership" value="weekly2" />
+              <span class="badge"><span data-lang="zh">推荐方案</span><span data-lang="en">Recommended</span></span>
+              <h3><span data-lang="zh">每周两节课</span><span data-lang="en">2 Classes / Week</span></h3>
+              <div class="price">$369</div>
+              <div class="sub"><span data-lang="zh">每月（8课时）</span><span data-lang="en">Monthly (8 classes)</span></div>
+              <ul class="features">
+                <li><span data-lang="zh">知识输入 + 项目训练并行</span><span data-lang="en">Balanced learning + projects</span></li>
+                <li><span data-lang="zh">双周能力成长评估</span><span data-lang="en">Bi-weekly growth review</span></li>
+              </ul>
+            </label>
 
-          <label class="membership" data-plan="weekly3">
-            <input type="radio" name="membership" value="weekly3" />
-            <span class="badge"><span data-lang="zh">进阶方案</span><span data-lang="en">Advanced</span></span>
-            <h3><span data-lang="zh">每周三节课</span><span data-lang="en">3 Classes / Week</span></h3>
-            <div class="price">$519</div>
-            <div class="sub"><span data-lang="zh">每月（12课时）</span><span data-lang="en">Monthly (12 classes)</span></div>
-            <ul class="features">
-              <li><span data-lang="zh">强化冲刺，适合竞赛/作品集目标</span><span data-lang="en">For competitions and portfolio goals</span></li>
-              <li><span data-lang="zh">每周导师复盘 + 个性化任务</span><span data-lang="en">Weekly mentor review</span></li>
-            </ul>
-          </label>
-        </div>
-
-        <div class="form-grid">
-          <div>
-            <label for="classMode" data-i18n="classMode"></label>
-            <select id="classMode">
-              <option value="1v1">1v1</option>
-              <option value="small">Small Group 1v4</option>
-            </select>
+            <label class="membership" data-plan="weekly3">
+              <input type="radio" name="membership" value="weekly3" />
+              <span class="badge"><span data-lang="zh">进阶方案</span><span data-lang="en">Advanced</span></span>
+              <h3><span data-lang="zh">每周三节课</span><span data-lang="en">3 Classes / Week</span></h3>
+              <div class="price">$519</div>
+              <div class="sub"><span data-lang="zh">每月（12课时）</span><span data-lang="en">Monthly (12 classes)</span></div>
+              <ul class="features">
+                <li><span data-lang="zh">强化冲刺，适合竞赛/作品集目标</span><span data-lang="en">For competitions and portfolio goals</span></li>
+                <li><span data-lang="zh">每周导师复盘 + 个性化任务</span><span data-lang="en">Weekly mentor review</span></li>
+              </ul>
+            </label>
           </div>
-          <div>
-            <label for="billingCycle" data-i18n="billingCycle"></label>
-            <select id="billingCycle">
-              <option value="monthly" data-i18n="monthly"></option>
-              <option value="term" data-i18n="term"></option>
-            </select>
+
+          <div class="form-grid">
+            <div>
+              <label for="classMode" data-i18n="classMode"></label>
+              <select id="classMode">
+                <option value="1v1">1v1</option>
+                <option value="small">Small Group 1v4</option>
+              </select>
+            </div>
+            <div>
+              <label for="billingCycle" data-i18n="billingCycle"></label>
+              <select id="billingCycle">
+                <option value="monthly" data-i18n="monthly"></option>
+                <option value="term" data-i18n="term"></option>
+              </select>
+            </div>
+            <div>
+              <label for="weekday" data-i18n="preferredDay"></label>
+              <select id="weekday">
+                <option data-i18n="dayMon"></option>
+                <option data-i18n="dayTue"></option>
+                <option data-i18n="dayWed"></option>
+                <option data-i18n="dayThu"></option>
+                <option data-i18n="dayFri"></option>
+                <option data-i18n="daySat"></option>
+                <option data-i18n="daySun"></option>
+              </select>
+            </div>
+            <div>
+              <label for="timeSlot" data-i18n="preferredTime"></label>
+              <select id="timeSlot">
+                <option data-i18n="timeAfterSchool"></option>
+                <option data-i18n="timeEvening"></option>
+                <option data-i18n="timeWeekendAm"></option>
+                <option data-i18n="timeWeekendPm"></option>
+              </select>
+            </div>
           </div>
-          <div>
-            <label for="weekday" data-i18n="preferredDay"></label>
-            <select id="weekday">
-              <option data-i18n="dayMon"></option>
-              <option data-i18n="dayTue"></option>
-              <option data-i18n="dayWed"></option>
-              <option data-i18n="dayThu"></option>
-              <option data-i18n="dayFri"></option>
-              <option data-i18n="daySat"></option>
-              <option data-i18n="daySun"></option>
-            </select>
+
+          <h2 style="margin-top:14px;"><span data-lang="zh">增值服务（可选）</span><span data-lang="en">Add-ons (Optional)</span></h2>
+          <div class="addon-list">
+            <label class="addon"><input type="checkbox" class="addon-check" value="mentor" /><span data-i18n="addonMentor"></span></label>
+            <label class="addon"><input type="checkbox" class="addon-check" value="project" /><span data-i18n="addonProject"></span></label>
+            <label class="addon"><input type="checkbox" class="addon-check" value="report" /><span data-i18n="addonReport"></span></label>
           </div>
-          <div>
-            <label for="timeSlot" data-i18n="preferredTime"></label>
-            <select id="timeSlot">
-              <option data-i18n="timeAfterSchool"></option>
-              <option data-i18n="timeEvening"></option>
-              <option data-i18n="timeWeekendAm"></option>
-              <option data-i18n="timeWeekendPm"></option>
-            </select>
+        </article>
+
+        <article class="panel">
+          <h2><span data-lang="zh">费用汇总</span><span data-lang="en">Price Summary</span></h2>
+          <div class="summary-kv" id="summaryList"></div>
+          <div class="total"><span data-i18n="totalLabel"></span><span id="totalPrice">$0</span></div>
+
+          <div class="actions">
+            <button class="btn" id="submitBtn" type="button"><span data-lang="zh">提交选课</span><span data-lang="en">Submit Selection</span></button>
+            <button class="btn" id="resetBtn" type="button"><span data-lang="zh">重置</span><span data-lang="en">Reset</span></button>
           </div>
+          <div id="result" class="result"></div>
+        </article>
+      </section>
+
+      <section class="extra-grid">
+        <article class="panel">
+          <h2><span data-lang="zh">页面附加信息（家长常问）</span><span data-lang="en">Additional Parent-Focused Info</span></h2>
+          <ul class="list">
+            <li><span data-lang="zh">每位学员将匹配固定主讲老师与学习顾问，保证沟通连续性。</span><span data-lang="en">Each student is assigned a fixed teacher and learning advisor.</span></li>
+            <li><span data-lang="zh">每 4 周生成阶段学习小结，每学期提供完整学期报告。</span><span data-lang="en">A milestone report is provided every 4 weeks, plus a full semester report.</span></li>
+            <li><span data-lang="zh">支持因病请假补课，需提前 24 小时申请。</span><span data-lang="en">Class make-up support is available with 24-hour notice.</span></li>
+            <li><span data-lang="zh">可随时升级 membership，系统按差价补收。</span><span data-lang="en">Membership can be upgraded anytime with prorated pricing.</span></li>
+          </ul>
+        </article>
+
+        <article class="panel">
+          <h2><span data-lang="zh">方案对比</span><span data-lang="en">Plan Comparison</span></h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><span data-lang="zh">方案</span><span data-lang="en">Plan</span></th>
+                  <th><span data-lang="zh">建议人群</span><span data-lang="en">Best For</span></th>
+                  <th><span data-lang="zh">目标周期</span><span data-lang="en">Target Cycle</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span data-lang="zh">每周一节</span><span data-lang="en">1/week</span></td>
+                  <td><span data-lang="zh">刚起步、强调习惯建立</span><span data-lang="en">Beginners building routine</span></td>
+                  <td><span data-lang="zh">12-16 周</span><span data-lang="en">12-16 weeks</span></td>
+                </tr>
+                <tr>
+                  <td><span data-lang="zh">每周两节</span><span data-lang="en">2/week</span></td>
+                  <td><span data-lang="zh">希望稳步提分和项目并进</span><span data-lang="en">Balanced growth + project work</span></td>
+                  <td><span data-lang="zh">8-12 周</span><span data-lang="en">8-12 weeks</span></td>
+                </tr>
+                <tr>
+                  <td><span data-lang="zh">每周三节</span><span data-lang="en">3/week</span></td>
+                  <td><span data-lang="zh">冲刺目标、竞赛、作品集</span><span data-lang="en">Intensive goals/competitions</span></td>
+                  <td><span data-lang="zh">6-10 周</span><span data-lang="en">6-10 weeks</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand footer-col">
+        <div class="footer-logo-row">
+          <img src="assets/logo.png" alt="MindDo logo" />
+          <span>MindDo</span>
         </div>
-
-        <h2 style="margin-top:14px;"><span data-lang="zh">增值服务（可选）</span><span data-lang="en">Add-ons (Optional)</span></h2>
-        <div class="addon-list">
-          <label class="addon"><input type="checkbox" class="addon-check" value="mentor" /><span data-i18n="addonMentor"></span></label>
-          <label class="addon"><input type="checkbox" class="addon-check" value="project" /><span data-i18n="addonProject"></span></label>
-          <label class="addon"><input type="checkbox" class="addon-check" value="report" /><span data-i18n="addonReport"></span></label>
+        <p><span data-lang="zh">专注 5–18 岁 AI 与编程教育，帮助每个孩子在智能时代找到自己的路。</span><span data-lang="en">AI &amp; coding education for ages 5–18, helping every child thrive in the intelligent era.</span></p>
+        <div class="footer-hours">
+          <span data-lang="zh">📅 周一至周五 15:00–20:00<br>📅 周末 9:00–18:00</span>
+          <span data-lang="en">📅 Mon–Fri 3:00 PM–8:00 PM<br>📅 Weekends 9:00 AM–6:00 PM</span>
         </div>
-      </article>
-
-      <article class="panel">
-        <h2><span data-lang="zh">费用汇总</span><span data-lang="en">Price Summary</span></h2>
-        <div class="summary-kv" id="summaryList"></div>
-        <div class="total"><span data-i18n="totalLabel"></span><span id="totalPrice">$0</span></div>
-
-        <div class="actions">
-          <button class="btn" id="submitBtn" type="button"><span data-lang="zh">提交选课</span><span data-lang="en">Submit Selection</span></button>
-          <button class="btn" id="resetBtn" type="button"><span data-lang="zh">重置</span><span data-lang="en">Reset</span></button>
-        </div>
-        <div id="result" class="result"></div>
-      </article>
-    </section>
-
-    <section class="extra-grid">
-      <article class="panel">
-        <h2><span data-lang="zh">页面附加信息（家长常问）</span><span data-lang="en">Additional Parent-Focused Info</span></h2>
-        <ul class="list">
-          <li><span data-lang="zh">每位学员将匹配固定主讲老师与学习顾问，保证沟通连续性。</span><span data-lang="en">Each student is assigned a fixed teacher and learning advisor.</span></li>
-          <li><span data-lang="zh">每 4 周生成阶段学习小结，每学期提供完整学期报告。</span><span data-lang="en">A milestone report is provided every 4 weeks, plus a full semester report.</span></li>
-          <li><span data-lang="zh">支持因病请假补课，需提前 24 小时申请。</span><span data-lang="en">Class make-up support is available with 24-hour notice.</span></li>
-          <li><span data-lang="zh">可随时升级 membership，系统按差价补收。</span><span data-lang="en">Membership can be upgraded anytime with prorated pricing.</span></li>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">课程</span><span data-lang="en">Programs</span></h4>
+        <ul>
+          <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+          <li><a href="course-selection.html"><span data-lang="zh">选课</span><span data-lang="en">Course Selection</span></a></li>
+          <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+          <li><a href="semester-report.html"><span data-lang="zh">学期报告</span><span data-lang="en">Semester Report</span></a></li>
         </ul>
-      </article>
-
-      <article class="panel">
-        <h2><span data-lang="zh">方案对比</span><span data-lang="en">Plan Comparison</span></h2>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th><span data-lang="zh">方案</span><span data-lang="en">Plan</span></th>
-                <th><span data-lang="zh">建议人群</span><span data-lang="en">Best For</span></th>
-                <th><span data-lang="zh">目标周期</span><span data-lang="en">Target Cycle</span></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><span data-lang="zh">每周一节</span><span data-lang="en">1/week</span></td>
-                <td><span data-lang="zh">刚起步、强调习惯建立</span><span data-lang="en">Beginners building routine</span></td>
-                <td><span data-lang="zh">12-16 周</span><span data-lang="en">12-16 weeks</span></td>
-              </tr>
-              <tr>
-                <td><span data-lang="zh">每周两节</span><span data-lang="en">2/week</span></td>
-                <td><span data-lang="zh">希望稳步提分和项目并进</span><span data-lang="en">Balanced growth + project work</span></td>
-                <td><span data-lang="zh">8-12 周</span><span data-lang="en">8-12 weeks</span></td>
-              </tr>
-              <tr>
-                <td><span data-lang="zh">每周三节</span><span data-lang="en">3/week</span></td>
-                <td><span data-lang="zh">冲刺目标、竞赛、作品集</span><span data-lang="en">Intensive goals/competitions</span></td>
-                <td><span data-lang="zh">6-10 周</span><span data-lang="en">6-10 weeks</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </article>
-    </section>
-  </main>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">学员</span><span data-lang="en">Students</span></h4>
+        <ul>
+          <li><a href="student-account.html"><span data-lang="zh">学员中心</span><span data-lang="en">Student Hub</span></a></li>
+          <li><a href="assessment.html"><span data-lang="zh">入学评估</span><span data-lang="en">Assessment</span></a></li>
+          <li><a href="feedback.html"><span data-lang="zh">课堂反馈</span><span data-lang="en">Feedback</span></a></li>
+          <li><a href="signup.html"><span data-lang="zh">注册登录</span><span data-lang="en">Sign Up</span></a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">运营</span><span data-lang="en">Operations</span></h4>
+        <ul>
+          <li><a href="dashboard.html"><span data-lang="zh">运营后台</span><span data-lang="en">Dashboard</span></a></li>
+          <li><a href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a></li>
+          <li><a href="new-trials.html"><span data-lang="zh">新试课列表</span><span data-lang="en">New Trials</span></a></li>
+          <li><a href="request-center.html"><span data-lang="zh">请假管理</span><span data-lang="en">Requests</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 MindDo AI Learning Center</span>
+      <span><span data-lang="zh">让每个孩子都能驾驭 AI</span><span data-lang="en">Empowering every child with AI</span></span>
+    </div>
+  </footer>
 
   <script src="assets/minddo-flow.js"></script>
   <script>
@@ -790,4 +800,3 @@
   </script>
 </body>
 </html>
-

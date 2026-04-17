@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -6,161 +6,61 @@
   <title>Sign Up | 学员注册</title>
   <style>
     :root {
-      --bg: #f6efe4;
-      --bg-soft: #fffaf2;
-      --card: rgba(255, 250, 242, 0.94);
-      --line: rgba(151, 84, 21, 0.14);
-      --line-strong: rgba(208, 129, 36, 0.3);
-      --primary: #f0a11f;
-      --primary-deep: #8c3d14;
-      --text: #4f2410;
-      --muted: #8b6e58;
-      --success: #6f8f57;
-      --error: #c46a4d;
+      --bg: #fbf7ef; --sand: #f2e4c9; --card: rgba(255,252,246,0.94);
+      --line: rgba(126,77,29,0.14); --text: #45200d; --muted: #826956;
+      --gold: #ecab2f; --gold-deep: #d79016; --clay: #8f3c16; --brown: #5f2c12;
+      --shadow: 0 24px 60px rgba(100,58,22,0.12);
+      --success: #6f8f57; --error: #c46a4d;
     }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color: var(--text); background: var(--bg); }
+    a { color: inherit; text-decoration: none; }
+    [data-lang] { display: none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display: inline; }
 
-    * { box-sizing: border-box; }
+    /* NAVBAR */
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(255,252,246,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .nav-brand { display: flex; align-items: center; gap: 12px; }
+    .nav-brand img { width: 44px; height: 44px; object-fit: contain; }
+    .nav-brand-name { font-size: 22px; font-weight: 800; color: var(--clay); }
+    .nav-menu { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-menu a { padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--muted); transition: 0.15s; }
+    .nav-menu a:hover { color: var(--clay); background: rgba(143,60,22,0.06); }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .lang-btn { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--clay); font-family: inherit; transition: 0.15s; }
+    .lang-btn:hover, .lang-btn.active { background: var(--sand); border-color: var(--gold); }
+    .btn-primary { background: linear-gradient(135deg,#ffe5a7,var(--gold)); color: #4b250f; border: none; border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.2s; box-shadow: 0 4px 14px rgba(215,144,22,0.28); display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+    .btn-primary:hover { transform: translateY(-2px); }
 
-    body {
-      margin: 0;
-      font-family: "Avenir Next", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(255, 204, 97, 0.3), transparent 30%),
-        radial-gradient(circle at 85% 18%, rgba(244, 162, 38, 0.14), transparent 24%),
-        linear-gradient(180deg, #fffdf9, var(--bg));
-      color: var(--text);
-      min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
-    }
+    /* PAGE HERO */
+    .page-hero { background: linear-gradient(145deg,#3a1a08 0%,#5f2c12 50%,#8f3c16 100%); padding: 52px 0; }
+    .page-hero-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+    .page-tag { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: rgba(236,171,47,0.18); border: 1px solid rgba(236,171,47,0.3); color: #ffd98e; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
+    .page-hero h1 { font-size: clamp(28px,3.5vw,44px); font-weight: 900; color: #fff8ef; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .page-hero p { font-size: 15px; color: rgba(255,241,220,0.75); line-height: 1.7; }
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 20% 24%, rgba(255, 208, 118, 0.16), transparent 24%),
-        radial-gradient(circle at 82% 78%, rgba(179, 76, 14, 0.08), transparent 28%);
-      z-index: 0;
-    }
+    /* CONTENT */
+    .page-content { padding: 48px 0 80px; }
+    .content-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
 
-    .container {
-      position: relative;
-      z-index: 1;
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 28px 20px 52px;
-    }
+    /* FOOTER */
+    .footer { background: var(--brown); color: rgba(255,245,230,0.78); padding: 60px 48px 32px; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+    .footer-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .footer-logo-row img { width: 36px; height: 36px; object-fit: contain; filter: brightness(2) saturate(0.2); }
+    .footer-logo-row span { font-size: 18px; font-weight: 800; color: #fff8ef; }
+    .footer-brand p { font-size: 13px; line-height: 1.7; margin-bottom: 16px; }
+    .footer-hours { background: rgba(255,245,230,0.07); border: 1px solid rgba(255,237,215,0.1); border-radius: 12px; padding: 14px 16px; font-size: 12px; line-height: 1.8; }
+    .footer-col h4 { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,237,215,0.5); margin-bottom: 16px; }
+    .footer-col ul { list-style: none; display: grid; gap: 10px; }
+    .footer-col ul a { font-size: 14px; color: rgba(255,245,230,0.72); transition: 0.15s; }
+    .footer-col ul a:hover { color: #fff8ef; }
+    .footer-bottom { max-width: 1280px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255,237,215,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: rgba(255,245,230,0.45); }
+    @media (max-width: 900px) { .navbar { padding: 0 24px; } .nav-menu { display: none; } .page-hero-inner, .content-inner { padding: 0 24px; } .footer-inner { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 640px) { .footer-inner { grid-template-columns: 1fr; } .footer { padding: 48px 24px 28px; } }
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      padding: 14px 18px;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      background: rgba(255, 252, 247, 0.82);
-      box-shadow: 0 18px 48px rgba(123, 72, 24, 0.08);
-      backdrop-filter: blur(12px);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .brand img {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-
-    .brand-copy {
-      display: grid;
-      gap: 4px;
-    }
-
-    .brand-copy strong {
-      font-size: 19px;
-      color: var(--primary-deep);
-    }
-
-    .brand-copy span {
-      font-size: 12px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: #aa6a2b;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .chip,
-    .lang-btn,
-    .submit-btn,
-    .oauth-btn {
-      border: 1px solid var(--line);
-      background: rgba(255, 247, 236, 0.96);
-      color: var(--primary-deep);
-      padding: 8px 14px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-size: 13px;
-      text-decoration: none;
-      transition: all 0.2s ease;
-    }
-
-    .chip:hover,
-    .lang-btn:hover,
-    .lang-btn.active,
-    .submit-btn:hover,
-    .oauth-btn:hover {
-      background: linear-gradient(135deg, #fff6de, #ffd977);
-      border-color: rgba(208, 129, 36, 0.5);
-      box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
-      color: var(--primary-deep);
-    }
-
-    .lang-switch { display: flex; gap: 10px; }
-
-    .hero,
-    .card {
-      background: linear-gradient(180deg, rgba(255, 252, 247, 0.96), rgba(252, 244, 232, 0.96));
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      box-shadow: 0 24px 56px rgba(123, 72, 24, 0.08);
-    }
-
-    .hero {
-      padding: 24px;
-      margin-bottom: 18px;
-    }
-
-    .hero h1 {
-      margin: 0 0 10px;
-      font-size: clamp(24px, 4vw, 36px);
-      letter-spacing: 0.02em;
-      color: var(--primary-deep);
-    }
-
-    .hero p,
-    .muted {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
+    /* PAGE-SPECIFIC STYLES */
     .grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -168,18 +68,22 @@
     }
 
     .card {
+      background: linear-gradient(180deg, rgba(255, 252, 247, 0.96), rgba(252, 244, 232, 0.96));
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 24px 56px rgba(123, 72, 24, 0.08);
       padding: 20px;
     }
 
     h2 {
       margin: 0 0 10px;
-      color: var(--primary-deep);
+      color: var(--clay);
       font-size: 20px;
     }
 
     h3 {
       margin: 0 0 8px;
-      color: var(--primary-deep);
+      color: var(--clay);
       font-size: 17px;
     }
 
@@ -198,15 +102,29 @@
     }
 
     .oauth-btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 247, 236, 0.96);
+      color: var(--clay);
+      padding: 10px 12px;
       border-radius: 14px;
       text-align: center;
       font-weight: 600;
-      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       min-height: 48px;
+    }
+
+    .oauth-btn:hover {
+      background: linear-gradient(135deg, #fff6de, #ffd977);
+      border-color: rgba(208, 129, 36, 0.5);
+      box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
+      color: var(--clay);
     }
 
     .oauth-logo {
@@ -346,6 +264,21 @@
       justify-self: start;
       min-width: 180px;
       border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 247, 236, 0.96);
+      color: var(--clay);
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(135deg, #fff6de, #ffd977);
+      border-color: rgba(208, 129, 36, 0.5);
+      box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
+      color: var(--clay);
     }
 
     .result {
@@ -381,133 +314,176 @@
     }
 
     @media (max-width: 640px) {
-      .container { padding: 22px 14px 38px; }
       .row, .oauth-row { grid-template-columns: 1fr; }
-      .topbar {
-        justify-content: center;
-        border-radius: 18px;
-      }
     }
   </style>
 </head>
 <body>
-  <main class="container">
-    <div class="topbar">
-      <a class="brand" href="index.html" aria-label="MindDo home">
-        <img src="assets/logo.png" alt="Mindo AI logo" />
-        <div class="brand-copy">
-          <span>Mindo AI</span>
-          <strong>Mindo AI</strong>
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <ul class="nav-menu">
+      <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+      <li><a href="assessment.html"><span data-lang="zh">入学评估</span><span data-lang="en">Assessment</span></a></li>
+      <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+      <li><a href="course-selection.html"><span data-lang="zh">选课</span><span data-lang="en">Enroll</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="lang-btn active" type="button" data-set-lang="zh-CN">中文</button>
+      <button class="lang-btn" type="button" data-set-lang="en">English</button>
+      <a class="btn-primary" href="student-account.html"><span data-lang="zh">学员中心</span><span data-lang="en">My Account</span></a>
+    </div>
+  </nav>
+
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-tag"><span data-lang="zh">注册 · 登录</span><span data-lang="en">Sign Up · Log In</span></div>
+      <h1><span data-lang="zh">创建你的学员账户</span><span data-lang="en">Create Your Student Account</span></h1>
+      <p><span data-lang="zh">注册后即可查看评估报告、选课方案、排课信息和学习反馈。</span><span data-lang="en">Sign up to access your assessment results, course options, schedule, and learning feedback.</span></p>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="content-inner">
+
+      <section class="grid">
+        <article class="card stack">
+          <h2 data-i18n="authTitle"></h2>
+
+          <section class="auth-section">
+            <div>
+              <h3 data-i18n="registerTitle"></h3>
+              <p class="section-copy" data-i18n="registerIntro"></p>
+            </div>
+
+            <form id="signupForm" novalidate>
+              <div class="row">
+                <div>
+                  <label for="studentName" data-i18n="studentName"></label>
+                  <input id="studentName" name="studentName" type="text" required />
+                </div>
+                <div>
+                  <label for="email" data-i18n="email"></label>
+                  <input id="email" name="email" type="email" required />
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label for="password" data-i18n="password"></label>
+                  <input id="password" name="password" type="password" required />
+                </div>
+                <div>
+                  <label for="confirmPassword" data-i18n="confirmPassword"></label>
+                  <input id="confirmPassword" name="confirmPassword" type="password" required />
+                </div>
+              </div>
+
+              <label class="consent">
+                <input id="consent" name="consent" type="checkbox" required />
+                <span data-i18n="consent"></span>
+              </label>
+
+              <button class="submit-btn" type="submit" data-i18n="submit"></button>
+              <div id="submitResult" class="result" role="status" aria-live="polite"></div>
+            </form>
+          </section>
+
+          <div class="divider" data-i18n="loginDivider"></div>
+
+          <section class="auth-section">
+            <div>
+              <h3 data-i18n="loginTitle"></h3>
+              <p class="section-copy" data-i18n="loginIntro"></p>
+            </div>
+
+            <form id="loginForm" novalidate>
+              <div class="row">
+                <div>
+                  <label for="loginEmail" data-i18n="email"></label>
+                  <input id="loginEmail" name="loginEmail" type="email" required />
+                </div>
+                <div>
+                  <label for="loginPassword" data-i18n="password"></label>
+                  <input id="loginPassword" name="loginPassword" type="password" required />
+                </div>
+              </div>
+
+              <button class="submit-btn" type="submit" data-i18n="loginSubmit"></button>
+              <div id="loginResult" class="result" role="status" aria-live="polite"></div>
+            </form>
+          </section>
+
+          <div class="divider" data-i18n="or"></div>
+
+          <div class="oauth-row">
+            <button type="button" class="oauth-btn" id="googleBtn">
+              <span class="oauth-logo google" aria-hidden="true">G</span>
+              <span class="oauth-label" data-i18n="google"></span>
+            </button>
+            <button type="button" class="oauth-btn" id="microsoftBtn">
+              <span class="oauth-logo microsoft" aria-hidden="true"></span>
+              <span class="oauth-label" data-i18n="microsoft"></span>
+            </button>
+            <button type="button" class="oauth-btn" id="appleBtn">
+              <span class="oauth-logo apple" aria-hidden="true">A</span>
+              <span class="oauth-label" data-i18n="apple"></span>
+            </button>
+          </div>
+        </article>
+      </section>
+
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand footer-col">
+        <div class="footer-logo-row">
+          <img src="assets/logo.png" alt="MindDo logo" />
+          <span>MindDo</span>
         </div>
-      </a>
-      <div class="nav-links">
-        <a class="chip" href="index.html" data-i18n="backFlow"></a>
-        <a class="chip" href="trial.html" data-i18n="backTrial"></a>
-        <a class="chip" href="assessment.html" data-i18n="goAssessment"></a>
-        <a class="chip" href="student-account.html" data-i18n="goAccount"></a>
-        <a class="chip" href="course-system.html" data-i18n="goCourseSystem"></a>
-        <a class="chip" href="course-selection.html" data-i18n="goCourseSelection"></a>
-        <a class="chip" href="feedback.html" data-i18n="goFeedback"></a>
-        <a class="chip" href="semester-report.html" data-i18n="goSemesterReport"></a>
-        <a class="chip" href="dashboard.html" data-i18n="goDashboard"></a>
+        <p><span data-lang="zh">专注 5–18 岁 AI 与编程教育，帮助每个孩子在智能时代找到自己的路。</span><span data-lang="en">AI &amp; coding education for ages 5–18, helping every child thrive in the intelligent era.</span></p>
+        <div class="footer-hours">
+          <span data-lang="zh">📅 周一至周五 15:00–20:00<br>📅 周末 9:00–18:00</span>
+          <span data-lang="en">📅 Mon–Fri 3:00 PM–8:00 PM<br>📅 Weekends 9:00 AM–6:00 PM</span>
+        </div>
       </div>
-      <div class="lang-switch" aria-label="language switch">
-        <button class="lang-btn" type="button" data-set-lang="zh-CN">中文</button>
-        <button class="lang-btn" type="button" data-set-lang="en">English</button>
+      <div class="footer-col">
+        <h4><span data-lang="zh">课程</span><span data-lang="en">Programs</span></h4>
+        <ul>
+          <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+          <li><a href="course-selection.html"><span data-lang="zh">选课</span><span data-lang="en">Course Selection</span></a></li>
+          <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+          <li><a href="semester-report.html"><span data-lang="zh">学期报告</span><span data-lang="en">Semester Report</span></a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">学员</span><span data-lang="en">Students</span></h4>
+        <ul>
+          <li><a href="student-account.html"><span data-lang="zh">学员中心</span><span data-lang="en">Student Hub</span></a></li>
+          <li><a href="assessment.html"><span data-lang="zh">入学评估</span><span data-lang="en">Assessment</span></a></li>
+          <li><a href="feedback.html"><span data-lang="zh">课堂反馈</span><span data-lang="en">Feedback</span></a></li>
+          <li><a href="signup.html"><span data-lang="zh">注册登录</span><span data-lang="en">Sign Up</span></a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">运营</span><span data-lang="en">Operations</span></h4>
+        <ul>
+          <li><a href="dashboard.html"><span data-lang="zh">运营后台</span><span data-lang="en">Dashboard</span></a></li>
+          <li><a href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a></li>
+          <li><a href="new-trials.html"><span data-lang="zh">新试课列表</span><span data-lang="en">New Trials</span></a></li>
+          <li><a href="request-center.html"><span data-lang="zh">请假管理</span><span data-lang="en">Requests</span></a></li>
+        </ul>
       </div>
     </div>
-
-    <section class="hero">
-      <h1 data-i18n="pageTitle"></h1>
-    </section>
-
-    <section class="grid">
-      <article class="card stack">
-        <h2 data-i18n="authTitle"></h2>
-
-        <section class="auth-section">
-          <div>
-            <h3 data-i18n="registerTitle"></h3>
-            <p class="section-copy" data-i18n="registerIntro"></p>
-          </div>
-
-          <form id="signupForm" novalidate>
-            <div class="row">
-              <div>
-                <label for="studentName" data-i18n="studentName"></label>
-                <input id="studentName" name="studentName" type="text" required />
-              </div>
-              <div>
-                <label for="email" data-i18n="email"></label>
-                <input id="email" name="email" type="email" required />
-              </div>
-            </div>
-
-            <div class="row">
-              <div>
-                <label for="password" data-i18n="password"></label>
-                <input id="password" name="password" type="password" required />
-              </div>
-              <div>
-                <label for="confirmPassword" data-i18n="confirmPassword"></label>
-                <input id="confirmPassword" name="confirmPassword" type="password" required />
-              </div>
-            </div>
-
-            <label class="consent">
-              <input id="consent" name="consent" type="checkbox" required />
-              <span data-i18n="consent"></span>
-            </label>
-
-            <button class="submit-btn" type="submit" data-i18n="submit"></button>
-            <div id="submitResult" class="result" role="status" aria-live="polite"></div>
-          </form>
-        </section>
-
-        <div class="divider" data-i18n="loginDivider"></div>
-
-        <section class="auth-section">
-          <div>
-            <h3 data-i18n="loginTitle"></h3>
-            <p class="section-copy" data-i18n="loginIntro"></p>
-          </div>
-
-          <form id="loginForm" novalidate>
-            <div class="row">
-              <div>
-                <label for="loginEmail" data-i18n="email"></label>
-                <input id="loginEmail" name="loginEmail" type="email" required />
-              </div>
-              <div>
-                <label for="loginPassword" data-i18n="password"></label>
-                <input id="loginPassword" name="loginPassword" type="password" required />
-              </div>
-            </div>
-
-            <button class="submit-btn" type="submit" data-i18n="loginSubmit"></button>
-            <div id="loginResult" class="result" role="status" aria-live="polite"></div>
-          </form>
-        </section>
-
-        <div class="divider" data-i18n="or"></div>
-
-        <div class="oauth-row">
-          <button type="button" class="oauth-btn" id="googleBtn">
-            <span class="oauth-logo google" aria-hidden="true">G</span>
-            <span class="oauth-label" data-i18n="google"></span>
-          </button>
-          <button type="button" class="oauth-btn" id="microsoftBtn">
-            <span class="oauth-logo microsoft" aria-hidden="true"></span>
-            <span class="oauth-label" data-i18n="microsoft"></span>
-          </button>
-          <button type="button" class="oauth-btn" id="appleBtn">
-            <span class="oauth-logo apple" aria-hidden="true">A</span>
-            <span class="oauth-label" data-i18n="apple"></span>
-          </button>
-        </div>
-      </article>
-    </section>
-  </main>
+    <div class="footer-bottom">
+      <span>© 2026 MindDo AI Learning Center</span>
+      <span><span data-lang="zh">让每个孩子都能驾驭 AI</span><span data-lang="en">Empowering every child with AI</span></span>
+    </div>
+  </footer>
 
   <script src="assets/minddo-flow.js"></script>
   <script>
@@ -858,5 +834,3 @@
   </script>
 </body>
 </html>
-
-
