@@ -133,37 +133,53 @@
     }
     .hero-stat span { font-size: 13px; color: rgba(255, 241, 220, 0.68); line-height: 1.4; }
 
-    /* Hero form */
+    /* Hero trial card */
     .hero-form-card {
       background: rgba(255, 252, 247, 0.97); border-radius: 24px;
-      padding: 32px; box-shadow: 0 32px 80px rgba(0, 0, 0, 0.28);
+      padding: 30px; box-shadow: 0 32px 80px rgba(0, 0, 0, 0.28);
       border: 1px solid rgba(255, 237, 200, 0.5);
     }
-    .hero-form-card h2 { font-size: 21px; font-weight: 800; color: var(--clay); margin-bottom: 6px; }
-    .hero-form-card > p { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 22px; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label {
-      display: block; font-size: 11px; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px;
+    .hero-form-card .gift-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 999px;
+      background: linear-gradient(135deg, #fff6de, #ffd977);
+      color: var(--clay); font-size: 11px; font-weight: 800;
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px;
     }
-    .form-group input, .form-group select {
-      width: 100%; padding: 11px 14px;
-      border: 1px solid rgba(126, 77, 29, 0.18); border-radius: 11px;
-      background: rgba(255, 250, 244, 0.98); color: var(--text);
-      font-size: 14px; font-family: inherit; outline: none; transition: 0.15s;
-    }
-    .form-group input:focus, .form-group select:focus {
-      border-color: var(--gold); box-shadow: 0 0 0 3px rgba(236, 171, 47, 0.15);
-    }
-    .form-submit {
-      width: 100%; padding: 14px;
+    .hero-form-card h2 { font-size: 24px; font-weight: 900; color: var(--clay); line-height: 1.15; margin-bottom: 8px; letter-spacing: -0.01em; }
+    .hero-form-card > p { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
+    .trial-cta {
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; padding: 15px 20px;
       background: linear-gradient(135deg, #ffe5a7, var(--gold));
-      color: #4b250f; border: none; border-radius: 11px;
+      color: #4b250f; border: none; border-radius: 14px;
       font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit;
-      transition: 0.2s; margin-top: 6px; box-shadow: 0 8px 24px rgba(215, 144, 22, 0.3);
+      transition: 0.2s; box-shadow: 0 10px 26px rgba(215, 144, 22, 0.32); text-decoration: none;
     }
-    .form-submit:hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(215, 144, 22, 0.4); }
-    .form-note { text-align: center; font-size: 11px; color: var(--muted); margin-top: 10px; opacity: 0.8; }
+    .trial-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(215, 144, 22, 0.42); }
+    .trial-steps { display: grid; gap: 10px; margin: 20px 0 18px; }
+    .trial-steps .step {
+      display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: flex-start;
+      padding: 12px 14px; border-radius: 12px;
+      background: rgba(255, 248, 238, 0.8); border: 1px solid rgba(151, 84, 21, 0.1);
+    }
+    .trial-steps .step .sn {
+      width: 28px; height: 28px; border-radius: 999px;
+      background: linear-gradient(135deg, #fff6de, #ffd977);
+      color: var(--clay); display: grid; place-items: center;
+      font-size: 13px; font-weight: 800;
+    }
+    .trial-steps .step strong { display: block; font-size: 13px; font-weight: 800; color: var(--clay); margin-bottom: 2px; }
+    .trial-steps .step span { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .trial-perks { display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; font-size: 11px; color: var(--muted); padding: 10px 0; border-top: 1px dashed rgba(151, 84, 21, 0.16); }
+    .trial-perks span { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+    .trial-perks span::before { content: "✓"; color: var(--success, #6f8f57); font-weight: 800; }
+    .trial-secondary {
+      display: block; text-align: center; font-size: 12px; font-weight: 700;
+      color: var(--muted); padding-top: 10px; border-top: 1px dashed rgba(151, 84, 21, 0.16);
+      text-decoration: none; transition: 0.15s;
+    }
+    .trial-secondary:hover { color: var(--clay); }
 
     /* TRUST BAR */
     .trust-bar {
@@ -436,53 +452,55 @@
       </div>
 
       <div class="hero-form-card">
+        <div class="gift-badge">🎁 <span data-lang="zh">免费体验课</span><span data-lang="en">Free Trial Class</span></div>
         <h2>
-          <span data-lang="zh">预约免费体验课</span>
-          <span data-lang="en">Book a Free Session</span>
+          <span data-lang="zh">45 分钟体验 AI 世界</span>
+          <span data-lang="en">45 Minutes in the AI World</span>
         </h2>
         <p>
-          <span data-lang="zh">填写信息，我们将在24小时内联系您安排时间。</span>
-          <span data-lang="en">Fill in the info and we'll reach out within 24 hours.</span>
+          <span data-lang="zh">无需先填表，直接选时间即可预约。首次试课完全免费，不收预付款。</span>
+          <span data-lang="en">No form required — just pick a time. First trial is completely free, no prepayment.</span>
         </p>
-        <form action="trial.html" method="get">
-          <div class="form-group">
-            <label><span data-lang="zh">家长姓名</span><span data-lang="en">Parent Name</span></label>
-            <input type="text" />
+
+        <a href="trial.html" class="trial-cta">
+          <span data-lang="zh">立即预约免费试课 →</span>
+          <span data-lang="en">Book My Free Trial →</span>
+        </a>
+
+        <div class="trial-steps">
+          <div class="step">
+            <div class="sn">1</div>
+            <div>
+              <strong><span data-lang="zh">选择时间</span><span data-lang="en">Pick a Time</span></strong>
+              <span><span data-lang="zh">在线日历选择合适时段与意向课程</span><span data-lang="en">Choose a slot and AI track from the calendar</span></span>
+            </div>
           </div>
-          <div class="form-group">
-            <label><span data-lang="zh">联系电话</span><span data-lang="en">Phone Number</span></label>
-            <input type="tel" />
+          <div class="step">
+            <div class="sn">2</div>
+            <div>
+              <strong><span data-lang="zh">完善信息</span><span data-lang="en">Enter Info</span></strong>
+              <span><span data-lang="zh">填写联系方式并完成邮箱或手机验证</span><span data-lang="en">Fill contact info and verify by email or SMS</span></span>
+            </div>
           </div>
-          <div class="form-group">
-            <label><span data-lang="zh">孩子年龄</span><span data-lang="en">Child's Age</span></label>
-            <select>
-              <option value="">—</option>
-              <option>5–7</option>
-              <option>8–10</option>
-              <option>11–14</option>
-              <option>15–18</option>
-            </select>
+          <div class="step">
+            <div class="sn">3</div>
+            <div>
+              <strong><span data-lang="zh">上课体验</span><span data-lang="en">Attend Class</span></strong>
+              <span><span data-lang="zh">和老师一起完成你的第一个 AI 小作品</span><span data-lang="en">Build your first AI project with an instructor</span></span>
+            </div>
           </div>
-          <div class="form-group">
-            <label><span data-lang="zh">感兴趣的课程</span><span data-lang="en">Interested Program</span></label>
-            <select>
-              <option value="">—</option>
-              <option><span data-lang="zh">AI 启蒙入门</span><span data-lang="en">AI Fundamentals</span></option>
-              <option><span data-lang="zh">AI 创意工坊</span><span data-lang="en">AI Creative Studio</span></option>
-              <option><span data-lang="zh">AI 编程进阶</span><span data-lang="en">AI Programming</span></option>
-              <option><span data-lang="zh">AI 项目营</span><span data-lang="en">AI Project Camp</span></option>
-              <option><span data-lang="zh">AI 竞赛冲刺</span><span data-lang="en">AI Competition</span></option>
-            </select>
-          </div>
-          <button type="submit" class="form-submit">
-            <span data-lang="zh">立即预约 →</span>
-            <span data-lang="en">Reserve My Spot →</span>
-          </button>
-        </form>
-        <p class="form-note">
-          <span data-lang="zh">无需承诺 · 首次试课完全免费</span>
-          <span data-lang="en">No commitment · First trial is completely free</span>
-        </p>
+        </div>
+
+        <div class="trial-perks">
+          <span><span data-lang="zh">无需预付</span><span data-lang="en">No prepayment</span></span>
+          <span><span data-lang="zh">首次免费</span><span data-lang="en">First free</span></span>
+          <span><span data-lang="zh">线上/线下</span><span data-lang="en">Online/in-person</span></span>
+        </div>
+
+        <a href="campuses.html" class="trial-secondary">
+          <span data-lang="zh">📍 查看 11 个校区 · 按邮编推荐 →</span>
+          <span data-lang="en">📍 See our 11 campuses · ZIP-based match →</span>
+        </a>
       </div>
     </div>
   </section>
