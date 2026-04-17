@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>校区分布 | MindDo Campuses</title>
+  <style>
+    :root { --bg:#fbf7ef; --sand:#f2e4c9; --card:rgba(255,252,246,0.94); --line:rgba(126,77,29,0.14); --text:#45200d; --muted:#826956; --gold:#ecab2f; --gold-deep:#d79016; --clay:#8f3c16; --brown:#5f2c12; --shadow:0 24px 60px rgba(100,58,22,0.12); --success:#6f8f57; --error:#c46a4d; }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
+    a { color:inherit; text-decoration:none; }
+    button { font:inherit; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+
+    .navbar { position:sticky; top:0; z-index:100; background:rgba(255,252,246,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:44px; height:44px; object-fit:contain; }
+    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
+    .nav-menu { display:flex; align-items:center; gap:4px; list-style:none; }
+    .nav-menu a { padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600; color:var(--muted); transition:0.15s; }
+    .nav-menu a:hover, .nav-menu a.active { color:var(--clay); background:rgba(143,60,22,0.06); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .lang-btn { background:none; border:1px solid var(--line); border-radius:999px; padding:7px 14px; cursor:pointer; font-size:13px; font-weight:600; color:var(--clay); font-family:inherit; }
+    .lang-btn:hover,.lang-btn.active { background:var(--sand); border-color:var(--gold); }
+    .btn-primary { background:linear-gradient(135deg,#ffe5a7,var(--gold)); color:#4b250f; border:none; border-radius:999px; padding:11px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(215,144,22,0.28); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-primary:hover { transform:translateY(-2px); }
+    .btn-secondary { background:rgba(255,248,239,0.98); color:var(--clay); border:1px solid var(--line); border-radius:999px; padding:11px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(215,144,22,0.38); }
+
+    .page-hero { background:linear-gradient(145deg,#3a1a08 0%,#5f2c12 50%,#8f3c16 100%); padding:64px 0 48px; position:relative; overflow:hidden; }
+    .page-hero::before { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 18% 55%,rgba(236,171,47,0.18) 0%,transparent 48%),radial-gradient(circle at 82% 22%,rgba(236,171,47,0.1) 0%,transparent 38%); }
+    .page-hero-inner { max-width:1280px; margin:0 auto; padding:0 48px; position:relative; z-index:1; color:#fff8ef; text-align:center; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(236,171,47,0.18); border:1px solid rgba(236,171,47,0.3); color:#ffd98e; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
+    .page-hero h1 { font-size:clamp(28px,3.5vw,44px); font-weight:900; color:#fff8ef; letter-spacing:-0.02em; margin-bottom:10px; }
+    .page-hero .sub { font-size:16px; color:rgba(255,241,220,0.78); line-height:1.75; max-width:600px; margin:0 auto 28px; }
+
+    .zip-finder { background:rgba(255,252,247,0.08); border:1px solid rgba(255,237,215,0.2); border-radius:20px; padding:24px; max-width:600px; margin:0 auto; backdrop-filter:blur(8px); }
+    .zip-label { font-size:12px; font-weight:800; color:rgba(255,237,215,0.7); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:12px; display:block; }
+    .zip-input-row { display:flex; gap:10px; }
+    .zip-input { flex:1; padding:13px 18px; border-radius:999px; border:1px solid rgba(255,237,215,0.28); background:rgba(255,252,247,0.95); color:var(--text); font-size:15px; font-weight:600; font-family:inherit; outline:none; letter-spacing:0.04em; }
+    .zip-input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(236,171,47,0.25); }
+    .zip-btn { background:linear-gradient(135deg,#ffe5a7,var(--gold)); color:#4b250f; border:none; border-radius:999px; padding:13px 22px; font-size:14px; font-weight:800; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 8px 24px rgba(215,144,22,0.35); white-space:nowrap; }
+    .zip-btn:hover { transform:translateY(-2px); }
+    .zip-hint { font-size:12px; color:rgba(255,241,220,0.55); margin-top:10px; text-align:center; }
+
+    .result-box { margin-top:18px; padding:18px 20px; background:rgba(111,143,87,0.18); border:1px solid rgba(111,143,87,0.5); border-radius:16px; display:none; text-align:left; color:#fff8ef; }
+    .result-box.on { display:grid; grid-template-columns:48px 1fr auto; gap:16px; align-items:center; }
+    .result-box.error { background:rgba(196,106,77,0.16); border-color:rgba(196,106,77,0.5); }
+    .result-box .check { width:48px; height:48px; border-radius:999px; background:var(--success); color:#fff; display:grid; place-items:center; font-size:22px; font-weight:800; }
+    .result-box.error .check { background:var(--error); }
+    .result-label { font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,237,215,0.65); margin-bottom:2px; }
+    .result-name { font-size:20px; font-weight:900; color:#fff8ef; line-height:1.2; }
+    .result-meta { font-size:13px; color:rgba(255,241,220,0.75); margin-top:4px; }
+    .result-box .go-btn { background:rgba(255,252,247,0.1); border:1px solid rgba(255,237,215,0.3); color:#fff8ef; padding:9px 18px; border-radius:999px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .result-box .go-btn:hover { background:rgba(255,252,247,0.18); }
+
+    /* MAP */
+    .page-content { padding:56px 0 80px; }
+    .content-inner { max-width:1280px; margin:0 auto; padding:0 48px; }
+    .section-head { margin-bottom:32px; }
+    .section-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(255,214,138,0.2); border:1px solid rgba(176,112,39,0.22); color:#9c5a1d; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:12px; }
+    .section-title { font-size:clamp(24px,3vw,36px); font-weight:900; color:var(--clay); line-height:1.1; letter-spacing:-0.02em; margin-bottom:10px; }
+    .section-sub { font-size:15px; color:var(--muted); line-height:1.7; max-width:640px; }
+
+    .map-wrap { position:relative; margin-bottom:40px; border-radius:22px; overflow:hidden; background:linear-gradient(135deg,#f2e4c9 0%,#e8d5a8 60%,#dbc08a 100%); border:1px solid var(--line); box-shadow:0 18px 44px rgba(123,72,24,0.1); aspect-ratio:3/1; min-height:280px; }
+    .map-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(126,77,29,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(126,77,29,0.06) 1px,transparent 1px); background-size:48px 48px; }
+    .map-regions { position:absolute; inset:0; pointer-events:none; }
+    .map-region-label { position:absolute; font-size:11px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:rgba(143,60,22,0.35); }
+    .map-pin { position:absolute; transform:translate(-50%,-100%); cursor:pointer; transition:0.2s; z-index:2; }
+    .map-pin .dot { width:16px; height:16px; border-radius:999px; background:var(--clay); border:3px solid #fff8ef; box-shadow:0 4px 10px rgba(100,58,22,0.3); position:relative; margin:0 auto; }
+    .map-pin .dot::after { content:""; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%); border-left:5px solid transparent; border-right:5px solid transparent; border-top:8px solid #fff8ef; }
+    .map-pin .pin-label { position:absolute; top:-26px; left:50%; transform:translateX(-50%); background:var(--clay); color:#fff8ef; padding:3px 8px; border-radius:999px; font-size:11px; font-weight:700; white-space:nowrap; opacity:0; transition:0.15s; pointer-events:none; }
+    .map-pin:hover .pin-label, .map-pin.active .pin-label { opacity:1; }
+    .map-pin:hover .dot, .map-pin.active .dot { background:linear-gradient(135deg,#ffe5a7,var(--gold)); transform:scale(1.25); }
+    .map-pin.recommended .dot { background:linear-gradient(135deg,#ffe5a7,var(--gold)); border-color:#fff; box-shadow:0 0 0 4px rgba(236,171,47,0.3),0 6px 14px rgba(192,123,39,0.4); animation:pulse 2s ease-in-out infinite; }
+    .map-pin.recommended .pin-label { opacity:1; background:var(--gold-deep); }
+    @keyframes pulse { 0%,100% { box-shadow:0 0 0 4px rgba(236,171,47,0.3),0 6px 14px rgba(192,123,39,0.4); } 50% { box-shadow:0 0 0 8px rgba(236,171,47,0.15),0 6px 14px rgba(192,123,39,0.4); } }
+    .map-legend { position:absolute; top:16px; right:16px; background:rgba(255,252,247,0.94); border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-size:11px; color:var(--muted); line-height:1.5; backdrop-filter:blur(8px); }
+    .map-legend strong { color:var(--clay); font-weight:800; }
+
+    /* REGIONS + CARDS */
+    .region-row { margin-bottom:40px; }
+    .region-head { display:flex; align-items:baseline; gap:12px; margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid var(--sand); }
+    .region-head h3 { font-size:20px; font-weight:900; color:var(--clay); }
+    .region-head .count { font-size:13px; font-weight:700; color:var(--muted); }
+    .region-head .flag { font-size:22px; }
+
+    .campus-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .campus-card { position:relative; background:var(--card); border:1px solid var(--line); border-radius:18px; padding:22px; transition:0.2s; box-shadow:0 10px 24px rgba(123,72,24,0.06); scroll-margin-top:90px; }
+    .campus-card:hover { transform:translateY(-3px); border-color:rgba(208,129,36,0.4); box-shadow:0 18px 40px rgba(123,72,24,0.12); }
+    .campus-card.recommended { border-color:var(--gold); background:linear-gradient(180deg,rgba(255,246,222,0.95),rgba(255,251,243,0.94)); box-shadow:0 20px 44px rgba(208,129,36,0.22); }
+    .campus-card.recommended::before { content:""; position:absolute; inset:0; border-radius:18px; pointer-events:none; box-shadow:inset 0 0 0 2px var(--gold); }
+    .badge-recommended { position:absolute; top:-10px; right:18px; background:linear-gradient(135deg,#ffe5a7,var(--gold)); color:#4b250f; padding:5px 12px; border-radius:999px; font-size:10px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; box-shadow:0 4px 12px rgba(215,144,22,0.35); }
+    .campus-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; }
+    .campus-head h4 { font-size:18px; font-weight:800; color:var(--clay); }
+    .campus-head .distance { font-size:12px; font-weight:700; color:var(--gold-deep); padding:4px 10px; border-radius:999px; background:rgba(236,171,47,0.15); white-space:nowrap; }
+    .campus-region { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px; }
+    .campus-info { display:grid; gap:8px; font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:16px; }
+    .campus-info .row { display:flex; align-items:flex-start; gap:8px; }
+    .campus-info .icon { width:16px; font-size:13px; flex-shrink:0; color:var(--clay); }
+    .campus-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .campus-action { flex:1; background:rgba(255,248,239,0.98); border:1px solid var(--line); color:var(--clay); padding:8px 12px; border-radius:999px; font-size:12px; font-weight:700; font-family:inherit; cursor:pointer; text-align:center; text-decoration:none; transition:0.15s; }
+    .campus-action:hover { background:linear-gradient(135deg,#fff6de,#ffd977); border-color:rgba(208,129,36,0.4); }
+    .campus-action.primary { background:linear-gradient(135deg,#ffe5a7,var(--gold)); color:#4b250f; border:none; }
+
+    .cta-band { background:linear-gradient(135deg,rgba(255,248,234,0.98),rgba(249,236,205,0.96)); border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:72px 48px; text-align:center; }
+    .cta-band h2 { font-size:clamp(24px,3vw,36px); font-weight:900; color:var(--clay); letter-spacing:-0.02em; margin:12px 0; }
+    .cta-band p { font-size:15px; color:var(--muted); line-height:1.7; max-width:520px; margin:0 auto 28px; }
+    .cta-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+    .footer { background:var(--brown); color:rgba(255,245,230,0.78); padding:60px 48px 32px; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:40px; margin-bottom:40px; }
+    .footer-logo-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .footer-logo-row img { width:36px; height:36px; object-fit:contain; filter:brightness(2) saturate(0.2); }
+    .footer-logo-row span { font-size:18px; font-weight:800; color:#fff8ef; }
+    .footer-brand p { font-size:13px; line-height:1.7; margin-bottom:16px; }
+    .footer-hours { background:rgba(255,245,230,0.07); border:1px solid rgba(255,237,215,0.1); border-radius:12px; padding:14px 16px; font-size:12px; line-height:1.8; }
+    .footer-col h4 { font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,237,215,0.5); margin-bottom:16px; }
+    .footer-col ul { list-style:none; display:grid; gap:10px; }
+    .footer-col ul a { font-size:14px; color:rgba(255,245,230,0.72); }
+    .footer-col ul a:hover { color:#fff8ef; }
+    .footer-bottom { max-width:1280px; margin:0 auto; padding-top:24px; border-top:1px solid rgba(255,237,215,0.1); display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(255,245,230,0.45); }
+
+    @media (max-width:1000px) { .campus-grid { grid-template-columns:repeat(2,1fr); } .map-wrap { aspect-ratio:2/1; } }
+    @media (max-width:900px) { .navbar { padding:0 24px; } .nav-menu { display:none; } .page-hero-inner,.content-inner { padding:0 24px; } .footer-inner { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:640px) { .campus-grid { grid-template-columns:1fr; } .footer-inner { grid-template-columns:1fr; } .footer { padding:48px 24px 28px; } .zip-input-row { flex-direction:column; } .zip-btn { width:100%; } .result-box.on { grid-template-columns:auto 1fr; } .result-box .go-btn { grid-column:1 / -1; width:100%; text-align:center; } .map-wrap { aspect-ratio:4/3; min-height:320px; } .map-legend { display:none; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html"><img src="assets/logo.png" alt="MindDo logo" /><span class="nav-brand-name">MindDo</span></a>
+    <ul class="nav-menu">
+      <li><a href="index.html"><span data-lang="zh">首页</span><span data-lang="en">Home</span></a></li>
+      <li><a href="campuses.html" class="active"><span data-lang="zh">校区</span><span data-lang="en">Campus</span></a></li>
+      <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+      <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="lang-btn active" type="button" data-set-lang="zh-CN">中文</button>
+      <button class="lang-btn" type="button" data-set-lang="en">English</button>
+      <a class="btn-primary" href="student-account.html"><span data-lang="zh">学员中心</span><span data-lang="en">My Account</span></a>
+    </div>
+  </nav>
+
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-tag"><span data-lang="zh">校区分布</span><span data-lang="en">Our Campuses</span></div>
+      <h1><span data-lang="zh">找到离你最近的 MindDo 校区</span><span data-lang="en">Find Your Nearest MindDo Campus</span></h1>
+      <p class="sub"><span data-lang="zh">我们在 11 个城市设有校区，覆盖北美主要都市。输入邮编，我们会自动为你推荐最近的校区。</span><span data-lang="en">With 11 campuses across North America, enter your ZIP code and we'll recommend the closest one.</span></p>
+
+      <div class="zip-finder">
+        <label class="zip-label" for="zipInput"><span data-lang="zh">输入你的邮编</span><span data-lang="en">Enter Your ZIP / Postal Code</span></label>
+        <div class="zip-input-row">
+          <input id="zipInput" class="zip-input" type="text" placeholder="92614 · 98052 · K1A 0A6" maxlength="10" autocomplete="postal-code" />
+          <button id="findBtn" class="zip-btn" type="button"><span data-lang="zh">查找最近校区 →</span><span data-lang="en">Find Nearest →</span></button>
+        </div>
+        <div class="zip-hint"><span data-lang="zh">支持美国邮编和加拿大邮政编码，输入后回车或点击按钮</span><span data-lang="en">Supports US ZIP and Canadian postal codes. Press Enter or tap the button.</span></div>
+        <div class="result-box" id="resultBox">
+          <div class="check" id="resultIcon">✓</div>
+          <div>
+            <div class="result-label" id="resultLabel"><span data-lang="zh">推荐校区</span><span data-lang="en">Recommended Campus</span></div>
+            <div class="result-name" id="resultName">—</div>
+            <div class="result-meta" id="resultMeta">—</div>
+          </div>
+          <button class="go-btn" id="goRecommendedBtn" type="button"><span data-lang="zh">查看详情 →</span><span data-lang="en">View →</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="content-inner">
+      <div class="section-head">
+        <div class="section-tag"><span data-lang="zh">校区地图</span><span data-lang="en">Campus Map</span></div>
+        <h2 class="section-title"><span data-lang="zh">11 个校区，一张地图</span><span data-lang="en">11 Campuses on One Map</span></h2>
+        <p class="section-sub"><span data-lang="zh">鼠标悬停可查看校区名称，点击则滚动到该校区卡片。</span><span data-lang="en">Hover a pin for the campus name, click to scroll to its details.</span></p>
+      </div>
+
+      <div class="map-wrap">
+        <div class="map-grid"></div>
+        <div class="map-regions">
+          <div class="map-region-label" style="top:20%; left:12%;">Pacific NW</div>
+          <div class="map-region-label" style="bottom:14%; left:12%;">California</div>
+          <div class="map-region-label" style="top:32%; left:52%;">Midwest</div>
+          <div class="map-region-label" style="top:14%; right:14%;">Canada</div>
+        </div>
+        <div id="mapPins"></div>
+        <div class="map-legend">
+          <strong><span data-lang="zh">图例</span><span data-lang="en">Legend</span></strong><br>
+          🟠 <span data-lang="zh">校区</span><span data-lang="en">Campus</span> &nbsp;
+          ⭐ <span data-lang="zh">推荐</span><span data-lang="en">Recommended</span>
+        </div>
+      </div>
+
+      <div id="regionsContainer"></div>
+    </div>
+  </div>
+
+  <div class="cta-band">
+    <div class="section-tag"><span data-lang="zh">还没决定？</span><span data-lang="en">Not Sure?</span></div>
+    <h2><span data-lang="zh">先预约一节免费试课</span><span data-lang="en">Book a Free Trial First</span></h2>
+    <p><span data-lang="zh">无论你选哪个校区，第一节体验课都是免费的。线上学员也可以远程参加。</span><span data-lang="en">Your first trial class is free at any campus — online students can join remotely too.</span></p>
+    <div class="cta-btns">
+      <a class="btn-primary" href="trial.html"><span data-lang="zh">预约免费试课</span><span data-lang="en">Book Free Trial</span></a>
+      <a class="btn-secondary" href="course-system.html"><span data-lang="zh">查看课程体系</span><span data-lang="en">View Curriculum</span></a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/logo.png" alt="MindDo" /><span>MindDo</span></div>
+        <p><span data-lang="zh">AI、编程与未来技能青少年学习中心。</span><span data-lang="en">AI and coding learning center for young learners.</span></p>
+        <div class="footer-hours">
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,237,215,0.45);margin-bottom:8px;"><span data-lang="zh">开放时间</span><span data-lang="en">Hours</span></div>
+          <span data-lang="zh">周一至周五 3:00pm – 7:30pm<br>周六 9:30am – 5:00pm<br>周日 休息</span>
+          <span data-lang="en">Mon – Fri 3:00pm – 7:30pm<br>Saturday 9:30am – 5:00pm<br>Sunday Closed</span>
+        </div>
+      </div>
+      <div class="footer-col"><h4><span data-lang="zh">课程项目</span><span data-lang="en">Programs</span></h4><ul>
+        <li><a href="course-system.html"><span data-lang="zh">AI 启蒙入门</span><span data-lang="en">AI Fundamentals</span></a></li>
+        <li><a href="course-system.html"><span data-lang="zh">AI 创意工坊</span><span data-lang="en">AI Creative Studio</span></a></li>
+        <li><a href="course-system.html"><span data-lang="zh">AI 编程进阶</span><span data-lang="en">AI Programming</span></a></li>
+        <li><a href="course-system.html"><span data-lang="zh">AI 竞赛冲刺</span><span data-lang="en">AI Competition</span></a></li>
+        <li><a href="trial.html"><span data-lang="zh">AI 项目营</span><span data-lang="en">AI Project Camp</span></a></li>
+      </ul></div>
+      <div class="footer-col"><h4><span data-lang="zh">快速入口</span><span data-lang="en">Quick Access</span></h4><ul>
+        <li><a href="campuses.html"><span data-lang="zh">校区分布</span><span data-lang="en">Campuses</span></a></li>
+        <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+        <li><a href="assessment.html"><span data-lang="zh">能力评估</span><span data-lang="en">Assessment</span></a></li>
+        <li><a href="signup.html"><span data-lang="zh">注册 / 登录</span><span data-lang="en">Sign Up</span></a></li>
+        <li><a href="student-account.html"><span data-lang="zh">学员主页</span><span data-lang="en">Student Home</span></a></li>
+      </ul></div>
+      <div class="footer-col"><h4><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></h4><ul>
+        <li><a href="dashboard.html"><span data-lang="zh">运营看板</span><span data-lang="en">Dashboard</span></a></li>
+        <li><a href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a></li>
+        <li><a href="new-trials.html"><span data-lang="zh">新试课列表</span><span data-lang="en">New Trials</span></a></li>
+        <li><a href="new-students.html"><span data-lang="zh">新学员列表</span><span data-lang="en">New Students</span></a></li>
+        <li><a href="request-center.html"><span data-lang="zh">申请处理中心</span><span data-lang="en">Request Center</span></a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MindDo Learning Center · <span data-lang="zh">保留所有权利</span><span data-lang="en">All rights reserved</span></span>
+      <span><span data-lang="zh">隐私政策 · 服务条款</span><span data-lang="en">Privacy · Terms</span></span>
+    </div>
+  </footer>
+
+  <script src="assets/minddo-flow.js"></script>
+  <script>
+    (function () {
+      var CAMPUSES = [
+        { id: "irvine", zh: "尔湾校区", en: "Irvine", region: "CA", regionZh: "加州 · 橙县", regionEn: "California · Orange County",
+          address: "5505 Alton Pkwy, Irvine, CA 92618", phone: "(949) 555-0101", lat: 33.6846, lng: -117.8265, flag: "🏖️" },
+        { id: "arcadia", zh: "阿凯迪亚校区", en: "Arcadia", region: "CA", regionZh: "加州 · 洛杉矶", regionEn: "California · LA County",
+          address: "111 E Huntington Dr, Arcadia, CA 91006", phone: "(626) 555-0102", lat: 34.1397, lng: -118.0353, flag: "🌴" },
+        { id: "diamond-bar", zh: "钻石吧校区", en: "Diamond Bar", region: "CA", regionZh: "加州 · 洛杉矶", regionEn: "California · LA County",
+          address: "1450 S Bridge Gate Dr, Diamond Bar, CA 91765", phone: "(909) 555-0103", lat: 34.0286, lng: -117.8103, flag: "💎" },
+        { id: "san-diego", zh: "圣地亚哥校区", en: "San Diego", region: "CA", regionZh: "加州 · 圣地亚哥", regionEn: "California · San Diego",
+          address: "101 W Broadway, San Diego, CA 92101", phone: "(619) 555-0104", lat: 32.7157, lng: -117.1611, flag: "⛵" },
+        { id: "hollywood", zh: "好莱坞校区", en: "Hollywood", region: "CA", regionZh: "加州 · 洛杉矶", regionEn: "California · LA County",
+          address: "6801 Hollywood Blvd, Hollywood, CA 90028", phone: "(323) 555-0105", lat: 34.0928, lng: -118.3287, flag: "🎬" },
+        { id: "redmond", zh: "雷德蒙德校区", en: "Redmond", region: "WA", regionZh: "华州 · 西雅图", regionEn: "Washington · Seattle",
+          address: "16400 NE 83rd St, Redmond, WA 98052", phone: "(425) 555-0106", lat: 47.6740, lng: -122.1215, flag: "🌲" },
+        { id: "bothell", zh: "博塞尔校区", en: "Bothell", region: "WA", regionZh: "华州 · 西雅图", regionEn: "Washington · Seattle",
+          address: "18109 Bothell Way NE, Bothell, WA 98011", phone: "(425) 555-0107", lat: 47.7623, lng: -122.2054, flag: "🌧️" },
+        { id: "factoria", zh: "法克托里亚校区", en: "Factoria", region: "WA", regionZh: "华州 · 贝尔维尤", regionEn: "Washington · Bellevue",
+          address: "4052 Factoria Square Mall SE, Bellevue, WA 98006", phone: "(425) 555-0108", lat: 47.5806, lng: -122.1565, flag: "☕" },
+        { id: "west-lafayette", zh: "西拉斐特校区", en: "West Lafayette", region: "IN", regionZh: "印第安纳 · 普渡", regionEn: "Indiana · Purdue",
+          address: "120 N Salisbury St, West Lafayette, IN 47906", phone: "(765) 555-0109", lat: 40.4259, lng: -86.9081, flag: "🏫" },
+        { id: "ottawa", zh: "渥太华校区", en: "Ottawa", region: "ON", regionZh: "加拿大 · 安大略", regionEn: "Canada · Ontario",
+          address: "99 Bank St, Ottawa, ON K1P 6B9", phone: "(613) 555-0110", lat: 45.4215, lng: -75.6972, flag: "🍁" },
+        { id: "online", zh: "线上课程", en: "Online", region: "Virtual", regionZh: "线上课堂", regionEn: "Virtual Classroom",
+          address: "", phone: "", lat: null, lng: null, flag: "💻" }
+      ];
+
+      var REGIONS_ORDER = [
+        { key: "CA", zh: "加州校区 (California)", en: "California", flag: "☀️" },
+        { key: "WA", zh: "华州校区 (Washington)", en: "Washington", flag: "🌲" },
+        { key: "IN", zh: "印第安纳校区", en: "Indiana", flag: "🌾" },
+        { key: "ON", zh: "加拿大校区", en: "Canada", flag: "🍁" },
+        { key: "Virtual", zh: "线上", en: "Online", flag: "💻" }
+      ];
+
+      // ZIP2 → approximate lat/lng for US regions (good enough for distance ranking)
+      var ZIP2_COORDS = {
+        "90": [34.05, -118.25], "91": [34.10, -118.10], "92": [33.50, -117.30],
+        "93": [34.50, -119.00], "94": [37.78, -122.42], "95": [37.00, -121.50], "96": [40.50, -121.00],
+        "97": [44.05, -122.90], "98": [47.60, -122.30], "99": [47.60, -117.50],
+        "80": [39.75, -104.90], "85": [33.45, -112.07], "89": [36.10, -115.20],
+        "45": [39.10, -84.50], "46": [39.80, -86.15], "47": [40.42, -86.91], "48": [42.50, -83.80],
+        "60": [41.88, -87.63], "61": [40.00, -89.00], "63": [38.62, -90.20],
+        "10": [40.75, -73.98], "11": [40.70, -73.70], "02": [42.36, -71.06], "07": [40.73, -74.17],
+        "19": [39.95, -75.17], "20": [38.90, -77.03], "22": [38.85, -77.10],
+        "30": [33.75, -84.40], "33": [25.77, -80.19], "75": [32.78, -96.80], "77": [29.76, -95.37],
+        "73": [35.47, -97.52], "70": [29.95, -90.07]
+      };
+
+      var html = document.documentElement;
+      var langButtons = document.querySelectorAll("[data-set-lang]");
+
+      function langOf() { return html.getAttribute("lang") === "en" ? "en" : "zh-CN"; }
+      function k() { return langOf() === "en" ? "en" : "zh"; }
+
+      function haversine(la1, lo1, la2, lo2) {
+        var R = 3958.8;
+        var toRad = Math.PI / 180;
+        var dLat = (la2 - la1) * toRad;
+        var dLng = (lo2 - lo1) * toRad;
+        var sLat = Math.sin(dLat / 2);
+        var sLng = Math.sin(dLng / 2);
+        var a = sLat * sLat + Math.cos(la1 * toRad) * Math.cos(la2 * toRad) * sLng * sLng;
+        return 2 * R * Math.asin(Math.sqrt(a));
+      }
+
+      function zipToCoords(raw) {
+        if (!raw) return null;
+        var z = String(raw).trim().toUpperCase();
+        if (/^[A-Z]/.test(z)) {
+          var firstLetter = z.charAt(0);
+          if (firstLetter === "K") return { lat: 45.4215, lng: -75.6972, label: "Ottawa Area" };
+          if (firstLetter === "L" || firstLetter === "M" || firstLetter === "N" || firstLetter === "P") return { lat: 43.65, lng: -79.38, label: "Southern Ontario" };
+          if (firstLetter === "H" || firstLetter === "J") return { lat: 45.50, lng: -73.57, label: "Quebec" };
+          if (firstLetter === "V") return { lat: 49.25, lng: -123.12, label: "British Columbia" };
+          return null;
+        }
+        var digits = z.replace(/\D/g, "").slice(0, 5);
+        if (digits.length < 5) return null;
+        var z2 = digits.slice(0, 2);
+        var coords = ZIP2_COORDS[z2];
+        if (!coords) return null;
+        return { lat: coords[0], lng: coords[1], label: "ZIP " + digits };
+      }
+
+      function distanceRanked(origin) {
+        return CAMPUSES
+          .filter(function (c) { return c.lat !== null; })
+          .map(function (c) { return Object.assign({}, c, { distance: haversine(origin.lat, origin.lng, c.lat, c.lng) }); })
+          .sort(function (a, b) { return a.distance - b.distance; });
+      }
+
+      // Geographic bounds for the simple map (covers N America catchment)
+      var BOUND = { north: 49.5, south: 31, west: -125, east: -72 };
+      function latLngToPct(lat, lng) {
+        return {
+          x: ((lng - BOUND.west) / (BOUND.east - BOUND.west)) * 100,
+          y: ((BOUND.north - lat) / (BOUND.north - BOUND.south)) * 100
+        };
+      }
+
+      function renderMap(highlightId) {
+        var pinsEl = document.getElementById("mapPins");
+        pinsEl.innerHTML = CAMPUSES.filter(function (c) { return c.lat !== null; }).map(function (c) {
+          var p = latLngToPct(c.lat, c.lng);
+          var cls = "map-pin" + (c.id === highlightId ? " recommended" : "");
+          var label = k() === "zh" ? c.zh : c.en;
+          return "<a href=\"#campus-" + c.id + "\" class=\"" + cls + "\" style=\"left:" + p.x + "%;top:" + p.y + "%;\" data-campus=\"" + c.id + "\">" +
+            "<span class=\"pin-label\">" + label + "</span><span class=\"dot\"></span></a>";
+        }).join("");
+      }
+
+      function renderCampusCards(rankedById) {
+        var container = document.getElementById("regionsContainer");
+        container.innerHTML = REGIONS_ORDER.map(function (reg) {
+          var list = CAMPUSES.filter(function (c) { return c.region === reg.key; });
+          if (!list.length) return "";
+          var head = "<div class=\"region-head\"><span class=\"flag\">" + reg.flag + "</span><h3>" + (k() === "zh" ? reg.zh : reg.en) + "</h3><span class=\"count\">" + list.length + " " + (k() === "zh" ? "个校区" : (list.length > 1 ? "campuses" : "campus")) + "</span></div>";
+          var cards = list.map(function (c) {
+            var isRec = rankedById && c.id === rankedById.topId;
+            var dist = rankedById && rankedById.byId[c.id] ? rankedById.byId[c.id].toFixed(1) + " mi" : "";
+            var name = k() === "zh" ? c.zh : c.en;
+            var region = k() === "zh" ? c.regionZh : c.regionEn;
+            var addr = c.address || (k() === "zh" ? "全球学员可远程加入" : "Join from anywhere");
+            var phone = c.phone || (k() === "zh" ? "在线支持" : "Online support");
+            var recBadge = isRec ? "<div class=\"badge-recommended\">" + (k() === "zh" ? "⭐ 为你推荐" : "⭐ Best for you") + "</div>" : "";
+            var distBadge = dist ? "<span class=\"distance\">" + dist + "</span>" : "";
+            var actions = c.id === "online"
+              ? "<a class=\"campus-action primary\" href=\"trial.html\">" + (k() === "zh" ? "立即报名" : "Enroll") + "</a>" +
+                "<a class=\"campus-action\" href=\"course-system.html\">" + (k() === "zh" ? "课程详情" : "Programs") + "</a>"
+              : "<a class=\"campus-action primary\" href=\"trial.html\">" + (k() === "zh" ? "预约试课" : "Book Trial") + "</a>" +
+                "<a class=\"campus-action\" target=\"_blank\" rel=\"noopener\" href=\"https://maps.google.com/?q=" + encodeURIComponent(c.address) + "\">" + (k() === "zh" ? "查看地图" : "Directions") + "</a>";
+            return "<article id=\"campus-" + c.id + "\" class=\"campus-card" + (isRec ? " recommended" : "") + "\">" +
+              recBadge +
+              "<div class=\"campus-head\"><div><div class=\"campus-region\">" + region + "</div><h4>" + name + "</h4></div>" + distBadge + "</div>" +
+              "<div class=\"campus-info\">" +
+              (c.address ? "<div class=\"row\"><span class=\"icon\">📍</span><span>" + addr + "</span></div>" : "<div class=\"row\"><span class=\"icon\">🌐</span><span>" + addr + "</span></div>") +
+              (c.phone ? "<div class=\"row\"><span class=\"icon\">📞</span><span>" + phone + "</span></div>" : "<div class=\"row\"><span class=\"icon\">💬</span><span>" + phone + "</span></div>") +
+              "</div>" +
+              "<div class=\"campus-actions\">" + actions + "</div>" +
+              "</article>";
+          }).join("");
+          return "<section class=\"region-row\">" + head + "<div class=\"campus-grid\">" + cards + "</div></section>";
+        }).join("");
+      }
+
+      function doLookup(zipRaw) {
+        var box = document.getElementById("resultBox");
+        var icon = document.getElementById("resultIcon");
+        var nameEl = document.getElementById("resultName");
+        var metaEl = document.getElementById("resultMeta");
+        var labelEl = document.getElementById("resultLabel");
+        var goBtn = document.getElementById("goRecommendedBtn");
+
+        var coords = zipToCoords(zipRaw);
+        if (!coords) {
+          box.className = "result-box on error";
+          icon.textContent = "!";
+          labelEl.innerHTML = "<span data-lang=\"zh\">无法识别邮编</span><span data-lang=\"en\">Unrecognized ZIP</span>";
+          nameEl.textContent = k() === "zh" ? "暂时无法识别这个邮编" : "We couldn't find this ZIP code";
+          metaEl.textContent = k() === "zh" ? "推荐先尝试线上课程，或联系我们确认最近校区。" : "Try our online program, or contact us for the nearest campus.";
+          goBtn.onclick = function () { location.hash = "#campus-online"; };
+          renderMap(null);
+          renderCampusCards(null);
+          return;
+        }
+
+        var ranked = distanceRanked(coords);
+        var top = ranked[0];
+        var byId = {}; ranked.forEach(function (r) { byId[r.id] = r.distance; });
+
+        box.className = "result-box on";
+        icon.textContent = "✓";
+        labelEl.innerHTML = "<span data-lang=\"zh\">为你推荐</span><span data-lang=\"en\">Recommended for you</span>";
+        nameEl.textContent = k() === "zh" ? top.zh : top.en;
+        metaEl.textContent = (k() === "zh" ? "距离约 " : "About ") + top.distance.toFixed(1) + " mi · " + (k() === "zh" ? top.regionZh : top.regionEn);
+        goBtn.onclick = function () { location.hash = "#campus-" + top.id; };
+
+        renderMap(top.id);
+        renderCampusCards({ topId: top.id, byId: byId });
+      }
+
+      function setLang(lang) {
+        html.setAttribute("lang", lang);
+        localStorage.setItem("minddo_lang", lang);
+        document.title = (lang === "en" ? "Campuses" : "校区分布") + " | MindDo";
+        langButtons.forEach(function (btn) { btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang); });
+        // Re-render dynamic sections for language
+        var zip = document.getElementById("zipInput").value.trim();
+        if (zip) doLookup(zip);
+        else { renderMap(null); renderCampusCards(null); }
+      }
+
+      var savedLang = localStorage.getItem("minddo_lang");
+      setLang(savedLang === "en" ? "en" : "zh-CN");
+
+      langButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); });
+      });
+
+      document.getElementById("findBtn").addEventListener("click", function () {
+        doLookup(document.getElementById("zipInput").value.trim());
+      });
+      document.getElementById("zipInput").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") doLookup(e.target.value.trim());
+      });
+
+      // Initial render (no recommendation)
+      renderMap(null);
+      renderCampusCards(null);
+    })();
+  </script>
+</body>
+</html>
