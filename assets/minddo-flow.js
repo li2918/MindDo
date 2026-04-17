@@ -440,7 +440,10 @@
         "trial-register.html": "预约试课 · 填信息",
         "assessment.html": "能力评估",
         "signup.html": "注册登录",
-        "course-selection.html": "选课排课",
+        "course-selection.html": "选课 · 方案",
+        "course-schedule.html": "选课 · 时段",
+        "course-payment.html": "选课 · 支付",
+        "course-confirm.html": "选课 · 完成",
         "student-account.html": "学员中心",
         "feedback.html": "课堂反馈",
         "semester-report.html": "学期报告",
@@ -483,7 +486,10 @@
         "trial-register.html": "Trial · Info",
         "assessment.html": "Assessment",
         "signup.html": "Sign Up",
-        "course-selection.html": "Course Selection",
+        "course-selection.html": "Enroll · Plan",
+        "course-schedule.html": "Enroll · Schedule",
+        "course-payment.html": "Enroll · Pay",
+        "course-confirm.html": "Enroll · Done",
         "student-account.html": "Student Hub",
         "feedback.html": "Class Feedback",
         "semester-report.html": "Semester Report",
@@ -498,7 +504,7 @@
   };
 
   var PAGE_GROUPS = {
-    journey: ["trial.html", "trial-register.html", "assessment.html", "signup.html", "course-selection.html", "student-account.html", "feedback.html", "semester-report.html"],
+    journey: ["trial.html", "trial-register.html", "assessment.html", "signup.html", "course-selection.html", "course-schedule.html", "course-payment.html", "course-confirm.html", "student-account.html", "feedback.html", "semester-report.html"],
     ops: ["dashboard.html", "student-management.html", "request-center.html", "new-trials.html", "new-students.html"],
     info: ["index.html", "course-system.html"]
   };

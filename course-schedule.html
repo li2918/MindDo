@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>选课 · 第 1 步：选择方案 | Enrollment · Step 1</title>
+  <title>选课 · 第 2 步：课程时段 | Enrollment · Step 2</title>
   <style>
     :root { --bg:#fbf7ef; --sand:#f2e4c9; --card:rgba(255,252,246,0.94); --line:rgba(126,77,29,0.14); --text:#45200d; --muted:#826956; --gold:#ecab2f; --gold-deep:#d79016; --clay:#8f3c16; --brown:#5f2c12; --shadow:0 24px 60px rgba(100,58,22,0.12); --success:#6f8f57; --error:#c46a4d; }
     *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
@@ -56,22 +56,22 @@
     .layout { display:grid; grid-template-columns:1.4fr 1fr; gap:20px; align-items:start; }
     .panel { background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(123,72,24,0.08); padding:24px; }
     .panel h2 { margin:0 0 14px; font-size:19px; color:var(--clay); font-weight:800; }
+    .panel h3 { font-size:15px; color:var(--clay); font-weight:800; margin:18px 0 10px; }
     .panel .desc { font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:14px; }
 
-    .membership-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
-    .membership { position:relative; padding:18px; border-radius:18px; border:1px solid var(--line); background:rgba(255,251,245,0.9); cursor:pointer; transition:0.2s; display:block; }
-    .membership:hover { transform:translateY(-2px); border-color:rgba(208,129,36,0.45); }
-    .membership input { position:absolute; opacity:0; pointer-events:none; }
-    .membership.selected { border-color:var(--gold); background:linear-gradient(180deg,rgba(255,246,222,0.92),rgba(255,251,243,0.94)); box-shadow:0 14px 32px rgba(208,129,36,0.18); }
-    .membership .badge { display:inline-flex; padding:4px 10px; border-radius:999px; background:rgba(236,171,47,0.2); border:1px solid rgba(208,129,36,0.28); color:var(--clay); font-size:10px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
-    .membership.selected .badge { background:linear-gradient(135deg,#fff6de,#ffd977); }
-    .membership h3 { margin:0 0 8px; font-size:16px; color:var(--clay); font-weight:800; }
-    .membership .price { font-size:26px; font-weight:900; color:var(--clay); line-height:1; margin-bottom:4px; }
-    .membership .sub { font-size:12px; color:var(--muted); margin-bottom:12px; }
-    .membership .features { list-style:none; padding:0; margin:0; display:grid; gap:6px; font-size:12px; color:var(--muted); line-height:1.55; }
-    .membership .features li::before { content:"✓"; color:var(--success); font-weight:800; margin-right:6px; }
-    .membership .check-mark { position:absolute; top:14px; right:14px; width:22px; height:22px; border-radius:999px; background:var(--gold); color:#4b250f; display:none; align-items:center; justify-content:center; font-size:13px; font-weight:800; }
-    .membership.selected .check-mark { display:inline-flex; }
+    .day-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-top:4px; }
+    .day-chip { border:1px solid var(--line); background:rgba(255,251,245,0.9); border-radius:14px; padding:14px 6px; text-align:center; cursor:pointer; transition:0.15s; font-family:inherit; }
+    .day-chip:hover { border-color:rgba(208,129,36,0.46); transform:translateY(-1px); }
+    .day-chip.active { background:linear-gradient(135deg,#fff6de,#ffd977); border-color:rgba(208,129,36,0.5); box-shadow:0 10px 22px rgba(192,123,39,0.18); }
+    .day-chip .dname { display:block; font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; margin-bottom:4px; letter-spacing:0.06em; }
+    .day-chip.active .dname { color:var(--clay); }
+    .day-chip .dnum { display:block; font-size:18px; font-weight:800; color:var(--clay); }
+    .slot-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:4px; }
+    .slot-chip { border:1px solid var(--line); background:rgba(255,251,245,0.9); border-radius:14px; padding:14px 10px; text-align:center; cursor:pointer; transition:0.15s; font-family:inherit; }
+    .slot-chip:hover { border-color:rgba(208,129,36,0.46); transform:translateY(-1px); }
+    .slot-chip.active { background:linear-gradient(135deg,#fff6de,#ffd977); border-color:rgba(208,129,36,0.5); box-shadow:0 10px 22px rgba(192,123,39,0.18); }
+    .slot-chip .stime { font-size:15px; font-weight:800; color:var(--clay); display:block; margin-bottom:2px; }
+    .slot-chip .slabel { font-size:11px; font-weight:600; color:var(--muted); }
 
     .summary-panel { position:sticky; top:88px; }
     .summary-kv { display:grid; gap:6px; margin-bottom:14px; font-size:13px; }
@@ -82,7 +82,8 @@
     .total span:last-child { color:var(--clay); font-size:26px; font-weight:900; }
 
     .action-row { display:flex; justify-content:space-between; gap:12px; margin-top:28px; padding-top:22px; border-top:1px solid var(--line); flex-wrap:wrap; }
-    .action-row.end { justify-content:flex-end; }
+    .error-msg { font-size:14px; padding:12px 16px; border-radius:12px; margin-top:14px; display:none; background:rgba(196,106,77,0.1); border:1px solid rgba(196,106,77,0.3); color:var(--error); }
+    .error-msg.on { display:block; }
 
     .footer { background:var(--brown); color:rgba(255,245,230,0.78); padding:60px 48px 32px; }
     .footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:40px; margin-bottom:40px; }
@@ -97,9 +98,9 @@
     .footer-col ul a:hover { color:#fff8ef; }
     .footer-bottom { max-width:1280px; margin:0 auto; padding-top:24px; border-top:1px solid rgba(255,237,215,0.1); display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(255,245,230,0.45); }
 
-    @media (max-width:1000px) { .layout { grid-template-columns:1fr; } .summary-panel { position:static; } .membership-grid { grid-template-columns:1fr; } }
-    @media (max-width:900px) { .navbar { padding:0 24px; } .nav-menu { display:none; } .page-hero-inner,.content-inner { padding:0 24px; } .footer-inner { grid-template-columns:repeat(2,1fr); } .meta { grid-template-columns:repeat(2,1fr); } }
-    @media (max-width:640px) { .footer-inner { grid-template-columns:1fr; } .footer { padding:48px 24px 28px; } .action-row { flex-direction:column-reverse; } .action-row>* { width:100%; justify-content:center; } }
+    @media (max-width:1000px) { .layout { grid-template-columns:1fr; } .summary-panel { position:static; } }
+    @media (max-width:900px) { .navbar { padding:0 24px; } .nav-menu { display:none; } .page-hero-inner,.content-inner { padding:0 24px; } .footer-inner { grid-template-columns:repeat(2,1fr); } .meta { grid-template-columns:repeat(2,1fr); } .slot-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:640px) { .footer-inner { grid-template-columns:1fr; } .footer { padding:48px 24px 28px; } .day-grid { grid-template-columns:repeat(4,1fr); } .action-row { flex-direction:column-reverse; } .action-row>* { width:100%; justify-content:center; } }
   </style>
 </head>
 <body>
@@ -121,12 +122,12 @@
   <div class="page-hero">
     <div class="page-hero-inner">
       <div class="page-tag"><span data-lang="zh">课程报名</span><span data-lang="en">Course Enrollment</span></div>
-      <h1><span data-lang="zh">第 1 步：选择 Membership 方案</span><span data-lang="en">Step 1: Choose Your Membership</span></h1>
-      <p class="sub"><span data-lang="zh">选择适合学员的课时方案。可随时升级，差价按比例补收。</span><span data-lang="en">Pick the plan that fits the student's learning pace. You can upgrade any time with prorated pricing.</span></p>
+      <h1><span data-lang="zh">第 2 步：选择上课时段</span><span data-lang="en">Step 2: Pick Class Schedule</span></h1>
+      <p class="sub"><span data-lang="zh">选择你希望的固定上课日和时段。开课后可每周灵活调整，请假系统自动处理。</span><span data-lang="en">Pick a recurring day and time slot. You can reschedule weekly after enrollment.</span></p>
       <div class="step-bar">
-        <div class="step-item active"><span class="step-num">1</span><span data-lang="zh">选择方案</span><span data-lang="en">Plan</span></div>
+        <div class="step-item done"><span class="step-num">✓</span><span data-lang="zh">已选方案</span><span data-lang="en">Plan</span></div>
         <div class="step-sep"></div>
-        <div class="step-item"><span class="step-num">2</span><span data-lang="zh">课程时段</span><span data-lang="en">Schedule</span></div>
+        <div class="step-item active"><span class="step-num">2</span><span data-lang="zh">课程时段</span><span data-lang="en">Schedule</span></div>
         <div class="step-sep"></div>
         <div class="step-item"><span class="step-num">3</span><span data-lang="zh">在线支付</span><span data-lang="en">Payment</span></div>
         <div class="step-sep"></div>
@@ -141,63 +142,27 @@
         <div class="meta-item"><span class="k" data-lang="zh">学员姓名</span><span class="k" data-lang="en">Student</span><span class="v" id="metaName">—</span></div>
         <div class="meta-item"><span class="k" data-lang="zh">学员 ID</span><span class="k" data-lang="en">Student ID</span><span class="v" id="metaId">—</span></div>
         <div class="meta-item"><span class="k" data-lang="zh">年级</span><span class="k" data-lang="en">Grade</span><span class="v" id="metaGrade">—</span></div>
-        <div class="meta-item"><span class="k" data-lang="zh">学习目标</span><span class="k" data-lang="en">Goal</span><span class="v" id="metaGoal">—</span></div>
+        <div class="meta-item"><span class="k" data-lang="zh">已选方案</span><span class="k" data-lang="en">Plan</span><span class="v" id="metaPlan">—</span></div>
       </div>
 
       <div class="layout">
         <article class="panel">
-          <h2><span data-lang="zh">可选方案</span><span data-lang="en">Available Plans</span></h2>
-          <p class="desc"><span data-lang="zh">根据学员学习节奏和目标选择合适的课时方案。</span><span data-lang="en">Pick the plan that matches your learning pace and goals.</span></p>
+          <h2><span data-lang="zh">首选上课日</span><span data-lang="en">Preferred Day</span></h2>
+          <p class="desc"><span data-lang="zh">选择你希望固定上课的那一天。</span><span data-lang="en">Pick your recurring weekly class day.</span></p>
+          <div class="day-grid" id="dayGrid"></div>
 
-          <div class="membership-grid" id="membershipGrid">
-            <label class="membership" data-plan="weekly1">
-              <input type="radio" name="membership" value="weekly1" />
-              <span class="check-mark">✓</span>
-              <span class="badge"><span data-lang="zh">基础方案</span><span data-lang="en">Foundation</span></span>
-              <h3><span data-lang="zh">每周一节课</span><span data-lang="en">1 Class / Week</span></h3>
-              <div class="price">$199</div>
-              <div class="sub"><span data-lang="zh">每月（4 课时）</span><span data-lang="en">Monthly (4 classes)</span></div>
-              <ul class="features">
-                <li><span data-lang="zh">建立稳定学习节奏</span><span data-lang="en">Build steady routine</span></li>
-                <li><span data-lang="zh">每周课堂反馈</span><span data-lang="en">Weekly feedback</span></li>
-              </ul>
-            </label>
+          <h3 style="margin-top:24px;"><span data-lang="zh">首选上课时段</span><span data-lang="en">Preferred Time Slot</span></h3>
+          <div class="slot-grid" id="slotGrid"></div>
 
-            <label class="membership" data-plan="weekly2">
-              <input type="radio" name="membership" value="weekly2" />
-              <span class="check-mark">✓</span>
-              <span class="badge"><span data-lang="zh">推荐方案</span><span data-lang="en">Recommended</span></span>
-              <h3><span data-lang="zh">每周两节课</span><span data-lang="en">2 Classes / Week</span></h3>
-              <div class="price">$369</div>
-              <div class="sub"><span data-lang="zh">每月（8 课时）</span><span data-lang="en">Monthly (8 classes)</span></div>
-              <ul class="features">
-                <li><span data-lang="zh">知识输入 + 项目训练</span><span data-lang="en">Balanced learning + projects</span></li>
-                <li><span data-lang="zh">双周成长评估</span><span data-lang="en">Bi-weekly reviews</span></li>
-              </ul>
-            </label>
-
-            <label class="membership" data-plan="weekly3">
-              <input type="radio" name="membership" value="weekly3" />
-              <span class="check-mark">✓</span>
-              <span class="badge"><span data-lang="zh">进阶方案</span><span data-lang="en">Advanced</span></span>
-              <h3><span data-lang="zh">每周三节课</span><span data-lang="en">3 Classes / Week</span></h3>
-              <div class="price">$519</div>
-              <div class="sub"><span data-lang="zh">每月（12 课时）</span><span data-lang="en">Monthly (12 classes)</span></div>
-              <ul class="features">
-                <li><span data-lang="zh">竞赛 / 作品集冲刺</span><span data-lang="en">Competition / portfolio</span></li>
-                <li><span data-lang="zh">每周导师复盘</span><span data-lang="en">Weekly mentor review</span></li>
-              </ul>
-            </label>
+          <div class="action-row">
+            <a class="btn-secondary" href="course-selection.html"><span data-lang="zh">← 返回选方案</span><span data-lang="en">← Back to Plan</span></a>
+            <button class="btn-primary" id="toStep3"><span data-lang="zh">下一步：在线支付 →</span><span data-lang="en">Next: Payment →</span></button>
           </div>
-
-          <div class="action-row end">
-            <a class="btn-secondary" href="student-account.html"><span data-lang="zh">稍后再选</span><span data-lang="en">Later</span></a>
-            <button class="btn-primary" id="toStep2" disabled><span data-lang="zh">下一步：选课时段 →</span><span data-lang="en">Next: Schedule →</span></button>
-          </div>
+          <div class="error-msg" id="err"></div>
         </article>
 
         <aside class="panel summary-panel">
-          <h2><span data-lang="zh">实时报价</span><span data-lang="en">Live Quote</span></h2>
+          <h2><span data-lang="zh">订单摘要</span><span data-lang="en">Order Summary</span></h2>
           <div class="summary-kv" id="summary"></div>
           <div class="total"><span><span data-lang="zh">本期总价</span><span data-lang="en">Period Total</span></span><span id="total">$0</span></div>
         </aside>
@@ -209,7 +174,7 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <div class="footer-logo-row"><img src="assets/logo.png" alt="MindDo" /><span>MindDo</span></div>
-        <p><span data-lang="zh">AI、编程与未来技能青少年学习中心，致力于让每个孩子都能在 AI 时代找到自己的位置。</span><span data-lang="en">AI and coding learning center for young learners.</span></p>
+        <p><span data-lang="zh">AI、编程与未来技能青少年学习中心。</span><span data-lang="en">AI and coding learning center for young learners.</span></p>
         <div class="footer-hours">
           <div style="font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,237,215,0.45);margin-bottom:8px;"><span data-lang="zh">开放时间</span><span data-lang="en">Hours</span></div>
           <span data-lang="zh">周一至周五 3:00pm – 7:30pm<br>周六 9:30am – 5:00pm<br>周日 休息</span>
@@ -253,81 +218,125 @@
         weekly2: { price: 369, labelZh: "每周两节课", labelEn: "2 Classes / Week" },
         weekly3: { price: 519, labelZh: "每周三节课", labelEn: "3 Classes / Week" }
       };
+      var DAYS = [
+        { k: "mon", zh: "周一", en: "Mon", num: "01" },
+        { k: "tue", zh: "周二", en: "Tue", num: "02" },
+        { k: "wed", zh: "周三", en: "Wed", num: "03" },
+        { k: "thu", zh: "周四", en: "Thu", num: "04" },
+        { k: "fri", zh: "周五", en: "Fri", num: "05" },
+        { k: "sat", zh: "周六", en: "Sat", num: "06" },
+        { k: "sun", zh: "周日", en: "Sun", num: "07" }
+      ];
+      var SLOTS = [
+        { k: "afterschool", time: "16:00 – 17:30", zh: "放学后", en: "After School" },
+        { k: "evening", time: "19:00 – 20:30", zh: "晚间", en: "Evening" },
+        { k: "weekendAm", time: "09:30 – 11:00", zh: "周末上午", en: "Weekend AM" },
+        { k: "weekendPm", time: "14:00 – 15:30", zh: "周末下午", en: "Weekend PM" }
+      ];
       var html = document.documentElement;
       var langButtons = document.querySelectorAll("[data-set-lang]");
 
       function langOf() { return html.getAttribute("lang") === "en" ? "en" : "zh-CN"; }
       function k() { return langOf() === "en" ? "en" : "zh"; }
       function money(n) { return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 2 }); }
-
-      function loadState() {
-        try { return JSON.parse(sessionStorage.getItem(KEY) || "{}"); } catch (_) { return {}; }
-      }
+      function loadState() { try { return JSON.parse(sessionStorage.getItem(KEY) || "{}"); } catch (_) { return {}; } }
       function saveState(s) { try { sessionStorage.setItem(KEY, JSON.stringify(s)); } catch (_) {} }
 
       var state = loadState();
-      if (!state.plan) state.plan = "";
+      if (!state.plan) { window.location.replace("course-selection.html"); return; }
+      if (!state.day) state.day = "";
+      if (!state.slot) state.slot = "";
 
-      function renderSelection() {
-        document.querySelectorAll(".membership").forEach(function (el) {
-          el.classList.toggle("selected", el.getAttribute("data-plan") === state.plan);
-        });
-        document.getElementById("toStep2").disabled = !state.plan;
+      function renderDayGrid() {
+        document.getElementById("dayGrid").innerHTML = DAYS.map(function (d) {
+          var active = state.day === d.k ? " active" : "";
+          return "<button type=\"button\" class=\"day-chip" + active + "\" data-day=\"" + d.k + "\">" +
+            "<span class=\"dname\">" + (k() === "zh" ? d.zh : d.en) + "</span>" +
+            "<span class=\"dnum\">" + d.num + "</span>" +
+            "</button>";
+        }).join("");
+      }
+      function renderSlotGrid() {
+        document.getElementById("slotGrid").innerHTML = SLOTS.map(function (s) {
+          var active = state.slot === s.k ? " active" : "";
+          return "<button type=\"button\" class=\"slot-chip" + active + "\" data-slot=\"" + s.k + "\">" +
+            "<span class=\"stime\">" + s.time + "</span>" +
+            "<span class=\"slabel\">" + (k() === "zh" ? s.zh : s.en) + "</span>" +
+            "</button>";
+        }).join("");
       }
 
       function renderSummary() {
-        var el = document.getElementById("summary");
-        var total = document.getElementById("total");
-        if (!state.plan) {
-          el.innerHTML = "<div><span>" + (k() === "zh" ? "请选择一个方案" : "Pick a plan") + "</span><strong>—</strong></div>";
-          total.textContent = "$0";
-          return;
-        }
         var p = PLANS[state.plan];
-        var label = k() === "zh" ? p.labelZh : p.labelEn;
-        el.innerHTML = "<div><span>" + (k() === "zh" ? "Membership 方案" : "Membership") + "</span><strong>" + label + "</strong></div>" +
-          "<div><span>" + (k() === "zh" ? "月费" : "Monthly") + "</span><strong>" + money(p.price) + "</strong></div>";
-        total.textContent = money(p.price);
+        var planLabel = k() === "zh" ? p.labelZh : p.labelEn;
+        var rows = [{ l: (k() === "zh" ? "Membership 方案" : "Membership"), v: planLabel + " · " + money(p.price) + "/mo" }];
+        if (state.day) {
+          var d = DAYS.find(function (x) { return x.k === state.day; });
+          rows.push({ l: (k() === "zh" ? "上课日" : "Class Day"), v: d ? (k() === "zh" ? d.zh : d.en) : "—" });
+        }
+        if (state.slot) {
+          var s = SLOTS.find(function (x) { return x.k === state.slot; });
+          rows.push({ l: (k() === "zh" ? "时段" : "Time Slot"), v: s ? s.time : "—" });
+        }
+        document.getElementById("summary").innerHTML = rows.map(function (r) {
+          return "<div><span>" + r.l + "</span><strong>" + r.v + "</strong></div>";
+        }).join("");
+        document.getElementById("total").textContent = money(p.price);
       }
 
       function setLang(lang) {
         html.setAttribute("lang", lang);
         localStorage.setItem("minddo_lang", lang);
-        document.title = (lang === "en" ? "Enrollment · Step 1: Plan" : "选课 · 第 1 步：选择方案") + " | MindDo";
+        document.title = (lang === "en" ? "Enrollment · Step 2: Schedule" : "选课 · 第 2 步：课程时段") + " | MindDo";
         langButtons.forEach(function (btn) { btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang); });
+        renderDayGrid();
+        renderSlotGrid();
         renderSummary();
+        document.getElementById("metaPlan").textContent = k() === "zh" ? PLANS[state.plan].labelZh : PLANS[state.plan].labelEn;
       }
 
       function populateMeta() {
         var current = window.MindDoFlow && window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent();
-        var snap = window.MindDoFlow && window.MindDoFlow.getSnapshot && window.MindDoFlow.getSnapshot();
         if (current) {
           document.getElementById("metaName").textContent = current.studentName || current.name || "—";
           document.getElementById("metaId").textContent = current.studentId || "—";
           document.getElementById("metaGrade").textContent = current.grade || "—";
         }
-        var goal = (snap && snap.assessment && (snap.assessment.goal || snap.assessment.goalCategory)) || (current && current.goal) || "—";
-        document.getElementById("metaGoal").textContent = goal;
       }
 
       populateMeta();
       var savedLang = localStorage.getItem("minddo_lang");
       setLang(savedLang === "en" ? "en" : "zh-CN");
-      renderSelection();
 
       langButtons.forEach(function (btn) { btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); }); });
-      document.getElementById("membershipGrid").addEventListener("click", function (e) {
-        var label = e.target.closest(".membership");
-        if (!label) return;
-        state.plan = label.getAttribute("data-plan");
+
+      document.getElementById("dayGrid").addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-day]");
+        if (!btn) return;
+        state.day = btn.getAttribute("data-day");
         saveState(state);
-        renderSelection();
+        renderDayGrid();
         renderSummary();
       });
-      document.getElementById("toStep2").addEventListener("click", function () {
-        if (!state.plan) return;
+      document.getElementById("slotGrid").addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-slot]");
+        if (!btn) return;
+        state.slot = btn.getAttribute("data-slot");
         saveState(state);
-        window.location.href = "course-schedule.html";
+        renderSlotGrid();
+        renderSummary();
+      });
+      document.getElementById("toStep3").addEventListener("click", function () {
+        var err = document.getElementById("err");
+        if (!state.day || !state.slot) {
+          err.className = "error-msg on";
+          err.textContent = k() === "zh" ? "请先选择上课日和时段。" : "Please choose a day and time slot.";
+          return;
+        }
+        err.className = "error-msg";
+        err.textContent = "";
+        saveState(state);
+        window.location.href = "course-payment.html";
       });
     })();
   </script>

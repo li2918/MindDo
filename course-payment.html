@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>选课 · 第 3 步：在线支付 | Enrollment · Step 3</title>
+  <style>
+    :root { --bg:#fbf7ef; --sand:#f2e4c9; --card:rgba(255,252,246,0.94); --line:rgba(126,77,29,0.14); --text:#45200d; --muted:#826956; --gold:#ecab2f; --gold-deep:#d79016; --clay:#8f3c16; --brown:#5f2c12; --shadow:0 24px 60px rgba(100,58,22,0.12); --success:#6f8f57; --error:#c46a4d; }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
+    a { color:inherit; text-decoration:none; }
+    button { font:inherit; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+
+    .navbar { position:sticky; top:0; z-index:100; background:rgba(255,252,246,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:44px; height:44px; object-fit:contain; }
+    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
+    .nav-menu { display:flex; align-items:center; gap:4px; list-style:none; }
+    .nav-menu a { padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600; color:var(--muted); transition:0.15s; }
+    .nav-menu a:hover { color:var(--clay); background:rgba(143,60,22,0.06); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .lang-btn { background:none; border:1px solid var(--line); border-radius:999px; padding:7px 14px; cursor:pointer; font-size:13px; font-weight:600; color:var(--clay); font-family:inherit; }
+    .lang-btn:hover,.lang-btn.active { background:var(--sand); border-color:var(--gold); }
+    .btn-primary { background:linear-gradient(135deg,#ffe5a7,var(--gold)); color:#4b250f; border:none; border-radius:999px; padding:11px 24px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(215,144,22,0.28); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-primary:hover { transform:translateY(-2px); }
+    .btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+    .btn-secondary { background:rgba(255,248,239,0.98); color:var(--clay); border:1px solid var(--line); border-radius:999px; padding:11px 24px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(215,144,22,0.38); }
+
+    .page-hero { background:linear-gradient(145deg,#3a1a08 0%,#5f2c12 50%,#8f3c16 100%); padding:56px 0 44px; position:relative; overflow:hidden; }
+    .page-hero::before { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 18% 55%,rgba(236,171,47,0.18) 0%,transparent 48%),radial-gradient(circle at 82% 22%,rgba(236,171,47,0.1) 0%,transparent 38%); }
+    .page-hero-inner { max-width:1280px; margin:0 auto; padding:0 48px; position:relative; z-index:1; color:#fff8ef; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(236,171,47,0.18); border:1px solid rgba(236,171,47,0.3); color:#ffd98e; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
+    .page-hero h1 { font-size:clamp(26px,3.2vw,40px); font-weight:900; color:#fff8ef; letter-spacing:-0.02em; margin-bottom:10px; }
+    .page-hero .sub { font-size:15px; color:rgba(255,241,220,0.78); line-height:1.7; max-width:640px; margin-bottom:24px; }
+
+    .step-bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .step-item { display:inline-flex; align-items:center; gap:10px; padding:9px 16px; border-radius:999px; background:rgba(255,252,247,0.08); border:1px solid rgba(255,237,215,0.18); color:rgba(255,241,220,0.7); font-size:12px; font-weight:700; white-space:nowrap; }
+    .step-item.active { background:rgba(236,171,47,0.22); border-color:rgba(236,171,47,0.45); color:#ffe5a7; }
+    .step-item.done { background:rgba(111,143,87,0.22); border-color:rgba(111,143,87,0.42); color:#c6e2a8; }
+    .step-num { width:22px; height:22px; border-radius:999px; background:rgba(255,237,215,0.14); display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; }
+    .step-item.active .step-num { background:var(--gold); color:#4b250f; }
+    .step-item.done .step-num { background:var(--success); color:#fff; }
+    .step-sep { width:20px; height:1px; background:rgba(255,237,215,0.28); }
+
+    .page-content { padding:40px 0 80px; }
+    .content-inner { max-width:1180px; margin:0 auto; padding:0 48px; }
+    .meta { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:24px; }
+    .meta-item { border-radius:14px; border:1px solid var(--line); background:rgba(255,248,238,0.78); padding:12px 14px; }
+    .meta-item .k { display:block; color:var(--muted); font-size:11px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px; }
+    .meta-item .v { color:var(--clay); font-size:14px; font-weight:700; }
+
+    .layout { display:grid; grid-template-columns:1.4fr 1fr; gap:20px; align-items:start; }
+    .panel { background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(123,72,24,0.08); padding:24px; }
+    .panel h2 { margin:0 0 14px; font-size:19px; color:var(--clay); font-weight:800; }
+    .panel .desc { font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:14px; }
+
+    .field { display:grid; gap:6px; margin-bottom:14px; }
+    .field label { font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+    .field input { width:100%; border:1px solid rgba(126,77,29,0.18); background:rgba(255,252,247,0.92); color:var(--text); border-radius:12px; padding:11px 14px; font-size:14px; font-family:inherit; outline:none; transition:0.15s; }
+    .field input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(236,171,47,0.15); }
+
+    .pay-tabs { display:flex; gap:8px; padding:4px; border-radius:14px; background:rgba(242,228,201,0.6); border:1px solid var(--line); margin-bottom:18px; }
+    .pay-tab { flex:1; border:none; background:transparent; color:var(--muted); padding:12px 14px; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+    .pay-tab.active { background:linear-gradient(135deg,#ffe5a7,var(--gold)); color:#4b250f; box-shadow:0 4px 12px rgba(215,144,22,0.22); }
+    .pay-tab .pico { font-size:18px; }
+    .pay-panel { display:none; }
+    .pay-panel.active { display:block; }
+    .card-row { display:grid; grid-template-columns:2fr 1fr 1fr; gap:12px; }
+    .qr-box { display:flex; flex-direction:column; align-items:center; gap:14px; padding:28px; border:1px dashed rgba(151,84,21,0.28); border-radius:14px; background:rgba(255,251,245,0.8); }
+    .qr-box .qr-placeholder { width:180px; height:180px; border-radius:14px; background:repeating-linear-gradient(45deg,rgba(143,60,22,0.12) 0 8px,rgba(143,60,22,0.05) 8px 16px); display:grid; place-items:center; color:var(--clay); font-size:12px; font-weight:700; text-align:center; padding:20px; }
+    .qr-box .qr-note { font-size:13px; color:var(--muted); text-align:center; max-width:300px; line-height:1.6; }
+    .processing { display:none; text-align:center; padding:18px; color:var(--muted); font-size:14px; }
+    .processing.on { display:block; }
+    .processing .spinner { display:inline-block; width:20px; height:20px; border:2px solid rgba(143,60,22,0.18); border-top-color:var(--gold); border-radius:999px; animation:spin 0.8s linear infinite; vertical-align:middle; margin-right:8px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    .summary-panel { position:sticky; top:88px; }
+    .summary-kv { display:grid; gap:6px; margin-bottom:14px; font-size:13px; }
+    .summary-kv>div { display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px dashed rgba(151,84,21,0.12); color:var(--muted); }
+    .summary-kv>div strong { color:var(--text); font-weight:700; }
+    .total { display:flex; justify-content:space-between; align-items:baseline; padding:14px 0 6px; border-top:2px solid rgba(151,84,21,0.18); font-weight:800; }
+    .total span:first-child { color:var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:0.06em; }
+    .total span:last-child { color:var(--clay); font-size:26px; font-weight:900; }
+
+    .action-row { display:flex; justify-content:space-between; gap:12px; margin-top:28px; padding-top:22px; border-top:1px solid var(--line); flex-wrap:wrap; }
+    .error-msg { font-size:14px; padding:12px 16px; border-radius:12px; margin-top:14px; display:none; background:rgba(196,106,77,0.1); border:1px solid rgba(196,106,77,0.3); color:var(--error); }
+    .error-msg.on { display:block; }
+
+    .footer { background:var(--brown); color:rgba(255,245,230,0.78); padding:60px 48px 32px; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:40px; margin-bottom:40px; }
+    .footer-logo-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .footer-logo-row img { width:36px; height:36px; object-fit:contain; filter:brightness(2) saturate(0.2); }
+    .footer-logo-row span { font-size:18px; font-weight:800; color:#fff8ef; }
+    .footer-brand p { font-size:13px; line-height:1.7; margin-bottom:16px; }
+    .footer-hours { background:rgba(255,245,230,0.07); border:1px solid rgba(255,237,215,0.1); border-radius:12px; padding:14px 16px; font-size:12px; line-height:1.8; }
+    .footer-col h4 { font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,237,215,0.5); margin-bottom:16px; }
+    .footer-col ul { list-style:none; display:grid; gap:10px; }
+    .footer-col ul a { font-size:14px; color:rgba(255,245,230,0.72); }
+    .footer-col ul a:hover { color:#fff8ef; }
+    .footer-bottom { max-width:1280px; margin:0 auto; padding-top:24px; border-top:1px solid rgba(255,237,215,0.1); display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(255,245,230,0.45); }
+
+    @media (max-width:1000px) { .layout { grid-template-columns:1fr; } .summary-panel { position:static; } }
+    @media (max-width:900px) { .navbar { padding:0 24px; } .nav-menu { display:none; } .page-hero-inner,.content-inner { padding:0 24px; } .footer-inner { grid-template-columns:repeat(2,1fr); } .meta { grid-template-columns:repeat(2,1fr); } .card-row { grid-template-columns:1fr; } }
+    @media (max-width:640px) { .footer-inner { grid-template-columns:1fr; } .footer { padding:48px 24px 28px; } .action-row { flex-direction:column-reverse; } .action-row>* { width:100%; justify-content:center; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html"><img src="assets/logo.png" alt="MindDo logo" /><span class="nav-brand-name">MindDo</span></a>
+    <ul class="nav-menu">
+      <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+      <li><a href="assessment.html"><span data-lang="zh">能力评估</span><span data-lang="en">Assessment</span></a></li>
+      <li><a href="signup.html"><span data-lang="zh">注册登录</span><span data-lang="en">Sign Up</span></a></li>
+      <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="lang-btn active" type="button" data-set-lang="zh-CN">中文</button>
+      <button class="lang-btn" type="button" data-set-lang="en">English</button>
+      <a class="btn-primary" href="student-account.html"><span data-lang="zh">学员中心</span><span data-lang="en">My Account</span></a>
+    </div>
+  </nav>
+
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-tag"><span data-lang="zh">课程报名</span><span data-lang="en">Course Enrollment</span></div>
+      <h1><span data-lang="zh">第 3 步：在线支付</span><span data-lang="en">Step 3: Online Payment</span></h1>
+      <p class="sub"><span data-lang="zh">选择支付方式并完成付款。演示环境下不会真的扣款。</span><span data-lang="en">Choose a payment method and complete the payment. No real charge in demo mode.</span></p>
+      <div class="step-bar">
+        <div class="step-item done"><span class="step-num">✓</span><span data-lang="zh">已选方案</span><span data-lang="en">Plan</span></div>
+        <div class="step-sep"></div>
+        <div class="step-item done"><span class="step-num">✓</span><span data-lang="zh">已选时段</span><span data-lang="en">Schedule</span></div>
+        <div class="step-sep"></div>
+        <div class="step-item active"><span class="step-num">3</span><span data-lang="zh">在线支付</span><span data-lang="en">Payment</span></div>
+        <div class="step-sep"></div>
+        <div class="step-item"><span class="step-num">4</span><span data-lang="zh">报名成功</span><span data-lang="en">Done</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="content-inner">
+      <div class="meta">
+        <div class="meta-item"><span class="k" data-lang="zh">学员姓名</span><span class="k" data-lang="en">Student</span><span class="v" id="metaName">—</span></div>
+        <div class="meta-item"><span class="k" data-lang="zh">方案</span><span class="k" data-lang="en">Plan</span><span class="v" id="metaPlan">—</span></div>
+        <div class="meta-item"><span class="k" data-lang="zh">上课日</span><span class="k" data-lang="en">Class Day</span><span class="v" id="metaDay">—</span></div>
+        <div class="meta-item"><span class="k" data-lang="zh">时段</span><span class="k" data-lang="en">Time Slot</span><span class="v" id="metaSlot">—</span></div>
+      </div>
+
+      <div class="layout">
+        <article class="panel">
+          <h2><span data-lang="zh">选择支付方式</span><span data-lang="en">Choose Payment Method</span></h2>
+          <p class="desc"><span data-lang="zh">支持信用卡、支付宝和微信支付。演示环境下点击"确认并支付"会直接跳转到确认页。</span><span data-lang="en">Credit Card, Alipay and WeChat Pay supported. In demo mode, clicking "Pay" jumps straight to confirmation.</span></p>
+
+          <div class="pay-tabs">
+            <button type="button" class="pay-tab active" data-pay="card"><span class="pico">💳</span><span data-lang="zh">信用卡</span><span data-lang="en">Credit Card</span></button>
+            <button type="button" class="pay-tab" data-pay="alipay"><span class="pico">🟦</span><span data-lang="zh">支付宝</span><span data-lang="en">Alipay</span></button>
+            <button type="button" class="pay-tab" data-pay="wechat"><span class="pico">🟩</span><span data-lang="zh">微信支付</span><span data-lang="en">WeChat Pay</span></button>
+          </div>
+
+          <div class="pay-panel active" id="payCard">
+            <div class="field">
+              <label><span data-lang="zh">持卡人姓名</span><span data-lang="en">Cardholder Name</span></label>
+              <input id="cardholder" type="text" placeholder="JOHN DOE" />
+            </div>
+            <div class="field">
+              <label><span data-lang="zh">卡号</span><span data-lang="en">Card Number</span></label>
+              <input id="cardNumber" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242" maxlength="23" />
+            </div>
+            <div class="card-row">
+              <div class="field" style="margin-bottom:0;">
+                <label><span data-lang="zh">有效期</span><span data-lang="en">Expiry</span></label>
+                <input id="cardExpiry" type="text" placeholder="MM / YY" maxlength="7" />
+              </div>
+              <div class="field" style="margin-bottom:0;">
+                <label>CVV</label>
+                <input id="cardCvv" type="text" inputmode="numeric" placeholder="123" maxlength="4" />
+              </div>
+              <div class="field" style="margin-bottom:0;">
+                <label><span data-lang="zh">邮编</span><span data-lang="en">ZIP</span></label>
+                <input id="cardZip" type="text" placeholder="10001" maxlength="10" />
+              </div>
+            </div>
+          </div>
+
+          <div class="pay-panel" id="payAlipay">
+            <div class="qr-box">
+              <div class="qr-placeholder"><span data-lang="zh">扫码支付<br>（演示二维码）</span><span data-lang="en">Scan to Pay<br>(demo QR)</span></div>
+              <div class="qr-note"><span data-lang="zh">打开支付宝扫码确认金额后支付。完成后点击下方按钮。</span><span data-lang="en">Open Alipay and scan. Click below after paying.</span></div>
+            </div>
+          </div>
+
+          <div class="pay-panel" id="payWechat">
+            <div class="qr-box">
+              <div class="qr-placeholder"><span data-lang="zh">微信扫一扫<br>（演示二维码）</span><span data-lang="en">Scan with WeChat<br>(demo QR)</span></div>
+              <div class="qr-note"><span data-lang="zh">在微信中打开扫一扫完成支付。</span><span data-lang="en">Scan with WeChat to pay.</span></div>
+            </div>
+          </div>
+
+          <div class="processing" id="processing"><span class="spinner"></span><span data-lang="zh">正在处理支付…</span><span data-lang="en">Processing payment…</span></div>
+
+          <div class="action-row">
+            <a class="btn-secondary" href="course-schedule.html"><span data-lang="zh">← 返回选时段</span><span data-lang="en">← Back to Schedule</span></a>
+            <button class="btn-primary" id="payBtn"><span data-lang="zh">确认并支付</span><span data-lang="en">Pay</span> <span id="payAmount">$0</span> <span data-lang="zh">→</span><span data-lang="en">→</span></button>
+          </div>
+          <div class="error-msg" id="err"></div>
+        </article>
+
+        <aside class="panel summary-panel">
+          <h2><span data-lang="zh">确认订单</span><span data-lang="en">Review Order</span></h2>
+          <div class="summary-kv" id="summary"></div>
+          <div class="total"><span><span data-lang="zh">应付金额</span><span data-lang="en">Amount Due</span></span><span id="total">$0</span></div>
+          <p class="desc" style="margin-top:14px;font-size:12px;"><span data-lang="zh">🔒 支付由 Stripe 与支付宝 / 微信官方网关处理。</span><span data-lang="en">🔒 Payments are processed via Stripe and official Alipay / WeChat gateways.</span></p>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/logo.png" alt="MindDo" /><span>MindDo</span></div>
+        <p><span data-lang="zh">AI、编程与未来技能青少年学习中心。</span><span data-lang="en">AI and coding learning center for young learners.</span></p>
+        <div class="footer-hours">
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,237,215,0.45);margin-bottom:8px;"><span data-lang="zh">开放时间</span><span data-lang="en">Hours</span></div>
+          <span data-lang="zh">周一至周五 3:00pm – 7:30pm<br>周六 9:30am – 5:00pm<br>周日 休息</span>
+          <span data-lang="en">Mon – Fri 3:00pm – 7:30pm<br>Saturday 9:30am – 5:00pm<br>Sunday Closed</span>
+        </div>
+      </div>
+      <div class="footer-col"><h4><span data-lang="zh">课程项目</span><span data-lang="en">Programs</span></h4><ul>
+        <li><a href="course-system.html"><span data-lang="zh">AI 基础</span><span data-lang="en">AI Basics</span></a></li>
+        <li><a href="course-system.html"><span data-lang="zh">Scratch 编程</span><span data-lang="en">Scratch Coding</span></a></li>
+        <li><a href="course-system.html"><span data-lang="zh">Python 进阶</span><span data-lang="en">Python Advanced</span></a></li>
+        <li><a href="course-system.html"><span data-lang="zh">机器人课程</span><span data-lang="en">Robotics</span></a></li>
+        <li><a href="trial.html"><span data-lang="zh">假期集训营</span><span data-lang="en">Holiday Camps</span></a></li>
+      </ul></div>
+      <div class="footer-col"><h4><span data-lang="zh">快速入口</span><span data-lang="en">Quick Access</span></h4><ul>
+        <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+        <li><a href="assessment.html"><span data-lang="zh">能力评估</span><span data-lang="en">Assessment</span></a></li>
+        <li><a href="signup.html"><span data-lang="zh">注册 / 登录</span><span data-lang="en">Sign Up</span></a></li>
+        <li><a href="student-account.html"><span data-lang="zh">学员主页</span><span data-lang="en">Student Home</span></a></li>
+        <li><a href="course-selection.html"><span data-lang="zh">选课排课</span><span data-lang="en">Course Selection</span></a></li>
+      </ul></div>
+      <div class="footer-col"><h4><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></h4><ul>
+        <li><a href="dashboard.html"><span data-lang="zh">运营看板</span><span data-lang="en">Dashboard</span></a></li>
+        <li><a href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a></li>
+        <li><a href="new-trials.html"><span data-lang="zh">新试课列表</span><span data-lang="en">New Trials</span></a></li>
+        <li><a href="new-students.html"><span data-lang="zh">新学员列表</span><span data-lang="en">New Students</span></a></li>
+        <li><a href="request-center.html"><span data-lang="zh">申请处理中心</span><span data-lang="en">Request Center</span></a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MindDo Learning Center · <span data-lang="zh">保留所有权利</span><span data-lang="en">All rights reserved</span></span>
+      <span><span data-lang="zh">隐私政策 · 服务条款</span><span data-lang="en">Privacy · Terms</span></span>
+    </div>
+  </footer>
+
+  <script src="assets/minddo-flow.js"></script>
+  <script>
+    (function () {
+      var KEY = "minddo_course_enrollment";
+      var PLANS = {
+        weekly1: { price: 199, labelZh: "每周一节课", labelEn: "1 Class / Week" },
+        weekly2: { price: 369, labelZh: "每周两节课", labelEn: "2 Classes / Week" },
+        weekly3: { price: 519, labelZh: "每周三节课", labelEn: "3 Classes / Week" }
+      };
+      var DAYS = { mon: { zh: "周一", en: "Mon" }, tue: { zh: "周二", en: "Tue" }, wed: { zh: "周三", en: "Wed" }, thu: { zh: "周四", en: "Thu" }, fri: { zh: "周五", en: "Fri" }, sat: { zh: "周六", en: "Sat" }, sun: { zh: "周日", en: "Sun" } };
+      var SLOTS = { afterschool: { time: "16:00 – 17:30", zh: "放学后", en: "After School" }, evening: { time: "19:00 – 20:30", zh: "晚间", en: "Evening" }, weekendAm: { time: "09:30 – 11:00", zh: "周末上午", en: "Weekend AM" }, weekendPm: { time: "14:00 – 15:30", zh: "周末下午", en: "Weekend PM" } };
+
+      var html = document.documentElement;
+      var langButtons = document.querySelectorAll("[data-set-lang]");
+
+      function langOf() { return html.getAttribute("lang") === "en" ? "en" : "zh-CN"; }
+      function k() { return langOf() === "en" ? "en" : "zh"; }
+      function money(n) { return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 2 }); }
+      function loadState() { try { return JSON.parse(sessionStorage.getItem(KEY) || "{}"); } catch (_) { return {}; } }
+      function saveState(s) { try { sessionStorage.setItem(KEY, JSON.stringify(s)); } catch (_) {} }
+
+      var state = loadState();
+      if (!state.plan) { window.location.replace("course-selection.html"); return; }
+      if (!state.day || !state.slot) { window.location.replace("course-schedule.html"); return; }
+      if (!state.payMethod) state.payMethod = "card";
+
+      function renderMeta() {
+        var current = window.MindDoFlow && window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent();
+        document.getElementById("metaName").textContent = (current && (current.studentName || current.name)) || "—";
+        var plan = PLANS[state.plan];
+        document.getElementById("metaPlan").textContent = k() === "zh" ? plan.labelZh : plan.labelEn;
+        var day = DAYS[state.day];
+        document.getElementById("metaDay").textContent = day ? (k() === "zh" ? day.zh : day.en) : "—";
+        var slot = SLOTS[state.slot];
+        document.getElementById("metaSlot").textContent = slot ? slot.time : "—";
+      }
+
+      function renderSummary() {
+        var plan = PLANS[state.plan];
+        var planLabel = k() === "zh" ? plan.labelZh : plan.labelEn;
+        var day = DAYS[state.day];
+        var slot = SLOTS[state.slot];
+        var rows = [
+          { l: k() === "zh" ? "Membership 方案" : "Membership", v: planLabel + " · " + money(plan.price) + "/mo" },
+          { l: k() === "zh" ? "上课日" : "Class Day", v: day ? (k() === "zh" ? day.zh : day.en) : "—" },
+          { l: k() === "zh" ? "时段" : "Time Slot", v: slot ? slot.time : "—" }
+        ];
+        document.getElementById("summary").innerHTML = rows.map(function (r) {
+          return "<div><span>" + r.l + "</span><strong>" + r.v + "</strong></div>";
+        }).join("");
+        var total = money(plan.price);
+        document.getElementById("total").textContent = total;
+        document.getElementById("payAmount").textContent = total;
+      }
+
+      function setLang(lang) {
+        html.setAttribute("lang", lang);
+        localStorage.setItem("minddo_lang", lang);
+        document.title = (lang === "en" ? "Enrollment · Step 3: Payment" : "选课 · 第 3 步：在线支付") + " | MindDo";
+        langButtons.forEach(function (btn) { btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang); });
+        renderMeta();
+        renderSummary();
+      }
+
+      function validateCard() {
+        var num = (document.getElementById("cardNumber").value || "").replace(/\s+/g, "");
+        var exp = (document.getElementById("cardExpiry").value || "").trim();
+        var cvv = (document.getElementById("cardCvv").value || "").trim();
+        var name = (document.getElementById("cardholder").value || "").trim();
+        var zip = (document.getElementById("cardZip").value || "").trim();
+        if (!name) return { ok: false, msg: { zh: "请填写持卡人姓名", en: "Please enter the cardholder name" } };
+        if (!/^\d{13,19}$/.test(num)) return { ok: false, msg: { zh: "卡号格式不正确", en: "Invalid card number" } };
+        if (!/^\d{2}\s*\/\s*\d{2}$/.test(exp)) return { ok: false, msg: { zh: "有效期格式应为 MM/YY", en: "Expiry format should be MM/YY" } };
+        if (!/^\d{3,4}$/.test(cvv)) return { ok: false, msg: { zh: "CVV 应为 3 或 4 位数字", en: "CVV should be 3 or 4 digits" } };
+        if (!zip) return { ok: false, msg: { zh: "请填写邮编", en: "Please enter the ZIP code" } };
+        return { ok: true };
+      }
+
+      function genOrderId() {
+        var d = new Date();
+        var pad = function (n) { return String(n).padStart(2, "0"); };
+        var rand = Math.floor(Math.random() * 10000).toString().padStart(4, "0");
+        return "MD" + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "-" + rand;
+      }
+
+      function processPayment() {
+        var err = document.getElementById("err");
+        err.className = "error-msg";
+        err.textContent = "";
+
+        if (state.payMethod === "card") {
+          var v = validateCard();
+          if (!v.ok) { err.className = "error-msg on"; err.textContent = v.msg[k()] || v.msg.zh; return; }
+        }
+
+        var processing = document.getElementById("processing");
+        processing.classList.add("on");
+        document.getElementById("payBtn").disabled = true;
+
+        setTimeout(function () {
+          processing.classList.remove("on");
+          state.orderId = genOrderId();
+          state.paidAt = new Date().toISOString();
+          state.totalAmount = PLANS[state.plan].price;
+
+          var plan = PLANS[state.plan];
+          var day = DAYS[state.day];
+          var slot = SLOTS[state.slot];
+          var orderPayload = {
+            orderId: state.orderId,
+            plan: state.plan,
+            planLabel: k() === "zh" ? plan.labelZh : plan.labelEn,
+            weekday: day ? (k() === "zh" ? day.zh : day.en) : state.day,
+            timeSlot: slot ? slot.time : state.slot,
+            totalAmount: state.totalAmount,
+            totalMonthly: money(state.totalAmount),
+            createdAt: state.paidAt
+          };
+          var paymentPayload = {
+            orderId: state.orderId,
+            amount: state.totalAmount,
+            source: state.payMethod,
+            method: state.payMethod,
+            createdAt: state.paidAt
+          };
+
+          if (window.MindDoFlow) {
+            if (window.MindDoFlow.saveMembershipOrder) window.MindDoFlow.saveMembershipOrder(orderPayload);
+            if (window.MindDoFlow.savePayment) window.MindDoFlow.savePayment(paymentPayload);
+          } else {
+            try {
+              var orders = JSON.parse(localStorage.getItem("minddo_membership_orders") || "[]");
+              orders.push(orderPayload);
+              localStorage.setItem("minddo_membership_orders", JSON.stringify(orders));
+              var pays = JSON.parse(localStorage.getItem("minddo_payments") || "[]");
+              pays.push(paymentPayload);
+              localStorage.setItem("minddo_payments", JSON.stringify(pays));
+            } catch (_) {}
+          }
+
+          saveState(state);
+          window.location.href = "course-confirm.html";
+        }, 1400);
+      }
+
+      var savedLang = localStorage.getItem("minddo_lang");
+      setLang(savedLang === "en" ? "en" : "zh-CN");
+
+      langButtons.forEach(function (btn) { btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); }); });
+
+      document.querySelectorAll("[data-pay]").forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          state.payMethod = tab.getAttribute("data-pay");
+          saveState(state);
+          document.querySelectorAll("[data-pay]").forEach(function (t) { t.classList.toggle("active", t === tab); });
+          document.getElementById("payCard").classList.toggle("active", state.payMethod === "card");
+          document.getElementById("payAlipay").classList.toggle("active", state.payMethod === "alipay");
+          document.getElementById("payWechat").classList.toggle("active", state.payMethod === "wechat");
+        });
+      });
+
+      document.getElementById("payBtn").addEventListener("click", processPayment);
+
+      document.getElementById("cardNumber").addEventListener("input", function (e) {
+        var v = e.target.value.replace(/\D/g, "").slice(0, 19);
+        e.target.value = v.replace(/(.{4})/g, "$1 ").trim();
+      });
+      document.getElementById("cardExpiry").addEventListener("input", function (e) {
+        var v = e.target.value.replace(/\D/g, "").slice(0, 4);
+        if (v.length >= 3) v = v.slice(0, 2) + " / " + v.slice(2);
+        e.target.value = v;
+      });
+      document.getElementById("cardCvv").addEventListener("input", function (e) {
+        e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4);
+      });
+    })();
+  </script>
+</body>
+</html>

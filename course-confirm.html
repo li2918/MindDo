@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>选课 · 第 4 步：报名成功 | Enrollment · Done</title>
+  <style>
+    :root { --bg:#fbf7ef; --sand:#f2e4c9; --card:rgba(255,252,246,0.94); --line:rgba(126,77,29,0.14); --text:#45200d; --muted:#826956; --gold:#ecab2f; --gold-deep:#d79016; --clay:#8f3c16; --brown:#5f2c12; --shadow:0 24px 60px rgba(100,58,22,0.12); --success:#6f8f57; --error:#c46a4d; }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
+    a { color:inherit; text-decoration:none; }
+    button { font:inherit; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+
+    .navbar { position:sticky; top:0; z-index:100; background:rgba(255,252,246,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:44px; height:44px; object-fit:contain; }
+    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
+    .nav-menu { display:flex; align-items:center; gap:4px; list-style:none; }
+    .nav-menu a { padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600; color:var(--muted); transition:0.15s; }
+    .nav-menu a:hover { color:var(--clay); background:rgba(143,60,22,0.06); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .lang-btn { background:none; border:1px solid var(--line); border-radius:999px; padding:7px 14px; cursor:pointer; font-size:13px; font-weight:600; color:var(--clay); font-family:inherit; }
+    .lang-btn:hover,.lang-btn.active { background:var(--sand); border-color:var(--gold); }
+    .btn-primary { background:linear-gradient(135deg,#ffe5a7,var(--gold)); color:#4b250f; border:none; border-radius:999px; padding:11px 24px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(215,144,22,0.28); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-primary:hover { transform:translateY(-2px); }
+    .btn-secondary { background:rgba(255,248,239,0.98); color:var(--clay); border:1px solid var(--line); border-radius:999px; padding:11px 24px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(215,144,22,0.38); }
+    .btn-ghost-light { background:rgba(255,251,245,0.9); color:var(--clay); border:1px solid var(--line); border-radius:999px; padding:8px 16px; font-size:13px; font-weight:700; font-family:inherit; display:inline-flex; align-items:center; gap:6px; text-decoration:none; cursor:pointer; }
+    .btn-ghost-light:hover { background:linear-gradient(135deg,#fff6de,#ffd977); border-color:rgba(208,129,36,0.5); }
+
+    .page-hero { background:linear-gradient(145deg,#3a1a08 0%,#5f2c12 50%,#8f3c16 100%); padding:48px 0 36px; position:relative; overflow:hidden; }
+    .page-hero::before { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 50% 0%,rgba(111,143,87,0.22) 0%,transparent 60%); }
+    .page-hero-inner { max-width:1280px; margin:0 auto; padding:0 48px; position:relative; z-index:1; color:#fff8ef; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(111,143,87,0.25); border:1px solid rgba(111,143,87,0.5); color:#c6e2a8; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
+
+    .step-bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
+    .step-item { display:inline-flex; align-items:center; gap:10px; padding:9px 16px; border-radius:999px; background:rgba(255,252,247,0.08); border:1px solid rgba(255,237,215,0.18); color:rgba(255,241,220,0.7); font-size:12px; font-weight:700; white-space:nowrap; }
+    .step-item.done { background:rgba(111,143,87,0.22); border-color:rgba(111,143,87,0.42); color:#c6e2a8; }
+    .step-item.active { background:rgba(236,171,47,0.22); border-color:rgba(236,171,47,0.45); color:#ffe5a7; }
+    .step-num { width:22px; height:22px; border-radius:999px; background:rgba(255,237,215,0.14); display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; }
+    .step-item.done .step-num { background:var(--success); color:#fff; }
+    .step-item.active .step-num { background:var(--gold); color:#4b250f; }
+    .step-sep { width:20px; height:1px; background:rgba(255,237,215,0.28); }
+
+    .confirm-check { position:relative; width:96px; height:96px; border-radius:999px; background:linear-gradient(135deg,#8fba6a,var(--success)); margin:0 auto 20px; display:grid; place-items:center; font-size:48px; color:#fff; box-shadow:0 16px 40px rgba(111,143,87,0.5); animation:pop 0.5s ease-out; }
+    @keyframes pop { 0% { transform:scale(0.2); opacity:0; } 60% { transform:scale(1.1); } 100% { transform:scale(1); opacity:1; } }
+    .hero-inner-center { text-align:center; }
+    .hero-inner-center h1 { font-size:clamp(28px,3.5vw,42px); font-weight:900; color:#fff8ef; letter-spacing:-0.02em; margin-bottom:10px; }
+    .hero-inner-center .sub { font-size:15px; color:rgba(255,241,220,0.8); line-height:1.7; max-width:520px; margin:0 auto; }
+    .order-id { display:inline-flex; padding:10px 20px; border-radius:999px; background:rgba(236,171,47,0.22); border:1px solid rgba(236,171,47,0.45); color:#ffe5a7; font-size:14px; font-weight:700; letter-spacing:0.05em; margin-top:18px; font-family:'SF Mono',Monaco,Consolas,monospace; }
+
+    .page-content { padding:40px 0 80px; }
+    .content-inner { max-width:1000px; margin:0 auto; padding:0 48px; }
+
+    .confirm-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:18px; }
+    .confirm-card { padding:24px; border:1px solid var(--line); border-radius:20px; background:var(--card); box-shadow:0 14px 32px rgba(123,72,24,0.06); }
+    .confirm-card h3 { font-size:13px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+    .confirm-card h3 .dot { width:8px; height:8px; border-radius:999px; background:var(--gold); }
+    .confirm-row { display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px dashed rgba(151,84,21,0.1); font-size:14px; }
+    .confirm-row:last-child { border-bottom:none; }
+    .confirm-row span:first-child { color:var(--muted); }
+    .confirm-row span:last-child { color:var(--clay); font-weight:700; text-align:right; }
+
+    .panel { background:var(--card); border:1px solid var(--line); border-radius:20px; box-shadow:0 14px 32px rgba(123,72,24,0.06); padding:24px; }
+    .panel h2 { font-size:18px; font-weight:800; color:var(--clay); margin-bottom:16px; }
+    .next-steps { display:grid; gap:10px; }
+    .next-step { display:grid; grid-template-columns:auto 1fr auto; gap:14px; align-items:center; padding:14px 18px; border-radius:14px; border:1px solid var(--line); background:rgba(255,251,245,0.9); }
+    .next-step .ns-num { width:32px; height:32px; border-radius:999px; background:linear-gradient(135deg,#fff6de,#ffd977); color:var(--clay); display:grid; place-items:center; font-weight:800; font-size:14px; }
+    .next-step .ns-txt strong { display:block; font-size:14px; color:var(--clay); margin-bottom:2px; }
+    .next-step .ns-txt span { font-size:12px; color:var(--muted); }
+
+    .action-row { display:flex; justify-content:space-between; gap:12px; margin-top:22px; padding-top:20px; border-top:1px solid var(--line); flex-wrap:wrap; }
+    .notice { padding:28px; border-radius:20px; background:rgba(196,106,77,0.08); border:1px solid rgba(196,106,77,0.24); color:var(--error); font-size:15px; line-height:1.7; text-align:center; }
+    .notice a { color:var(--clay); font-weight:700; text-decoration:underline; margin-left:4px; }
+
+    .footer { background:var(--brown); color:rgba(255,245,230,0.78); padding:60px 48px 32px; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:40px; margin-bottom:40px; }
+    .footer-logo-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .footer-logo-row img { width:36px; height:36px; object-fit:contain; filter:brightness(2) saturate(0.2); }
+    .footer-logo-row span { font-size:18px; font-weight:800; color:#fff8ef; }
+    .footer-brand p { font-size:13px; line-height:1.7; margin-bottom:16px; }
+    .footer-hours { background:rgba(255,245,230,0.07); border:1px solid rgba(255,237,215,0.1); border-radius:12px; padding:14px 16px; font-size:12px; line-height:1.8; }
+    .footer-col h4 { font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,237,215,0.5); margin-bottom:16px; }
+    .footer-col ul { list-style:none; display:grid; gap:10px; }
+    .footer-col ul a { font-size:14px; color:rgba(255,245,230,0.72); }
+    .footer-col ul a:hover { color:#fff8ef; }
+    .footer-bottom { max-width:1280px; margin:0 auto; padding-top:24px; border-top:1px solid rgba(255,237,215,0.1); display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(255,245,230,0.45); }
+
+    @media (max-width:900px) { .navbar { padding:0 24px; } .nav-menu { display:none; } .page-hero-inner,.content-inner { padding:0 24px; } .footer-inner { grid-template-columns:repeat(2,1fr); } .confirm-grid { grid-template-columns:1fr; } }
+    @media (max-width:640px) { .footer-inner { grid-template-columns:1fr; } .footer { padding:48px 24px 28px; } .action-row { flex-direction:column-reverse; } .action-row>* { width:100%; justify-content:center; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html"><img src="assets/logo.png" alt="MindDo logo" /><span class="nav-brand-name">MindDo</span></a>
+    <ul class="nav-menu">
+      <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+      <li><a href="assessment.html"><span data-lang="zh">能力评估</span><span data-lang="en">Assessment</span></a></li>
+      <li><a href="signup.html"><span data-lang="zh">注册登录</span><span data-lang="en">Sign Up</span></a></li>
+      <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="lang-btn active" type="button" data-set-lang="zh-CN">中文</button>
+      <button class="lang-btn" type="button" data-set-lang="en">English</button>
+      <a class="btn-primary" href="student-account.html"><span data-lang="zh">学员中心</span><span data-lang="en">My Account</span></a>
+    </div>
+  </nav>
+
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="step-bar" style="justify-content:center;">
+        <div class="step-item done"><span class="step-num">✓</span><span data-lang="zh">选方案</span><span data-lang="en">Plan</span></div>
+        <div class="step-sep"></div>
+        <div class="step-item done"><span class="step-num">✓</span><span data-lang="zh">选时段</span><span data-lang="en">Schedule</span></div>
+        <div class="step-sep"></div>
+        <div class="step-item done"><span class="step-num">✓</span><span data-lang="zh">已支付</span><span data-lang="en">Payment</span></div>
+        <div class="step-sep"></div>
+        <div class="step-item active"><span class="step-num">4</span><span data-lang="zh">报名成功</span><span data-lang="en">Done</span></div>
+      </div>
+      <div class="hero-inner-center" id="heroBlock">
+        <div class="confirm-check">✓</div>
+        <div class="page-tag"><span data-lang="zh">报名成功</span><span data-lang="en">Enrollment Confirmed</span></div>
+        <h1><span data-lang="zh">欢迎加入 MindDo！</span><span data-lang="en">Welcome to MindDo!</span></h1>
+        <p class="sub"><span data-lang="zh">你的课程已经排好，我们已经发送确认邮件到你的邮箱。开课当天老师会通过微信或邮件联系你。</span><span data-lang="en">Your schedule is set. A confirmation email has been sent. Your instructor will reach out on the first day.</span></p>
+        <div class="order-id" id="orderIdBadge">#MD-ORDER</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="content-inner">
+      <div id="noOrderNotice" class="notice" style="display:none;">
+        <span data-lang="zh">未找到订单信息。请</span><span data-lang="en">No order found. Please</span>
+        <a href="course-selection.html"><span data-lang="zh">返回重新开始报名</span><span data-lang="en">start the enrollment over</span></a>
+      </div>
+
+      <div id="orderDetails" style="display:none;">
+        <div class="confirm-grid">
+          <div class="confirm-card">
+            <h3><span class="dot"></span><span data-lang="zh">课程信息</span><span data-lang="en">Course Details</span></h3>
+            <div class="confirm-row"><span><span data-lang="zh">学员</span><span data-lang="en">Student</span></span><span id="cfStudent">—</span></div>
+            <div class="confirm-row"><span><span data-lang="zh">会员方案</span><span data-lang="en">Membership</span></span><span id="cfMembership">—</span></div>
+            <div class="confirm-row"><span><span data-lang="zh">上课日</span><span data-lang="en">Class Day</span></span><span id="cfDay">—</span></div>
+            <div class="confirm-row"><span><span data-lang="zh">时段</span><span data-lang="en">Time Slot</span></span><span id="cfTime">—</span></div>
+            <div class="confirm-row"><span><span data-lang="zh">首课日期</span><span data-lang="en">First Class</span></span><span id="cfFirstClass">—</span></div>
+          </div>
+          <div class="confirm-card">
+            <h3><span class="dot"></span><span data-lang="zh">支付信息</span><span data-lang="en">Payment Info</span></h3>
+            <div class="confirm-row"><span><span data-lang="zh">订单编号</span><span data-lang="en">Order ID</span></span><span id="cfOrderId">—</span></div>
+            <div class="confirm-row"><span><span data-lang="zh">支付方式</span><span data-lang="en">Method</span></span><span id="cfPayMethod">—</span></div>
+            <div class="confirm-row"><span><span data-lang="zh">支付金额</span><span data-lang="en">Amount Paid</span></span><span id="cfAmount">—</span></div>
+            <div class="confirm-row"><span><span data-lang="zh">支付时间</span><span data-lang="en">Paid At</span></span><span id="cfPaidAt">—</span></div>
+            <div class="confirm-row"><span><span data-lang="zh">状态</span><span data-lang="en">Status</span></span><span style="color:var(--success);">✓ <span data-lang="zh">已完成</span><span data-lang="en">Completed</span></span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2><span data-lang="zh">接下来该做什么</span><span data-lang="en">What's Next</span></h2>
+          <div class="next-steps">
+            <div class="next-step">
+              <div class="ns-num">1</div>
+              <div class="ns-txt">
+                <strong><span data-lang="zh">查收邮件确认</span><span data-lang="en">Check your email</span></strong>
+                <span><span data-lang="zh">报名确认邮件已发送</span><span data-lang="en">Confirmation email sent</span></span>
+              </div>
+              <button class="btn-ghost-light" type="button"><span data-lang="zh">重新发送</span><span data-lang="en">Resend</span></button>
+            </div>
+            <div class="next-step">
+              <div class="ns-num">2</div>
+              <div class="ns-txt">
+                <strong><span data-lang="zh">进入学员中心</span><span data-lang="en">Go to Student Hub</span></strong>
+                <span><span data-lang="zh">查看课表、申请请假</span><span data-lang="en">View schedule & request changes</span></span>
+              </div>
+              <a class="btn-primary" href="student-account.html"><span data-lang="zh">前往</span><span data-lang="en">Open</span></a>
+            </div>
+            <div class="next-step">
+              <div class="ns-num">3</div>
+              <div class="ns-txt">
+                <strong><span data-lang="zh">加入家长群</span><span data-lang="en">Join parent group</span></strong>
+                <span><span data-lang="zh">与老师和其他家长保持沟通</span><span data-lang="en">Stay connected with instructors</span></span>
+              </div>
+              <button class="btn-ghost-light" type="button"><span data-lang="zh">扫码加入</span><span data-lang="en">Join</span></button>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <button class="btn-secondary" id="newOrderBtn"><span data-lang="zh">新建另一个订单</span><span data-lang="en">Start Another Order</span></button>
+            <a class="btn-primary" href="student-account.html"><span data-lang="zh">前往学员中心 →</span><span data-lang="en">Go to Student Hub →</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/logo.png" alt="MindDo" /><span>MindDo</span></div>
+        <p><span data-lang="zh">AI、编程与未来技能青少年学习中心。</span><span data-lang="en">AI and coding learning center for young learners.</span></p>
+        <div class="footer-hours">
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,237,215,0.45);margin-bottom:8px;"><span data-lang="zh">开放时间</span><span data-lang="en">Hours</span></div>
+          <span data-lang="zh">周一至周五 3:00pm – 7:30pm<br>周六 9:30am – 5:00pm<br>周日 休息</span>
+          <span data-lang="en">Mon – Fri 3:00pm – 7:30pm<br>Saturday 9:30am – 5:00pm<br>Sunday Closed</span>
+        </div>
+      </div>
+      <div class="footer-col"><h4><span data-lang="zh">课程项目</span><span data-lang="en">Programs</span></h4><ul>
+        <li><a href="course-system.html"><span data-lang="zh">AI 基础</span><span data-lang="en">AI Basics</span></a></li>
+        <li><a href="course-system.html"><span data-lang="zh">Scratch 编程</span><span data-lang="en">Scratch Coding</span></a></li>
+        <li><a href="course-system.html"><span data-lang="zh">Python 进阶</span><span data-lang="en">Python Advanced</span></a></li>
+        <li><a href="course-system.html"><span data-lang="zh">机器人课程</span><span data-lang="en">Robotics</span></a></li>
+        <li><a href="trial.html"><span data-lang="zh">假期集训营</span><span data-lang="en">Holiday Camps</span></a></li>
+      </ul></div>
+      <div class="footer-col"><h4><span data-lang="zh">快速入口</span><span data-lang="en">Quick Access</span></h4><ul>
+        <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+        <li><a href="assessment.html"><span data-lang="zh">能力评估</span><span data-lang="en">Assessment</span></a></li>
+        <li><a href="signup.html"><span data-lang="zh">注册 / 登录</span><span data-lang="en">Sign Up</span></a></li>
+        <li><a href="student-account.html"><span data-lang="zh">学员主页</span><span data-lang="en">Student Home</span></a></li>
+        <li><a href="course-selection.html"><span data-lang="zh">选课排课</span><span data-lang="en">Course Selection</span></a></li>
+      </ul></div>
+      <div class="footer-col"><h4><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></h4><ul>
+        <li><a href="dashboard.html"><span data-lang="zh">运营看板</span><span data-lang="en">Dashboard</span></a></li>
+        <li><a href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a></li>
+        <li><a href="new-trials.html"><span data-lang="zh">新试课列表</span><span data-lang="en">New Trials</span></a></li>
+        <li><a href="new-students.html"><span data-lang="zh">新学员列表</span><span data-lang="en">New Students</span></a></li>
+        <li><a href="request-center.html"><span data-lang="zh">申请处理中心</span><span data-lang="en">Request Center</span></a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MindDo Learning Center · <span data-lang="zh">保留所有权利</span><span data-lang="en">All rights reserved</span></span>
+      <span><span data-lang="zh">隐私政策 · 服务条款</span><span data-lang="en">Privacy · Terms</span></span>
+    </div>
+  </footer>
+
+  <script src="assets/minddo-flow.js"></script>
+  <script>
+    (function () {
+      var KEY = "minddo_course_enrollment";
+      var PLANS = {
+        weekly1: { price: 199, labelZh: "每周一节课", labelEn: "1 Class / Week" },
+        weekly2: { price: 369, labelZh: "每周两节课", labelEn: "2 Classes / Week" },
+        weekly3: { price: 519, labelZh: "每周三节课", labelEn: "3 Classes / Week" }
+      };
+      var DAYS = { mon: { zh: "周一", en: "Mon", idx: 1 }, tue: { zh: "周二", en: "Tue", idx: 2 }, wed: { zh: "周三", en: "Wed", idx: 3 }, thu: { zh: "周四", en: "Thu", idx: 4 }, fri: { zh: "周五", en: "Fri", idx: 5 }, sat: { zh: "周六", en: "Sat", idx: 6 }, sun: { zh: "周日", en: "Sun", idx: 0 } };
+      var SLOTS = { afterschool: { time: "16:00 – 17:30", zh: "放学后", en: "After School" }, evening: { time: "19:00 – 20:30", zh: "晚间", en: "Evening" }, weekendAm: { time: "09:30 – 11:00", zh: "周末上午", en: "Weekend AM" }, weekendPm: { time: "14:00 – 15:30", zh: "周末下午", en: "Weekend PM" } };
+      var PAY_METHODS = { card: { zh: "信用卡", en: "Credit Card" }, alipay: { zh: "支付宝", en: "Alipay" }, wechat: { zh: "微信支付", en: "WeChat Pay" } };
+
+      var html = document.documentElement;
+      var langButtons = document.querySelectorAll("[data-set-lang]");
+
+      function langOf() { return html.getAttribute("lang") === "en" ? "en" : "zh-CN"; }
+      function k() { return langOf() === "en" ? "en" : "zh"; }
+      function money(n) { return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 2 }); }
+      function loadState() { try { return JSON.parse(sessionStorage.getItem(KEY) || "{}"); } catch (_) { return {}; } }
+
+      function firstClassDate(dayKey) {
+        var d = DAYS[dayKey];
+        if (!d) return "";
+        var now = new Date();
+        var diff = (d.idx - now.getDay() + 7) % 7 || 7;
+        var first = new Date(now);
+        first.setDate(now.getDate() + diff);
+        return first.toLocaleDateString(k() === "en" ? "en-US" : "zh-CN", { month: "short", day: "numeric", weekday: "short" });
+      }
+
+      var state = loadState();
+      var hasOrder = !!(state && state.plan && state.day && state.slot && state.orderId && state.paidAt);
+
+      function render() {
+        var notice = document.getElementById("noOrderNotice");
+        var details = document.getElementById("orderDetails");
+        var heroBlock = document.getElementById("heroBlock");
+        if (!hasOrder) {
+          notice.style.display = "block";
+          details.style.display = "none";
+          heroBlock.style.display = "none";
+          return;
+        }
+        notice.style.display = "none";
+        details.style.display = "block";
+        heroBlock.style.display = "block";
+
+        var plan = PLANS[state.plan];
+        var day = DAYS[state.day];
+        var slot = SLOTS[state.slot];
+        var current = window.MindDoFlow && window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent();
+
+        document.getElementById("orderIdBadge").textContent = "#" + state.orderId;
+        document.getElementById("cfStudent").textContent = (current && (current.studentName || current.name)) || "—";
+        document.getElementById("cfMembership").textContent = k() === "zh" ? plan.labelZh : plan.labelEn;
+        document.getElementById("cfDay").textContent = day ? (k() === "zh" ? day.zh : day.en) : "—";
+        document.getElementById("cfTime").textContent = slot ? slot.time + " (" + (k() === "zh" ? slot.zh : slot.en) + ")" : "—";
+        document.getElementById("cfFirstClass").textContent = firstClassDate(state.day);
+        document.getElementById("cfOrderId").textContent = state.orderId;
+        document.getElementById("cfPayMethod").textContent = PAY_METHODS[state.payMethod] ? (k() === "zh" ? PAY_METHODS[state.payMethod].zh : PAY_METHODS[state.payMethod].en) : state.payMethod;
+        document.getElementById("cfAmount").textContent = money(state.totalAmount || plan.price);
+        document.getElementById("cfPaidAt").textContent = new Date(state.paidAt).toLocaleString(k() === "en" ? "en-US" : "zh-CN");
+      }
+
+      function setLang(lang) {
+        html.setAttribute("lang", lang);
+        localStorage.setItem("minddo_lang", lang);
+        document.title = (lang === "en" ? "Enrollment · Done" : "选课 · 报名成功") + " | MindDo";
+        langButtons.forEach(function (btn) { btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang); });
+        render();
+      }
+
+      var savedLang = localStorage.getItem("minddo_lang");
+      setLang(savedLang === "en" ? "en" : "zh-CN");
+
+      langButtons.forEach(function (btn) { btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); }); });
+
+      document.getElementById("newOrderBtn").addEventListener("click", function () {
+        try { sessionStorage.removeItem(KEY); } catch (_) {}
+        window.location.href = "course-selection.html";
+      });
+    })();
+  </script>
+</body>
+</html>
