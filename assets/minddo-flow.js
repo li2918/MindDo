@@ -121,10 +121,10 @@
       start: "trial.html",
       trial: "assessment.html",
       assessment: "signup.html",
-      signup: "dashboard.html",
+      signup: "course-selection.html",
       payment: "course-selection.html",
-      membership: "feedback.html",
-      feedback: "dashboard.html"
+      membership: "student-account.html",
+      feedback: "student-account.html"
     };
     return map[stage] || "index.html";
   }
@@ -435,30 +435,32 @@
     var copy = {
       "zh-CN": {
         title: "流程测试面板",
-        desc: "使用 dummy data 测试完整流程，无需后端或数据库配置。",
-        student: "学生",
-        noStudent: "当前没有激活学生",
-        stage: "阶段",
+        desc: "填充示例数据测试完整学员流程：试课 → 评估 → 注册 → 选课 → 学员中心 → 反馈。",
+        student: "学员",
+        noStudent: "暂无激活学员",
+        stage: "当前阶段",
         next: "下一步",
         seed: "填充示例数据",
         payment: "模拟支付",
         reset: "重置数据",
         goNext: "前往下一步",
-        studentPage: "学生页",
-        dashboard: "看板",
+        studentPage: "学员中心",
+        dashboard: "运营看板",
+        report: "学期报告",
+        trials: "新试课",
         stages: {
           start: "开始",
-          trial: "试课",
-          assessment: "评估",
-          signup: "注册",
-          payment: "支付",
-          membership: "排课",
-          feedback: "反馈"
+          trial: "已预约试课",
+          assessment: "已完成评估",
+          signup: "已注册账户",
+          payment: "已支付",
+          membership: "已选课排课",
+          feedback: "已收到反馈"
         }
       },
       en: {
         title: "Flow Test Panel",
-        desc: "Use dummy data to test the full flow without backend or database setup.",
+        desc: "Seed demo data to test the full flow: Trial → Assessment → Signup → Course Selection → Student Hub → Feedback.",
         student: "Student",
         noStudent: "No active student",
         stage: "Stage",
@@ -467,16 +469,18 @@
         payment: "Mock Payment",
         reset: "Reset",
         goNext: "Go Next",
-        studentPage: "Student",
+        studentPage: "Student Hub",
         dashboard: "Dashboard",
+        report: "Semester Report",
+        trials: "New Trials",
         stages: {
           start: "Start",
-          trial: "Trial",
-          assessment: "Assessment",
-          signup: "Signup",
-          payment: "Payment",
-          membership: "Scheduling",
-          feedback: "Feedback"
+          trial: "Trial Booked",
+          assessment: "Assessment Done",
+          signup: "Account Created",
+          payment: "Payment Made",
+          membership: "Enrolled",
+          feedback: "Feedback Received"
         }
       }
     };
@@ -498,7 +502,11 @@
       "<div class='minddo-flow-row'>" +
       "<a class='minddo-flow-link primary' href='" + getNextPage(stage) + "'>" + t.goNext + "</a>" +
       "<a class='minddo-flow-link' href='student-account.html'>" + t.studentPage + "</a>" +
+      "</div>" +
+      "<div class='minddo-flow-row'>" +
       "<a class='minddo-flow-link' href='dashboard.html'>" + t.dashboard + "</a>" +
+      "<a class='minddo-flow-link' href='semester-report.html'>" + t.report + "</a>" +
+      "<a class='minddo-flow-link' href='new-trials.html'>" + t.trials + "</a>" +
       "</div>";
 
     panel.addEventListener("click", function (e) {
