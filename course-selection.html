@@ -112,16 +112,6 @@
     .slot-chip .stime { font-size: 15px; font-weight: 800; color: var(--clay); display: block; margin-bottom: 2px; }
     .slot-chip .slabel { font-size: 11px; font-weight: 600; color: var(--muted); }
 
-    /* ADDONS */
-    .addon-list { display: grid; gap: 10px; margin-top: 4px; }
-    .addon { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); background: rgba(255,251,245,0.9); border-radius: 14px; cursor: pointer; transition: 0.15s; }
-    .addon:hover { border-color: rgba(208,129,36,0.38); }
-    .addon input { width: 18px; height: 18px; accent-color: var(--gold-deep); cursor: pointer; }
-    .addon.checked { border-color: var(--gold); background: linear-gradient(180deg, rgba(255,246,222,0.92), rgba(255,251,243,0.94)); }
-    .addon-info strong { display: block; font-size: 14px; font-weight: 800; color: var(--clay); margin-bottom: 2px; }
-    .addon-info span { font-size: 12px; color: var(--muted); line-height: 1.5; }
-    .addon-price { font-size: 15px; font-weight: 800; color: var(--clay); white-space: nowrap; }
-
     /* SUMMARY SIDEBAR */
     .summary-panel { position: sticky; top: 88px; }
     .summary-kv { display: grid; gap: 6px; margin-bottom: 14px; font-size: 13px; }
@@ -324,9 +314,6 @@
 
             <h3><span data-lang="zh">首选上课时段</span><span data-lang="en">Preferred Time Slot</span></h3>
             <div class="slot-grid" id="slotGrid"></div>
-
-            <h3><span data-lang="zh">增值服务（可选）</span><span data-lang="en">Add-ons (Optional)</span></h3>
-            <div class="addon-list" id="addonList"></div>
 
             <div class="action-row">
               <button class="btn-secondary" id="back2to1"><span data-lang="zh">← 上一步</span><span data-lang="en">← Back</span></button>
@@ -549,11 +536,6 @@
         weekly2: { price: 369, classes: 8, labelZh: "每周两节课", labelEn: "2 Classes / Week" },
         weekly3: { price: 519, classes: 12, labelZh: "每周三节课", labelEn: "3 Classes / Week" }
       };
-      var ADDONS = [
-        { id: "mentor", price: 79, zh: { title: "专属导师辅导", desc: "固定导师每月 1 次 1v1 深度辅导" }, en: { title: "Dedicated Mentor", desc: "Monthly 1-on-1 mentor session" } },
-        { id: "project", price: 49, zh: { title: "项目制作加餐", desc: "每月一个可展示的完整作品" }, en: { title: "Extra Project Workshop", desc: "One showcase project per month" } },
-        { id: "report", price: 29, zh: { title: "月度详细学习报告", desc: "家长端可查看的深度评估" }, en: { title: "Monthly Detailed Report", desc: "In-depth progress report for parents" } }
-      ];
       var DAYS = [
         { k: "mon", zh: "周一", en: "Mon", num: "01" },
         { k: "tue", zh: "周二", en: "Tue", num: "02" },
@@ -580,7 +562,6 @@
         plan: "weekly1",
         day: "wed",
         slot: "evening",
-        addons: [],
         payMethod: "card",
         orderId: "",
         paidAt: ""
@@ -596,16 +577,9 @@
 
       function computeTotals() {
         var plan = PLANS[state.plan];
-        var base = plan.price;
-        var addonSum = 0;
-        state.addons.forEach(function (id) {
-          var a = ADDONS.find(function (x) { return x.id === id; });
-          if (a) addonSum += a.price;
-        });
-        var total = base + addonSum;
+        var total = plan.price;
         return {
-          base: base,
-          addonSum: addonSum,
+          base: plan.price,
           total: Math.round(total * 100) / 100
         };
       }
@@ -638,19 +612,6 @@
             "</button>";
         }).join("");
       }
-      function renderAddonList() {
-        var el = document.getElementById("addonList");
-        el.innerHTML = ADDONS.map(function (a) {
-          var checked = state.addons.indexOf(a.id) >= 0;
-          var info = k() === "zh" ? a.zh : a.en;
-          return "<label class=\"addon" + (checked ? " checked" : "") + "\" data-addon=\"" + a.id + "\">" +
-            "<input type=\"checkbox\" " + (checked ? "checked" : "") + " data-addon-check=\"" + a.id + "\" />" +
-            "<div class=\"addon-info\"><strong>" + info.title + "</strong><span>" + info.desc + "</span></div>" +
-            "<div class=\"addon-price\">+" + money(a.price) + "/" + (k() === "zh" ? "月" : "mo") + "</div>" +
-            "</label>";
-        }).join("");
-      }
-
       function summaryRows() {
         var plan = PLANS[state.plan];
         var t = computeTotals();
@@ -663,10 +624,6 @@
           var slot = SLOTS.find(function (x) { return x.k === state.slot; });
           rows.push({ l: k() === "zh" ? "上课日" : "Class Day", v: day ? (k() === "zh" ? day.zh : day.en) : "—" });
           rows.push({ l: k() === "zh" ? "时段" : "Time Slot", v: slot ? slot.time : "—" });
-          state.addons.forEach(function (id) {
-            var a = ADDONS.find(function (x) { return x.id === id; });
-            if (a) rows.push({ l: "+ " + (k() === "zh" ? a.zh.title : a.en.title), v: money(a.price) + "/mo" });
-          });
         }
         return { rows: rows, total: t.total };
       }
@@ -781,7 +738,6 @@
             planLabel: k() === "zh" ? plan.labelZh : plan.labelEn,
             weekday: day ? (k() === "zh" ? day.zh : day.en) : state.day,
             timeSlot: slot ? slot.time : state.slot,
-            addons: state.addons.slice(),
             totalAmount: totals.total,
             totalMonthly: money(totals.total),
             createdAt: state.paidAt
@@ -823,7 +779,6 @@
         });
         renderDayGrid();
         renderSlotGrid();
-        renderAddonList();
         renderSummaries();
         if (state.step === 4) {
           populateConfirmation(computeTotals());
@@ -875,16 +830,6 @@
         renderSlotGrid();
         renderSummaries();
       });
-      document.getElementById("addonList").addEventListener("change", function (e) {
-        if (e.target.type !== "checkbox") return;
-        var id = e.target.getAttribute("data-addon-check");
-        if (!id) return;
-        var idx = state.addons.indexOf(id);
-        if (e.target.checked && idx < 0) state.addons.push(id);
-        else if (!e.target.checked && idx >= 0) state.addons.splice(idx, 1);
-        renderAddonList();
-        renderSummaries();
-      });
 
       document.getElementById("toStep2").addEventListener("click", function () { setStep(2); });
       document.getElementById("back2to1").addEventListener("click", function () { setStep(1); });
@@ -913,7 +858,7 @@
 
       document.getElementById("payBtn").addEventListener("click", processPayment);
       document.getElementById("newOrderBtn").addEventListener("click", function () {
-        state = { step: 1, plan: "weekly1", day: "wed", slot: "evening", addons: [], payMethod: "card", orderId: "", paidAt: "" };
+        state = { step: 1, plan: "weekly1", day: "wed", slot: "evening", payMethod: "card", orderId: "", paidAt: "" };
         document.querySelectorAll("[data-pay]").forEach(function (t) { t.classList.toggle("active", t.getAttribute("data-pay") === "card"); });
         document.getElementById("payCard").classList.add("active");
         document.getElementById("payAlipay").classList.remove("active");
@@ -926,7 +871,6 @@
         renderMembershipSelection();
         renderDayGrid();
         renderSlotGrid();
-        renderAddonList();
         setStep(1);
       });
 
@@ -946,7 +890,6 @@
 
       renderDayGrid();
       renderSlotGrid();
-      renderAddonList();
       renderSummaries();
     })();
   </script>
