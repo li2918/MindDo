@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>隐私政策 | Privacy Policy · MindDo</title>
+  <meta name="description" content="MindDo 隐私政策：我们如何收集、使用和保护学员及家长信息。" />
+  <meta name="author" content="MindDo AI Learning Center" />
+  <meta name="theme-color" content="#8f3c16" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="MindDo" />
+  <meta property="og:title" content="Privacy Policy · MindDo" />
+  <meta property="og:description" content="How MindDo collects, uses, and protects student and parent information." />
+  <meta name="twitter:card" content="summary" />
+  <link rel="canonical" href="privacy.html" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root { --bg:#fbf7ef; --sand:#f2e4c9; --card:rgba(255,252,246,0.94); --line:rgba(126,77,29,0.14); --text:#45200d; --muted:#826956; --gold:#ecab2f; --gold-deep:#d79016; --clay:#8f3c16; --brown:#5f2c12; }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
+    a { color:inherit; text-decoration:none; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+    .skip-link { position:absolute; left:-999px; top:0; background:var(--clay); color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; }
+    .skip-link:focus { left:0; outline:3px solid var(--gold); }
+
+    .navbar { position:sticky; top:0; z-index:100; background:rgba(255,252,246,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:44px; height:44px; object-fit:contain; }
+    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
+    .btn-primary { background:linear-gradient(135deg,#ffe5a7,var(--gold)); color:#4b250f; border:none; border-radius:999px; padding:10px 22px; font-size:14px; font-weight:700; text-decoration:none; box-shadow:0 4px 14px rgba(215,144,22,0.28); }
+
+    .page-hero { background:linear-gradient(145deg,#3a1a08 0%,#5f2c12 50%,#8f3c16 100%); padding:56px 0 40px; color:#fff8ef; text-align:center; }
+    .page-hero-inner { max-width:900px; margin:0 auto; padding:0 48px; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(236,171,47,0.18); border:1px solid rgba(236,171,47,0.3); color:#ffd98e; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
+    .page-hero h1 { font-size:clamp(28px,3.5vw,42px); font-weight:900; margin-bottom:10px; letter-spacing:-0.02em; }
+    .page-hero p { font-size:15px; color:rgba(255,241,220,0.75); line-height:1.7; max-width:600px; margin:0 auto; }
+    .updated { margin-top:12px; font-size:12px; color:rgba(255,241,220,0.55); }
+
+    main { padding:48px 0 80px; }
+    .content { max-width:860px; margin:0 auto; padding:0 48px; }
+    article h2 { font-size:22px; font-weight:800; color:var(--clay); margin:32px 0 14px; scroll-margin-top:84px; }
+    article h2:first-child { margin-top:0; }
+    article p { font-size:15px; color:var(--text); line-height:1.85; margin-bottom:14px; }
+    article ul { margin:0 0 16px 22px; }
+    article ul li { font-size:15px; color:var(--text); line-height:1.85; margin-bottom:6px; }
+    article strong { color:var(--clay); }
+
+    .toc { padding:20px 22px; border-radius:18px; background:var(--sand); border:1px solid var(--line); margin-bottom:36px; }
+    .toc strong { display:block; font-size:12px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+    .toc ol { margin:0; padding-left:20px; color:var(--clay); }
+    .toc ol li { margin-bottom:4px; }
+    .toc a { color:var(--clay); font-weight:600; text-decoration:none; }
+    .toc a:hover { text-decoration:underline; }
+
+    .contact-card { margin-top:36px; padding:22px; border-radius:18px; background:linear-gradient(135deg,rgba(255,246,222,0.9),rgba(255,251,243,0.9)); border:1px solid rgba(208,129,36,0.24); }
+    .contact-card h3 { font-size:16px; font-weight:800; color:var(--clay); margin-bottom:8px; }
+    .contact-card p { margin-bottom:6px; }
+
+    .footer { background:var(--brown); color:rgba(255,245,230,0.78); padding:48px 48px 32px; margin-top:60px; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px; font-size:13px; }
+    .footer a { color:rgba(255,245,230,0.72); }
+    .footer a:hover { color:#fff8ef; }
+    .footer .links { display:flex; gap:18px; }
+
+    @media (max-width:700px) { .navbar { padding:0 20px; } .page-hero-inner, .content { padding:0 22px; } article h2 { font-size:19px; } }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html"><img src="assets/logo.png" alt="MindDo" /><span class="nav-brand-name">MindDo</span></a>
+    <a class="btn-primary" href="index.html"><span data-lang="zh">返回首页 →</span><span data-lang="en">Back to Home →</span></a>
+  </nav>
+
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-tag"><span data-lang="zh">法律条款</span><span data-lang="en">Legal</span></div>
+      <h1><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy Policy</span></h1>
+      <p><span data-lang="zh">我们尊重并保护学员与家长的个人信息。以下条款说明我们如何收集、使用和保护你的数据。</span><span data-lang="en">We respect and protect student and parent information. This policy explains how we collect, use, and safeguard your data.</span></p>
+      <div class="updated"><span data-lang="zh">最近更新：2026 年 4 月</span><span data-lang="en">Last updated: April 2026</span></div>
+    </div>
+  </header>
+
+  <main id="main" role="main">
+    <div class="content">
+      <nav class="toc" aria-label="Table of contents">
+        <strong><span data-lang="zh">目录</span><span data-lang="en">Contents</span></strong>
+        <ol>
+          <li><a href="#s1"><span data-lang="zh">我们收集的信息</span><span data-lang="en">Information We Collect</span></a></li>
+          <li><a href="#s2"><span data-lang="zh">信息如何使用</span><span data-lang="en">How We Use It</span></a></li>
+          <li><a href="#s3"><span data-lang="zh">Cookie 与本地存储</span><span data-lang="en">Cookies & Local Storage</span></a></li>
+          <li><a href="#s4"><span data-lang="zh">第三方服务</span><span data-lang="en">Third-Party Services</span></a></li>
+          <li><a href="#s5"><span data-lang="zh">儿童隐私 (COPPA)</span><span data-lang="en">Children's Privacy (COPPA)</span></a></li>
+          <li><a href="#s6"><span data-lang="zh">你的权利</span><span data-lang="en">Your Rights</span></a></li>
+          <li><a href="#s7"><span data-lang="zh">联系方式</span><span data-lang="en">Contact</span></a></li>
+        </ol>
+      </nav>
+
+      <article>
+        <h2 id="s1"><span data-lang="zh">1. 我们收集的信息</span><span data-lang="en">1. Information We Collect</span></h2>
+        <p><span data-lang="zh">当你注册账户、预约试课或填写评估时，我们会收集：</span><span data-lang="en">When you sign up, book a trial, or complete an assessment, we collect:</span></p>
+        <ul>
+          <li><span data-lang="zh"><strong>账户信息：</strong>学员姓名、邮箱、密码（加盐哈希存储）、家长联系方式。</span><span data-lang="en"><strong>Account info:</strong> student name, email, password (stored as a salted hash), parent contact.</span></li>
+          <li><span data-lang="zh"><strong>课程记录：</strong>试课安排、选课结果、课堂反馈与学期报告。</span><span data-lang="en"><strong>Course records:</strong> trial bookings, course selections, class feedback, and semester reports.</span></li>
+          <li><span data-lang="zh"><strong>使用数据：</strong>设备类型、浏览器、页面访问路径（需你同意 Cookie 才会收集）。</span><span data-lang="en"><strong>Usage data:</strong> device type, browser, page visits (collected only after you accept cookies).</span></li>
+        </ul>
+
+        <h2 id="s2"><span data-lang="zh">2. 信息如何使用</span><span data-lang="en">2. How We Use It</span></h2>
+        <ul>
+          <li><span data-lang="zh">安排试课、匹配合适的老师，并向你发送课程确认邮件。</span><span data-lang="en">Schedule trials, match a suitable instructor, and send confirmation emails.</span></li>
+          <li><span data-lang="zh">提供学员中心、课堂反馈、学期报告与客服支持。</span><span data-lang="en">Operate the student hub, class feedback, semester reports, and customer support.</span></li>
+          <li><span data-lang="zh">改进课程质量与平台体验（仅使用去标识化的汇总数据）。</span><span data-lang="en">Improve course quality and platform experience, using only aggregated, de-identified data.</span></li>
+          <li><span data-lang="zh">在你同意的前提下，向你发送新课程、优惠和活动通知。</span><span data-lang="en">With your consent, send you updates on new classes, promotions, and events.</span></li>
+        </ul>
+
+        <h2 id="s3"><span data-lang="zh">3. Cookie 与本地存储</span><span data-lang="en">3. Cookies & Local Storage</span></h2>
+        <p><span data-lang="zh">我们使用必要 Cookie 来保持你的登录状态和语言偏好；分析类 Cookie 仅在你选择"全部接受"后才会启用。你可以在页面底部的 Cookie 横幅中随时调整。</span><span data-lang="en">Essential cookies keep you signed in and remember your language. Analytics cookies activate only after you choose "Accept All". You can change this at any time via the banner at the bottom of any page.</span></p>
+
+        <h2 id="s4"><span data-lang="zh">4. 第三方服务</span><span data-lang="en">4. Third-Party Services</span></h2>
+        <p><span data-lang="zh">我们仅使用为实现产品功能所必需的第三方服务（例如支付、邮件服务），并通过合同要求这些服务方达到同等的数据保护水平。</span><span data-lang="en">We use third-party services only as needed to operate (e.g. payments, email delivery), and require contractual protections for equivalent data safeguards.</span></p>
+
+        <h2 id="s5"><span data-lang="zh">5. 儿童隐私 (COPPA)</span><span data-lang="en">5. Children's Privacy (COPPA)</span></h2>
+        <p><span data-lang="zh">MindDo 是面向 5–18 岁青少年的学习平台。对 13 岁以下的学员，我们在收集信息前将征得可验证的家长同意，仅收集与课程安排直接相关的信息，并限制对未成年人信息的使用范围。</span><span data-lang="en">MindDo serves students aged 5–18. For students under 13, we obtain verifiable parental consent before collecting information, limit collection to what is strictly necessary for course delivery, and restrict how minors' data is used.</span></p>
+
+        <h2 id="s6"><span data-lang="zh">6. 你的权利</span><span data-lang="en">6. Your Rights</span></h2>
+        <ul>
+          <li><span data-lang="zh">访问、更正或删除你的账户信息。</span><span data-lang="en">Access, correct, or delete your account information.</span></li>
+          <li><span data-lang="zh">导出你的学习数据。</span><span data-lang="en">Export your learning data.</span></li>
+          <li><span data-lang="zh">撤回同意并停止接收营销通讯。</span><span data-lang="en">Withdraw consent and unsubscribe from marketing.</span></li>
+          <li><span data-lang="zh">向监管机构（如 FTC、网信办）投诉。</span><span data-lang="en">File a complaint with a supervisory authority (e.g. FTC).</span></li>
+        </ul>
+
+        <h2 id="s7"><span data-lang="zh">7. 联系方式</span><span data-lang="en">7. Contact</span></h2>
+        <p><span data-lang="zh">有任何隐私相关问题，请联系我们的数据保护负责人。</span><span data-lang="en">For any privacy-related question, please contact our data protection officer.</span></p>
+
+        <div class="contact-card">
+          <h3><span data-lang="zh">MindDo 数据保护办公室</span><span data-lang="en">MindDo Data Protection Office</span></h3>
+          <p>📧 privacy@minddo.example.com</p>
+          <p>📍 5505 Alton Pkwy, Irvine, CA 92618</p>
+          <p><span data-lang="zh">工作时间：周一至周五 9:00–17:00（太平洋时间）</span><span data-lang="en">Hours: Mon–Fri 9:00–17:00 PT</span></p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>© 2026 MindDo Learning Center</span>
+      <div class="links">
+        <a href="privacy.html"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy</span></a>
+        <a href="terms.html"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a>
+        <a href="index.html"><span data-lang="zh">返回首页</span><span data-lang="en">Home</span></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/consent.js" defer></script>
+  <script>
+    (function(){
+      var saved = localStorage.getItem("minddo_lang");
+      if (saved === "en") document.documentElement.setAttribute("lang", "en");
+    })();
+  </script>
+</body>
+</html>

@@ -3,8 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="登录 MindDo 学员账户，查看课表、课堂反馈与学期报告。 · Log in to your MindDo student account to view schedule, class feedback, and semester reports." />
+  <meta name="author" content="MindDo AI Learning Center" />
+  <meta name="theme-color" content="#8f3c16" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="MindDo" />
+  <meta property="og:title" content="学员登录" />
+  <meta property="og:description" content="Log in to your MindDo student account to view schedule, class feedback, and semester reports." />
+  <meta property="og:image" content="assets/favicon.svg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="学员登录" />
+  <meta name="twitter:description" content="Log in to your MindDo student account to view schedule, class feedback, and semester reports." />
+  <link rel="canonical" href="login.html" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
   <title>学员登录 | Student Login</title>
   <style>
+    /* Accessibility: skip link */
+    .skip-link { position:absolute; left:-9999px; top:0; background:#8f3c16; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #ecab2f; outline-offset:2px; }
+
     :root { --bg:#fbf7ef; --sand:#f2e4c9; --card:rgba(255,252,246,0.94); --line:rgba(126,77,29,0.14); --text:#45200d; --muted:#826956; --gold:#ecab2f; --gold-deep:#d79016; --clay:#8f3c16; --brown:#5f2c12; --shadow:0 24px 60px rgba(100,58,22,0.12); --success:#6f8f57; --error:#c46a4d; }
     *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
     html { scroll-behavior:smooth; }
@@ -107,6 +127,7 @@
   </style>
 </head>
 <body>
+  <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
   <nav class="navbar">
     <a class="nav-brand" href="index.html"><img src="assets/logo.png" alt="MindDo logo" /><span class="nav-brand-name">MindDo</span></a>
     <ul class="nav-menu">
@@ -219,7 +240,7 @@
     </div>
     <div class="footer-bottom">
       <span>© 2025 MindDo Learning Center · <span data-lang="zh">保留所有权利</span><span data-lang="en">All rights reserved</span></span>
-      <span><span data-lang="zh">隐私政策 · 服务条款</span><span data-lang="en">Privacy · Terms</span></span>
+      <span><a href="privacy.html" style="color:inherit;"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy Policy</span></a> · <a href="terms.html" style="color:inherit;"><span data-lang="zh">服务条款</span><span data-lang="en">Terms of Service</span></a></span>
     </div>
   </footer>
 
@@ -396,5 +417,6 @@
       });
     })();
   </script>
+  <script src="assets/consent.js" defer></script>
 </body>
 </html>

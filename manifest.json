@@ -1,0 +1,22 @@
+{
+  "name": "MindDo AI Learning Center",
+  "short_name": "MindDo",
+  "description": "AI & coding learning center for young learners, ages 5-18. 11 campuses across North America plus online classes.",
+  "lang": "en",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fbf7ef",
+  "theme_color": "#8f3c16",
+  "icons": [
+    { "src": "assets/favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "assets/favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Book Free Trial", "short_name": "Trial", "url": "./trial.html" },
+    { "name": "Student Hub", "short_name": "Hub", "url": "./student-account.html" },
+    { "name": "Find Campus", "short_name": "Campus", "url": "./campuses.html" }
+  ],
+  "categories": ["education", "kids"]
+}

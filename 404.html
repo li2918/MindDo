@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>页面未找到 | 404 · MindDo</title>
+  <meta name="description" content="很抱歉，你访问的 MindDo 页面不存在。" />
+  <meta name="robots" content="noindex, follow" />
+  <meta name="theme-color" content="#8f3c16" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root { --bg:#fbf7ef; --sand:#f2e4c9; --line:rgba(126,77,29,0.14); --text:#45200d; --muted:#826956; --gold:#ecab2f; --clay:#8f3c16; --brown:#5f2c12; --success:#6f8f57; }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); min-height:100vh; display:flex; flex-direction:column; }
+    a { color:inherit; text-decoration:none; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+
+    .navbar { padding:20px 40px; display:flex; align-items:center; justify-content:space-between; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:40px; height:40px; object-fit:contain; }
+    .nav-brand-name { font-size:20px; font-weight:800; color:var(--clay); }
+    .lang-switch { display:flex; gap:6px; }
+    .lang-switch button { background:none; border:1px solid var(--line); border-radius:999px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:600; color:var(--clay); font-family:inherit; }
+    .lang-switch button.active { background:var(--sand); border-color:var(--gold); }
+
+    main {
+      flex:1; display:grid; place-items:center;
+      padding:40px 20px;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(236,171,47,0.18), transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(143,60,22,0.12), transparent 40%);
+    }
+    .card { max-width:620px; width:100%; text-align:center; padding:48px 36px; border-radius:26px; background:rgba(255,252,246,0.96); border:1px solid var(--line); box-shadow:0 32px 80px rgba(100,58,22,0.14); }
+
+    .glyph { font-size:96px; font-weight:900; line-height:1; background:linear-gradient(135deg,var(--gold),var(--clay)); -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:-0.04em; margin-bottom:4px; }
+    .status { font-size:13px; font-weight:800; color:var(--muted); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:18px; }
+    h1 { font-size:clamp(24px,3.2vw,34px); font-weight:900; color:var(--clay); letter-spacing:-0.02em; margin-bottom:12px; }
+    p.lead { font-size:15px; color:var(--muted); line-height:1.7; max-width:440px; margin:0 auto 32px; }
+
+    .actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:28px; }
+    .btn { display:inline-flex; align-items:center; gap:6px; padding:12px 22px; border-radius:999px; font-size:14px; font-weight:700; cursor:pointer; text-decoration:none; transition:.2s; font-family:inherit; border:none; }
+    .btn-primary { background:linear-gradient(135deg,#ffe5a7,var(--gold)); color:#4b250f; box-shadow:0 6px 18px rgba(215,144,22,0.3); }
+    .btn-primary:hover { transform:translateY(-2px); }
+    .btn-secondary { background:rgba(255,248,239,0.98); color:var(--clay); border:1px solid var(--line); }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(215,144,22,0.38); }
+
+    .suggest { margin-top:20px; padding-top:24px; border-top:1px dashed rgba(151,84,21,0.18); text-align:left; }
+    .suggest-label { font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; text-align:center; }
+    .suggest-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .suggest a { display:block; padding:12px 14px; border-radius:14px; background:rgba(255,248,238,0.9); border:1px solid rgba(151,84,21,0.1); text-align:center; font-size:13px; font-weight:700; color:var(--clay); transition:.15s; }
+    .suggest a:hover { background:linear-gradient(135deg,#fff6de,#ffd977); border-color:rgba(208,129,36,0.4); transform:translateY(-2px); }
+    .suggest a span.emoji { display:block; font-size:20px; margin-bottom:4px; }
+
+    .footer { padding:24px 40px; text-align:center; font-size:12px; color:var(--muted); border-top:1px solid var(--line); }
+    .footer a { color:var(--clay); font-weight:600; margin:0 8px; }
+
+    @media (max-width:640px) { .navbar { padding:18px 22px; } .card { padding:36px 24px; } .glyph { font-size:72px; } .suggest-grid { grid-template-columns:1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html"><img src="assets/logo.png" alt="MindDo" /><span class="nav-brand-name">MindDo</span></a>
+    <div class="lang-switch">
+      <button type="button" class="active" data-set-lang="zh-CN">中文</button>
+      <button type="button" data-set-lang="en">English</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="card" role="alert">
+      <div class="glyph" aria-hidden="true">404</div>
+      <div class="status">Page Not Found</div>
+      <h1><span data-lang="zh">这个页面跑到课间休息去了 ☕</span><span data-lang="en">This page stepped out for a break ☕</span></h1>
+      <p class="lead"><span data-lang="zh">你访问的地址可能已经改名、被移除，或者只是输错了一个字母。不如从下面这些入口重新开始吧。</span><span data-lang="en">The address you tried may have been renamed, removed, or just a typo. Try one of these entry points instead.</span></p>
+
+      <div class="actions">
+        <a class="btn btn-primary" href="index.html"><span data-lang="zh">返回首页 →</span><span data-lang="en">Back to Home →</span></a>
+        <a class="btn btn-secondary" href="trial.html"><span data-lang="zh">预约免费试课</span><span data-lang="en">Book Free Trial</span></a>
+      </div>
+
+      <div class="suggest">
+        <div class="suggest-label"><span data-lang="zh">或者试试这些</span><span data-lang="en">Or try these</span></div>
+        <div class="suggest-grid">
+          <a href="campuses.html"><span class="emoji">📍</span><span data-lang="zh">查找校区</span><span data-lang="en">Campuses</span></a>
+          <a href="course-system.html"><span class="emoji">🎓</span><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a>
+          <a href="login.html"><span class="emoji">🔐</span><span data-lang="zh">学员登录</span><span data-lang="en">Log In</span></a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span>© 2026 MindDo Learning Center</span>
+    <a href="privacy.html"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy</span></a>
+    <a href="terms.html"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a>
+  </footer>
+
+  <script src="assets/consent.js" defer></script>
+  <script>
+    (function () {
+      var htmlEl = document.documentElement;
+      var saved = localStorage.getItem("minddo_lang");
+      var lang = saved === "en" ? "en" : "zh-CN";
+      htmlEl.setAttribute("lang", lang);
+      document.querySelectorAll("[data-set-lang]").forEach(function (b) {
+        b.classList.toggle("active", b.getAttribute("data-set-lang") === lang);
+        b.addEventListener("click", function () {
+          var next = b.getAttribute("data-set-lang");
+          htmlEl.setAttribute("lang", next);
+          localStorage.setItem("minddo_lang", next);
+          document.querySelectorAll("[data-set-lang]").forEach(function (x) { x.classList.toggle("active", x === b); });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

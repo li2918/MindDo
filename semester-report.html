@@ -3,8 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MindDo 学期报告：阶段能力评估、学习进度与教师总结。 · MindDo semester report: periodic skill assessments, progress, and teacher summaries." />
+  <meta name="author" content="MindDo AI Learning Center" />
+  <meta name="theme-color" content="#8f3c16" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="MindDo" />
+  <meta property="og:title" content="学期报告" />
+  <meta property="og:description" content="MindDo semester report: periodic skill assessments, progress, and teacher summaries." />
+  <meta property="og:image" content="assets/favicon.svg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="学期报告" />
+  <meta name="twitter:description" content="MindDo semester report: periodic skill assessments, progress, and teacher summaries." />
+  <link rel="canonical" href="semester-report.html" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
   <title>学期报告 | Semester Report</title>
   <style>
+    /* Accessibility: skip link */
+    .skip-link { position:absolute; left:-9999px; top:0; background:#8f3c16; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #ecab2f; outline-offset:2px; }
+
     :root {
       --bg: #fbf7ef; --sand: #f2e4c9; --card: rgba(255,252,246,0.94);
       --line: rgba(126,77,29,0.14); --text: #45200d; --muted: #826956;
@@ -138,6 +158,7 @@
   </style>
 </head>
 <body>
+  <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
 
   <nav class="navbar">
     <a class="nav-brand" href="index.html" aria-label="MindDo home">
@@ -387,7 +408,7 @@
     </div>
     <div class="footer-bottom">
       <span>© 2025 MindDo Learning Center · <span data-lang="zh">保留所有权利</span><span data-lang="en">All rights reserved</span></span>
-      <span><span data-lang="zh">隐私政策 · 服务条款</span><span data-lang="en">Privacy Policy · Terms of Service</span></span>
+      <span><a href="privacy.html" style="color:inherit;"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy Policy</span></a> · <a href="terms.html" style="color:inherit;"><span data-lang="zh">服务条款</span><span data-lang="en">Terms of Service</span></a></span>
     </div>
   </footer>
 
@@ -400,8 +421,8 @@
           attend: "出勤率", homework: "作业完成率", project: "项目完成数", growth: "能力成长指数",
           skill1: "AI提问与信息检索", skill2: "编程逻辑与结构化思维", skill3: "项目表达与展示能力", skill4: "时间管理与任务拆解", skill5: "团队协作与同伴反馈",
           obs1: "课堂参与积极，愿意主动提问，能将抽象任务转化为可执行步骤。",
-          obs2: "在项目复盘中开始形成"问题-证据-结论"的表达结构。",
-          obs3: "遇到开放题时偶尔急于给答案，建议继续训练"先分析再生成"。",
+          obs2: "在项目复盘中开始形成\"问题-证据-结论\"的表达结构。",
+          obs3: "遇到开放题时偶尔急于给答案，建议继续训练\"先分析再生成\"。",
           obs4: "同伴协作意识明显提升，组内反馈更加具体可执行。",
           obs5: "建议下学期增加跨学科研究型任务，强化持续迭代能力。",
           pa1: "项目目标：用图文问答帮助校园垃圾分类宣传。", pa2: "学生贡献：负责提示词设计、资料筛选和交互文案。", pa3: "学习亮点：能够识别错误答案并进行二次验证。", pa4: "家长可见成果：完整演示稿 + 课堂展示视频。",
@@ -410,10 +431,10 @@
           good: "达成良好", improve: "可继续提升",
           w4t: "基础提示词训练与信息筛选", w4c: "已建立基本提问框架，准确率稳定。", w4p: "每周2次复述课堂重点，巩固结构化表达。",
           w8t: "小组项目协作与角色分工", w8c: "能够按分工推进任务并及时同步进度。", w8p: "家庭场景中可让孩子主导一次小型计划任务。",
-          w12t: "中期项目答辩", w12c: "内容完整，但节奏略快，结论呈现可更聚焦。", w12p: "鼓励孩子用"先结论后解释"练习表达。",
+          w12t: "中期项目答辩", w12c: "内容完整，但节奏略快，结论呈现可更聚焦。", w12p: "鼓励孩子用\"先结论后解释\"练习表达。",
           w16t: "学期结题展示", w16c: "展示逻辑清楚，数据引用与案例支撑明显提升。", w16p: "肯定过程努力，并与孩子共定下学期目标。",
-          nextPlan: "下学期建议：建议进入"AI创造进阶班"，重点提升模型思维、跨学科研究与公开表达能力；可配置1个长期项目（8-10周）+ 2个短项目（2-3周）。",
-          homeAdvice: "家庭支持建议：每周安排1次20分钟"项目回顾时间"，聚焦三个问题：本周完成了什么？遇到什么困难？下周准备如何改进？"
+          nextPlan: "下学期建议：建议进入\"AI创造进阶班\"，重点提升模型思维、跨学科研究与公开表达能力；可配置1个长期项目（8-10周）+ 2个短项目（2-3周）。",
+          homeAdvice: "家庭支持建议：每周安排1次20分钟\"项目回顾时间\"，聚焦三个问题：本周完成了什么？遇到什么困难？下周准备如何改进？"
         },
         en: {
           studentName: "Student Name", studentNameV: "Leo Li", studentId: "Student ID", grade: "Grade", gradeV: "Grade 6", semester: "Semester",
@@ -460,5 +481,6 @@
       });
     })();
   </script>
+  <script src="assets/consent.js" defer></script>
 </body>
 </html>

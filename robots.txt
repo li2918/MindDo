@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Internal operations pages — indexable but low priority
+Disallow: /dashboard.html
+Disallow: /student-management.html
+Disallow: /new-students.html
+Disallow: /new-trials.html
+Disallow: /request-center.html
+
+# Account-gated pages
+Disallow: /student-account.html
+Disallow: /feedback.html
+Disallow: /semester-report.html
+
+Sitemap: https://minddo.example.com/sitemap.xml
