@@ -162,6 +162,92 @@
     .footer-col ul a:hover { color:#fff8ef; }
     .footer-bottom { max-width:1280px; margin:0 auto; padding-top:24px; border-top:1px solid rgba(255,237,215,0.1); display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(255,245,230,0.45); }
 
+    /* FLOATING CHAT WIDGET */
+    .chat-bubble {
+      position:fixed; right:20px; bottom:20px; z-index:9996;
+      width:60px; height:60px; border-radius:999px;
+      background:linear-gradient(135deg,#ffe5a7,var(--gold));
+      border:none; cursor:pointer;
+      box-shadow:0 12px 30px rgba(215,144,22,0.42);
+      display:grid; place-items:center;
+      font-size:26px; color:#4b250f;
+      transition:.22s;
+    }
+    .chat-bubble:hover { transform:translateY(-3px) scale(1.04); box-shadow:0 18px 38px rgba(215,144,22,0.55); }
+    .chat-bubble.open { display:none; }
+    .chat-bubble .dot { position:absolute; top:2px; right:2px; width:14px; height:14px; border-radius:999px; background:var(--success); border:3px solid #fff8ef; }
+
+    .chat-panel {
+      position:fixed; right:20px; bottom:20px; z-index:9997;
+      width:min(360px,calc(100vw - 32px)); height:min(540px,calc(100vh - 40px));
+      background:#fff8ef; border-radius:22px; border:1px solid var(--line);
+      box-shadow:0 24px 60px rgba(100,58,22,0.28);
+      display:none; flex-direction:column; overflow:hidden;
+      font-family:inherit;
+    }
+    .chat-panel.open { display:flex; }
+    .chat-head { padding:18px 18px 16px; background:linear-gradient(135deg,#3a1a08 0%,#5f2c12 50%,#8f3c16 100%); color:#fff8ef; display:flex; align-items:center; gap:12px; position:relative; }
+    .chat-head img { width:42px; height:42px; border-radius:999px; border:2px solid rgba(255,237,215,0.25); background:var(--sand); flex-shrink:0; }
+    .chat-head .who strong { display:block; font-size:14px; font-weight:800; color:#fff8ef; }
+    .chat-head .who .status { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:rgba(255,241,220,0.72); margin-top:2px; }
+    .chat-head .who .status::before { content:""; width:7px; height:7px; border-radius:999px; background:var(--success); box-shadow:0 0 0 3px rgba(111,143,87,0.32); }
+    .chat-close { margin-left:auto; background:rgba(255,252,247,0.12); border:1px solid rgba(255,237,215,0.2); color:#fff8ef; width:32px; height:32px; border-radius:999px; cursor:pointer; font-size:14px; line-height:1; display:grid; place-items:center; font-family:inherit; }
+    .chat-close:hover { background:rgba(255,252,247,0.2); }
+
+    .chat-body { flex:1; overflow-y:auto; padding:16px 18px; background:#fbf7ef; }
+    .chat-body::-webkit-scrollbar { width:6px; }
+    .chat-body::-webkit-scrollbar-thumb { background:rgba(151,84,21,0.18); border-radius:999px; }
+
+    .chat-msg { display:flex; gap:8px; margin-bottom:12px; max-width:90%; }
+    .chat-msg.bot { margin-right:auto; }
+    .chat-msg.user { margin-left:auto; flex-direction:row-reverse; }
+    .chat-msg .bubble-txt {
+      padding:10px 14px; border-radius:14px;
+      font-size:13.5px; line-height:1.55; word-wrap:break-word;
+    }
+    .chat-msg.bot .bubble-txt { background:#fff; color:var(--text); border:1px solid var(--line); border-bottom-left-radius:4px; }
+    .chat-msg.user .bubble-txt { background:linear-gradient(135deg,#ffe5a7,var(--gold)); color:#4b250f; border-bottom-right-radius:4px; font-weight:600; }
+    .chat-ts { font-size:10px; color:var(--muted); margin-top:4px; text-align:left; padding:0 4px; }
+    .chat-msg.user .chat-ts { text-align:right; }
+
+    .typing { display:inline-flex; gap:4px; padding:12px 14px; background:#fff; border:1px solid var(--line); border-radius:14px; border-bottom-left-radius:4px; }
+    .typing span { width:6px; height:6px; border-radius:999px; background:var(--muted); opacity:0.4; animation:typingDot 1.2s infinite; }
+    .typing span:nth-child(2) { animation-delay:0.15s; }
+    .typing span:nth-child(3) { animation-delay:0.3s; }
+    @keyframes typingDot { 0%,60%,100% { opacity:0.3; transform:translateY(0); } 30% { opacity:1; transform:translateY(-3px); } }
+
+    .chat-quick { padding:8px 14px 4px; display:flex; flex-wrap:wrap; gap:6px; background:#fbf7ef; }
+    .chat-quick button {
+      background:rgba(255,252,247,0.96); border:1px solid var(--line); color:var(--clay);
+      border-radius:999px; padding:7px 12px; font-size:12px; font-weight:700;
+      cursor:pointer; font-family:inherit; transition:.15s;
+    }
+    .chat-quick button:hover { background:linear-gradient(135deg,#fff6de,#ffd977); border-color:rgba(208,129,36,0.5); transform:translateY(-1px); }
+
+    .chat-input {
+      display:flex; gap:8px; padding:12px 14px 14px;
+      background:#fff; border-top:1px solid var(--line);
+    }
+    .chat-input input {
+      flex:1; border:1px solid var(--line); border-radius:999px;
+      padding:10px 16px; font-size:13.5px; font-family:inherit;
+      background:#fbf7ef; color:var(--text); outline:none; transition:.15s;
+    }
+    .chat-input input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(236,171,47,0.15); background:#fff; }
+    .chat-input button {
+      background:linear-gradient(135deg,#ffe5a7,var(--gold)); color:#4b250f;
+      border:none; border-radius:999px; width:40px; height:40px;
+      font-size:16px; cursor:pointer; display:grid; place-items:center;
+      flex-shrink:0; font-family:inherit; transition:.15s;
+    }
+    .chat-input button:hover { transform:translateY(-1px); }
+    .chat-input button:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+
+    @media (max-width:480px){
+      .chat-panel { right:12px; bottom:12px; width:calc(100vw - 24px); height:calc(100vh - 80px); }
+      .chat-bubble { right:16px; bottom:16px; }
+    }
+
     @media (max-width:1000px){ .grid { grid-template-columns:1fr; } .channels { grid-template-columns:1fr; } .office-grid { grid-template-columns:repeat(2,1fr); } .sla-grid { grid-template-columns:repeat(2,1fr); } }
     @media (max-width:900px){ .navbar { padding:0 24px; } .nav-menu { display:none; } .channels-wrap, .content-inner, .offices-inner, .sla-inner, .page-hero-inner { padding:0 24px; } .footer-inner { grid-template-columns:repeat(2,1fr); } }
     @media (max-width:640px){ .form-grid { grid-template-columns:1fr; } .office-grid { grid-template-columns:1fr; } .footer-inner { grid-template-columns:1fr; } .footer { padding:48px 24px 28px; } .form-card, .info-card { padding:24px 22px; } }
@@ -213,11 +299,11 @@
           <div class="value"><a href="mailto:hello@minddo.com">hello@minddo.com</a></div>
           <div class="meta"><span data-lang="zh">2 小时内回复（工作时间内）</span><span data-lang="en">Reply within 2 business hours</span></div>
         </article>
-        <article class="channel">
+        <article class="channel" id="openChatCard" role="button" tabindex="0" aria-controls="chatPanel" style="cursor:pointer;">
           <div class="channel-icon">💬</div>
           <h3><span data-lang="zh">在线咨询</span><span data-lang="en">Live Chat</span></h3>
-          <p><span data-lang="zh">直接和顾问一对一文字对话，适合快速问题。</span><span data-lang="en">Real-time text chat with an advisor — fastest path for quick questions.</span></p>
-          <div class="value"><span data-lang="zh">右下角开启对话</span><span data-lang="en">Launch chat at bottom-right</span></div>
+          <p><span data-lang="zh">直接和招生顾问 Amy 一对一文字对话，适合快速问题。</span><span data-lang="en">Real-time text chat with admissions advisor Amy — fastest path for quick questions.</span></p>
+          <div class="value"><span data-lang="zh">点击打开对话 →</span><span data-lang="en">Click to start chat →</span></div>
           <div class="meta"><span data-lang="zh">平均 90 秒接入</span><span data-lang="en">Avg. 90-second wait</span></div>
         </article>
       </div>
@@ -546,6 +632,28 @@
     </div>
   </footer>
 
+  <!-- Floating chat widget -->
+  <button type="button" class="chat-bubble" id="chatBubble" aria-label="Open live chat" aria-expanded="false" aria-controls="chatPanel">
+    💬<span class="dot" aria-hidden="true"></span>
+  </button>
+  <aside class="chat-panel" id="chatPanel" role="dialog" aria-labelledby="chatAdvisorName">
+    <div class="chat-head">
+      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=AmyAdvisor&backgroundColor=fdbcbc" alt="" />
+      <div class="who">
+        <strong id="chatAdvisorName"><span data-lang="zh">Amy · 招生顾问</span><span data-lang="en">Amy · Admissions Advisor</span></strong>
+        <span class="status"><span data-lang="zh">在线 · 通常 2 分钟内回复</span><span data-lang="en">Online · typically replies in 2 min</span></span>
+      </div>
+      <button type="button" class="chat-close" id="chatClose" aria-label="Close chat">✕</button>
+    </div>
+    <div class="chat-body" id="chatBody" aria-live="polite"></div>
+    <div class="chat-quick" id="chatQuick"></div>
+    <form class="chat-input" id="chatInput">
+      <input type="text" id="chatInputField" aria-label="Message"
+        placeholder="" data-placeholder-zh="输入你的问题…" data-placeholder-en="Type your question…" autocomplete="off" />
+      <button type="submit" aria-label="Send">↑</button>
+    </form>
+  </aside>
+
   <script src="assets/consent.js" defer></script>
   <script>
     (function () {
@@ -614,6 +722,221 @@
           : "✓ 消息已收到，招生顾问将在 2 个工作小时内与你联系。";
         form.reset();
         setLang(lang); // re-apply placeholder
+      });
+
+      /* ===== Floating chat widget ===== */
+      var chatBubble = document.getElementById("chatBubble");
+      var chatPanel = document.getElementById("chatPanel");
+      var chatBody = document.getElementById("chatBody");
+      var chatQuick = document.getElementById("chatQuick");
+      var chatField = document.getElementById("chatInputField");
+      var chatFormEl = document.getElementById("chatInput");
+      var chatClose = document.getElementById("chatClose");
+      var openChatCard = document.getElementById("openChatCard");
+
+      var CHAT_KEY = "minddo_chat_log";
+
+      // Scripted answer bank, bilingual. Matched against keywords; falls back to generic.
+      var CHAT_REPLIES = [
+        {
+          match: ["课程","program","programs","课","学习","学员","age","ages","curriculum"],
+          zh: "我们有 5 条 AI 学习路径，覆盖 5-18 岁：启蒙入门、创意工坊、编程进阶、项目营、竞赛冲刺。你希望给孩子了解哪一条？或者告诉我孩子几岁，我帮你匹配。",
+          en: "We run 5 AI learning tracks for ages 5-18: Fundamentals, Creative Studio, Programming, Project Camp, Competition. Which age is your child? I can match a track."
+        },
+        {
+          match: ["试课","trial","免费","free","体验"],
+          zh: "免费体验课 60 分钟，孩子会在老师带领下完成第一件 AI 小作品。你想直接预约吗？我可以把链接发给你：trial.html",
+          en: "The free trial is 60 minutes — your child ships a first AI project with an instructor. Want to book directly? Here's the link: trial.html"
+        },
+        {
+          match: ["学费","价格","pricing","price","cost","多少钱","fee","fees"],
+          zh: "Membership 从 $199/月起（每周 1 节课）。$369/月是最受欢迎的 2 节/周方案。首月内未使用的课时可全额退款。需要我把详细的方案对比发给你吗？",
+          en: "Memberships start at $199/mo (1 class/week). Our most popular 2/week plan is $369/mo. Unused classes in the first month are fully refundable. Want me to send the full plan comparison?"
+        },
+        {
+          match: ["校区","campus","地址","location","哪里","where","online","线上"],
+          zh: "我们在北美 10 个城市有线下校区（加州 5 个、华盛顿 3 个、印第安纳 1 个、加拿大渥太华 1 个），另有线上直播小班。你方便告诉我邮编吗？我帮你匹配最近的。",
+          en: "We have 10 physical campuses (5 in CA, 3 in WA, 1 in IN, 1 in Ottawa) plus small-group live online classes. If you share your ZIP/postal code I can match the closest one."
+        },
+        {
+          match: ["老师","teacher","instructor","师资","faculty"],
+          zh: "主讲老师来自 Google Brain、Microsoft AI、MIT、Berkeley 等背景，平均 7 年 AI 研究/工程经验，并完成 120 小时 K-12 教学认证。我可以把师资介绍页发给你。",
+          en: "Lead instructors come from Google Brain, Microsoft AI, MIT, Berkeley — avg 7 years in AI research/engineering, plus 120 hours of K-12 teaching certification. Want me to send you the teachers page?"
+        },
+        {
+          match: ["退款","refund","退"],
+          zh: "首月内未使用课时可全额退款；之后按剩余课时比例退款。项目营和 1 对 1 课程不支持退款但可转让。完整条款在 terms.html。",
+          en: "Unused classes in your first month are fully refundable; after that, refunds are prorated. Project camps and 1-on-1 are non-refundable but transferable. Full terms at terms.html."
+        },
+        {
+          match: ["hi","hello","你好","嗨"],
+          zh: "你好～我是 Amy，MindDo 的招生顾问。告诉我孩子几岁、你最关心的问题，我马上帮你。",
+          en: "Hi! I'm Amy, a MindDo admissions advisor. Tell me your child's age and what you'd like to know — I'll take it from there."
+        }
+      ];
+      var CHAT_FALLBACK = {
+        zh: "谢谢你的问题！为了给你准确的回复，我把它转给对应的顾问，我们会在工作时间内 2 小时内通过邮件回复你。如果方便，也可以直接填下面的表单留下邮箱 🙏",
+        en: "Thanks for asking! To give you an accurate answer I'll route this to the right advisor — we'll reply by email within 2 business hours. You can also drop your email in the form below 🙏"
+      };
+      var CHAT_QUICK = {
+        zh: ["课程方案","免费试课","学费与退款","校区 / 线上","师资背景"],
+        en: ["Programs","Free trial","Pricing & refunds","Campus / Online","Teachers"]
+      };
+      var QUICK_TO_MATCH = {
+        "课程方案":"课程","免费试课":"试课","学费与退款":"学费","校区 / 线上":"校区","师资背景":"老师",
+        "Programs":"program","Free trial":"trial","Pricing & refunds":"pricing","Campus / Online":"campus","Teachers":"teacher"
+      };
+
+      function nowHHMM() {
+        var d = new Date();
+        return (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes();
+      }
+
+      function appendMsg(role, text, skipPersist) {
+        var wrap = document.createElement("div");
+        wrap.className = "chat-msg " + role;
+        var inner = document.createElement("div");
+        var txt = document.createElement("div");
+        txt.className = "bubble-txt";
+        txt.textContent = text;
+        var ts = document.createElement("div");
+        ts.className = "chat-ts";
+        ts.textContent = nowHHMM();
+        inner.appendChild(txt);
+        inner.appendChild(ts);
+        wrap.appendChild(inner);
+        chatBody.appendChild(wrap);
+        chatBody.scrollTop = chatBody.scrollHeight;
+        if (!skipPersist) {
+          try {
+            var log = JSON.parse(sessionStorage.getItem(CHAT_KEY) || "[]");
+            log.push({ role: role, text: text, at: Date.now() });
+            sessionStorage.setItem(CHAT_KEY, JSON.stringify(log));
+          } catch (_) {}
+        }
+      }
+
+      function appendTyping() {
+        var wrap = document.createElement("div");
+        wrap.className = "chat-msg bot";
+        wrap.id = "chatTyping";
+        var inner = document.createElement("div");
+        var dots = document.createElement("div");
+        dots.className = "typing";
+        dots.innerHTML = "<span></span><span></span><span></span>";
+        inner.appendChild(dots);
+        wrap.appendChild(inner);
+        chatBody.appendChild(wrap);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+      function removeTyping() {
+        var el = document.getElementById("chatTyping");
+        if (el) el.remove();
+      }
+
+      function findReply(userText) {
+        var lang = langOf() === "en" ? "en" : "zh";
+        var q = (userText || "").toLowerCase();
+        for (var i = 0; i < CHAT_REPLIES.length; i++) {
+          var r = CHAT_REPLIES[i];
+          for (var j = 0; j < r.match.length; j++) {
+            if (q.indexOf(r.match[j]) >= 0) return r[lang];
+          }
+        }
+        return CHAT_FALLBACK[lang];
+      }
+
+      function renderQuick() {
+        var lang = langOf() === "en" ? "en" : "zh";
+        var items = CHAT_QUICK[lang];
+        chatQuick.innerHTML = items.map(function (q) {
+          return "<button type=\"button\" data-quick=\"" + q + "\">" + q + "</button>";
+        }).join("");
+      }
+
+      function simulateReply(userText) {
+        var reply = findReply(userText);
+        appendTyping();
+        // Variable delay: 600-1400ms, feels more natural.
+        var delay = 650 + Math.min(900, Math.max(400, reply.length * 12));
+        setTimeout(function () {
+          removeTyping();
+          appendMsg("bot", reply);
+          if (window.MindDoAnalytics) window.MindDoAnalytics.track("chat_reply", { len: reply.length });
+        }, delay);
+      }
+
+      function greet() {
+        // Only greet on first open per session.
+        try {
+          var greeted = sessionStorage.getItem("minddo_chat_greeted");
+          if (greeted === "1") return;
+          sessionStorage.setItem("minddo_chat_greeted", "1");
+        } catch (_) {}
+        var lang = langOf() === "en" ? "en" : "zh";
+        var greeting = lang === "zh"
+          ? "你好！我是 MindDo 招生顾问 Amy。随便问我关于课程、试课、校区或学费的问题，我会 2 分钟内回复你 🙂"
+          : "Hi there! I'm Amy, a MindDo admissions advisor. Ask me anything about programs, trials, campuses, or tuition — I reply within 2 min 🙂";
+        setTimeout(function () { appendMsg("bot", greeting); }, 400);
+      }
+
+      function restoreLog() {
+        try {
+          var log = JSON.parse(sessionStorage.getItem(CHAT_KEY) || "[]");
+          log.forEach(function (m) { appendMsg(m.role, m.text, true); });
+        } catch (_) {}
+      }
+
+      function openChat() {
+        chatPanel.classList.add("open");
+        chatBubble.classList.add("open");
+        chatBubble.setAttribute("aria-expanded", "true");
+        if (!chatBody.children.length) {
+          restoreLog();
+          if (!chatBody.children.length) greet();
+        }
+        setTimeout(function () { chatField.focus(); }, 50);
+        if (window.MindDoAnalytics) window.MindDoAnalytics.track("chat_open", {});
+      }
+      function closeChat() {
+        chatPanel.classList.remove("open");
+        chatBubble.classList.remove("open");
+        chatBubble.setAttribute("aria-expanded", "false");
+      }
+
+      chatBubble.addEventListener("click", openChat);
+      chatClose.addEventListener("click", closeChat);
+      openChatCard.addEventListener("click", openChat);
+      openChatCard.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openChat(); } });
+
+      chatFormEl.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var text = chatField.value.trim();
+        if (!text) return;
+        appendMsg("user", text);
+        chatField.value = "";
+        if (window.MindDoAnalytics) window.MindDoAnalytics.track("chat_send", { len: text.length });
+        simulateReply(text);
+      });
+
+      chatQuick.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-quick]");
+        if (!btn) return;
+        var label = btn.getAttribute("data-quick");
+        appendMsg("user", label);
+        var probe = QUICK_TO_MATCH[label] || label;
+        simulateReply(probe);
+      });
+
+      // Re-localize chat field placeholder and quick-reply chips on lang switch.
+      function localizeChat() {
+        var lang = langOf() === "en" ? "en" : "zh";
+        chatField.placeholder = chatField.getAttribute(lang === "en" ? "data-placeholder-en" : "data-placeholder-zh") || "";
+        renderQuick();
+      }
+      localizeChat();
+      document.querySelectorAll("[data-set-lang]").forEach(function (b) {
+        b.addEventListener("click", function () { setTimeout(localizeChat, 0); });
       });
     })();
   </script>
