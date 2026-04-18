@@ -371,9 +371,13 @@
       addons: ["mentor"],
       classMode: "1v1",
       billingCycle: "monthly",
-      weekday: "周三",
-      timeSlot: "晚间 19:00-21:00",
-      totalMonthly: "$408.00",
+      sessions: [
+        { dayKey: "mon", weekday: "周一", weekdayZh: "周一", weekdayEn: "Mon", slotKey: "evening", slotLabel: "晚间", timeSlot: "19:00 – 20:30" },
+        { dayKey: "wed", weekday: "周三", weekdayZh: "周三", weekdayEn: "Wed", slotKey: "evening", slotLabel: "晚间", timeSlot: "19:00 – 20:30" }
+      ],
+      weekday: "周一",
+      timeSlot: "19:00 – 20:30",
+      totalMonthly: "$369.00",
       createdAt: daysAgo(2)
     }]);
 

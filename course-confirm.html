@@ -169,8 +169,8 @@
             <h3><span class="dot"></span><span data-lang="zh">课程信息</span><span data-lang="en">Course Details</span></h3>
             <div class="confirm-row"><span><span data-lang="zh">学员</span><span data-lang="en">Student</span></span><span id="cfStudent">—</span></div>
             <div class="confirm-row"><span><span data-lang="zh">会员方案</span><span data-lang="en">Membership</span></span><span id="cfMembership">—</span></div>
-            <div class="confirm-row"><span><span data-lang="zh">上课日</span><span data-lang="en">Class Day</span></span><span id="cfDay">—</span></div>
-            <div class="confirm-row"><span><span data-lang="zh">时段</span><span data-lang="en">Time Slot</span></span><span id="cfTime">—</span></div>
+            <div class="confirm-row"><span><span data-lang="zh">每周课时</span><span data-lang="en">Sessions / Week</span></span><span id="cfSessionCount">—</span></div>
+            <div class="confirm-row"><span><span data-lang="zh">上课安排</span><span data-lang="en">Weekly Schedule</span></span><span id="cfSessions">—</span></div>
             <div class="confirm-row"><span><span data-lang="zh">首课日期</span><span data-lang="en">First Class</span></span><span id="cfFirstClass">—</span></div>
           </div>
           <div class="confirm-card">
@@ -281,18 +281,26 @@
       function money(n) { return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 2 }); }
       function loadState() { try { return JSON.parse(sessionStorage.getItem(KEY) || "{}"); } catch (_) { return {}; } }
 
-      function firstClassDate(dayKey) {
+      function nextDateForDay(dayKey) {
         var d = DAYS[dayKey];
-        if (!d) return "";
+        if (!d) return null;
         var now = new Date();
         var diff = (d.idx - now.getDay() + 7) % 7 || 7;
-        var first = new Date(now);
-        first.setDate(now.getDate() + diff);
-        return first.toLocaleDateString(k() === "en" ? "en-US" : "zh-CN", { month: "short", day: "numeric", weekday: "short" });
+        var next = new Date(now);
+        next.setDate(now.getDate() + diff);
+        return next;
+      }
+      function formatDate(dt) {
+        if (!dt) return "";
+        return dt.toLocaleDateString(k() === "en" ? "en-US" : "zh-CN", { month: "short", day: "numeric", weekday: "short" });
       }
 
       var state = loadState();
-      var hasOrder = !!(state && state.plan && state.day && state.slot && state.orderId && state.paidAt);
+      // Backward-compat: legacy single day/slot
+      if (state && !Array.isArray(state.sessions)) {
+        state.sessions = (state.day && state.slot) ? [{ day: state.day, slot: state.slot }] : [];
+      }
+      var hasOrder = !!(state && state.plan && state.sessions && state.sessions.length && state.orderId && state.paidAt);
 
       function render() {
         var notice = document.getElementById("noOrderNotice");
@@ -309,16 +317,28 @@
         heroBlock.style.display = "block";
 
         var plan = PLANS[state.plan];
-        var day = DAYS[state.day];
-        var slot = SLOTS[state.slot];
         var current = window.MindDoFlow && window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent();
+
+        var sessionLabels = state.sessions.map(function (sess) {
+          var d = DAYS[sess.day];
+          var s = SLOTS[sess.slot];
+          var dText = d ? (k() === "zh" ? d.zh : d.en) : "—";
+          var sTime = s ? s.time : "—";
+          return dText + " · " + sTime;
+        }).join(" / ");
+
+        // First class = earliest upcoming session
+        var upcoming = state.sessions.map(function (sess) {
+          return nextDateForDay(sess.day);
+        }).filter(Boolean).sort(function (a, b) { return a - b; });
+        var firstClassText = upcoming.length ? formatDate(upcoming[0]) : "—";
 
         document.getElementById("orderIdBadge").textContent = "#" + state.orderId;
         document.getElementById("cfStudent").textContent = (current && (current.studentName || current.name)) || "—";
         document.getElementById("cfMembership").textContent = k() === "zh" ? plan.labelZh : plan.labelEn;
-        document.getElementById("cfDay").textContent = day ? (k() === "zh" ? day.zh : day.en) : "—";
-        document.getElementById("cfTime").textContent = slot ? slot.time + " (" + (k() === "zh" ? slot.zh : slot.en) + ")" : "—";
-        document.getElementById("cfFirstClass").textContent = firstClassDate(state.day);
+        document.getElementById("cfSessionCount").textContent = state.sessions.length + (k() === "zh" ? " 节 / 周" : (state.sessions.length > 1 ? " classes / week" : " class / week"));
+        document.getElementById("cfSessions").textContent = sessionLabels;
+        document.getElementById("cfFirstClass").textContent = firstClassText;
         document.getElementById("cfOrderId").textContent = state.orderId;
         document.getElementById("cfPayMethod").textContent = PAY_METHODS[state.payMethod] ? (k() === "zh" ? PAY_METHODS[state.payMethod].zh : PAY_METHODS[state.payMethod].en) : state.payMethod;
         document.getElementById("cfAmount").textContent = money(state.totalAmount || plan.price);

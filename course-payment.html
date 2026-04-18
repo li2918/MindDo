@@ -172,8 +172,8 @@
       <div class="meta">
         <div class="meta-item"><span class="k" data-lang="zh">学员姓名</span><span class="k" data-lang="en">Student</span><span class="v" id="metaName">—</span></div>
         <div class="meta-item"><span class="k" data-lang="zh">方案</span><span class="k" data-lang="en">Plan</span><span class="v" id="metaPlan">—</span></div>
-        <div class="meta-item"><span class="k" data-lang="zh">上课日</span><span class="k" data-lang="en">Class Day</span><span class="v" id="metaDay">—</span></div>
-        <div class="meta-item"><span class="k" data-lang="zh">时段</span><span class="k" data-lang="en">Time Slot</span><span class="v" id="metaSlot">—</span></div>
+        <div class="meta-item"><span class="k" data-lang="zh">每周课时</span><span class="k" data-lang="en">Sessions / Week</span><span class="v" id="metaSessionCount">—</span></div>
+        <div class="meta-item"><span class="k" data-lang="zh">上课安排</span><span class="k" data-lang="en">Schedule</span><span class="v" id="metaSessions">—</span></div>
       </div>
 
       <div class="layout">
@@ -289,9 +289,9 @@
     (function () {
       var KEY = "minddo_course_enrollment";
       var PLANS = {
-        weekly1: { price: 199, labelZh: "每周一节课", labelEn: "1 Class / Week" },
-        weekly2: { price: 369, labelZh: "每周两节课", labelEn: "2 Classes / Week" },
-        weekly3: { price: 519, labelZh: "每周三节课", labelEn: "3 Classes / Week" }
+        weekly1: { price: 199, labelZh: "每周一节课", labelEn: "1 Class / Week", sessions: 1 },
+        weekly2: { price: 369, labelZh: "每周两节课", labelEn: "2 Classes / Week", sessions: 2 },
+        weekly3: { price: 519, labelZh: "每周三节课", labelEn: "3 Classes / Week", sessions: 3 }
       };
       var DAYS = { mon: { zh: "周一", en: "Mon" }, tue: { zh: "周二", en: "Tue" }, wed: { zh: "周三", en: "Wed" }, thu: { zh: "周四", en: "Thu" }, fri: { zh: "周五", en: "Fri" }, sat: { zh: "周六", en: "Sat" }, sun: { zh: "周日", en: "Sun" } };
       var SLOTS = { afterschool: { time: "16:00 – 17:30", zh: "放学后", en: "After School" }, evening: { time: "19:00 – 20:30", zh: "晚间", en: "Evening" }, weekendAm: { time: "09:30 – 11:00", zh: "周末上午", en: "Weekend AM" }, weekendPm: { time: "14:00 – 15:30", zh: "周末下午", en: "Weekend PM" } };
@@ -306,31 +306,49 @@
       function saveState(s) { try { sessionStorage.setItem(KEY, JSON.stringify(s)); } catch (_) {} }
 
       var state = loadState();
-      if (!state.plan) { window.location.replace("course-selection.html"); return; }
-      if (!state.day || !state.slot) { window.location.replace("course-schedule.html"); return; }
+      if (!state.plan || !PLANS[state.plan]) { window.location.replace("course-selection.html"); return; }
+      // Backward-compat: promote legacy day/slot into sessions
+      if (!Array.isArray(state.sessions)) {
+        state.sessions = (state.day && state.slot) ? [{ day: state.day, slot: state.slot }] : [];
+      }
+      var needed = PLANS[state.plan].sessions;
+      var complete = state.sessions.length === needed && state.sessions.every(function (s) { return s && s.day && s.slot; });
+      if (!complete) { window.location.replace("course-schedule.html"); return; }
       if (!state.payMethod) state.payMethod = "card";
+
+      function sessionLabelsText() {
+        return state.sessions.map(function (sess) {
+          var d = DAYS[sess.day];
+          var s = SLOTS[sess.slot];
+          var dText = d ? (k() === "zh" ? d.zh : d.en) : "—";
+          var sText = s ? s.time : "—";
+          return dText + " " + sText;
+        }).join(k() === "zh" ? " / " : " / ");
+      }
 
       function renderMeta() {
         var current = window.MindDoFlow && window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent();
         document.getElementById("metaName").textContent = (current && (current.studentName || current.name)) || "—";
         var plan = PLANS[state.plan];
         document.getElementById("metaPlan").textContent = k() === "zh" ? plan.labelZh : plan.labelEn;
-        var day = DAYS[state.day];
-        document.getElementById("metaDay").textContent = day ? (k() === "zh" ? day.zh : day.en) : "—";
-        var slot = SLOTS[state.slot];
-        document.getElementById("metaSlot").textContent = slot ? slot.time : "—";
+        document.getElementById("metaSessionCount").textContent = state.sessions.length + (k() === "zh" ? " 节" : (state.sessions.length > 1 ? " classes" : " class"));
+        document.getElementById("metaSessions").textContent = sessionLabelsText();
       }
 
       function renderSummary() {
         var plan = PLANS[state.plan];
         var planLabel = k() === "zh" ? plan.labelZh : plan.labelEn;
-        var day = DAYS[state.day];
-        var slot = SLOTS[state.slot];
         var rows = [
-          { l: k() === "zh" ? "Membership 方案" : "Membership", v: planLabel + " · " + money(plan.price) + "/mo" },
-          { l: k() === "zh" ? "上课日" : "Class Day", v: day ? (k() === "zh" ? day.zh : day.en) : "—" },
-          { l: k() === "zh" ? "时段" : "Time Slot", v: slot ? slot.time : "—" }
+          { l: k() === "zh" ? "Membership 方案" : "Membership", v: planLabel + " · " + money(plan.price) + "/mo" }
         ];
+        state.sessions.forEach(function (sess, i) {
+          var d = DAYS[sess.day];
+          var s = SLOTS[sess.slot];
+          var dText = d ? (k() === "zh" ? d.zh : d.en) : "—";
+          var sText = s ? s.time : "—";
+          var label = k() === "zh" ? ("第 " + (i + 1) + " 节") : ("Class " + (i + 1));
+          rows.push({ l: label, v: dText + " · " + sText });
+        });
         document.getElementById("summary").innerHTML = rows.map(function (r) {
           return "<div><span>" + r.l + "</span><strong>" + r.v + "</strong></div>";
         }).join("");
@@ -390,14 +408,27 @@
           state.totalAmount = PLANS[state.plan].price;
 
           var plan = PLANS[state.plan];
-          var day = DAYS[state.day];
-          var slot = SLOTS[state.slot];
+          var orderSessions = state.sessions.map(function (sess) {
+            var d = DAYS[sess.day];
+            var s = SLOTS[sess.slot];
+            return {
+              dayKey: sess.day,
+              weekday: d ? (k() === "zh" ? d.zh : d.en) : sess.day,
+              weekdayZh: d ? d.zh : sess.day,
+              weekdayEn: d ? d.en : sess.day,
+              slotKey: sess.slot,
+              slotLabel: s ? (k() === "zh" ? s.zh : s.en) : sess.slot,
+              timeSlot: s ? s.time : sess.slot
+            };
+          });
+          var firstSession = orderSessions[0] || {};
           var orderPayload = {
             orderId: state.orderId,
             plan: state.plan,
             planLabel: k() === "zh" ? plan.labelZh : plan.labelEn,
-            weekday: day ? (k() === "zh" ? day.zh : day.en) : state.day,
-            timeSlot: slot ? slot.time : state.slot,
+            sessions: orderSessions,
+            weekday: firstSession.weekday || "",
+            timeSlot: firstSession.timeSlot || "",
             totalAmount: state.totalAmount,
             totalMonthly: money(state.totalAmount),
             createdAt: state.paidAt

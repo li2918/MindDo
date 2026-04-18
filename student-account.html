@@ -1375,6 +1375,52 @@
         return value === target;
       }
 
+      function membershipSessions(item) {
+        // Returns [{weekday, timeSlot, dayKey, slotKey, classMode, plan, addons, billingCycle}]
+        // Falls back to a single session built from legacy weekday/timeSlot fields.
+        if (!item) return [];
+        if (Array.isArray(item.sessions) && item.sessions.length) {
+          return item.sessions.map(function (s) {
+            return Object.assign({}, s, {
+              weekday: s.weekday || s.weekdayZh || s.weekdayEn || "",
+              timeSlot: s.timeSlot || "",
+              classMode: item.classMode,
+              plan: item.plan,
+              addons: item.addons,
+              billingCycle: item.billingCycle
+            });
+          });
+        }
+        if (item.weekday || item.timeSlot) {
+          return [{
+            weekday: item.weekday || "",
+            timeSlot: item.timeSlot || "",
+            classMode: item.classMode,
+            plan: item.plan,
+            addons: item.addons,
+            billingCycle: item.billingCycle
+          }];
+        }
+        return [];
+      }
+
+      var WEEKDAY_IDX = {
+        "周一": 1, "周二": 2, "周三": 3, "周四": 4, "周五": 5, "周六": 6, "周日": 0,
+        "monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6, "sunday": 0,
+        "mon": 1, "tue": 2, "wed": 3, "thu": 4, "fri": 5, "sat": 6, "sun": 0
+      };
+
+      function nextOccurrence(weekday) {
+        var idx = WEEKDAY_IDX[String(weekday || "").toLowerCase()] || WEEKDAY_IDX[String(weekday || "")];
+        if (typeof idx !== "number") return null;
+        var now = new Date();
+        var diff = (idx - now.getDay() + 7) % 7;
+        if (diff === 0) diff = 7;
+        var next = new Date(now);
+        next.setDate(now.getDate() + diff);
+        return next;
+      }
+
       function syncCurrentStudentFromQuery() {
         var params = new URLSearchParams(window.location.search);
         var name = params.get("name") || "";
@@ -1447,12 +1493,33 @@
               ? t.statusItems.hasTrial
               : t.statusItems.noTrial;
 
-        if (memberships.length) {
-          var nextClass = memberships[0];
-          nextLessonText.textContent = (formatPlan(nextClass.plan, lang) || t.courseItems[0].fallback) + " · " + (nextClass.weekday || t.scheduleItems[0].fallback);
+        // Flatten all sessions across active memberships, then pick the nearest upcoming one
+        var allSessions = [];
+        memberships.forEach(function (m) {
+          membershipSessions(m).forEach(function (s) { allSessions.push(s); });
+        });
+        var upcoming = allSessions
+          .map(function (s) { return { sess: s, when: nextOccurrence(s.weekday) }; })
+          .filter(function (x) { return x.when; })
+          .sort(function (a, b) { return a.when - b.when; });
+
+        if (upcoming.length) {
+          var pick = upcoming[0];
+          nextLessonText.textContent =
+            (formatPlan(pick.sess.plan, lang) || t.courseItems[0].fallback) +
+            " · " + (pick.sess.weekday || t.scheduleItems[0].fallback);
           nextLessonMeta.innerHTML =
-            "<span class='reminder-pill'>" + (nextClass.timeSlot || t.scheduleItems[1].fallback) + "</span>" +
-            "<span class='reminder-pill'>" + (formatClassMode(nextClass.classMode, lang) || t.courseItems[1].fallback) + "</span>";
+            "<span class='reminder-pill'>" + (pick.sess.timeSlot || t.scheduleItems[1].fallback) + "</span>" +
+            "<span class='reminder-pill'>" + (formatClassMode(pick.sess.classMode, lang) || t.courseItems[1].fallback) + "</span>" +
+            (allSessions.length > 1
+              ? "<span class='reminder-pill'>" + (lang === "en" ? (allSessions.length + " classes / week") : (allSessions.length + " 节 / 周")) + "</span>"
+              : "");
+        } else if (memberships.length) {
+          var fallbackClass = memberships[0];
+          nextLessonText.textContent = (formatPlan(fallbackClass.plan, lang) || t.courseItems[0].fallback) + " · " + (fallbackClass.weekday || t.scheduleItems[0].fallback);
+          nextLessonMeta.innerHTML =
+            "<span class='reminder-pill'>" + (fallbackClass.timeSlot || t.scheduleItems[1].fallback) + "</span>" +
+            "<span class='reminder-pill'>" + (formatClassMode(fallbackClass.classMode, lang) || t.courseItems[1].fallback) + "</span>";
         } else {
           nextLessonText.textContent = t.nextLessonEmpty;
           nextLessonMeta.innerHTML = "";
@@ -1506,30 +1573,47 @@
           return "<li><span>" + item.label + "</span><strong>" + courseValues[index] + "</strong></li>";
         }).join("");
 
-        var scheduleDays = uniqueByText(memberships.map(function (item) {
-          return item.weekday || "";
-        }).filter(Boolean));
-        var scheduleTimes = uniqueByText(memberships.map(function (item) {
-          return item.timeSlot || "";
-        }).filter(Boolean));
-        var scheduleAddons = uniqueByText(memberships.map(function (item) {
-          return formatAddons(item.addons, lang);
-        }).filter(Boolean));
+        // Schedule list: one row per session, across all memberships
+        var sessionRows = [];
+        memberships.forEach(function (m, mi) {
+          var sessList = membershipSessions(m);
+          sessList.forEach(function (s, si) {
+            sessionRows.push({
+              membershipIndex: mi,
+              sessionIndex: si,
+              total: sessList.length,
+              weekday: s.weekday,
+              timeSlot: s.timeSlot,
+              classMode: s.classMode,
+              addons: s.addons,
+              plan: s.plan
+            });
+          });
+        });
 
-        var scheduleValues = [
-          scheduleDays.length ? scheduleDays.join(" / ") : (latestMembership ? (latestMembership.weekday || t.scheduleItems[0].fallback) : t.scheduleItems[0].fallback),
-          scheduleTimes.length ? scheduleTimes.join(" / ") : (latestMembership ? (latestMembership.timeSlot || t.scheduleItems[1].fallback) : t.scheduleItems[1].fallback),
-          scheduleAddons.length ? scheduleAddons.join(" / ") : (latestMembership ? (formatAddons(latestMembership.addons, lang) || t.scheduleItems[2].fallback) : t.scheduleItems[2].fallback)
-        ];
+        if (sessionRows.length) {
+          scheduleList.innerHTML = sessionRows.map(function (row) {
+            var label = row.total > 1
+              ? (lang === "en" ? ("Class " + (row.sessionIndex + 1)) : ("第 " + (row.sessionIndex + 1) + " 节"))
+              : (lang === "en" ? "Weekly Class" : "每周课程");
+            var right = (row.weekday || t.scheduleItems[0].fallback) + " · " + (row.timeSlot || t.scheduleItems[1].fallback);
+            return "<li><span>" + label + "</span><strong>" + right + "</strong></li>";
+          }).join("");
+        } else {
+          scheduleList.innerHTML =
+            "<li><span>" + t.scheduleItems[0].label + "</span><strong>" + t.scheduleItems[0].fallback + "</strong></li>" +
+            "<li><span>" + t.scheduleItems[1].label + "</span><strong>" + t.scheduleItems[1].fallback + "</strong></li>";
+        }
 
-        scheduleList.innerHTML = t.scheduleItems.map(function (item, index) {
-          return "<li><span>" + item.label + "</span><strong>" + scheduleValues[index] + "</strong></li>";
-        }).join("");
-
-        requestTarget.innerHTML = memberships.length
-          ? memberships.map(function (item, index) {
-              var label = (formatPlan(item.plan, lang) || t.courseItems[0].fallback) + " · " + (item.weekday || t.scheduleItems[0].fallback) + " · " + (item.timeSlot || t.scheduleItems[1].fallback);
-              return "<option value='" + index + "'>" + label + "</option>";
+        // Request target options — one per membership+session pair
+        requestTarget.innerHTML = sessionRows.length
+          ? sessionRows.map(function (row) {
+              var planLabel = formatPlan(row.plan, lang) || t.courseItems[0].fallback;
+              var suffix = row.total > 1
+                ? (lang === "en" ? (" · #" + (row.sessionIndex + 1)) : (" · 第 " + (row.sessionIndex + 1) + " 节"))
+                : "";
+              var label = planLabel + suffix + " · " + (row.weekday || t.scheduleItems[0].fallback) + " · " + (row.timeSlot || t.scheduleItems[1].fallback);
+              return "<option value='" + row.membershipIndex + ":" + row.sessionIndex + "'>" + label + "</option>";
             }).join("")
           : "<option value=''>" + t.nextLessonEmpty + "</option>";
 
@@ -1541,14 +1625,14 @@
 
         var days = getWeekDays(lang);
         weekBoard.innerHTML = days.map(function (day) {
-          var dayMemberships = memberships.filter(function (item) {
-            return matchesDay(item.weekday, day.key);
+          var daySessions = sessionRows.filter(function (row) {
+            return matchesDay(row.weekday, day.key);
           });
-          var isActive = dayMemberships.length > 0;
-          var slotMarkup = dayMemberships.length
-            ? "<div class='slot-stack'>" + dayMemberships.map(function (item) {
-                var title = formatPlan(item.plan, lang) || t.courseItems[0].fallback;
-                var meta = [item.timeSlot || "", formatClassMode(item.classMode, lang) || ""].filter(Boolean).join(" · ");
+          var isActive = daySessions.length > 0;
+          var slotMarkup = daySessions.length
+            ? "<div class='slot-stack'>" + daySessions.map(function (row) {
+                var title = formatPlan(row.plan, lang) || t.courseItems[0].fallback;
+                var meta = [row.timeSlot || "", formatClassMode(row.classMode, lang) || ""].filter(Boolean).join(" · ");
                 return "<div class='slot-chip'><strong>" + title + "</strong><span>" + meta + "</span></div>";
               }).join("") + "</div>"
             : "<div class='day-empty'>" + t.scheduleItems[1].fallback + "</div>";
@@ -1606,19 +1690,28 @@
           .filter(function (item) { return matchCurrentStudent(item, current); })
           .sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
 
-        var selectedIndex = Number(requestTarget.value);
-        var selectedMembership = memberships[selectedIndex];
+        var rawValue = String(requestTarget.value || "");
+        var parts = rawValue.split(":");
+        var mIdx = Number(parts[0]);
+        var sIdx = Number(parts[1] || 0);
+        var selectedMembership = memberships[mIdx];
+        var sessList = membershipSessions(selectedMembership);
+        var selectedSession = sessList[sIdx] || sessList[0];
         var reason = String(requestReason.value || "").trim();
 
-        if (!selectedMembership || !reason) {
+        if (!selectedMembership || !selectedSession || !reason) {
           requestResult.className = "request-result error";
           requestResult.textContent = t.requestError;
           return;
         }
 
+        var sessionSuffix = sessList.length > 1
+          ? (lang === "en" ? (" · #" + (sIdx + 1)) : (" · 第 " + (sIdx + 1) + " 节"))
+          : "";
+
         var payload = {
           type: requestType.value,
-          targetLabel: (formatPlan(selectedMembership.plan, lang) || t.courseItems[0].fallback) + " · " + (selectedMembership.weekday || t.scheduleItems[0].fallback) + " · " + (selectedMembership.timeSlot || t.scheduleItems[1].fallback),
+          targetLabel: (formatPlan(selectedMembership.plan, lang) || t.courseItems[0].fallback) + sessionSuffix + " · " + (selectedSession.weekday || t.scheduleItems[0].fallback) + " · " + (selectedSession.timeSlot || t.scheduleItems[1].fallback),
           reason: reason,
           email: current.email || "",
           studentName: current.studentName || current.name || "",

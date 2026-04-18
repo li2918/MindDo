@@ -81,6 +81,13 @@
     .panel h3 { font-size:15px; color:var(--clay); font-weight:800; margin:18px 0 10px; }
     .panel .desc { font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:14px; }
 
+    .session-block { border:1px solid var(--line); background:rgba(255,251,245,0.5); border-radius:18px; padding:18px 20px; margin-bottom:16px; }
+    .session-block h3 { margin:0 0 4px; font-size:15px; color:var(--clay); font-weight:800; }
+    .session-block .session-sub { font-size:12px; color:var(--muted); margin-bottom:12px; }
+    .session-block h4 { font-size:12px; font-weight:800; color:var(--clay); letter-spacing:0.06em; text-transform:uppercase; margin:12px 0 8px; }
+    .day-chip.disabled { opacity:0.38; cursor:not-allowed; pointer-events:none; }
+    .day-chip.taken { opacity:0.4; cursor:not-allowed; pointer-events:none; }
+    .day-chip.taken::after { content:"✓"; display:block; font-size:10px; color:var(--muted); margin-top:2px; }
     .day-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-top:4px; }
     .day-chip { border:1px solid var(--line); background:rgba(255,251,245,0.9); border-radius:14px; padding:14px 6px; text-align:center; cursor:pointer; transition:0.15s; font-family:inherit; }
     .day-chip:hover { border-color:rgba(208,129,36,0.46); transform:translateY(-1px); }
@@ -173,12 +180,9 @@
 
       <div class="layout">
         <article class="panel">
-          <h2><span data-lang="zh">首选上课日</span><span data-lang="en">Preferred Day</span></h2>
-          <p class="desc"><span data-lang="zh">选择你希望固定上课的那一天。</span><span data-lang="en">Pick your recurring weekly class day.</span></p>
-          <div class="day-grid" id="dayGrid"></div>
-
-          <h3 style="margin-top:24px;"><span data-lang="zh">首选上课时段</span><span data-lang="en">Preferred Time Slot</span></h3>
-          <div class="slot-grid" id="slotGrid"></div>
+          <h2><span data-lang="zh">每周课程时段</span><span data-lang="en">Weekly Class Sessions</span></h2>
+          <p class="desc" id="sessionHint"></p>
+          <div id="sessionList"></div>
 
           <div class="action-row">
             <a class="btn-secondary" href="course-selection.html"><span data-lang="zh">← 返回选方案</span><span data-lang="en">← Back to Plan</span></a>
@@ -240,9 +244,9 @@
     (function () {
       var KEY = "minddo_course_enrollment";
       var PLANS = {
-        weekly1: { price: 199, labelZh: "每周一节课", labelEn: "1 Class / Week" },
-        weekly2: { price: 369, labelZh: "每周两节课", labelEn: "2 Classes / Week" },
-        weekly3: { price: 519, labelZh: "每周三节课", labelEn: "3 Classes / Week" }
+        weekly1: { price: 199, labelZh: "每周一节课", labelEn: "1 Class / Week", sessions: 1 },
+        weekly2: { price: 369, labelZh: "每周两节课", labelEn: "2 Classes / Week", sessions: 2 },
+        weekly3: { price: 519, labelZh: "每周三节课", labelEn: "3 Classes / Week", sessions: 3 }
       };
       var DAYS = [
         { k: "mon", zh: "周一", en: "Mon", num: "01" },
@@ -269,41 +273,79 @@
       function saveState(s) { try { sessionStorage.setItem(KEY, JSON.stringify(s)); } catch (_) {} }
 
       var state = loadState();
-      if (!state.plan) { window.location.replace("course-selection.html"); return; }
-      if (!state.day) state.day = "";
-      if (!state.slot) state.slot = "";
+      if (!state.plan || !PLANS[state.plan]) { window.location.replace("course-selection.html"); return; }
 
-      function renderDayGrid() {
-        document.getElementById("dayGrid").innerHTML = DAYS.map(function (d) {
-          var active = state.day === d.k ? " active" : "";
-          return "<button type=\"button\" class=\"day-chip" + active + "\" data-day=\"" + d.k + "\">" +
-            "<span class=\"dname\">" + (k() === "zh" ? d.zh : d.en) + "</span>" +
-            "<span class=\"dnum\">" + d.num + "</span>" +
-            "</button>";
-        }).join("");
+      var need = PLANS[state.plan].sessions;
+
+      // Migrate legacy single day/slot state into sessions array
+      if (!Array.isArray(state.sessions)) {
+        state.sessions = [];
+        if (state.day && state.slot) state.sessions.push({ day: state.day, slot: state.slot });
       }
-      function renderSlotGrid() {
-        document.getElementById("slotGrid").innerHTML = SLOTS.map(function (s) {
-          var active = state.slot === s.k ? " active" : "";
-          return "<button type=\"button\" class=\"slot-chip" + active + "\" data-slot=\"" + s.k + "\">" +
-            "<span class=\"stime\">" + s.time + "</span>" +
-            "<span class=\"slabel\">" + (k() === "zh" ? s.zh : s.en) + "</span>" +
-            "</button>";
+      // Normalize length: trim excess, pad empty session placeholders
+      if (state.sessions.length > need) state.sessions = state.sessions.slice(0, need);
+      while (state.sessions.length < need) state.sessions.push({ day: "", slot: "" });
+      delete state.day;
+      delete state.slot;
+      saveState(state);
+
+      function takenDays(exceptIndex) {
+        var taken = {};
+        state.sessions.forEach(function (s, i) {
+          if (i !== exceptIndex && s && s.day) taken[s.day] = true;
+        });
+        return taken;
+      }
+
+      function renderSessionList() {
+        var sessionIdxLabel = k() === "zh" ? "第 {n} 节课" : "Class {n}";
+        var dayHeader = k() === "zh" ? "上课日" : "Class Day";
+        var slotHeader = k() === "zh" ? "时段" : "Time Slot";
+        var blocks = state.sessions.map(function (sess, i) {
+          var taken = takenDays(i);
+          var dayChips = DAYS.map(function (d) {
+            var isTaken = !!taken[d.k];
+            var isActive = sess.day === d.k;
+            var cls = "day-chip" + (isActive ? " active" : "") + (isTaken && !isActive ? " taken" : "");
+            return "<button type=\"button\" class=\"" + cls + "\" data-sess=\"" + i + "\" data-day=\"" + d.k + "\">" +
+              "<span class=\"dname\">" + (k() === "zh" ? d.zh : d.en) + "</span>" +
+              "<span class=\"dnum\">" + d.num + "</span>" +
+              "</button>";
+          }).join("");
+          var slotChips = SLOTS.map(function (s) {
+            var cls = "slot-chip" + (sess.slot === s.k ? " active" : "");
+            return "<button type=\"button\" class=\"" + cls + "\" data-sess=\"" + i + "\" data-slot=\"" + s.k + "\">" +
+              "<span class=\"stime\">" + s.time + "</span>" +
+              "<span class=\"slabel\">" + (k() === "zh" ? s.zh : s.en) + "</span>" +
+              "</button>";
+          }).join("");
+          return "<div class=\"session-block\" data-session-idx=\"" + i + "\">" +
+            "<h3>" + sessionIdxLabel.replace("{n}", i + 1) + "</h3>" +
+            "<div class=\"session-sub\">" + (k() === "zh" ? "请选择上课日与时段，每节课需使用不同的上课日。" : "Pick one day and time slot. Each weekly session must use a different day.") + "</div>" +
+            "<h4>" + dayHeader + "</h4>" +
+            "<div class=\"day-grid\">" + dayChips + "</div>" +
+            "<h4>" + slotHeader + "</h4>" +
+            "<div class=\"slot-grid\">" + slotChips + "</div>" +
+            "</div>";
         }).join("");
+        document.getElementById("sessionList").innerHTML = blocks;
+        document.getElementById("sessionHint").textContent = (k() === "zh"
+          ? "当前方案每周 " + need + " 节课，请为每节课选择独立的上课日和时段。"
+          : "Your plan includes " + need + " class" + (need > 1 ? "es" : "") + " per week. Pick a unique day and time slot for each.");
       }
 
       function renderSummary() {
         var p = PLANS[state.plan];
         var planLabel = k() === "zh" ? p.labelZh : p.labelEn;
         var rows = [{ l: (k() === "zh" ? "Membership 方案" : "Membership"), v: planLabel + " · " + money(p.price) + "/mo" }];
-        if (state.day) {
-          var d = DAYS.find(function (x) { return x.k === state.day; });
-          rows.push({ l: (k() === "zh" ? "上课日" : "Class Day"), v: d ? (k() === "zh" ? d.zh : d.en) : "—" });
-        }
-        if (state.slot) {
-          var s = SLOTS.find(function (x) { return x.k === state.slot; });
-          rows.push({ l: (k() === "zh" ? "时段" : "Time Slot"), v: s ? s.time : "—" });
-        }
+        state.sessions.forEach(function (sess, i) {
+          var dObj = DAYS.find(function (x) { return x.k === sess.day; });
+          var sObj = SLOTS.find(function (x) { return x.k === sess.slot; });
+          var dText = dObj ? (k() === "zh" ? dObj.zh : dObj.en) : "—";
+          var sText = sObj ? sObj.time : "—";
+          var label = (k() === "zh" ? ("第 " + (i + 1) + " 节") : ("Class " + (i + 1)));
+          rows.push({ l: label, v: dText + " · " + sText });
+        });
         document.getElementById("summary").innerHTML = rows.map(function (r) {
           return "<div><span>" + r.l + "</span><strong>" + r.v + "</strong></div>";
         }).join("");
@@ -315,8 +357,7 @@
         localStorage.setItem("minddo_lang", lang);
         document.title = (lang === "en" ? "Enrollment · Step 2: Schedule" : "选课 · 第 2 步：课程时段") + " | MindDo";
         langButtons.forEach(function (btn) { btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang); });
-        renderDayGrid();
-        renderSlotGrid();
+        renderSessionList();
         renderSummary();
         document.getElementById("metaPlan").textContent = k() === "zh" ? PLANS[state.plan].labelZh : PLANS[state.plan].labelEn;
       }
@@ -336,27 +377,42 @@
 
       langButtons.forEach(function (btn) { btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); }); });
 
-      document.getElementById("dayGrid").addEventListener("click", function (e) {
-        var btn = e.target.closest("[data-day]");
-        if (!btn) return;
-        state.day = btn.getAttribute("data-day");
+      document.getElementById("sessionList").addEventListener("click", function (e) {
+        var target = e.target.closest("[data-sess]");
+        if (!target) return;
+        var idx = Number(target.getAttribute("data-sess"));
+        if (!state.sessions[idx]) return;
+        var day = target.getAttribute("data-day");
+        var slot = target.getAttribute("data-slot");
+        if (day) {
+          var taken = takenDays(idx);
+          if (taken[day]) return;
+          state.sessions[idx].day = day;
+        }
+        if (slot) state.sessions[idx].slot = slot;
         saveState(state);
-        renderDayGrid();
+        renderSessionList();
         renderSummary();
       });
-      document.getElementById("slotGrid").addEventListener("click", function (e) {
-        var btn = e.target.closest("[data-slot]");
-        if (!btn) return;
-        state.slot = btn.getAttribute("data-slot");
-        saveState(state);
-        renderSlotGrid();
-        renderSummary();
-      });
+
       document.getElementById("toStep3").addEventListener("click", function () {
         var err = document.getElementById("err");
-        if (!state.day || !state.slot) {
+        var incomplete = state.sessions.some(function (s) { return !s || !s.day || !s.slot; });
+        if (incomplete) {
           err.className = "error-msg on";
-          err.textContent = k() === "zh" ? "请先选择上课日和时段。" : "Please choose a day and time slot.";
+          err.textContent = k() === "zh"
+            ? "请为每节课选择上课日和时段。"
+            : "Please choose a day and time slot for every class.";
+          return;
+        }
+        var seen = {};
+        var dup = false;
+        state.sessions.forEach(function (s) { if (seen[s.day]) dup = true; seen[s.day] = true; });
+        if (dup) {
+          err.className = "error-msg on";
+          err.textContent = k() === "zh"
+            ? "每节课需要使用不同的上课日。"
+            : "Each class must use a different day of the week.";
           return;
         }
         err.className = "error-msg";
