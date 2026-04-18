@@ -132,9 +132,11 @@
       margin-bottom: 22px;
     }
     .hero-copy h1 {
-      font-size: clamp(40px, 5.5vw, 70px); line-height: 1.02;
+      font-size: clamp(40px, 5.5vw, 64px); line-height: 1.05;
       letter-spacing: -0.03em; font-weight: 900; color: #fff8ef; margin-bottom: 20px;
+      text-wrap: balance;
     }
+    .section-title { text-wrap: balance; }
     .hero-copy h1 em { font-style: normal; color: var(--gold); }
     .hero-copy .subtitle {
       font-size: 17px; line-height: 1.75;
@@ -252,7 +254,7 @@
 
     /* WHY GRID */
     .why-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
     }
     .why-card {
       padding: 26px; border-radius: 20px;
@@ -580,16 +582,16 @@
     <div class="hero-inner">
       <div class="hero-copy">
         <div class="hero-kicker">
-          <span data-lang="zh">AI 启蒙 · AI 创意 · AI 编程 · 未来技能</span>
-          <span data-lang="en">AI Fundamentals · Creative · Programming · Future Skills</span>
+          <span data-lang="zh">AI 研究员创办 · 5–18 岁 · 北美 11 个校区</span>
+          <span data-lang="en">Built by AI researchers · Ages 5–18 · 11 N.A. campuses</span>
         </div>
         <h1>
-          <span data-lang="zh">让屏幕时间<br><em>变成</em>技能时间</span>
-          <span data-lang="en">Turn Screen Time<br><em>Into</em> Skill Time</span>
+          <span data-lang="zh">不只教孩子<em>用</em> AI，<br>我们教他们 <em>造</em> AI</span>
+          <span data-lang="en">Not Just Teaching Kids <em>to Use</em> AI.<br>Teaching Them <em>to Build</em> It.</span>
         </h1>
         <p class="subtitle">
-          <span data-lang="zh">MindDo 是面向5–18岁青少年的AI与编程学习中心，以兴趣为入口，打造真实可见的学习成果。</span>
-          <span data-lang="en">MindDo is an AI and coding center for ages 5–18, turning curiosity into real, visible skills and projects.</span>
+          <span data-lang="zh">MindDo 由前 Google Brain、Microsoft AI 研究员与斯坦福教育学者联合创办，专注 5–18 岁 AI 学习。每班最多 8 人，每节课都产出一件可展示的作品。</span>
+          <span data-lang="en">Founded by former Google Brain, Microsoft AI researchers, and Stanford education scholars. 5–18 only. 8-student classes. Every session ships something a parent can see.</span>
         </p>
         <div class="hero-btns">
           <a class="btn-primary" href="trial.html">
@@ -677,44 +679,34 @@
       <div class="section-head">
         <div class="section-tag">Why MindDo</div>
         <h2 class="section-title">
-          <span data-lang="zh">我们让 AI 学习变有趣</span>
-          <span data-lang="en">We Make AI Learning Fun</span>
+          <span data-lang="zh">四件不让步的事</span>
+          <span data-lang="en">Four Things We Don't Bend On</span>
         </h2>
         <p class="section-sub">
-          <span data-lang="zh">以项目为核心、以成果为导向，每节课都能带走看得见的作品。</span>
-          <span data-lang="en">Project-driven and outcome-focused — every session produces something visible to keep and share.</span>
+          <span data-lang="zh">AI 培训机构不缺，我们只做让每一条都经得起检验的那一家。</span>
+          <span data-lang="en">There's no shortage of AI coding programs. We built the one where every claim below can be checked on day one.</span>
         </p>
       </div>
       <div class="why-grid">
         <div class="why-card">
-          <div class="why-icon">🤖</div>
-          <h3><span data-lang="zh">自主进度学习</span><span data-lang="en">Self-Paced Learning</span></h3>
-          <p><span data-lang="zh">每位学员按照自己的节奏前进，老师提供个性化指导而不是统一教学。</span><span data-lang="en">Each student progresses at their own speed with personalized guidance rather than one-size-fits-all teaching.</span></p>
-        </div>
-        <div class="why-card">
-          <div class="why-icon">🏆</div>
-          <h3><span data-lang="zh">看得见的成果</span><span data-lang="en">Real, Visible Outcomes</span></h3>
-          <p><span data-lang="zh">学员会真正做出游戏、应用和 AI 项目，而不只是完成练习题。</span><span data-lang="en">Students build real games, apps, and AI projects — not just exercises — so progress is always visible.</span></p>
-        </div>
-        <div class="why-card">
-          <div class="why-icon">💡</div>
-          <h3><span data-lang="zh">批判性思维训练</span><span data-lang="en">Critical Thinking Focus</span></h3>
-          <p><span data-lang="zh">通过解决真实问题，培养调试、逻辑和工程思维，这是 AI 时代最核心的能力。</span><span data-lang="en">Through real problem-solving, students develop debugging, logical reasoning, and engineering thinking.</span></p>
+          <div class="why-icon">🧠</div>
+          <h3><span data-lang="zh">老师是真的在做 AI 的人</span><span data-lang="en">Teachers Who Actually Build AI</span></h3>
+          <p><span data-lang="zh">主讲老师平均 7 年 AI 研究 / 工程经验——前 Google Brain、Microsoft AI、MIT、Berkeley。再加上 120 小时的青少年教学认证。</span><span data-lang="en">Lead instructors average 7 years in AI research/engineering — ex-Google Brain, Microsoft AI, MIT, Berkeley. Plus 120 hours of K-12 teaching certification before they run a class.</span></p>
         </div>
         <div class="why-card">
           <div class="why-icon">👥</div>
-          <h3><span data-lang="zh">小班制教学</span><span data-lang="en">Small Class Sizes</span></h3>
-          <p><span data-lang="zh">每班最多8人，确保每位学员都能得到足够的关注和指导时间。</span><span data-lang="en">Maximum 8 students per class so every learner gets real attention and guided time.</span></p>
+          <h3><span data-lang="zh">每班最多 8 人，这是硬上限</span><span data-lang="en">Max 8 Per Class. Hard Ceiling.</span></h3>
+          <p><span data-lang="zh">我们算过：超过 8 人，老师就无法照看每个孩子的项目进度。宁可婉拒新家庭，也不破这条线。</span><span data-lang="en">We did the math: beyond 8 students, instructors can't steward every project. We turn families away rather than break this rule.</span></p>
         </div>
         <div class="why-card">
-          <div class="why-icon">📊</div>
-          <h3><span data-lang="zh">学期报告与反馈</span><span data-lang="en">Progress Reports & Feedback</span></h3>
-          <p><span data-lang="zh">家长可以随时查看学员的学习进度、课堂表现和阶段性学期报告。</span><span data-lang="en">Parents can view learning progress, class feedback, and semester reports at any time.</span></p>
+          <div class="why-icon">🚀</div>
+          <h3><span data-lang="zh">每节课都带走一件作品</span><span data-lang="en">Every Session Ships Something</span></h3>
+          <p><span data-lang="zh">一段 AI 生成的故事、一个训练好的模型、一只聊天机器人——"上过课"不等于"学到东西"，孩子必须带得出证据。</span><span data-lang="en">An AI-generated story, a trained model, a chatbot — "attended" doesn't count as "learned." Kids leave with proof of work.</span></p>
         </div>
         <div class="why-card">
-          <div class="why-icon">🌐</div>
-          <h3><span data-lang="zh">中英双语环境</span><span data-lang="en">Bilingual Environment</span></h3>
-          <p><span data-lang="zh">教学材料和指导语言支持中英文切换，帮助学员在真实语境中学习技术词汇。</span><span data-lang="en">All materials and instruction available in Chinese and English, building technical vocabulary in context.</span></p>
+          <div class="why-icon">📍</div>
+          <h3><span data-lang="zh">我们从 AI 开始，不是从编程</span><span data-lang="en">We Start at AI, Not at Coding</span></h3>
+          <p><span data-lang="zh">别家把编程课前面贴个"AI"标签。我们反过来：从 AI 直觉、提示词、伦理判断入手——因为那才是 AI 时代最值钱的思维训练。</span><span data-lang="en">Most programs teach coding and tag an "AI" label onto it. We invert the order: AI intuition, prompt craft, and ethical judgment come first — that's the problem-framing skill that matters most.</span></p>
         </div>
       </div>
     </div>
@@ -730,8 +722,8 @@
           <span data-lang="en">Programs for Every Age & Level</span>
         </h2>
         <p class="section-sub">
-          <span data-lang="zh">从 6 岁启蒙到 18 岁竞赛备赛，覆盖 AI 启蒙、创意、编程、项目与竞赛的完整学习路径。</span>
-          <span data-lang="en">From age 6 through 18, a full AI learning path covering fundamentals, creativity, programming, projects, and competitions.</span>
+          <span data-lang="zh">一条路径，五个台阶。从 6 岁看懂 AI，到 18 岁进 USACO 金组。每一级都有明确的能力锚点，不是抽象的"进阶"。</span>
+          <span data-lang="en">One path. Five rungs. From "understanding AI" at age 6 to competition-ready at 18. Every level defines a specific competency — not a vague "advanced."</span>
         </p>
       </div>
       <div class="programs-grid">
@@ -743,7 +735,7 @@
           <div class="program-body">
             <div class="program-age"><span data-lang="zh">适合年龄 6–10 岁</span><span data-lang="en">Ages 6–10</span></div>
             <h3><span data-lang="zh">AI 启蒙入门</span><span data-lang="en">AI Fundamentals</span></h3>
-            <p><span data-lang="zh">认识 AI 世界：人脸识别、语音助手、推荐算法是怎么工作的。通过互动工具亲手体验 AI，建立正确的 AI 认知。</span><span data-lang="en">Discover how AI works — face recognition, voice assistants, recommendation engines. Hands-on with interactive AI tools to build real understanding.</span></p>
+            <p><span data-lang="zh">建立 AI 直觉。12 周结束时，孩子能说出：AI 为什么这样看、这样听、什么时候会错。每节课都从一个他们熟悉的 AI 工具切入。</span><span data-lang="en">Build AI intuition. In 12 weeks, kids can explain why AI sees what it sees, hears what it hears, and where it fails. Every class starts from an AI tool they already use.</span></p>
             <span class="btn-primary" style="align-self:flex-start;">
               <span data-lang="zh">了解课程 →</span>
               <span data-lang="en">Learn More →</span>
@@ -758,7 +750,7 @@
           <div class="program-body">
             <div class="program-age"><span data-lang="zh">适合年龄 8–12 岁</span><span data-lang="en">Ages 8–12</span></div>
             <h3><span data-lang="zh">AI 创意工坊</span><span data-lang="en">AI Creative Studio</span></h3>
-            <p><span data-lang="zh">用 AI 生成图像、音乐与故事，学习写出高质量 Prompt，训练属于自己的风格模型，完成可分享的创意作品。</span><span data-lang="en">Generate images, music and stories with AI. Learn prompt engineering, train your own style model, and ship shareable creative projects.</span></p>
+            <p><span data-lang="zh">Prompt 就是这个时代的画笔。学员在 12 周内掌握 Midjourney、Suno、ElevenLabs，独立产出可发布的 AI 作品——动画、短视频、音乐、绘本。</span><span data-lang="en">Prompt is this era's paintbrush. In 12 weeks students master Midjourney, Suno, ElevenLabs, and ship publishable AI work — animations, shorts, music, picture books.</span></p>
             <span class="btn-primary" style="align-self:flex-start;">
               <span data-lang="zh">了解课程 →</span>
               <span data-lang="en">Learn More →</span>
@@ -773,7 +765,7 @@
           <div class="program-body">
             <div class="program-age"><span data-lang="zh">适合年龄 10–14 岁</span><span data-lang="en">Ages 10–14</span></div>
             <h3><span data-lang="zh">AI 编程进阶</span><span data-lang="en">AI Programming</span></h3>
-            <p><span data-lang="zh">用 Python 训练第一个机器学习模型：图像识别、聊天机器人、情感分析。打通从数据到模型的完整 AI 工程链路。</span><span data-lang="en">Train your first machine learning models in Python — image classification, chatbots, sentiment analysis. End-to-end AI engineering.</span></p>
+            <p><span data-lang="zh">从 Prompt 写到生产级代码。用 Python 训练第一个 ML 模型——图像分类、情感分析、RAG 聊天机器人——并部署到可访问的 URL。</span><span data-lang="en">From prompts to production code. Train your first ML models in Python — image classification, sentiment analysis, RAG chatbots — and ship them to a live URL.</span></p>
             <span class="btn-primary" style="align-self:flex-start;">
               <span data-lang="zh">了解课程 →</span>
               <span data-lang="en">Learn More →</span>
@@ -788,7 +780,7 @@
           <div class="program-body">
             <div class="program-age"><span data-lang="zh">适合年龄 12–16 岁</span><span data-lang="en">Ages 12–16</span></div>
             <h3><span data-lang="zh">AI 项目营</span><span data-lang="en">AI Project Camp</span></h3>
-            <p><span data-lang="zh">寒暑假集中 1–2 周完成完整 AI 项目：个性化推荐系统、智能问答助手或计算机视觉应用，最终展示给家长和同伴。</span><span data-lang="en">Ship a full AI project in 1–2 weeks during school breaks — a recommender system, Q&A assistant, or computer vision app — and present it.</span></p>
+            <p><span data-lang="zh">1–2 周，一件真正能用的 AI 产品。学员定义问题、收集数据、训练模型、交付产品——并在最终展示日面对 50 位家长路演。</span><span data-lang="en">1–2 weeks. One real AI product. Students define the problem, collect data, train the model, ship the product — then pitch it to 50 parents on demo day.</span></p>
             <span class="btn-primary" style="align-self:flex-start;">
               <span data-lang="zh">查看营期 →</span>
               <span data-lang="en">View Camps →</span>
@@ -805,12 +797,12 @@
       <div class="section-head" style="text-align:center;">
         <div class="section-tag" style="margin-inline:auto;">Our Campuses</div>
         <h2 class="section-title" style="margin-inline:auto;">
-          <span data-lang="zh">11 个校区遍布北美</span>
-          <span data-lang="en">11 Campuses Across North America</span>
+          <span data-lang="zh">就在你所在的城市</span>
+          <span data-lang="en">Likely 15 Minutes from Where You Live</span>
         </h2>
         <p class="section-sub" style="margin-inline:auto;">
-          <span data-lang="zh">在加州、华盛顿州、印第安纳州和加拿大安大略省设有校区，另有线上课程。输入邮编，我们会自动为你推荐最近的校区。</span>
-          <span data-lang="en">We have campuses in CA, WA, IN, and Ontario, Canada — plus online classes. Enter your ZIP and we'll find the closest one.</span>
+          <span data-lang="zh">加州 5 城、华盛顿州 3 城、印第安纳、加拿大各 1 城，加上覆盖全北美的线上直播小班。输入邮编，为你匹配最近的那一间。</span>
+          <span data-lang="en">5 campuses in CA, 3 in WA, plus Indiana and Ontario, plus small-group live online classes across all N.A. timezones. Drop a ZIP, we'll find your nearest one.</span>
         </p>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;max-width:900px;margin:0 auto 28px;">
@@ -842,12 +834,12 @@
         <div>
           <div class="section-tag light">MindDo Platform</div>
           <h2 class="section-title light" style="margin-top:12px;">
-            <span data-lang="zh">专为青少年设计的学习平台</span>
-            <span data-lang="en">A Learning Platform Built for Young Learners</span>
+            <span data-lang="zh">家长看得到进度，<br>孩子掌得住节奏</span>
+            <span data-lang="en">Parents See Progress.<br>Students Own the Pace.</span>
           </h2>
           <p class="section-sub light" style="margin-bottom:28px;">
-            <span data-lang="zh">帮助家长实时跟踪进度，帮助学员管理课表与申请，帮助运营高效处理日常事务。</span>
-            <span data-lang="en">Helps parents track progress in real time, students manage schedule and requests, and operations run efficiently.</span>
+            <span data-lang="zh">我们没有把学员门户做成花哨的 LMS。它只解决三件事：孩子能自己管课表，家长每节课后有具体反馈，教务能 24 小时内处理请假改期。</span>
+            <span data-lang="en">We didn't build a flashy LMS. The student portal does three things: kids manage their own schedule, parents get specific post-class feedback, and staff resolves every leave/reschedule request in under 24 hours.</span>
           </p>
           <div class="platform-features">
             <div class="platform-feature">
@@ -906,12 +898,12 @@
       <div class="section-head">
         <div class="section-tag">Meet the Team</div>
         <h2 class="section-title">
-          <span data-lang="zh">教你 AI 的老师</span>
-          <span data-lang="en">The Teachers Behind Every Class</span>
+          <span data-lang="zh">真的在做 AI 的人，在教你的孩子</span>
+          <span data-lang="en">The People Building AI Are the Ones Teaching Your Kid</span>
         </h2>
         <p class="section-sub">
-          <span data-lang="zh">每位主讲老师都来自 AI 研究、互联网产品或名校教育背景，平均教龄 7 年以上，并经过 120 小时的青少年教学认证。</span>
-          <span data-lang="en">Every lead instructor comes from AI research, product engineering, or top-tier education. Average 7+ years teaching, all certified through 120 hours of youth-focused training.</span>
+          <span data-lang="zh">不是临时招募的助教。每位主讲老师都有一份"履历之外的东西"——近期发表的论文、开源的 AI 工具、持续在做的项目。</span>
+          <span data-lang="en">Not bootcamp TAs. Every lead instructor has something beyond a résumé — a recent paper, an open-source AI tool, a side project they're still shipping.</span>
         </p>
       </div>
       <div class="team-grid">
@@ -953,12 +945,12 @@
       <div class="section-head">
         <div class="section-tag">Achievements & Press</div>
         <h2 class="section-title">
-          <span data-lang="zh">被看见的成长，被认可的成果</span>
-          <span data-lang="en">Growth That Gets Noticed</span>
+          <span data-lang="zh">结果是这样衡量的</span>
+          <span data-lang="en">How We Measure Ourselves</span>
         </h2>
         <p class="section-sub">
-          <span data-lang="zh">我们的学员在校内外获得的每一个奖项，都让我们相信 AI 教育可以走得更远。</span>
-          <span data-lang="en">Every award our students bring home is a reminder why we invest so heavily in curriculum quality.</span>
+          <span data-lang="zh">我们不数上了几节课。数的是：孩子赢了多少奖，家长续了多少次课，媒体写了多少次我们——因为这些是花了钱之后真的能被验证的东西。</span>
+          <span data-lang="en">We don't count classes delivered. We count awards students win, renewals parents sign, and press that covers us — because those are what you can verify after you've paid.</span>
         </p>
       </div>
       <div class="achieve-grid">
@@ -1084,8 +1076,8 @@
       <div class="section-head" style="text-align:center;">
         <div class="section-tag" style="margin-inline:auto;">FAQ</div>
         <h2 class="section-title" style="margin-inline:auto;">
-          <span data-lang="zh">家长问得最多的 6 个问题</span>
-          <span data-lang="en">6 Questions Parents Ask Most</span>
+          <span data-lang="zh">家长最关心的 6 件事，先说清楚</span>
+          <span data-lang="en">The 6 Things Parents Actually Ask</span>
         </h2>
         <p class="section-sub" style="margin-inline:auto;">
           <span data-lang="zh">还没找到你的答案？随时 <a href="contact.html" style="color:var(--clay);font-weight:700;text-decoration:underline;">联系我们</a> 或在工作时间内致电校区顾问。</span>
@@ -1141,12 +1133,12 @@
     <div class="section-inner">
       <div class="newsletter">
         <h2>
-          <span data-lang="zh">每月一封 AI 学习周报</span>
-          <span data-lang="en">Monthly AI Learning Letter</span>
+          <span data-lang="zh">每月一封信：亲子 AI 怎么一起学</span>
+          <span data-lang="en">One Letter a Month. Parenting the AI Generation.</span>
         </h2>
         <p>
-          <span data-lang="zh">精选适合亲子一起做的 AI 小项目、最新课程动态与家长心理课，每月 1 封，绝不打扰。</span>
-          <span data-lang="en">Hand-picked AI projects for parents and kids, new-class announcements, and parenting-with-AI reads. Once a month, never more.</span>
+          <span data-lang="zh">3 个 15 分钟就能做完的亲子 AI 小项目、1 篇家长读物、1 条学员故事。每月 1 次，绝不更多。</span>
+          <span data-lang="en">Three 15-minute AI projects for you and your kid. One short read for parents. One student story. Once a month, never more.</span>
         </p>
         <form id="newsletterForm" class="newsletter-form" novalidate>
           <input type="email" id="newsletterEmail" required autocomplete="email"
@@ -1165,16 +1157,16 @@
   <div class="cta-band">
     <div class="section-tag">Get Started</div>
     <h2>
-      <span data-lang="zh">准备好让孩子开始了吗？</span>
-      <span data-lang="en">Ready to Get Your Child Started?</span>
+      <span data-lang="zh">60 分钟，一节免费课。<br>零承诺，看完自己决定。</span>
+      <span data-lang="en">60 minutes. One free class.<br>Zero commitment.</span>
     </h2>
     <p>
-      <span data-lang="zh">预约一节免费试课，无需提前准备，全程有老师指引。</span>
-      <span data-lang="en">Book a free trial session — no preparation needed, instructors guide every step.</span>
+      <span data-lang="zh">先看一次完整的 MindDo 课堂长什么样——看我们怎么上课，再判断适不适合。比读十篇评价更省时间。</span>
+      <span data-lang="en">See an actual MindDo class end to end before you decide. Faster than reading ten reviews.</span>
     </p>
     <div class="cta-btns">
-      <a class="btn-primary" href="trial.html"><span data-lang="zh">预约免费试课</span><span data-lang="en">Book Free Trial</span></a>
-      <a class="btn-secondary" href="assessment.html"><span data-lang="zh">在线能力评估</span><span data-lang="en">Take Assessment</span></a>
+      <a class="btn-primary" href="trial.html"><span data-lang="zh">预约这节课 →</span><span data-lang="en">Claim This Class →</span></a>
+      <a class="btn-secondary" href="contact.html"><span data-lang="zh">先和招生顾问聊聊</span><span data-lang="en">Talk to an Advisor First</span></a>
     </div>
   </div>
 

@@ -846,7 +846,9 @@
 
         submitResult.className = "result success";
         submitResult.textContent = t.submitOk;
-        setTimeout(function () { window.location.href = "signup.html"; }, 1200);
+        // Preserve flow continuity: trial → signup → assessment → enrollment.
+        // Pass next=assessment.html so signup routes the new user straight into the skills test.
+        setTimeout(function () { window.location.href = "signup.html?next=assessment.html&reason=trial"; }, 1200);
       });
     })();
   </script>
