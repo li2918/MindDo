@@ -372,11 +372,11 @@
       classMode: "1v1",
       billingCycle: "monthly",
       sessions: [
-        { dayKey: "mon", weekday: "周一", weekdayZh: "周一", weekdayEn: "Mon", slotKey: "evening", slotLabel: "晚间", timeSlot: "19:00 – 20:30" },
-        { dayKey: "wed", weekday: "周三", weekdayZh: "周三", weekdayEn: "Wed", slotKey: "evening", slotLabel: "晚间", timeSlot: "19:00 – 20:30" }
+        { dayKey: "mon", weekday: "周一", weekdayZh: "周一", weekdayEn: "Mon", slotKey: "evening", slotLabel: "晚间", timeSlot: "17:30 – 19:00" },
+        { dayKey: "wed", weekday: "周三", weekdayZh: "周三", weekdayEn: "Wed", slotKey: "afterschool", slotLabel: "放学后", timeSlot: "15:00 – 16:30" }
       ],
       weekday: "周一",
-      timeSlot: "19:00 – 20:30",
+      timeSlot: "17:30 – 19:00",
       totalMonthly: "$369.00",
       createdAt: daysAgo(2)
     }]);

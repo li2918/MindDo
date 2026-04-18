@@ -207,8 +207,8 @@
         <p><span data-lang="zh">AI、编程与未来技能青少年学习中心。</span><span data-lang="en">AI and coding learning center for young learners.</span></p>
         <div class="footer-hours">
           <div style="font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,237,215,0.45);margin-bottom:8px;"><span data-lang="zh">开放时间</span><span data-lang="en">Hours</span></div>
-          <span data-lang="zh">周一至周五 3:00pm – 7:30pm<br>周六 9:30am – 5:00pm<br>周日 休息</span>
-          <span data-lang="en">Mon – Fri 3:00pm – 7:30pm<br>Saturday 9:30am – 5:00pm<br>Sunday Closed</span>
+          <span data-lang="zh">周一至周五 3:00pm – 7:00pm<br>周六周日 9:00am – 7:00pm</span>
+          <span data-lang="en">Mon – Fri 3:00pm – 7:00pm<br>Sat – Sun 9:00am – 7:00pm</span>
         </div>
       </div>
       <div class="footer-col"><h4><span data-lang="zh">课程项目</span><span data-lang="en">Programs</span></h4><ul>
@@ -257,12 +257,24 @@
         { k: "sat", zh: "周六", en: "Sat", num: "06" },
         { k: "sun", zh: "周日", en: "Sun", num: "07" }
       ];
-      var SLOTS = [
-        { k: "afterschool", time: "16:00 – 17:30", zh: "放学后", en: "After School" },
-        { k: "evening", time: "19:00 – 20:30", zh: "晚间", en: "Evening" },
-        { k: "weekendAm", time: "09:30 – 11:00", zh: "周末上午", en: "Weekend AM" },
-        { k: "weekendPm", time: "14:00 – 15:30", zh: "周末下午", en: "Weekend PM" }
+      // Center hours: Mon–Fri 15:00–19:00; Sat–Sun 09:00–19:00.
+      // Slots are 90 minutes and live inside those windows.
+      var SLOTS_WEEKDAY = [
+        { k: "afterschool", time: "15:00 – 16:30", zh: "放学后", en: "After School" },
+        { k: "evening",     time: "17:30 – 19:00", zh: "晚间",   en: "Evening" }
       ];
+      var SLOTS_WEEKEND = [
+        { k: "weekendAm",   time: "09:30 – 11:00", zh: "周末上午", en: "Weekend AM" },
+        { k: "weekendNoon", time: "11:30 – 13:00", zh: "周末午前", en: "Late Morning" },
+        { k: "weekendPm",   time: "14:00 – 15:30", zh: "周末下午", en: "Weekend PM" },
+        { k: "weekendLate", time: "16:00 – 17:30", zh: "周末傍晚", en: "Weekend Late" }
+      ];
+      var SLOTS = SLOTS_WEEKDAY.concat(SLOTS_WEEKEND);
+      function isWeekendKey(dayKey) { return dayKey === "sat" || dayKey === "sun"; }
+      function slotsForDay(dayKey) {
+        if (!dayKey) return [];
+        return isWeekendKey(dayKey) ? SLOTS_WEEKEND : SLOTS_WEEKDAY;
+      }
       var html = document.documentElement;
       var langButtons = document.querySelectorAll("[data-set-lang]");
 
@@ -301,6 +313,9 @@
         var sessionIdxLabel = k() === "zh" ? "第 {n} 节课" : "Class {n}";
         var dayHeader = k() === "zh" ? "上课日" : "Class Day";
         var slotHeader = k() === "zh" ? "时段" : "Time Slot";
+        var pickDayFirst = k() === "zh" ? "请先选择上课日。" : "Pick a class day first.";
+        var weekdayHint = k() === "zh" ? "周一至周五 · 下午 3 点至晚 7 点" : "Mon – Fri · 3:00pm – 7:00pm";
+        var weekendHint = k() === "zh" ? "周六周日 · 上午 9 点至晚 7 点" : "Sat – Sun · 9:00am – 7:00pm";
         var blocks = state.sessions.map(function (sess, i) {
           var taken = takenDays(i);
           var dayChips = DAYS.map(function (d) {
@@ -312,26 +327,36 @@
               "<span class=\"dnum\">" + d.num + "</span>" +
               "</button>";
           }).join("");
-          var slotChips = SLOTS.map(function (s) {
-            var cls = "slot-chip" + (sess.slot === s.k ? " active" : "");
-            return "<button type=\"button\" class=\"" + cls + "\" data-sess=\"" + i + "\" data-slot=\"" + s.k + "\">" +
-              "<span class=\"stime\">" + s.time + "</span>" +
-              "<span class=\"slabel\">" + (k() === "zh" ? s.zh : s.en) + "</span>" +
-              "</button>";
-          }).join("");
+          var dailySlots = slotsForDay(sess.day);
+          var slotBody;
+          if (!sess.day) {
+            slotBody = "<p class=\"session-sub\" style=\"margin:4px 0 0;\">" + pickDayFirst + "</p>";
+          } else {
+            var hint = isWeekendKey(sess.day) ? weekendHint : weekdayHint;
+            var slotChips = dailySlots.map(function (s) {
+              var cls = "slot-chip" + (sess.slot === s.k ? " active" : "");
+              return "<button type=\"button\" class=\"" + cls + "\" data-sess=\"" + i + "\" data-slot=\"" + s.k + "\">" +
+                "<span class=\"stime\">" + s.time + "</span>" +
+                "<span class=\"slabel\">" + (k() === "zh" ? s.zh : s.en) + "</span>" +
+                "</button>";
+            }).join("");
+            slotBody =
+              "<p class=\"session-sub\" style=\"margin:4px 0 10px;\">" + hint + "</p>" +
+              "<div class=\"slot-grid\">" + slotChips + "</div>";
+          }
           return "<div class=\"session-block\" data-session-idx=\"" + i + "\">" +
             "<h3>" + sessionIdxLabel.replace("{n}", i + 1) + "</h3>" +
             "<div class=\"session-sub\">" + (k() === "zh" ? "请选择上课日与时段，每节课需使用不同的上课日。" : "Pick one day and time slot. Each weekly session must use a different day.") + "</div>" +
             "<h4>" + dayHeader + "</h4>" +
             "<div class=\"day-grid\">" + dayChips + "</div>" +
             "<h4>" + slotHeader + "</h4>" +
-            "<div class=\"slot-grid\">" + slotChips + "</div>" +
+            slotBody +
             "</div>";
         }).join("");
         document.getElementById("sessionList").innerHTML = blocks;
         document.getElementById("sessionHint").textContent = (k() === "zh"
-          ? "当前方案每周 " + need + " 节课，请为每节课选择独立的上课日和时段。"
-          : "Your plan includes " + need + " class" + (need > 1 ? "es" : "") + " per week. Pick a unique day and time slot for each.");
+          ? "当前方案每周 " + need + " 节课。开放时间：周一至周五下午 3 点至晚 7 点；周六周日上午 9 点至晚 7 点。"
+          : "Your plan includes " + need + " class" + (need > 1 ? "es" : "") + " per week. Hours: Mon–Fri 3:00pm–7:00pm, Sat–Sun 9:00am–7:00pm.");
       }
 
       function renderSummary() {
@@ -387,7 +412,13 @@
         if (day) {
           var taken = takenDays(idx);
           if (taken[day]) return;
+          var prevDay = state.sessions[idx].day;
           state.sessions[idx].day = day;
+          // If the slot type (weekday/weekend) no longer matches, clear it
+          if (state.sessions[idx].slot) {
+            var valid = slotsForDay(day).some(function (s) { return s.k === state.sessions[idx].slot; });
+            if (!valid) state.sessions[idx].slot = "";
+          }
         }
         if (slot) state.sessions[idx].slot = slot;
         saveState(state);
