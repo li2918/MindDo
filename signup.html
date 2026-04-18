@@ -170,6 +170,7 @@
       <div class="layout">
         <!-- Signup form -->
         <article class="card">
+          <div id="reasonNotice" style="display:none;margin-bottom:18px;padding:12px 14px;border-radius:12px;background:rgba(236,171,47,0.12);border:1px solid rgba(236,171,47,0.35);color:var(--clay);font-size:13px;line-height:1.55;"></div>
           <div class="card-head">
             <h2><span data-lang="zh">新用户注册</span><span data-lang="en">Create Your Account</span></h2>
             <p class="desc"><span data-lang="zh">只需几个必填字段，注册后立即进入学员中心。</span><span data-lang="en">Just a few required fields — you'll land in your student hub right after.</span></p>
@@ -235,7 +236,7 @@
 
           <div class="login-link-row">
             <span data-lang="zh">已有账户？</span><span data-lang="en">Already have an account? </span>
-            <a href="login.html"><span data-lang="zh">直接登录 →</span><span data-lang="en">Log in here →</span></a>
+            <a id="loginLink" href="login.html"><span data-lang="zh">直接登录 →</span><span data-lang="en">Log in here →</span></a>
           </div>
         </article>
 
@@ -340,6 +341,10 @@
   <script src="assets/minddo-flow.js"></script>
   <script>
     (function () {
+      var REASON_MSG = {
+        assessment: { zh: "能力评估需要学员账户。完成注册后我们会直接带你开始测试。", en: "The assessment requires a student account. After signing up we'll take you straight to the test." }
+      };
+
       var I18N = {
         "zh-CN": {
           pageTitle: "创建学员账户",
@@ -349,7 +354,7 @@
           passwordMismatch: "两次输入的密码不一致。",
           missingFields: "请完整填写必填项。",
           consentRequired: "请勾选同意服务条款与隐私政策。",
-          signupSuccess: "注册成功，正在跳转到学员中心……",
+          signupSuccess: "注册成功，正在跳转……",
           oauthSuccess: "{provider} 注册成功，正在跳转……",
           pwLabels: ["弱", "一般", "良好", "强"]
         },
@@ -361,11 +366,17 @@
           passwordMismatch: "Passwords don't match.",
           missingFields: "Please fill in all required fields.",
           consentRequired: "Please agree to the Terms and Privacy Policy.",
-          signupSuccess: "Account created. Redirecting to your student hub...",
+          signupSuccess: "Account created. Redirecting...",
           oauthSuccess: "{provider} signup successful. Redirecting...",
           pwLabels: ["Weak", "Fair", "Good", "Strong"]
         }
       };
+
+      var urlParams = new URLSearchParams(window.location.search);
+      var nextParam = urlParams.get("next");
+      var reasonParam = urlParams.get("reason");
+      var SAFE_NEXT = /^[a-z0-9_-]+\.html(#[a-z0-9_-]+)?$/i;
+      var nextUrl = (nextParam && SAFE_NEXT.test(nextParam)) ? nextParam : "student-account.html";
 
       var html = document.documentElement;
       var langButtons = document.querySelectorAll("[data-set-lang]");
@@ -463,7 +474,7 @@
         try { localStorage.setItem("minddo_last_email", payload.email); } catch (_) {}
         var t = I18N[langOf()];
         showResult("success", provider ? t.oauthSuccess.replace("{provider}", provider) : t.signupSuccess);
-        setTimeout(function () { window.location.href = "student-account.html"; }, 900);
+        setTimeout(function () { window.location.href = nextUrl; }, 900);
       }
 
       function setLang(lang) {
@@ -472,6 +483,20 @@
         document.title = (lang === "en" ? "Create Your Account" : "创建学员账户") + " | MindDo";
         langButtons.forEach(function (btn) { btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang); });
         renderPwMeter();
+        var notice = document.getElementById("reasonNotice");
+        if (notice && reasonParam && REASON_MSG[reasonParam]) {
+          notice.textContent = REASON_MSG[reasonParam][lang === "en" ? "en" : "zh"];
+          notice.style.display = "block";
+        }
+      }
+
+      // Forward next+reason to the "Log in here" link so existing users land back at the origin page after signing in.
+      var loginLink = document.getElementById("loginLink");
+      if (loginLink && (nextParam || reasonParam)) {
+        var qs = [];
+        if (nextParam) qs.push("next=" + encodeURIComponent(nextParam));
+        if (reasonParam) qs.push("reason=" + encodeURIComponent(reasonParam));
+        loginLink.setAttribute("href", "login.html?" + qs.join("&"));
       }
 
       var savedLang = localStorage.getItem("minddo_lang");

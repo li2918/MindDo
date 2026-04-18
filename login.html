@@ -134,6 +134,7 @@
   <div class="page-content">
     <div class="content-inner">
       <div class="card">
+        <div id="reasonNotice" style="display:none;margin-bottom:18px;padding:12px 14px;border-radius:12px;background:rgba(236,171,47,0.12);border:1px solid rgba(236,171,47,0.35);color:var(--clay);font-size:13px;line-height:1.55;"></div>
         <h2><span data-lang="zh">登录账户</span><span data-lang="en">Sign In to Your Account</span></h2>
         <p class="desc"><span data-lang="zh">输入你注册时使用的邮箱和密码。</span><span data-lang="en">Enter the email and password you used to sign up.</span></p>
 
@@ -167,7 +168,7 @@
 
         <div class="signup-link">
           <span data-lang="zh">还没有账户？</span><span data-lang="en">Don't have an account? </span>
-          <a href="signup.html"><span data-lang="zh">立即注册 →</span><span data-lang="en">Sign up now →</span></a>
+          <a id="signupLink" href="signup.html"><span data-lang="zh">立即注册 →</span><span data-lang="en">Sign up now →</span></a>
         </div>
 
         <div class="demo-hint">
@@ -225,13 +226,17 @@
   <script src="assets/minddo-flow.js"></script>
   <script>
     (function () {
+      var REASON_MSG = {
+        assessment: { zh: "能力评估需要学员账户。请先登录或注册，我们将在完成后带你直接开始测试。", en: "The assessment requires a student account. Please log in or sign up and we'll take you straight to the test." }
+      };
+
       var I18N = {
         "zh-CN": {
           pageTitle: "学员登录",
           loginInvalid: "请输入邮箱和密码。",
           loginEmailInvalid: "邮箱格式不正确。",
           loginNotFound: "未找到该邮箱对应的账户，请先注册。",
-          loginSuccess: "登录成功，正在进入学员中心……",
+          loginSuccess: "登录成功，正在跳转……",
           oauthSuccess: "{provider} 登录成功，正在跳转……",
           forgotMsg: "演示环境暂未启用密码重置，请直接使用注册邮箱登录即可。"
         },
@@ -240,11 +245,17 @@
           loginInvalid: "Please enter an email and password.",
           loginEmailInvalid: "Email format is invalid.",
           loginNotFound: "No account found for this email. Please sign up first.",
-          loginSuccess: "Logged in. Opening your student hub...",
+          loginSuccess: "Logged in. Redirecting...",
           oauthSuccess: "{provider} login successful. Redirecting...",
           forgotMsg: "Password reset is disabled in demo mode. Use any registered email to log in."
         }
       };
+
+      var urlParams = new URLSearchParams(window.location.search);
+      var nextParam = urlParams.get("next");
+      var reasonParam = urlParams.get("reason");
+      var SAFE_NEXT = /^[a-z0-9_-]+\.html(#[a-z0-9_-]+)?$/i;
+      var nextUrl = (nextParam && SAFE_NEXT.test(nextParam)) ? nextParam : "student-account.html";
 
       var html = document.documentElement;
       var langButtons = document.querySelectorAll("[data-set-lang]");
@@ -286,7 +297,7 @@
         }
         try { localStorage.setItem("minddo_login_at", new Date().toISOString()); } catch (_) {}
         showResult("success", provider ? t.oauthSuccess.replace("{provider}", provider) : t.loginSuccess);
-        setTimeout(function () { window.location.href = "student-account.html"; }, 800);
+        setTimeout(function () { window.location.href = nextUrl; }, 800);
         return true;
       }
 
@@ -306,6 +317,20 @@
         localStorage.setItem("minddo_lang", lang);
         document.title = (lang === "en" ? "Student Login" : "学员登录") + " | MindDo";
         langButtons.forEach(function (btn) { btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang); });
+        var notice = document.getElementById("reasonNotice");
+        if (reasonParam && REASON_MSG[reasonParam]) {
+          notice.textContent = REASON_MSG[reasonParam][lang === "en" ? "en" : "zh"];
+          notice.style.display = "block";
+        }
+      }
+
+      // Forward next+reason to the sign-up link so new users land back at the same page.
+      var signupLink = document.getElementById("signupLink");
+      if (signupLink && (nextParam || reasonParam)) {
+        var qs = [];
+        if (nextParam) qs.push("next=" + encodeURIComponent(nextParam));
+        if (reasonParam) qs.push("reason=" + encodeURIComponent(reasonParam));
+        signupLink.setAttribute("href", "signup.html?" + qs.join("&"));
       }
 
       var savedLang = localStorage.getItem("minddo_lang");

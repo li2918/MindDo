@@ -412,6 +412,24 @@
   <script src="assets/minddo-flow.js"></script>
   <script>
     (function () {
+      // Auth guard: assessment requires a registered / logged-in account.
+      // If no current student, redirect to login with a return URL.
+      try {
+        var _current = null;
+        if (window.MindDoFlow && window.MindDoFlow.getCurrentStudent) {
+          _current = window.MindDoFlow.getCurrentStudent();
+        } else {
+          _current = JSON.parse(localStorage.getItem("minddo_current_student") || "null");
+        }
+        if (!_current || !_current.email) {
+          window.location.replace("login.html?next=assessment.html&reason=assessment");
+          return;
+        }
+      } catch (_) {
+        window.location.replace("login.html?next=assessment.html&reason=assessment");
+        return;
+      }
+
       var QUESTIONS = [
         {
           category: "logic",
