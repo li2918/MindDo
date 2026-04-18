@@ -95,12 +95,11 @@
     .day-chip .dname { display:block; font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; margin-bottom:4px; letter-spacing:0.06em; }
     .day-chip.active .dname { color:var(--clay); }
     .day-chip .dnum { display:block; font-size:18px; font-weight:800; color:var(--clay); }
-    .slot-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:4px; }
-    .slot-chip { border:1px solid var(--line); background:rgba(255,251,245,0.9); border-radius:14px; padding:14px 10px; text-align:center; cursor:pointer; transition:0.15s; font-family:inherit; }
+    .slot-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:4px; }
+    .slot-chip { border:1px solid var(--line); background:rgba(255,251,245,0.9); border-radius:12px; padding:10px 8px; text-align:center; cursor:pointer; transition:0.15s; font-family:inherit; }
     .slot-chip:hover { border-color:rgba(208,129,36,0.46); transform:translateY(-1px); }
     .slot-chip.active { background:linear-gradient(135deg,#fff6de,#ffd977); border-color:rgba(208,129,36,0.5); box-shadow:0 10px 22px rgba(192,123,39,0.18); }
-    .slot-chip .stime { font-size:15px; font-weight:800; color:var(--clay); display:block; margin-bottom:2px; }
-    .slot-chip .slabel { font-size:11px; font-weight:600; color:var(--muted); }
+    .slot-chip .stime { font-size:13px; font-weight:800; color:var(--clay); display:block; white-space:nowrap; }
 
     .summary-panel { position:sticky; top:88px; }
     .summary-kv { display:grid; gap:6px; margin-bottom:14px; font-size:13px; }
@@ -128,7 +127,7 @@
     .footer-bottom { max-width:1280px; margin:0 auto; padding-top:24px; border-top:1px solid rgba(255,237,215,0.1); display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(255,245,230,0.45); }
 
     @media (max-width:1000px) { .layout { grid-template-columns:1fr; } .summary-panel { position:static; } }
-    @media (max-width:900px) { .navbar { padding:0 24px; } .nav-menu { display:none; } .page-hero-inner,.content-inner { padding:0 24px; } .footer-inner { grid-template-columns:repeat(2,1fr); } .meta { grid-template-columns:repeat(2,1fr); } .slot-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:900px) { .navbar { padding:0 24px; } .nav-menu { display:none; } .page-hero-inner,.content-inner { padding:0 24px; } .footer-inner { grid-template-columns:repeat(2,1fr); } .meta { grid-template-columns:repeat(2,1fr); } .slot-grid { grid-template-columns:repeat(3,1fr); } }
     @media (max-width:640px) { .footer-inner { grid-template-columns:1fr; } .footer { padding:48px 24px 28px; } .day-grid { grid-template-columns:repeat(4,1fr); } .action-row { flex-direction:column-reverse; } .action-row>* { width:100%; justify-content:center; } }
   </style>
 </head>
@@ -257,23 +256,26 @@
         { k: "sat", zh: "周六", en: "Sat", num: "06" },
         { k: "sun", zh: "周日", en: "Sun", num: "07" }
       ];
-      // Center hours: Mon–Fri 15:00–19:00; Sat–Sun 09:00–19:00.
-      // Slots are 90 minutes and live inside those windows.
-      var SLOTS_WEEKDAY = [
-        { k: "afterschool", time: "15:00 – 16:30", zh: "放学后", en: "After School" },
-        { k: "evening",     time: "17:30 – 19:00", zh: "晚间",   en: "Evening" }
+      // Hourly slots. Center hours: Mon–Fri 15:00–19:00; Sat–Sun 09:00–19:00.
+      var SLOTS = [
+        { k: "t09", time: "09:00 – 10:00" },
+        { k: "t10", time: "10:00 – 11:00" },
+        { k: "t11", time: "11:00 – 12:00" },
+        { k: "t12", time: "12:00 – 13:00" },
+        { k: "t13", time: "13:00 – 14:00" },
+        { k: "t14", time: "14:00 – 15:00" },
+        { k: "t15", time: "15:00 – 16:00" },
+        { k: "t16", time: "16:00 – 17:00" },
+        { k: "t17", time: "17:00 – 18:00" },
+        { k: "t18", time: "18:00 – 19:00" }
       ];
-      var SLOTS_WEEKEND = [
-        { k: "weekendAm",   time: "09:30 – 11:00", zh: "周末上午", en: "Weekend AM" },
-        { k: "weekendNoon", time: "11:30 – 13:00", zh: "周末午前", en: "Late Morning" },
-        { k: "weekendPm",   time: "14:00 – 15:30", zh: "周末下午", en: "Weekend PM" },
-        { k: "weekendLate", time: "16:00 – 17:30", zh: "周末傍晚", en: "Weekend Late" }
-      ];
-      var SLOTS = SLOTS_WEEKDAY.concat(SLOTS_WEEKEND);
+      var WEEKDAY_SLOT_KEYS = ["t15", "t16", "t17", "t18"];
+      var WEEKEND_SLOT_KEYS = ["t09","t10","t11","t12","t13","t14","t15","t16","t17","t18"];
       function isWeekendKey(dayKey) { return dayKey === "sat" || dayKey === "sun"; }
       function slotsForDay(dayKey) {
         if (!dayKey) return [];
-        return isWeekendKey(dayKey) ? SLOTS_WEEKEND : SLOTS_WEEKDAY;
+        var valid = isWeekendKey(dayKey) ? WEEKEND_SLOT_KEYS : WEEKDAY_SLOT_KEYS;
+        return SLOTS.filter(function (s) { return valid.indexOf(s.k) !== -1; });
       }
       var html = document.documentElement;
       var langButtons = document.querySelectorAll("[data-set-lang]");
@@ -337,7 +339,6 @@
               var cls = "slot-chip" + (sess.slot === s.k ? " active" : "");
               return "<button type=\"button\" class=\"" + cls + "\" data-sess=\"" + i + "\" data-slot=\"" + s.k + "\">" +
                 "<span class=\"stime\">" + s.time + "</span>" +
-                "<span class=\"slabel\">" + (k() === "zh" ? s.zh : s.en) + "</span>" +
                 "</button>";
             }).join("");
             slotBody =

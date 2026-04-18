@@ -295,12 +295,11 @@
       };
       var DAYS = { mon: { zh: "周一", en: "Mon" }, tue: { zh: "周二", en: "Tue" }, wed: { zh: "周三", en: "Wed" }, thu: { zh: "周四", en: "Thu" }, fri: { zh: "周五", en: "Fri" }, sat: { zh: "周六", en: "Sat" }, sun: { zh: "周日", en: "Sun" } };
       var SLOTS = {
-        afterschool: { time: "15:00 – 16:30", zh: "放学后",   en: "After School" },
-        evening:     { time: "17:30 – 19:00", zh: "晚间",     en: "Evening" },
-        weekendAm:   { time: "09:30 – 11:00", zh: "周末上午", en: "Weekend AM" },
-        weekendNoon: { time: "11:30 – 13:00", zh: "周末午前", en: "Late Morning" },
-        weekendPm:   { time: "14:00 – 15:30", zh: "周末下午", en: "Weekend PM" },
-        weekendLate: { time: "16:00 – 17:30", zh: "周末傍晚", en: "Weekend Late" }
+        t09: { time: "09:00 – 10:00" }, t10: { time: "10:00 – 11:00" },
+        t11: { time: "11:00 – 12:00" }, t12: { time: "12:00 – 13:00" },
+        t13: { time: "13:00 – 14:00" }, t14: { time: "14:00 – 15:00" },
+        t15: { time: "15:00 – 16:00" }, t16: { time: "16:00 – 17:00" },
+        t17: { time: "17:00 – 18:00" }, t18: { time: "18:00 – 19:00" }
       };
 
       var html = document.documentElement;
@@ -424,7 +423,7 @@
               weekdayZh: d ? d.zh : sess.day,
               weekdayEn: d ? d.en : sess.day,
               slotKey: sess.slot,
-              slotLabel: s ? (k() === "zh" ? s.zh : s.en) : sess.slot,
+              slotLabel: s ? s.time : sess.slot,
               timeSlot: s ? s.time : sess.slot
             };
           });
