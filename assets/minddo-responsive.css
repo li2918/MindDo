@@ -10,16 +10,16 @@ body { overflow-x: hidden; }
   align-items: center;
   justify-content: center;
   background: none;
-  border: 1px solid var(--line, #e3d5bf);
+  border: 1px solid var(--line, #cfd8e3);
   border-radius: 8px;
   padding: 6px 8px;
   cursor: pointer;
-  color: var(--clay, #8f3c16);
+  color: var(--clay, #1e3a5f);
   font-family: inherit;
   line-height: 1;
   transition: 0.15s;
 }
-.minddo-hamburger:hover { background: var(--sand, #f6ead2); border-color: var(--gold, #c89429); }
+.minddo-hamburger:hover { background: var(--sand, #e8eef5); border-color: var(--gold, #0284c7); }
 .minddo-hamburger svg { display: block; }
 
 /* ============ max-width: 900px ============ */
@@ -41,8 +41,8 @@ body { overflow-x: hidden; }
     right: 0;
     background: #fff;
     padding: 10px 18px 14px;
-    border-bottom: 1px solid var(--line, #e3d5bf);
-    box-shadow: 0 10px 24px rgba(75, 37, 15, 0.08);
+    border-bottom: 1px solid var(--line, #cfd8e3);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
     z-index: 90;
   }
   nav.navbar.nav-open .nav-menu li { width: 100%; list-style: none; }

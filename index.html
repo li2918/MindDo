@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="MindDo — 面向 5-18 岁青少年的 AI 与编程学习中心，11 个线下校区和在线课程，首节试课完全免费。 · MindDo — AI & coding learning center for ages 5-18. 11 campuses and online classes. First trial class completely free." />
   <meta name="author" content="MindDo AI Learning Center" />
-  <meta name="theme-color" content="#8f3c16" />
+  <meta name="theme-color" content="#1e3a5f" />
   <meta name="robots" content="index, follow" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="MindDo" />
@@ -22,21 +22,21 @@
   <title>MindDo | AI & Coding Learning Center</title>
   <style>
     /* Accessibility: skip link */
-    .skip-link { position:absolute; left:-9999px; top:0; background:#8f3c16; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
-    .skip-link:focus { left:0; outline:3px solid #ecab2f; outline-offset:2px; }
+    .skip-link { position:absolute; left:-9999px; top:0; background:#1e3a5f; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #0ea5e9; outline-offset:2px; }
 
     :root {
-      --bg: #fbf7ef;
-      --sand: #f2e4c9;
-      --card: rgba(255, 252, 246, 0.94);
-      --line: rgba(126, 77, 29, 0.14);
-      --text: #45200d;
-      --muted: #826956;
-      --gold: #ecab2f;
-      --gold-deep: #d79016;
-      --clay: #8f3c16;
-      --brown: #5f2c12;
-      --shadow: 0 24px 60px rgba(100, 58, 22, 0.12);
+      --bg: #f6f8fb;
+      --sand: #e8eef5;
+      --card: rgba(240, 249, 255, 0.94);
+      --line: rgba(30, 58, 95, 0.14);
+      --text: #0f172a;
+      --muted: #5a6b81;
+      --gold: #0ea5e9;
+      --gold-deep: #0284c7;
+      --clay: #1e3a5f;
+      --brown: #14294a;
+      --shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -56,7 +56,7 @@
     /* NAVBAR */
     .navbar {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(255, 252, 246, 0.96);
+      background: rgba(240, 249, 255, 0.96);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--line);
       padding: 0 40px;
@@ -71,7 +71,7 @@
       padding: 8px 14px; border-radius: 8px;
       font-size: 14px; font-weight: 600; color: var(--muted); transition: 0.15s;
     }
-    .nav-menu a:hover { color: var(--clay); background: rgba(143, 60, 22, 0.06); }
+    .nav-menu a:hover { color: var(--clay); background: rgba(30, 58, 95, 0.06); }
     .nav-right { display: flex; align-items: center; gap: 10px; }
     .lang-btn {
       background: none; border: 1px solid var(--line); border-radius: 999px;
@@ -82,40 +82,40 @@
     .nav-login { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--clay); font-family: inherit; text-decoration: none; transition: 0.15s; }
     .nav-login:hover, .nav-login.active { background: var(--sand); border-color: var(--gold); }
     .btn-primary {
-      background: linear-gradient(135deg, #ffe5a7, var(--gold));
-      color: #4b250f; border: none; border-radius: 999px;
+      background: linear-gradient(135deg, #bae6fd, var(--gold));
+      color: #0b2540; border: none; border-radius: 999px;
       padding: 10px 22px; font-size: 14px; font-weight: 700;
       cursor: pointer; font-family: inherit; transition: 0.2s;
-      box-shadow: 0 4px 14px rgba(215, 144, 22, 0.28);
+      box-shadow: 0 4px 14px rgba(14, 165, 233, 0.28);
       display: inline-flex; align-items: center; gap: 6px;
     }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(215, 144, 22, 0.38); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(14, 165, 233, 0.38); }
     .btn-secondary {
-      background: rgba(255, 248, 239, 0.98); color: var(--clay);
+      background: rgba(240, 249, 255, 0.98); color: var(--clay);
       border: 1px solid var(--line); border-radius: 999px;
       padding: 10px 22px; font-size: 14px; font-weight: 700;
       cursor: pointer; font-family: inherit; transition: 0.2s;
       display: inline-flex; align-items: center; gap: 6px;
     }
-    .btn-secondary:hover { transform: translateY(-2px); border-color: rgba(215, 144, 22, 0.38); }
+    .btn-secondary:hover { transform: translateY(-2px); border-color: rgba(14, 165, 233, 0.38); }
 
     /* HERO */
     .hero {
       position: relative; min-height: 92vh;
       display: flex; align-items: stretch; overflow: hidden;
-      background: linear-gradient(145deg, #3a1a08 0%, #5f2c12 45%, #8f3c16 80%, #b05020 100%);
+      background: linear-gradient(145deg, #0b1a2e 0%, #14294a 45%, #1e3a5f 80%, #2563eb 100%);
     }
     .hero::before {
       content: ""; position: absolute; inset: 0; pointer-events: none;
       background:
-        radial-gradient(circle at 18% 55%, rgba(236, 171, 47, 0.18) 0%, transparent 48%),
-        radial-gradient(circle at 82% 22%, rgba(236, 171, 47, 0.1) 0%, transparent 38%);
+        radial-gradient(circle at 18% 55%, rgba(14, 165, 233, 0.18) 0%, transparent 48%),
+        radial-gradient(circle at 82% 22%, rgba(14, 165, 233, 0.1) 0%, transparent 38%);
     }
     .hero::after {
       content: ""; position: absolute; inset: 0; pointer-events: none;
       background-image:
-        linear-gradient(rgba(255, 220, 120, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 220, 120, 0.04) 1px, transparent 1px);
+        linear-gradient(rgba(186, 230, 253, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(186, 230, 253, 0.04) 1px, transparent 1px);
       background-size: 40px 40px;
     }
     .hero-inner {
@@ -123,51 +123,51 @@
       margin: 0 auto; padding: 80px 48px;
       display: grid; grid-template-columns: 1fr 420px; gap: 60px; align-items: center;
     }
-    .hero-copy { color: #fff8ef; }
+    .hero-copy { color: #f0f9ff; }
     .hero-kicker {
       display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(236, 171, 47, 0.2); border: 1px solid rgba(236, 171, 47, 0.4);
-      color: #ffd98e; border-radius: 999px; padding: 6px 16px;
+      background: rgba(14, 165, 233, 0.2); border: 1px solid rgba(14, 165, 233, 0.4);
+      color: #bae6fd; border-radius: 999px; padding: 6px 16px;
       font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
       margin-bottom: 22px;
     }
     .hero-copy h1 {
       font-size: clamp(40px, 5.5vw, 64px); line-height: 1.05;
-      letter-spacing: -0.03em; font-weight: 900; color: #fff8ef; margin-bottom: 20px;
+      letter-spacing: -0.03em; font-weight: 900; color: #f0f9ff; margin-bottom: 20px;
       text-wrap: balance;
     }
     .section-title { text-wrap: balance; }
     .hero-copy h1 em { font-style: normal; color: var(--gold); }
     .hero-copy .subtitle {
       font-size: 17px; line-height: 1.75;
-      color: rgba(255, 241, 220, 0.82); max-width: 540px; margin-bottom: 32px;
+      color: rgba(224, 242, 254, 0.82); max-width: 540px; margin-bottom: 32px;
     }
     .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 48px; }
     .btn-ghost {
-      background: rgba(255, 248, 239, 0.1); color: #fff8ef;
-      border: 1px solid rgba(255, 237, 215, 0.24); border-radius: 999px;
+      background: rgba(240, 249, 255, 0.1); color: #f0f9ff;
+      border: 1px solid rgba(224, 242, 254, 0.24); border-radius: 999px;
       padding: 10px 22px; font-size: 14px; font-weight: 700;
       font-family: inherit; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px;
     }
-    .btn-ghost:hover { background: rgba(255, 248, 239, 0.18); transform: translateY(-2px); }
+    .btn-ghost:hover { background: rgba(240, 249, 255, 0.18); transform: translateY(-2px); }
     .hero-stats { display: flex; gap: 36px; flex-wrap: wrap; }
     .hero-stat strong {
       display: block; font-size: 32px; font-weight: 900;
       color: var(--gold); line-height: 1; margin-bottom: 4px;
     }
-    .hero-stat span { font-size: 13px; color: rgba(255, 241, 220, 0.68); line-height: 1.4; }
+    .hero-stat span { font-size: 13px; color: rgba(224, 242, 254, 0.68); line-height: 1.4; }
 
     /* Hero trial card */
     .hero-form-card {
-      background: rgba(255, 252, 247, 0.97); border-radius: 24px;
+      background: rgba(240, 249, 255, 0.97); border-radius: 24px;
       padding: 30px; box-shadow: 0 32px 80px rgba(0, 0, 0, 0.28);
-      border: 1px solid rgba(255, 237, 200, 0.5);
+      border: 1px solid rgba(224, 242, 254, 0.5);
       text-align: left;
     }
     .hero-form-card .gift-badge {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 6px 12px; border-radius: 999px;
-      background: linear-gradient(135deg, #fff6de, #ffd977);
+      background: linear-gradient(135deg, #e0f2fe, #7dd3fc);
       color: var(--clay); font-size: 11px; font-weight: 800;
       letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px;
     }
@@ -175,18 +175,18 @@
     .trial-cta {
       display: flex; align-items: center; justify-content: center;
       width: 100%; padding: 15px 20px;
-      background: linear-gradient(135deg, #ffe5a7, var(--gold));
-      color: #4b250f; border: none; border-radius: 14px;
+      background: linear-gradient(135deg, #bae6fd, var(--gold));
+      color: #0b2540; border: none; border-radius: 14px;
       font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit;
-      transition: 0.2s; box-shadow: 0 10px 26px rgba(215, 144, 22, 0.32); text-decoration: none;
+      transition: 0.2s; box-shadow: 0 10px 26px rgba(14, 165, 233, 0.32); text-decoration: none;
       text-align: center;
     }
-    .trial-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(215, 144, 22, 0.42); }
+    .trial-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(14, 165, 233, 0.42); }
     .trial-outcomes {
       margin: 20px 0 18px;
       padding: 16px; border-radius: 14px;
-      background: linear-gradient(180deg, rgba(255, 248, 234, 0.7), rgba(255, 252, 244, 0.7));
-      border: 1px solid rgba(151, 84, 21, 0.1);
+      background: linear-gradient(180deg, rgba(240, 249, 255, 0.7), rgba(240, 249, 255, 0.7));
+      border: 1px solid rgba(30, 58, 95, 0.1);
     }
     .trial-outcomes .oc-head {
       display: flex; align-items: center; gap: 8px;
@@ -200,16 +200,16 @@
     }
     .outcome .oc-icon {
       width: 38px; height: 38px; border-radius: 10px;
-      background: linear-gradient(135deg, #fff6de, #ffd977);
+      background: linear-gradient(135deg, #e0f2fe, #7dd3fc);
       display: grid; place-items: center; font-size: 18px;
-      box-shadow: 0 4px 10px rgba(215, 144, 22, 0.2);
+      box-shadow: 0 4px 10px rgba(14, 165, 233, 0.2);
     }
     .outcome strong { display: block; font-size: 13px; font-weight: 800; color: var(--clay); line-height: 1.3; margin-bottom: 2px; text-align: left; }
     .outcome .oc-desc { font-size: 12px; color: var(--muted); line-height: 1.5; text-align: left; display: block; }
 
     .trial-secondary {
       display: block; text-align: center; font-size: 12px; font-weight: 700;
-      color: var(--muted); padding-top: 14px; border-top: 1px dashed rgba(151, 84, 21, 0.16);
+      color: var(--muted); padding-top: 14px; border-top: 1px dashed rgba(30, 58, 95, 0.16);
       text-decoration: none; transition: 0.15s;
     }
     .trial-secondary:hover { color: var(--clay); }
@@ -231,26 +231,26 @@
     .section-wrap { padding: 88px 0; }
     .section-wrap.bg-sand { background: var(--sand); }
     .section-wrap.bg-dark {
-      background: linear-gradient(145deg, #3a1a08 0%, #5f2c12 100%);
+      background: linear-gradient(145deg, #0b1a2e 0%, #14294a 100%);
     }
     .section-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
     .section-head { margin-bottom: 48px; }
     .section-tag {
       display: inline-flex; padding: 6px 12px; border-radius: 999px;
-      background: rgba(255, 214, 138, 0.2); border: 1px solid rgba(176, 112, 39, 0.22);
-      color: #9c5a1d; font-size: 11px; font-weight: 800;
+      background: rgba(186, 230, 253, 0.2); border: 1px solid rgba(30, 58, 95, 0.22);
+      color: #1e3a5f; font-size: 11px; font-weight: 800;
       letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px;
     }
     .section-tag.light {
-      background: rgba(236, 171, 47, 0.18); border-color: rgba(236, 171, 47, 0.3); color: #ffd98e;
+      background: rgba(14, 165, 233, 0.18); border-color: rgba(14, 165, 233, 0.3); color: #bae6fd;
     }
     .section-title {
       font-size: clamp(28px, 3.5vw, 44px); font-weight: 900; color: var(--clay);
       line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 14px;
     }
-    .section-title.light { color: #fff8ef; }
+    .section-title.light { color: #f0f9ff; }
     .section-sub { font-size: 16px; color: var(--muted); line-height: 1.75; max-width: 600px; }
-    .section-sub.light { color: rgba(255, 241, 220, 0.78); }
+    .section-sub.light { color: rgba(224, 242, 254, 0.78); }
 
     /* WHY GRID */
     .why-grid {
@@ -258,12 +258,12 @@
     }
     .why-card {
       padding: 26px; border-radius: 20px;
-      background: rgba(255, 252, 247, 0.9); border: 1px solid var(--line); transition: 0.2s;
+      background: rgba(240, 249, 255, 0.9); border: 1px solid var(--line); transition: 0.2s;
     }
-    .why-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: rgba(215, 144, 22, 0.28); }
+    .why-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: rgba(14, 165, 233, 0.28); }
     .why-icon {
       width: 50px; height: 50px; border-radius: 14px;
-      background: linear-gradient(135deg, #ffe7af, var(--gold));
+      background: linear-gradient(135deg, #bae6fd, var(--gold));
       display: grid; place-items: center; font-size: 22px; margin-bottom: 16px;
     }
     .why-card h3 { font-size: 17px; font-weight: 800; color: var(--clay); margin-bottom: 10px; }
@@ -273,11 +273,11 @@
     .programs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
     .program-card {
       border-radius: 22px; overflow: hidden;
-      background: rgba(255, 252, 247, 0.96); border: 1px solid var(--line);
-      box-shadow: 0 6px 20px rgba(100, 58, 22, 0.06);
+      background: rgba(240, 249, 255, 0.96); border: 1px solid var(--line);
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
       transition: 0.22s; display: flex; flex-direction: column;
     }
-    .program-card:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(100, 58, 22, 0.14); border-color: rgba(215, 144, 22, 0.3); }
+    .program-card:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(15, 23, 42, 0.14); border-color: rgba(14, 165, 233, 0.3); }
     .program-banner {
       height: 180px; position: relative; overflow: hidden;
       display: flex; align-items: flex-end; padding: 18px;
@@ -288,10 +288,10 @@
                         linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
       background-size: 28px 28px;
     }
-    .prog-ai     { background: linear-gradient(135deg, #8f3c16, #c05a28); }
-    .prog-code   { background: linear-gradient(135deg, #5f2c12, #8f3c16); }
+    .prog-ai     { background: linear-gradient(135deg, #1e3a5f, #3b82f6); }
+    .prog-code   { background: linear-gradient(135deg, #14294a, #1e3a5f); }
     .prog-robot  { background: linear-gradient(135deg, #4a7c59, #6e8b58); }
-    .prog-camp   { background: linear-gradient(135deg, #d79016, #ecab2f); }
+    .prog-camp   { background: linear-gradient(135deg, #0284c7, #0ea5e9); }
     .program-banner-icon {
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -58%); font-size: 84px; line-height: 1;
@@ -300,7 +300,7 @@
     }
     .program-banner-tag {
       position: relative; z-index: 1;
-      background: rgba(255, 252, 247, 0.95); color: var(--clay);
+      background: rgba(240, 249, 255, 0.95); color: var(--clay);
       border-radius: 999px; padding: 5px 12px;
       font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
     }
@@ -317,51 +317,51 @@
     .platform-features { display: grid; gap: 12px; margin-bottom: 28px; }
     .platform-feature {
       display: flex; align-items: flex-start; gap: 14px; padding: 16px;
-      border-radius: 14px; background: rgba(255, 249, 241, 0.06);
-      border: 1px solid rgba(255, 237, 215, 0.1);
+      border-radius: 14px; background: rgba(240, 249, 255, 0.06);
+      border: 1px solid rgba(224, 242, 254, 0.1);
     }
     .platform-feature-icon {
       width: 36px; height: 36px; border-radius: 10px;
-      background: rgba(236, 171, 47, 0.2); display: grid; place-items: center;
+      background: rgba(14, 165, 233, 0.2); display: grid; place-items: center;
       font-size: 16px; flex-shrink: 0;
     }
-    .platform-feature h4 { font-size: 14px; font-weight: 700; color: #fff8ef; margin-bottom: 3px; }
-    .platform-feature p { font-size: 13px; color: rgba(255, 241, 220, 0.65); margin: 0; line-height: 1.6; }
+    .platform-feature h4 { font-size: 14px; font-weight: 700; color: #f0f9ff; margin-bottom: 3px; }
+    .platform-feature p { font-size: 13px; color: rgba(224, 242, 254, 0.65); margin: 0; line-height: 1.6; }
     .platform-visual {
-      border-radius: 20px; background: rgba(255, 249, 241, 0.06);
-      border: 1px solid rgba(255, 237, 215, 0.12); padding: 28px; display: grid; gap: 12px;
+      border-radius: 20px; background: rgba(240, 249, 255, 0.06);
+      border: 1px solid rgba(224, 242, 254, 0.12); padding: 28px; display: grid; gap: 12px;
     }
     .plat-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .plat-stat {
       padding: 20px; border-radius: 14px;
-      background: rgba(255, 249, 241, 0.06); border: 1px solid rgba(255, 237, 215, 0.08); text-align: center;
+      background: rgba(240, 249, 255, 0.06); border: 1px solid rgba(224, 242, 254, 0.08); text-align: center;
     }
     .plat-stat strong { display: block; font-size: 28px; font-weight: 900; color: var(--gold); margin-bottom: 6px; }
-    .plat-stat span { font-size: 12px; color: rgba(255, 241, 220, 0.65); line-height: 1.4; }
+    .plat-stat span { font-size: 12px; color: rgba(224, 242, 254, 0.65); line-height: 1.4; }
     .plat-links { display: grid; gap: 8px; }
     .plat-link {
       display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-      border-radius: 10px; background: rgba(255, 249, 241, 0.06);
-      color: rgba(255, 241, 220, 0.82); font-size: 13px; font-weight: 600; transition: 0.15s;
+      border-radius: 10px; background: rgba(240, 249, 255, 0.06);
+      color: rgba(224, 242, 254, 0.82); font-size: 13px; font-weight: 600; transition: 0.15s;
     }
-    .plat-link:hover { background: rgba(255, 249, 241, 0.12); }
+    .plat-link:hover { background: rgba(240, 249, 255, 0.12); }
 
     /* TESTIMONIALS */
     .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     .review-card {
       padding: 26px; border-radius: 20px;
-      background: rgba(255, 252, 247, 0.95); border: 1px solid var(--line); transition: 0.2s;
+      background: rgba(240, 249, 255, 0.95); border: 1px solid var(--line); transition: 0.2s;
       display: flex; flex-direction: column;
     }
     .review-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
     .stars { color: var(--gold); font-size: 15px; margin-bottom: 14px; letter-spacing: 2px; }
     .review-card p { font-size: 14px; color: var(--muted); line-height: 1.8; margin-bottom: 20px; flex: 1; }
-    .reviewer-row { display: flex; align-items: center; gap: 14px; padding-top: 14px; border-top: 1px dashed rgba(151, 84, 21, 0.14); }
+    .reviewer-row { display: flex; align-items: center; gap: 14px; padding-top: 14px; border-top: 1px dashed rgba(30, 58, 95, 0.14); }
     .review-avatar {
       width: 56px; height: 56px; border-radius: 999px; flex-shrink: 0;
       object-fit: cover;
-      box-shadow: 0 8px 20px rgba(100, 58, 22, 0.18);
-      border: 3px solid rgba(255, 248, 239, 0.95);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+      border: 3px solid rgba(240, 249, 255, 0.95);
       background: var(--sand);
       display: block;
     }
@@ -373,50 +373,50 @@
     .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
     .team-card {
       position: relative; padding: 24px 20px 20px; border-radius: 22px;
-      background: rgba(255, 252, 247, 0.95); border: 1px solid var(--line);
-      box-shadow: 0 10px 24px rgba(100, 58, 22, 0.06);
+      background: rgba(240, 249, 255, 0.95); border: 1px solid var(--line);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
       display: flex; flex-direction: column; align-items: center; text-align: center;
       transition: 0.2s;
     }
-    .team-card:hover { transform: translateY(-4px); box-shadow: 0 20px 44px rgba(100, 58, 22, 0.12); border-color: rgba(215, 144, 22, 0.3); }
+    .team-card:hover { transform: translateY(-4px); box-shadow: 0 20px 44px rgba(15, 23, 42, 0.12); border-color: rgba(14, 165, 233, 0.3); }
     .team-badge {
       width: 56px; height: 56px; border-radius: 16px;
-      background: linear-gradient(135deg, #ffe5a7, var(--gold));
-      color: #4b250f;
+      background: linear-gradient(135deg, #bae6fd, var(--gold));
+      color: #0b2540;
       font-size: 22px; font-weight: 800; letter-spacing: 0.02em;
       display: inline-flex; align-items: center; justify-content: center;
       margin-bottom: 14px;
-      box-shadow: 0 10px 22px rgba(215, 144, 22, 0.22);
+      box-shadow: 0 10px 22px rgba(14, 165, 233, 0.22);
     }
     .team-card h3 { font-size: 17px; font-weight: 800; color: var(--clay); margin-bottom: 3px; }
     .team-card .role { font-size: 12px; font-weight: 700; color: var(--gold-deep); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
     .team-card .bio { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; flex: 1; }
     .team-tags { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
-    .team-tag { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(236, 171, 47, 0.14); border: 1px solid rgba(208, 129, 36, 0.2); color: var(--clay); }
+    .team-tag { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(14, 165, 233, 0.14); border: 1px solid rgba(2, 132, 199, 0.2); color: var(--clay); }
 
     /* ACHIEVEMENTS */
     .achieve-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
-    .achieve-main { padding: 32px; border-radius: 24px; background: linear-gradient(145deg, #3a1a08 0%, #5f2c12 50%, #8f3c16 100%); color: #fff8ef; position: relative; overflow: hidden; }
-    .achieve-main::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 80% 20%, rgba(236, 171, 47, 0.2), transparent 50%); }
-    .achieve-main .kicker { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; background: rgba(236, 171, 47, 0.22); border: 1px solid rgba(236, 171, 47, 0.4); color: #ffe5a7; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; }
-    .achieve-main h3 { position: relative; font-size: clamp(22px, 2.6vw, 30px); font-weight: 900; color: #fff8ef; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 14px; }
-    .achieve-main p { position: relative; font-size: 15px; color: rgba(255, 241, 220, 0.82); line-height: 1.75; margin-bottom: 24px; max-width: 520px; }
+    .achieve-main { padding: 32px; border-radius: 24px; background: linear-gradient(145deg, #0b1a2e 0%, #14294a 50%, #1e3a5f 100%); color: #f0f9ff; position: relative; overflow: hidden; }
+    .achieve-main::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 80% 20%, rgba(14, 165, 233, 0.2), transparent 50%); }
+    .achieve-main .kicker { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; background: rgba(14, 165, 233, 0.22); border: 1px solid rgba(14, 165, 233, 0.4); color: #bae6fd; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; }
+    .achieve-main h3 { position: relative; font-size: clamp(22px, 2.6vw, 30px); font-weight: 900; color: #f0f9ff; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 14px; }
+    .achieve-main p { position: relative; font-size: 15px; color: rgba(224, 242, 254, 0.82); line-height: 1.75; margin-bottom: 24px; max-width: 520px; }
     .achieve-stats { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    .achieve-stat { padding: 16px; border-radius: 14px; background: rgba(255, 249, 241, 0.08); border: 1px solid rgba(255, 237, 215, 0.12); }
+    .achieve-stat { padding: 16px; border-radius: 14px; background: rgba(240, 249, 255, 0.08); border: 1px solid rgba(224, 242, 254, 0.12); }
     .achieve-stat strong { display: block; font-size: 26px; font-weight: 900; color: var(--gold); line-height: 1; margin-bottom: 6px; letter-spacing: -0.02em; }
-    .achieve-stat span { font-size: 12px; color: rgba(255, 241, 220, 0.7); line-height: 1.4; }
+    .achieve-stat span { font-size: 12px; color: rgba(224, 242, 254, 0.7); line-height: 1.4; }
     .achieve-list { display: grid; gap: 12px; }
-    .achieve-item { padding: 20px; border-radius: 18px; background: rgba(255, 252, 247, 0.95); border: 1px solid var(--line); transition: 0.2s; }
-    .achieve-item:hover { border-color: rgba(208, 129, 36, 0.3); box-shadow: 0 12px 28px rgba(100, 58, 22, 0.08); }
+    .achieve-item { padding: 20px; border-radius: 18px; background: rgba(240, 249, 255, 0.95); border: 1px solid var(--line); transition: 0.2s; }
+    .achieve-item:hover { border-color: rgba(2, 132, 199, 0.3); box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08); }
     .achieve-item .date { font-size: 11px; font-weight: 700; color: var(--gold-deep); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
     .achieve-item strong { display: block; font-size: 15px; color: var(--clay); font-weight: 800; margin-bottom: 4px; line-height: 1.35; }
     .achieve-item span { display: block; font-size: 13px; color: var(--muted); line-height: 1.55; }
 
     /* FAQ */
     .faq-wrap { max-width: 860px; margin: 0 auto; }
-    .faq-item { border: 1px solid var(--line); border-radius: 16px; background: rgba(255, 252, 247, 0.9); margin-bottom: 12px; overflow: hidden; transition: 0.2s; }
-    .faq-item:hover { border-color: rgba(208, 129, 36, 0.32); }
-    .faq-item[open] { background: rgba(255, 248, 238, 0.95); border-color: rgba(208, 129, 36, 0.4); box-shadow: 0 10px 24px rgba(100, 58, 22, 0.06); }
+    .faq-item { border: 1px solid var(--line); border-radius: 16px; background: rgba(240, 249, 255, 0.9); margin-bottom: 12px; overflow: hidden; transition: 0.2s; }
+    .faq-item:hover { border-color: rgba(2, 132, 199, 0.32); }
+    .faq-item[open] { background: rgba(240, 249, 255, 0.95); border-color: rgba(2, 132, 199, 0.4); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06); }
     .faq-item summary {
       list-style: none; cursor: pointer;
       padding: 18px 52px 18px 22px;
@@ -429,9 +429,9 @@
       transform: translateY(-50%); font-size: 22px; font-weight: 400;
       color: var(--muted); transition: 0.2s;
       width: 28px; height: 28px; border-radius: 999px;
-      background: rgba(236, 171, 47, 0.1); display: grid; place-items: center;
+      background: rgba(14, 165, 233, 0.1); display: grid; place-items: center;
     }
-    .faq-item[open] summary::after { content: "−"; color: var(--clay); background: linear-gradient(135deg, #fff6de, #ffd977); }
+    .faq-item[open] summary::after { content: "−"; color: var(--clay); background: linear-gradient(135deg, #e0f2fe, #7dd3fc); }
     .faq-answer { padding: 0 22px 20px; font-size: 14px; line-height: 1.75; color: var(--muted); }
     .faq-answer p { margin-bottom: 10px; }
     .faq-answer p:last-child { margin-bottom: 0; }
@@ -439,15 +439,15 @@
     /* NEWSLETTER */
     .newsletter {
       padding: 56px 48px; border-radius: 28px;
-      background: linear-gradient(135deg, #fff4cf 0%, #ffd977 50%, #ecab2f 100%);
+      background: linear-gradient(135deg, #dbeafe 0%, #7dd3fc 50%, #0ea5e9 100%);
       position: relative; overflow: hidden; text-align: center;
-      box-shadow: 0 28px 60px rgba(208, 129, 36, 0.2);
+      box-shadow: 0 28px 60px rgba(2, 132, 199, 0.2);
     }
     .newsletter::before {
       content: ""; position: absolute; inset: 0; pointer-events: none;
       background-image:
         radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.4), transparent 40%),
-        radial-gradient(circle at 85% 75%, rgba(143, 60, 22, 0.14), transparent 40%);
+        radial-gradient(circle at 85% 75%, rgba(30, 58, 95, 0.14), transparent 40%);
     }
     .newsletter h2 { position: relative; font-size: clamp(24px, 3vw, 36px); font-weight: 900; color: var(--brown); letter-spacing: -0.02em; margin-bottom: 10px; }
     .newsletter p { position: relative; font-size: 15px; color: rgba(95, 44, 18, 0.85); line-height: 1.7; max-width: 540px; margin: 0 auto 26px; }
@@ -455,26 +455,26 @@
     .newsletter-form input {
       flex: 1; min-width: 220px;
       padding: 14px 20px; border-radius: 999px;
-      border: 1px solid rgba(143, 60, 22, 0.24);
-      background: rgba(255, 252, 247, 0.98);
+      border: 1px solid rgba(30, 58, 95, 0.24);
+      background: rgba(240, 249, 255, 0.98);
       color: var(--text); font-size: 15px; font-family: inherit; outline: none;
       transition: 0.15s;
     }
-    .newsletter-form input:focus { border-color: var(--clay); box-shadow: 0 0 0 4px rgba(143, 60, 22, 0.15); background: #fff; }
+    .newsletter-form input:focus { border-color: var(--clay); box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.15); background: #fff; }
     .newsletter-form button {
       padding: 14px 26px; border-radius: 999px; border: none;
-      background: var(--brown); color: #fff8ef;
+      background: var(--brown); color: #f0f9ff;
       font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer;
       transition: 0.2s; box-shadow: 0 10px 24px rgba(95, 44, 18, 0.32);
       letter-spacing: 0.02em;
     }
-    .newsletter-form button:hover { transform: translateY(-2px); background: #4a2310; }
+    .newsletter-form button:hover { transform: translateY(-2px); background: #0b1a2e; }
     .newsletter-note { position: relative; margin-top: 14px; font-size: 12px; color: rgba(95, 44, 18, 0.6); }
     .newsletter-result { position: relative; margin-top: 14px; font-size: 13px; font-weight: 700; color: var(--success, #6f8f57); min-height: 18px; }
 
     /* CTA BAND */
     .cta-band {
-      background: linear-gradient(135deg, rgba(255, 248, 234, 0.98), rgba(249, 236, 205, 0.96));
+      background: linear-gradient(135deg, rgba(240, 249, 255, 0.98), rgba(224, 242, 254, 0.96));
       border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
       padding: 80px 48px; text-align: center;
     }
@@ -486,31 +486,31 @@
     .cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
     /* FOOTER */
-    .footer { background: var(--brown); color: rgba(255, 245, 230, 0.78); padding: 60px 48px 32px; }
+    .footer { background: var(--brown); color: rgba(240, 249, 255, 0.78); padding: 60px 48px 32px; }
     .footer-inner {
       max-width: 1280px; margin: 0 auto;
       display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px;
     }
     .footer-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
     .footer-logo-row img { width: 36px; height: 36px; object-fit: contain; filter: brightness(2) saturate(0.2); }
-    .footer-logo-row span { font-size: 18px; font-weight: 800; color: #fff8ef; }
+    .footer-logo-row span { font-size: 18px; font-weight: 800; color: #f0f9ff; }
     .footer-brand p { font-size: 13px; line-height: 1.7; margin-bottom: 16px; }
     .footer-hours {
-      background: rgba(255, 245, 230, 0.07); border: 1px solid rgba(255, 237, 215, 0.1);
+      background: rgba(240, 249, 255, 0.07); border: 1px solid rgba(224, 242, 254, 0.1);
       border-radius: 12px; padding: 14px 16px; font-size: 12px; line-height: 1.8;
     }
     .footer-col h4 {
       font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
-      color: rgba(255, 237, 215, 0.5); margin-bottom: 16px;
+      color: rgba(224, 242, 254, 0.5); margin-bottom: 16px;
     }
     .footer-col ul { list-style: none; display: grid; gap: 10px; }
-    .footer-col ul a { font-size: 14px; color: rgba(255, 245, 230, 0.72); transition: 0.15s; }
-    .footer-col ul a:hover { color: #fff8ef; }
+    .footer-col ul a { font-size: 14px; color: rgba(240, 249, 255, 0.72); transition: 0.15s; }
+    .footer-col ul a:hover { color: #f0f9ff; }
     .footer-bottom {
       max-width: 1280px; margin: 0 auto; padding-top: 24px;
-      border-top: 1px solid rgba(255, 237, 215, 0.1);
+      border-top: 1px solid rgba(224, 242, 254, 0.1);
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 12px; color: rgba(255, 245, 230, 0.45);
+      font-size: 12px; color: rgba(240, 249, 255, 0.45);
     }
 
     /* RESPONSIVE */
@@ -551,6 +551,7 @@
       .faq-item summary { font-size: 15px; padding: 16px 48px 16px 18px; }
     }
   </style>
+  <link rel="stylesheet" href="assets/minddo-theme.css" />
   <link rel="stylesheet" href="assets/minddo-responsive.css" />
 </head>
 <body>
@@ -819,17 +820,17 @@
         </p>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;max-width:900px;margin:0 auto 28px;">
-        <a href="campuses.html#campus-irvine" style="padding:14px 10px;border-radius:14px;background:rgba(255,252,247,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;transition:0.2s;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🏖️</span><span data-lang="zh">尔湾</span><span data-lang="en">Irvine</span></a>
-        <a href="campuses.html#campus-arcadia" style="padding:14px 10px;border-radius:14px;background:rgba(255,252,247,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🌴</span><span data-lang="zh">阿凯迪亚</span><span data-lang="en">Arcadia</span></a>
-        <a href="campuses.html#campus-diamond-bar" style="padding:14px 10px;border-radius:14px;background:rgba(255,252,247,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">💎</span><span data-lang="zh">钻石吧</span><span data-lang="en">Diamond Bar</span></a>
-        <a href="campuses.html#campus-san-diego" style="padding:14px 10px;border-radius:14px;background:rgba(255,252,247,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">⛵</span><span data-lang="zh">圣地亚哥</span><span data-lang="en">San Diego</span></a>
-        <a href="campuses.html#campus-hollywood" style="padding:14px 10px;border-radius:14px;background:rgba(255,252,247,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🎬</span><span data-lang="zh">好莱坞</span><span data-lang="en">Hollywood</span></a>
-        <a href="campuses.html#campus-redmond" style="padding:14px 10px;border-radius:14px;background:rgba(255,252,247,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🌲</span><span data-lang="zh">雷德蒙德</span><span data-lang="en">Redmond</span></a>
-        <a href="campuses.html#campus-bothell" style="padding:14px 10px;border-radius:14px;background:rgba(255,252,247,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🌧️</span><span data-lang="zh">博塞尔</span><span data-lang="en">Bothell</span></a>
-        <a href="campuses.html#campus-factoria" style="padding:14px 10px;border-radius:14px;background:rgba(255,252,247,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">☕</span><span data-lang="zh">法克托里亚</span><span data-lang="en">Factoria</span></a>
-        <a href="campuses.html#campus-west-lafayette" style="padding:14px 10px;border-radius:14px;background:rgba(255,252,247,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🏫</span><span data-lang="zh">西拉斐特</span><span data-lang="en">W. Lafayette</span></a>
-        <a href="campuses.html#campus-ottawa" style="padding:14px 10px;border-radius:14px;background:rgba(255,252,247,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🍁</span><span data-lang="zh">渥太华</span><span data-lang="en">Ottawa</span></a>
-        <a href="campuses.html#campus-online" style="padding:14px 10px;border-radius:14px;background:linear-gradient(135deg,#fff6de,#ffd977);border:1px solid rgba(208,129,36,0.3);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">💻</span><span data-lang="zh">线上课程</span><span data-lang="en">Online</span></a>
+        <a href="campuses.html#campus-irvine" style="padding:14px 10px;border-radius:14px;background:rgba(240,249,255,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;transition:0.2s;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🏖️</span><span data-lang="zh">尔湾</span><span data-lang="en">Irvine</span></a>
+        <a href="campuses.html#campus-arcadia" style="padding:14px 10px;border-radius:14px;background:rgba(240,249,255,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🌴</span><span data-lang="zh">阿凯迪亚</span><span data-lang="en">Arcadia</span></a>
+        <a href="campuses.html#campus-diamond-bar" style="padding:14px 10px;border-radius:14px;background:rgba(240,249,255,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">💎</span><span data-lang="zh">钻石吧</span><span data-lang="en">Diamond Bar</span></a>
+        <a href="campuses.html#campus-san-diego" style="padding:14px 10px;border-radius:14px;background:rgba(240,249,255,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">⛵</span><span data-lang="zh">圣地亚哥</span><span data-lang="en">San Diego</span></a>
+        <a href="campuses.html#campus-hollywood" style="padding:14px 10px;border-radius:14px;background:rgba(240,249,255,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🎬</span><span data-lang="zh">好莱坞</span><span data-lang="en">Hollywood</span></a>
+        <a href="campuses.html#campus-redmond" style="padding:14px 10px;border-radius:14px;background:rgba(240,249,255,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🌲</span><span data-lang="zh">雷德蒙德</span><span data-lang="en">Redmond</span></a>
+        <a href="campuses.html#campus-bothell" style="padding:14px 10px;border-radius:14px;background:rgba(240,249,255,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🌧️</span><span data-lang="zh">博塞尔</span><span data-lang="en">Bothell</span></a>
+        <a href="campuses.html#campus-factoria" style="padding:14px 10px;border-radius:14px;background:rgba(240,249,255,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">☕</span><span data-lang="zh">法克托里亚</span><span data-lang="en">Factoria</span></a>
+        <a href="campuses.html#campus-west-lafayette" style="padding:14px 10px;border-radius:14px;background:rgba(240,249,255,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🏫</span><span data-lang="zh">西拉斐特</span><span data-lang="en">W. Lafayette</span></a>
+        <a href="campuses.html#campus-ottawa" style="padding:14px 10px;border-radius:14px;background:rgba(240,249,255,0.96);border:1px solid var(--line);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">🍁</span><span data-lang="zh">渥太华</span><span data-lang="en">Ottawa</span></a>
+        <a href="campuses.html#campus-online" style="padding:14px 10px;border-radius:14px;background:linear-gradient(135deg,#e0f2fe,#7dd3fc);border:1px solid rgba(2,132,199,0.3);text-align:center;font-weight:700;color:var(--clay);text-decoration:none;font-size:14px;"><span style="font-size:18px;display:block;margin-bottom:4px;">💻</span><span data-lang="zh">线上课程</span><span data-lang="en">Online</span></a>
       </div>
       <div style="text-align:center;">
         <a class="btn-primary" href="campuses.html">
@@ -891,8 +892,8 @@
             <div class="plat-stat"><strong>12+</strong><span><span data-lang="zh">核心课程模块</span><span data-lang="en">Course modules</span></span></div>
             <div class="plat-stat"><strong>24h</strong><span><span data-lang="zh">申请响应时间</span><span data-lang="en">Request response</span></span></div>
           </div>
-          <div style="background:rgba(255,249,241,0.06);border:1px solid rgba(255,237,215,0.1);border-radius:14px;padding:18px;">
-            <div style="font-size:11px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:rgba(255,237,215,0.45);margin-bottom:12px;">Quick Access</div>
+          <div style="background:rgba(240,249,255,0.06);border:1px solid rgba(224,242,254,0.1);border-radius:14px;padding:18px;">
+            <div style="font-size:11px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:rgba(224,242,254,0.45);margin-bottom:12px;">Quick Access</div>
             <div class="plat-links">
               <a class="plat-link" href="student-account.html"><span>👤</span><span data-lang="zh">学员主页</span><span data-lang="en">Student Home</span></a>
               <a class="plat-link" href="dashboard.html"><span>📋</span><span data-lang="zh">运营看板</span><span data-lang="en">Dashboard</span></a>
@@ -1114,7 +1115,7 @@
         <details class="faq-item">
           <summary><span data-lang="zh">课程形式是线上还是线下？</span><span data-lang="en">Are classes online or in-person?</span></summary>
           <div class="faq-answer">
-            <p><span data-lang="zh">两者都有。我们在北美 10 个城市设有线下校区，也提供小班直播在线课程。线上线下采用完全一致的教材、教师配置和评估体系。</span><span data-lang="en">Both. We operate 10 in-person campuses across North America and offer small-group live online classes. Identical curriculum, instructors, and assessments across formats.</span></p>
+            <p><span data-lang="zh">两者都有。我们在北美 10 个城市设有线下校区，另外还有 1 个线上小班直播课堂——共 11 个校区。线上线下采用完全一致的教材、教师配置和评估体系。</span><span data-lang="en">Both. We operate 10 in-person campuses across North America plus 1 live-online classroom — 11 in total. Identical curriculum, instructors, and assessments across formats.</span></p>
             <p><span data-lang="zh">选择最近校区：<a href="campuses.html" style="color:var(--clay);font-weight:700;">按邮编查找 →</a></span><span data-lang="en">Find your closest campus: <a href="campuses.html" style="color:var(--clay);font-weight:700;">ZIP-based finder →</a></span></p>
           </div>
         </details>
@@ -1198,7 +1199,7 @@
           <span data-lang="en">AI and coding learning center for young learners, helping every child find their place in the AI era.</span>
         </p>
         <div class="footer-hours">
-          <div style="font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,237,215,0.45);margin-bottom:8px;"><span data-lang="zh">开放时间</span><span data-lang="en">Hours</span></div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:rgba(224,242,254,0.45);margin-bottom:8px;"><span data-lang="zh">开放时间</span><span data-lang="en">Hours</span></div>
           <span data-lang="zh">周一至周五 &nbsp;3:00pm – 7:00pm<br>周六周日 &nbsp;9:00am – 7:00pm</span>
           <span data-lang="en">Mon – Fri &nbsp;&nbsp;3:00pm – 7:00pm<br>Sat – Sun &nbsp;9:00am – 7:00pm</span>
         </div>
@@ -1290,7 +1291,7 @@
             if (list.indexOf(email) < 0) list.push(email);
             localStorage.setItem(key, JSON.stringify(list));
           } catch (_) {}
-          resultEl.style.color = "#4a2310";
+          resultEl.style.color = "#0b1a2e";
           resultEl.textContent = lang === "en"
             ? "✓ You're in! Look out for our next letter."
             : "✓ 订阅成功，下一期我们会直接发送到你的邮箱。";

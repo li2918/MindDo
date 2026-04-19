@@ -1,0 +1,19 @@
+/* MindDo cool theme — navy + sky accents
+   Single source of truth for brand colors. Included on every page AFTER
+   the inline <style> block so it wins on equal specificity. Each page's
+   inline CSS continues to reference these via var(--clay) / var(--gold) /
+   var(--sand) / etc., so pages automatically pick up the new palette. */
+
+:root {
+  --bg: #f6f8fb;                                 /* page background */
+  --sand: #e8eef5;                               /* cool surface panel */
+  --card: rgba(255, 255, 255, 0.96);             /* card background */
+  --line: rgba(30, 58, 95, 0.12);                /* cool border */
+  --text: #0f172a;                               /* near-black navy */
+  --muted: #5a6b81;                              /* slate muted */
+  --gold: #0ea5e9;                               /* sky-500 accent */
+  --gold-deep: #0284c7;                          /* sky-600 deeper accent */
+  --clay: #1e3a5f;                               /* navy primary */
+  --brown: #14294a;                              /* deep navy surface */
+  --shadow: 0 24px 60px rgba(15, 23, 42, 0.10);  /* cool shadow */
+}

@@ -63,15 +63,15 @@
     s.id = "minddoConsentStyle";
     s.textContent =
       "#minddoConsentBanner{position:fixed;left:16px;right:16px;bottom:16px;z-index:9997;max-width:760px;margin:0 auto;" +
-      "background:rgba(255,252,246,0.97);border:1px solid rgba(126,77,29,0.18);border-radius:18px;padding:16px 18px;" +
-      "box-shadow:0 24px 60px rgba(100,58,22,0.22);display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;" +
-      "backdrop-filter:blur(12px);font-family:'Avenir Next','Helvetica Neue','PingFang SC','Microsoft YaHei',sans-serif;color:#45200d;font-size:13px;line-height:1.6;}" +
-      "#minddoConsentBanner p{margin:0;color:#45200d;}" +
-      "#minddoConsentBanner a{color:#8f3c16;font-weight:700;text-decoration:underline;}" +
+      "background:rgba(240,249,255,0.97);border:1px solid rgba(30,58,95,0.18);border-radius:18px;padding:16px 18px;" +
+      "box-shadow:0 24px 60px rgba(15,23,42,0.22);display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;" +
+      "backdrop-filter:blur(12px);font-family:'Avenir Next','Helvetica Neue','PingFang SC','Microsoft YaHei',sans-serif;color:#0f172a;font-size:13px;line-height:1.6;}" +
+      "#minddoConsentBanner p{margin:0;color:#0f172a;}" +
+      "#minddoConsentBanner a{color:#1e3a5f;font-weight:700;text-decoration:underline;}" +
       "#minddoConsentBanner .actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}" +
-      "#minddoConsentBanner button{border:1px solid rgba(126,77,29,0.18);border-radius:999px;padding:8px 16px;cursor:pointer;" +
-      "font-family:inherit;font-size:13px;font-weight:700;color:#8f3c16;background:rgba(255,248,239,0.98);transition:.15s;}" +
-      "#minddoConsentBanner button.primary{background:linear-gradient(135deg,#ffe5a7,#ecab2f);color:#4b250f;border-color:transparent;box-shadow:0 4px 12px rgba(215,144,22,0.3);}" +
+      "#minddoConsentBanner button{border:1px solid rgba(30,58,95,0.18);border-radius:999px;padding:8px 16px;cursor:pointer;" +
+      "font-family:inherit;font-size:13px;font-weight:700;color:#1e3a5f;background:rgba(240,249,255,0.98);transition:.15s;}" +
+      "#minddoConsentBanner button.primary{background:linear-gradient(135deg,#bae6fd,#0ea5e9);color:#0b2540;border-color:transparent;box-shadow:0 4px 12px rgba(14,165,233,0.3);}" +
       "#minddoConsentBanner button:hover{transform:translateY(-1px);}" +
       "@media (max-width:640px){#minddoConsentBanner{grid-template-columns:1fr;}#minddoConsentBanner .actions{justify-content:stretch;}#minddoConsentBanner button{flex:1;}}";
     document.head.appendChild(s);
