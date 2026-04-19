@@ -149,8 +149,16 @@
       <li><a href="course-selection.html"><span data-lang="zh">选课</span><span data-lang="en">Enroll</span></a></li>
     </ul>
     <div class="nav-right">
-      <button class="lang-btn active" type="button" data-set-lang="zh-CN">中文</button>
-      <button class="lang-btn" type="button" data-set-lang="en">English</button>
+      <div class="lang-switcher" data-lang-switcher>
+        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span class="lang-trigger-label">中文</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="lang-menu" role="listbox">
+          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
+          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+        </div>
+      </div>
       <a class="nav-login" href="login.html"><span data-lang="zh">登录</span><span data-lang="en">Log In</span></a>
       <a class="btn-primary" href="student-account.html"><span data-lang="zh">学员中心</span><span data-lang="en">My Account</span></a>
     </div>
@@ -557,6 +565,7 @@
       });
     })();
   </script>
+  <script src="assets/lang-switcher.js" defer></script>
   <script src="assets/consent.js" defer></script>
 </body>
 </html>

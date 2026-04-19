@@ -132,8 +132,16 @@
       <li><a href="new-students.html"><span data-lang="zh">新学员</span><span data-lang="en">New Students</span></a></li>
     </ul>
     <div class="nav-right">
-      <button class="lang-btn" type="button" id="langZh">中文</button>
-      <button class="lang-btn" type="button" id="langEn">English</button>
+      <div class="lang-switcher" data-lang-switcher>
+        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span class="lang-trigger-label">中文</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="lang-menu" role="listbox">
+          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
+          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+        </div>
+      </div>
       <a class="nav-login" href="login.html"><span data-lang="zh">登录</span><span data-lang="en">Log In</span></a>
       <a class="btn-primary" href="trial.html">
         <span data-lang="zh">预约试课</span>
@@ -258,18 +266,18 @@
   <script>
     (function () {
       var html = document.documentElement;
+      var langBtns = document.querySelectorAll("[data-set-lang]");
       var saved = localStorage.getItem("minddo_lang");
       var lang = saved === "en" ? "en" : "zh-CN";
       html.setAttribute("lang", lang);
-      document.getElementById("langZh").classList.toggle("active", lang === "zh-CN");
-      document.getElementById("langEn").classList.toggle("active", lang === "en");
-      document.getElementById("langZh").addEventListener("click", function () {
-        html.setAttribute("lang", "zh-CN"); localStorage.setItem("minddo_lang","zh-CN");
-        document.getElementById("langZh").classList.add("active"); document.getElementById("langEn").classList.remove("active");
-      });
-      document.getElementById("langEn").addEventListener("click", function () {
-        html.setAttribute("lang", "en"); localStorage.setItem("minddo_lang","en");
-        document.getElementById("langEn").classList.add("active"); document.getElementById("langZh").classList.remove("active");
+      langBtns.forEach(function (btn) {
+        btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
+        btn.addEventListener("click", function () {
+          var l = btn.getAttribute("data-set-lang");
+          html.setAttribute("lang", l);
+          localStorage.setItem("minddo_lang", l);
+          langBtns.forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-set-lang") === l); });
+        });
       });
 
       function readJson(key) { try { return JSON.parse(localStorage.getItem(key) || "[]"); } catch (_) { return []; } }
@@ -286,6 +294,7 @@
       }).join("") : "<tr><td colspan='6' style='color:var(--muted);text-align:center;padding:24px;'><span data-lang='zh'>今天暂无新注册试课。</span><span data-lang='en'>No new trial registrations today.</span></td></tr>";
     })();
   </script>
+  <script src="assets/lang-switcher.js" defer></script>
   <script src="assets/consent.js" defer></script>
 </body>
 </html>

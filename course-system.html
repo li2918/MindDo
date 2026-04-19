@@ -156,8 +156,16 @@
       <li><a href="contact.html"><span data-lang="zh">联系我们</span><span data-lang="en">Contact</span></a></li>
     </ul>
     <div class="nav-right">
-      <button class="lang-btn active" type="button" data-set-lang="zh-CN">中文</button>
-      <button class="lang-btn" type="button" data-set-lang="en">English</button>
+      <div class="lang-switcher" data-lang-switcher>
+        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span class="lang-trigger-label">中文</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="lang-menu" role="listbox">
+          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
+          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+        </div>
+      </div>
       <a class="nav-login" href="login.html"><span data-lang="zh">登录</span><span data-lang="en">Log In</span></a>
       <a class="btn-primary" href="trial.html"><span data-lang="zh">免费试课</span><span data-lang="en">Free Trial</span></a>
     </div>
@@ -454,6 +462,7 @@
       });
     })();
   </script>
+  <script src="assets/lang-switcher.js" defer></script>
   <script src="assets/consent.js" defer></script>
 </body>
 </html>

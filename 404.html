@@ -21,9 +21,6 @@
     .nav-brand { display:flex; align-items:center; gap:12px; }
     .nav-brand img { width:40px; height:40px; object-fit:contain; }
     .nav-brand-name { font-size:20px; font-weight:800; color:var(--clay); }
-    .lang-switch { display:flex; gap:6px; }
-    .lang-switch button { background:none; border:1px solid var(--line); border-radius:999px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:600; color:var(--clay); font-family:inherit; }
-    .lang-switch button.active { background:var(--sand); border-color:var(--gold); }
 
     main {
       flex:1; display:grid; place-items:center;
@@ -62,9 +59,15 @@
 <body>
   <nav class="navbar">
     <a class="nav-brand" href="index.html"><img src="assets/logo.png" alt="MindDo" /><span class="nav-brand-name">MindDo</span></a>
-    <div class="lang-switch">
-      <button type="button" class="active" data-set-lang="zh-CN">中文</button>
-      <button type="button" data-set-lang="en">English</button>
+    <div class="lang-switcher" data-lang-switcher>
+      <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+        <span class="lang-trigger-label">中文</span>
+        <span class="lang-caret" aria-hidden="true">▾</span>
+      </button>
+      <div class="lang-menu" role="listbox">
+        <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
+        <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+      </div>
     </div>
   </nav>
 
@@ -97,6 +100,7 @@
     <a href="terms.html"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a>
   </footer>
 
+  <script src="assets/lang-switcher.js" defer></script>
   <script src="assets/consent.js" defer></script>
   <script>
     (function () {
