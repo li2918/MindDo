@@ -1,0 +1,113 @@
+/* MindDo shared mobile / responsive styles
+   Targets the navbar + common CTAs. Included on every page. */
+
+html, body { max-width: 100%; }
+body { overflow-x: hidden; }
+
+/* Hamburger trigger — hidden on desktop, shown on mobile by injected JS */
+.minddo-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--line, #e3d5bf);
+  border-radius: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  color: var(--clay, #8f3c16);
+  font-family: inherit;
+  line-height: 1;
+  transition: 0.15s;
+}
+.minddo-hamburger:hover { background: var(--sand, #f6ead2); border-color: var(--gold, #c89429); }
+.minddo-hamburger svg { display: block; }
+
+/* ============ max-width: 900px ============ */
+@media (max-width: 900px) {
+  nav.navbar { flex-wrap: nowrap; }
+
+  nav.navbar .minddo-hamburger { display: inline-flex; margin-right: 4px; }
+
+  /* Desktop menu hidden by default on mobile; shown as dropdown when open */
+  nav.navbar .nav-menu { display: none; }
+  nav.navbar.nav-open .nav-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 10px 18px 14px;
+    border-bottom: 1px solid var(--line, #e3d5bf);
+    box-shadow: 0 10px 24px rgba(75, 37, 15, 0.08);
+    z-index: 90;
+  }
+  nav.navbar.nav-open .nav-menu li { width: 100%; list-style: none; }
+  nav.navbar.nav-open .nav-menu a {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+
+  /* Right side: tighten gaps so the primary CTA always fits */
+  nav.navbar .nav-right { gap: 6px; flex-wrap: nowrap; }
+
+  nav.navbar .nav-right .btn-primary {
+    padding: 8px 14px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  nav.navbar .lang-switcher .lang-trigger {
+    padding: 6px 10px;
+    font-size: 12px;
+    gap: 4px;
+  }
+  nav.navbar .lang-switcher .lang-menu { right: 0; min-width: 140px; }
+
+  nav.navbar .nav-right .nav-login {
+    padding: 6px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+}
+
+/* ============ max-width: 640px ============ */
+@media (max-width: 640px) {
+  nav.navbar { padding-left: 14px; padding-right: 14px; }
+
+  /* Free up horizontal room by folding login into the hamburger drawer */
+  nav.navbar .nav-right .nav-login { display: none; }
+
+  nav.navbar .nav-right .btn-primary {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+
+  nav.navbar .lang-switcher .lang-trigger {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  nav.navbar .nav-brand-name,
+  nav.navbar .brand-name { font-size: 16px; }
+  nav.navbar .nav-brand img { width: 32px; height: 32px; }
+}
+
+/* ============ max-width: 420px ============ */
+@media (max-width: 420px) {
+  nav.navbar { padding-left: 10px; padding-right: 10px; }
+  nav.navbar .nav-right { gap: 4px; }
+  nav.navbar .nav-right .btn-primary { padding: 7px 10px; font-size: 11.5px; }
+  nav.navbar .lang-switcher .lang-trigger { padding: 5px 7px; }
+  nav.navbar .nav-brand-name,
+  nav.navbar .brand-name { display: none; }
+}
+
+/* Global safety: images scale inside their containers */
+img { max-width: 100%; height: auto; }
