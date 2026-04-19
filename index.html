@@ -379,10 +379,14 @@
       transition: 0.2s;
     }
     .team-card:hover { transform: translateY(-4px); box-shadow: 0 20px 44px rgba(100, 58, 22, 0.12); border-color: rgba(215, 144, 22, 0.3); }
-    .team-photo {
-      width: 96px; height: 96px; border-radius: 999px; object-fit: cover;
-      border: 4px solid #fff8ef; box-shadow: 0 12px 30px rgba(100, 58, 22, 0.18);
-      margin-bottom: 14px; background: var(--sand);
+    .team-badge {
+      width: 56px; height: 56px; border-radius: 16px;
+      background: linear-gradient(135deg, #ffe5a7, var(--gold));
+      color: #4b250f;
+      font-size: 22px; font-weight: 800; letter-spacing: 0.02em;
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+      box-shadow: 0 10px 22px rgba(215, 144, 22, 0.22);
     }
     .team-card h3 { font-size: 17px; font-weight: 800; color: var(--clay); margin-bottom: 3px; }
     .team-card .role { font-size: 12px; font-weight: 700; color: var(--gold-deep); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
@@ -560,7 +564,7 @@
     </a>
     <ul class="nav-menu">
       <li><a href="#programs"><span data-lang="zh">课程</span><span data-lang="en">Programs</span></a></li>
-      <li><a href="#teachers"><span data-lang="zh">师资</span><span data-lang="en">Teachers</span></a></li>
+      <li><a href="#teachers"><span data-lang="zh">团队</span><span data-lang="en">Team</span></a></li>
       <li><a href="campuses.html"><span data-lang="zh">校区选择</span><span data-lang="en">Campuses</span></a></li>
       <li><a href="about.html"><span data-lang="zh">关于我们</span><span data-lang="en">About</span></a></li>
       <li><a href="#faq"><span data-lang="zh">常见问题</span><span data-lang="en">FAQ</span></a></li>
@@ -901,48 +905,48 @@
     </div>
   </div>
 
-  <!-- MEET YOUR TEACHERS -->
+  <!-- CURRICULUM R&D TEAM -->
   <div id="teachers" class="section-wrap bg-sand">
     <div class="section-inner">
       <div class="section-head">
-        <div class="section-tag">Meet the Team</div>
+        <div class="section-tag">Curriculum R&D</div>
         <h2 class="section-title">
-          <span data-lang="zh">真的在做 AI 的人，在教你的孩子</span>
-          <span data-lang="en">The People Building AI Are the Ones Teaching Your Kid</span>
+          <span data-lang="zh">我们最强的，不是某一位老师，是整个课程研发团队</span>
+          <span data-lang="en">Our Edge Isn't a Star Teacher — It's the Whole Curriculum R&D Team</span>
         </h2>
         <p class="section-sub">
-          <span data-lang="zh">不是临时招募的助教。每位主讲老师都有一份"履历之外的东西"——近期发表的论文、开源的 AI 工具、持续在做的项目。</span>
-          <span data-lang="en">Not bootcamp TAs. Every lead instructor has something beyond a résumé — a recent paper, an open-source AI tool, a side project they're still shipping.</span>
+          <span data-lang="zh">每一节课在送到学员面前之前，都要经过 AI 研究、K-12 教学法、儿童发展心理和内容编辑四轮评审。课堂上发生的事，是团队几个月打磨的结果，不是一个老师临场发挥。</span>
+          <span data-lang="en">Before a lesson reaches a student, it passes four review layers — AI research, K-12 pedagogy, child-development psychology, and editorial. What happens in class is months of team work, not one instructor improvising.</span>
         </p>
       </div>
       <div class="team-grid">
         <article class="team-card">
-          <img class="team-photo" src="https://api.dicebear.com/7.x/avataaars/svg?seed=DrSarahChen&backgroundColor=ffd6a0" alt="Dr. Sarah Chen" loading="lazy" />
-          <h3><span data-lang="zh">陈诗雯 博士</span><span data-lang="en">Dr. Sarah Chen</span></h3>
-          <div class="role"><span data-lang="zh">AI 研究首席 · 课程总负责人</span><span data-lang="en">AI Research Lead · Head of Curriculum</span></div>
-          <p class="bio"><span data-lang="zh">前 Google Brain 研究员，斯坦福 CS 博士。专注于让复杂 AI 概念对儿童变得直观易懂。</span><span data-lang="en">Former Google Brain researcher, Stanford CS PhD. Obsessed with making complex AI intuitive for kids.</span></p>
-          <div class="team-tags"><span class="team-tag">AI Research</span><span class="team-tag">PhD</span><span class="team-tag">10+ yrs</span></div>
+          <div class="team-badge" aria-hidden="true">01</div>
+          <h3><span data-lang="zh">AI 研究底座</span><span data-lang="en">AI Research Foundation</span></h3>
+          <div class="role"><span data-lang="zh">把前沿变成可讲解的</span><span data-lang="en">Frontier → Teachable</span></div>
+          <p class="bio"><span data-lang="zh">5 位博士背景研究员，履历覆盖 Google Brain、Microsoft AI、Stanford AI Lab。负责把最新的模型能力翻译成 K-12 能理解的语言。</span><span data-lang="en">5 PhD-level researchers with backgrounds at Google Brain, Microsoft AI, and Stanford AI Lab. They translate frontier model capabilities into K-12 vocabulary.</span></p>
+          <div class="team-tags"><span class="team-tag">5 PhDs</span><span class="team-tag">80+ papers</span><span class="team-tag">Frontier</span></div>
         </article>
         <article class="team-card">
-          <img class="team-photo" src="https://api.dicebear.com/7.x/avataaars/svg?seed=MarcusJohnson&backgroundColor=b6e3f4" alt="Marcus Johnson" loading="lazy" />
-          <h3><span data-lang="zh">Marcus Johnson</span><span data-lang="en">Marcus Johnson</span></h3>
-          <div class="role"><span data-lang="zh">高级 AI 工程讲师</span><span data-lang="en">Senior AI Engineering Instructor</span></div>
-          <p class="bio"><span data-lang="zh">前 Microsoft Azure ML 工程师，MIT 硕士。擅长把生产级 AI 工程拆成少年能掌握的积木。</span><span data-lang="en">Ex-Microsoft Azure ML engineer, MIT master's. Breaks down production AI engineering into lego-sized pieces for teens.</span></p>
-          <div class="team-tags"><span class="team-tag">Python</span><span class="team-tag">ML Ops</span><span class="team-tag">MIT</span></div>
+          <div class="team-badge" aria-hidden="true">02</div>
+          <h3><span data-lang="zh">K-12 教学法</span><span data-lang="en">K-12 Pedagogy</span></h3>
+          <div class="role"><span data-lang="zh">让孩子真的学得会</span><span data-lang="en">Make It Actually Stick</span></div>
+          <p class="bio"><span data-lang="zh">6 位拥有州级教师资格的教育专家，平均 9 年 5–18 岁教学经验。基于项目制学习设计课程结构，让"学过"真正变成"做过"。</span><span data-lang="en">6 state-credentialed educators with an average of 9 years teaching ages 5–18. They design the project-based structure that turns "studied" into "shipped."</span></p>
+          <div class="team-tags"><span class="team-tag">Stanford Ed</span><span class="team-tag">PBL</span><span class="team-tag">Licensed</span></div>
         </article>
         <article class="team-card">
-          <img class="team-photo" src="https://api.dicebear.com/7.x/avataaars/svg?seed=JennyLin&backgroundColor=fdbcbc" alt="Jenny Lin" loading="lazy" />
-          <h3><span data-lang="zh">林静怡</span><span data-lang="en">Jenny Lin</span></h3>
-          <div class="role"><span data-lang="zh">AI 创意教育主管</span><span data-lang="en">Head of Creative AI Education</span></div>
-          <p class="bio"><span data-lang="zh">RISD 数字媒体硕士，曾在 Adobe 教育团队任职 6 年。负责 AI 创意课程体系设计。</span><span data-lang="en">RISD master's in Digital Media, 6 years at Adobe Education. Designs the AI creative curriculum end-to-end.</span></p>
-          <div class="team-tags"><span class="team-tag">Generative AI</span><span class="team-tag">Design</span><span class="team-tag">K-12</span></div>
+          <div class="team-badge" aria-hidden="true">03</div>
+          <h3><span data-lang="zh">适龄化与内容安全</span><span data-lang="en">Age-Appropriate & Safe</span></h3>
+          <div class="role"><span data-lang="zh">5 岁和 18 岁不用同一套</span><span data-lang="en">5 vs. 18 Need Different Lessons</span></div>
+          <p class="bio"><span data-lang="zh">儿童发展心理顾问加专职内容编辑。每个模块按年龄段重新拆分，所有素材经过适龄评审和数据合规审查。</span><span data-lang="en">Child-development advisors plus dedicated content editors. Every module is re-scoped by age band, and every asset passes age-appropriate and data-compliance review.</span></p>
+          <div class="team-tags"><span class="team-tag">Dev Psych</span><span class="team-tag">COPPA</span><span class="team-tag">Editorial</span></div>
         </article>
         <article class="team-card">
-          <img class="team-photo" src="https://api.dicebear.com/7.x/avataaars/svg?seed=DavidParkTeacher&backgroundColor=d1d4f9" alt="David Park" loading="lazy" />
-          <h3><span data-lang="zh">朴俊赫</span><span data-lang="en">David Park</span></h3>
-          <div class="role"><span data-lang="zh">竞赛项目总教练</span><span data-lang="en">Head Coach, Competition Track</span></div>
-          <p class="bio"><span data-lang="zh">USACO Platinum 选手，UC Berkeley CS 本硕。近 3 年带领 42 位学员进入美国信息学奥赛决赛。</span><span data-lang="en">USACO Platinum, UC Berkeley CS B.S./M.S. Sent 42 students to USACO Gold+ in the last 3 years.</span></p>
-          <div class="team-tags"><span class="team-tag">USACO</span><span class="team-tag">Algorithms</span><span class="team-tag">Berkeley</span></div>
+          <div class="team-badge" aria-hidden="true">04</div>
+          <h3><span data-lang="zh">迭代实验室</span><span data-lang="en">Iteration Lab</span></h3>
+          <div class="role"><span data-lang="zh">课纲不是写完就锁死</span><span data-lang="en">Curriculum Is Never Shipped Once</span></div>
+          <p class="bio"><span data-lang="zh">每季度依据 600+ 学员的课堂表现和家长反馈更新课纲。不起作用的练习 2 周内下架，效果好的结构 1 个月内推到全校。</span><span data-lang="en">We revise curriculum quarterly from 600+ student performance signals and parent feedback. Underperforming exercises are pulled within 2 weeks; patterns that work roll out system-wide within a month.</span></p>
+          <div class="team-tags"><span class="team-tag">Quarterly</span><span class="team-tag">Data-Driven</span><span class="team-tag">Agile</span></div>
         </article>
       </div>
     </div>
