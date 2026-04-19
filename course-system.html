@@ -203,7 +203,7 @@
           </div>
           <div class="hero-actions" style="margin-top: 16px;">
             <a class="btn-ghost" href="trial.html"><span data-lang="zh">预约免费试课</span><span data-lang="en">Book Free Trial</span></a>
-            <a class="btn-ghost" href="assessment.html"><span data-lang="zh">在线评估</span><span data-lang="en">Take Assessment</span></a>
+            <a class="btn-ghost" href="assessment.html" data-requires-login="assessment"><span data-lang="zh">在线评估</span><span data-lang="en">Take Assessment</span></a>
           </div>
         </div>
       </div>
@@ -332,7 +332,7 @@
     </p>
     <div class="cta-btns">
       <a class="btn-primary" href="trial.html"><span data-lang="zh">预约免费试课</span><span data-lang="en">Book Free Trial</span></a>
-      <a class="btn-secondary" href="assessment.html"><span data-lang="zh">在线能力评估</span><span data-lang="en">Take Assessment</span></a>
+      <a class="btn-secondary" href="assessment.html" data-requires-login="assessment"><span data-lang="zh">在线能力评估</span><span data-lang="en">Take Assessment</span></a>
     </div>
   </div>
 
@@ -412,6 +412,45 @@
         btn.addEventListener("click", function () {
           setLang(btn.getAttribute("data-set-lang"));
         });
+      });
+
+      // Login-gated CTAs: anonymous visitors are sent to the login page with
+      // a return URL. Also relabel the button so intent is visible before the click.
+      function isLoggedIn() {
+        try {
+          var cur = JSON.parse(localStorage.getItem("minddo_current_student") || "null");
+          return !!(cur && cur.email);
+        } catch (_) { return false; }
+      }
+      function relabelGatedLinks() {
+        var loggedIn = isLoggedIn();
+        document.querySelectorAll("[data-requires-login]").forEach(function (el) {
+          var zh = el.querySelector("[data-lang='zh']");
+          var en = el.querySelector("[data-lang='en']");
+          if (!zh || !en) return;
+          if (!el.dataset.origZh) el.dataset.origZh = zh.textContent;
+          if (!el.dataset.origEn) el.dataset.origEn = en.textContent;
+          if (loggedIn) {
+            zh.textContent = el.dataset.origZh;
+            en.textContent = el.dataset.origEn;
+            el.removeAttribute("title");
+          } else {
+            zh.textContent = "登录后开始评估";
+            en.textContent = "Sign In To Take Assessment";
+            el.setAttribute("title", "需要学员账户 · Student account required");
+          }
+        });
+      }
+      relabelGatedLinks();
+
+      document.addEventListener("click", function (e) {
+        var link = e.target.closest("[data-requires-login]");
+        if (!link) return;
+        if (isLoggedIn()) return;
+        e.preventDefault();
+        var reason = link.getAttribute("data-requires-login") || "assessment";
+        var href = link.getAttribute("href") || "assessment.html";
+        window.location.href = "login.html?next=" + encodeURIComponent(href) + "&reason=" + encodeURIComponent(reason);
       });
     })();
   </script>
