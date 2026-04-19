@@ -2,6 +2,21 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
+  <script>
+    // Early auth gate: runs before any body parsing so anonymous visitors
+    // never see a flash of the assessment page. The in-body gate below is
+    // the secondary defense in case this block is skipped.
+    (function () {
+      try {
+        var cur = JSON.parse(localStorage.getItem("minddo_current_student") || "null");
+        if (!cur || !cur.email) {
+          window.location.replace("login.html?next=assessment.html&reason=assessment");
+        }
+      } catch (_) {
+        window.location.replace("login.html?next=assessment.html&reason=assessment");
+      }
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="MindDo 能力评估：10 道模拟测试题，8 分钟获得 AI 学习能力评级与课程建议。 · MindDo skills assessment: 10-question mock test, 8 minutes to get an AI readiness rating and course recommendation." />
   <meta name="author" content="MindDo AI Learning Center" />
