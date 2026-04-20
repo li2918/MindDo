@@ -88,7 +88,8 @@
     .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
     .hero-info-card { background: rgba(240,249,255,0.08); border: 1px solid rgba(224,242,254,0.15); border-radius: 20px; padding: 24px; display: grid; gap: 12px; }
     .hero-info-item { padding: 16px; border-radius: 14px; background: rgba(240,249,255,0.06); border: 1px solid rgba(224,242,254,0.1); }
-    .hero-info-item .icon { font-size: 24px; margin-bottom: 8px; display: block; }
+    .hero-info-item .icon { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: rgba(14,165,233,0.2); color: #bae6fd; margin-bottom: 10px; }
+    .hero-info-item .icon svg { width: 22px; height: 22px; stroke-width: 1.8; }
     .hero-info-item strong { display: block; font-size: 14px; font-weight: 800; color: #f0f9ff; margin-bottom: 4px; }
     .hero-info-item span { font-size: 12px; color: rgba(224,242,254,0.65); line-height: 1.5; }
 
@@ -256,7 +257,7 @@
             <span><span data-lang="zh">模拟真实测试节奏</span><span data-lang="en">Simulates a real test</span></span>
           </div>
           <div class="hero-info-item">
-            <span class="icon">🎯</span>
+            <span class="icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>
             <strong><span data-lang="zh">即时评级</span><span data-lang="en">Instant Rating</span></strong>
             <span><span data-lang="zh">初阶 / 中阶 / 进阶</span><span data-lang="en">Beginner / Intermediate / Advanced</span></span>
           </div>

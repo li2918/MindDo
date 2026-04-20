@@ -105,7 +105,8 @@
     .hero-stat span { font-size: 12px; color: rgba(224,242,254,0.65); line-height: 1.4; }
     .hero-info-card { background: rgba(240,249,255,0.08); border: 1px solid rgba(224,242,254,0.15); border-radius: 20px; padding: 24px; display: grid; gap: 10px; }
     .hero-info-item { padding: 14px; border-radius: 12px; background: rgba(240,249,255,0.06); border: 1px solid rgba(224,242,254,0.1); }
-    .hero-info-item .icon { font-size: 22px; margin-bottom: 6px; display: block; }
+    .hero-info-item .icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 10px; background: rgba(14,165,233,0.2); color: #bae6fd; margin-bottom: 8px; }
+    .hero-info-item .icon svg { width: 20px; height: 20px; stroke-width: 1.8; }
     .hero-info-item strong { display: block; font-size: 13px; font-weight: 800; color: #f0f9ff; margin-bottom: 3px; }
     .hero-info-item span { font-size: 12px; color: rgba(224,242,254,0.62); line-height: 1.45; }
     /* EXTRA BUTTONS */
@@ -195,7 +196,7 @@
             <span><span data-lang="zh">课后由导师填写并发布</span><span data-lang="en">Posted by instructor after each class</span></span>
           </div>
           <div class="hero-info-item">
-            <span class="icon">📈</span>
+            <span class="icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/></svg></span>
             <strong><span data-lang="zh">追踪进步 / Track Progress</span><span data-lang="en" style="display:none;">追踪进步 / Track Progress</span></strong>
             <span><span data-lang="zh">每次课的学习记录与成长反馈</span><span data-lang="en">Learning notes &amp; growth feedback per class</span></span>
           </div>

@@ -187,7 +187,7 @@
     }
     .chat-panel.open { display:flex; }
     .chat-head { padding:18px 18px 16px; background:linear-gradient(135deg,#0b1a2e 0%,#14294a 50%,#1e3a5f 100%); color:#f0f9ff; display:flex; align-items:center; gap:12px; position:relative; }
-    .chat-head img { width:42px; height:42px; border-radius:999px; border:2px solid rgba(224,242,254,0.25); background:var(--sand); flex-shrink:0; }
+    .chat-head img { width:42px; height:42px; border-radius:999px; border:2px solid rgba(224,242,254,0.25); background:var(--sand); flex-shrink:0; object-fit:cover; }
     .chat-head .who strong { display:block; font-size:14px; font-weight:800; color:#f0f9ff; }
     .chat-head .who .status { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:rgba(224,242,254,0.72); margin-top:2px; }
     .chat-head .who .status::before { content:""; width:7px; height:7px; border-radius:999px; background:var(--success); box-shadow:0 0 0 3px rgba(111,143,87,0.32); }
@@ -648,7 +648,7 @@
   </button>
   <aside class="chat-panel" id="chatPanel" role="dialog" aria-labelledby="chatAdvisorName">
     <div class="chat-head">
-      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=AmyAdvisor&backgroundColor=fdbcbc" alt="Amy, MindDo admissions advisor" />
+      <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Amy, MindDo admissions advisor" width="48" height="48" loading="lazy" />
       <div class="who">
         <strong id="chatAdvisorName"><span data-lang="zh">Amy · 招生顾问</span><span data-lang="en">Amy · Admissions Advisor</span></strong>
         <span class="status"><span data-lang="zh">在线 · 通常 2 分钟内回复</span><span data-lang="en">Online · typically replies in 2 min</span></span>

@@ -93,7 +93,8 @@
     .pillars { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
     .pillar { padding:28px; border-radius:22px; background:rgba(240,249,255,0.95); border:1px solid var(--line); transition:.2s; }
     .pillar:hover { transform:translateY(-3px); box-shadow:0 20px 44px rgba(15,23,42,0.1); border-color:rgba(14,165,233,0.3); }
-    .pillar-icon { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,#bae6fd,var(--gold)); display:grid; place-items:center; font-size:24px; margin-bottom:18px; }
+    .pillar-icon { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,#bae6fd,var(--gold)); display:grid; place-items:center; color:#0b2540; margin-bottom:18px; }
+    .pillar-icon svg { width:26px; height:26px; stroke-width:1.8; }
     .pillar h3 { font-size:18px; font-weight:800; color:var(--clay); margin-bottom:10px; }
     .pillar p { font-size:14px; color:var(--muted); line-height:1.75; }
 
@@ -230,17 +231,17 @@
         <p class="section-sub" style="margin-bottom:36px;"><span data-lang="zh">课程、导师、评估——我们在这三件事上持续投入，比任何一件具体的课更重要。</span><span data-lang="en">Curriculum, instructors, and assessment — these three investments matter more than any individual class we offer.</span></p>
         <div class="pillars">
           <article class="pillar">
-            <div class="pillar-icon">📚</div>
+            <div class="pillar-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></div>
             <h3><span data-lang="zh">专为青少年设计的 AI 课程</span><span data-lang="en">AI Curriculum, Built for Kids</span></h3>
             <p><span data-lang="zh">我们的课程由 AI 研究员和 K-12 教育专家共同设计。拒绝把大学 CS 课缩小给孩子，而是从真实场景出发，让抽象概念变成可动手的项目。</span><span data-lang="en">Designed by AI researchers and K-12 education specialists. We refuse to shrink college CS into a kids' version — we start from real scenarios and turn abstract concepts into hands-on projects.</span></p>
           </article>
           <article class="pillar">
-            <div class="pillar-icon">👩‍🏫</div>
+            <div class="pillar-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5"/></svg></div>
             <h3><span data-lang="zh">真正懂 AI 的老师</span><span data-lang="en">Teachers Who Actually Build AI</span></h3>
             <p><span data-lang="zh">每位主讲老师都来自 AI 研究、工程或顶尖教育背景。平均教龄 7 年以上，并通过 120 小时的青少年教学认证。他们不是读教案的助教。</span><span data-lang="en">Every lead instructor comes from AI research, engineering, or top education backgrounds. Average 7+ years teaching, certified through 120 hours of youth-focused training. They build AI for a living.</span></p>
           </article>
           <article class="pillar">
-            <div class="pillar-icon">📊</div>
+            <div class="pillar-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></div>
             <h3><span data-lang="zh">透明、可视化的成长评估</span><span data-lang="en">Transparent, Visible Progress</span></h3>
             <p><span data-lang="zh">每节课后的教师反馈、每 4 周的阶段小结、每学期的完整报告——家长永远知道孩子在哪、下一步该往哪去。没有黑箱。</span><span data-lang="en">Post-class teacher feedback, milestone summaries every 4 weeks, full semester reports. Parents always know where their child is and what's next. No black box.</span></p>
           </article>
@@ -319,21 +320,21 @@
         </div>
         <div class="leaders">
           <article class="leader">
-            <img class="leader-photo" src="https://api.dicebear.com/7.x/avataaars/svg?seed=SarahChenFounder&backgroundColor=ffd6a0" alt="Dr. Sarah Chen" loading="lazy" />
+            <img class="leader-photo" src="https://randomuser.me/api/portraits/women/49.jpg" alt="Dr. Sarah Chen" loading="lazy" width="160" height="160" />
             <h3><span data-lang="zh">Sarah Chen 博士</span><span data-lang="en">Dr. Sarah Chen</span></h3>
             <div class="role"><span data-lang="zh">创始人 & CEO</span><span data-lang="en">Founder & CEO</span></div>
             <p class="bio"><span data-lang="zh">前 Google Brain 研究员，斯坦福 CS 博士。让 MindDo 课程保持在 AI 学术前沿的同时，依然适合 5 岁的孩子。</span><span data-lang="en">Former Google Brain researcher, Stanford CS PhD. Keeps MindDo's curriculum in sync with AI research while keeping it accessible to 5-year-olds.</span></p>
             <div class="creds"><span>Stanford PhD</span><span>·</span><span>ex-Google Brain</span></div>
           </article>
           <article class="leader">
-            <img class="leader-photo" src="https://api.dicebear.com/7.x/avataaars/svg?seed=MichaelRiveraFounder&backgroundColor=b6e3f4" alt="Michael Rivera" loading="lazy" />
+            <img class="leader-photo" src="https://randomuser.me/api/portraits/men/22.jpg" alt="Michael Rivera" loading="lazy" width="160" height="160" />
             <h3><span data-lang="zh">Michael Rivera</span><span data-lang="en">Michael Rivera</span></h3>
             <div class="role"><span data-lang="zh">联合创始人 & CTO</span><span data-lang="en">Co-founder & CTO</span></div>
             <p class="bio"><span data-lang="zh">前 Microsoft Azure ML 高级工程师，MIT 硕士。搭建了 MindDo 学员平台与教师系统。</span><span data-lang="en">Ex-Microsoft Azure ML senior engineer, MIT master's. Built MindDo's student platform and instructor systems from scratch.</span></p>
             <div class="creds"><span>MIT</span><span>·</span><span>ex-Microsoft</span></div>
           </article>
           <article class="leader">
-            <img class="leader-photo" src="https://api.dicebear.com/7.x/avataaars/svg?seed=DrPriyaSrinivasan&backgroundColor=fdbcbc" alt="Dr. Priya Srinivasan" loading="lazy" />
+            <img class="leader-photo" src="https://randomuser.me/api/portraits/women/67.jpg" alt="Dr. Priya Srinivasan" loading="lazy" width="160" height="160" />
             <h3><span data-lang="zh">Priya Srinivasan 博士</span><span data-lang="en">Dr. Priya Srinivasan</span></h3>
             <div class="role"><span data-lang="zh">教育总监</span><span data-lang="en">Head of Education</span></div>
             <p class="bio"><span data-lang="zh">斯坦福 K-12 教育学博士，15 年教育研究经验。主持 MindDo 课程与评估框架设计。</span><span data-lang="en">Stanford K-12 education PhD, 15 years in research. Owns MindDo's curriculum and assessment framework.</span></p>
