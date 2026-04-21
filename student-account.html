@@ -1076,7 +1076,7 @@
             { label: "所在城市", fallback: "未填写" }
           ],
           summaryItems: [
-            { label: "最近试课科目", fallback: "暂无记录" },
+            { label: "最近试课校区", fallback: "暂无记录" },
             { label: "最近试课时间", fallback: "尚未预约" },
             { label: "最近评估等级", fallback: "尚未评估" },
             { label: "最近反馈状态", fallback: "尚未提交" }
@@ -1207,7 +1207,7 @@
             { label: "City", fallback: "Not provided" }
           ],
           summaryItems: [
-            { label: "Latest Trial Subject", fallback: "No record yet" },
+            { label: "Latest Trial Campus", fallback: "No record yet" },
             { label: "Latest Trial Time", fallback: "Not scheduled" },
             { label: "Latest Assessment Level", fallback: "Not assessed" },
             { label: "Latest Feedback", fallback: "Not submitted" }
@@ -1557,7 +1557,7 @@
           : t.summaryItems[2].fallback;
 
         var summaryValues = [
-          latestLead ? (latestLead.subjectLabel || latestLead.subject || t.summaryItems[0].fallback) : t.summaryItems[0].fallback,
+          latestLead ? (latestLead.campusLabel || latestLead.campus || t.summaryItems[0].fallback) : t.summaryItems[0].fallback,
           latestLead ? (formatTrialTime(latestLead) || t.summaryItems[1].fallback) : t.summaryItems[1].fallback,
           assessmentLevel,
           latestFeedback ? (latestFeedback.rating ? latestFeedback.rating + "" : t.summaryItems[3].fallback) : t.summaryItems[3].fallback

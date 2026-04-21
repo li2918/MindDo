@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="预约 MindDo 免费体验课 · 第 1 步：先选时间和意向 AI 方向。 · Book a free MindDo trial · Step 1: pick your time and AI track." />
+  <meta name="description" content="预约 MindDo 免费体验课 · 第 1 步：先选校区和时间。 · Book a free MindDo trial · Step 1: pick your campus and time." />
   <meta name="author" content="MindDo AI Learning Center" />
   <meta name="theme-color" content="#1e3a5f" />
   <meta name="robots" content="index, follow" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="MindDo" />
   <meta property="og:title" content="试课预约 · 选择时间" />
-  <meta property="og:description" content="Book a free MindDo trial · Step 1: pick your time and AI track." />
+  <meta property="og:description" content="Book a free MindDo trial · Step 1: pick your campus and time." />
   <meta property="og:image" content="assets/favicon.svg" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="试课预约 · 选择时间" />
-  <meta name="twitter:description" content="Book a free MindDo trial · Step 1: pick your time and AI track." />
+  <meta name="twitter:description" content="Book a free MindDo trial · Step 1: pick your campus and time." />
   <link rel="canonical" href="trial.html" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="apple-touch-icon" href="assets/favicon.svg" />
@@ -176,8 +176,8 @@
       </div>
       <h1><span data-lang="zh">选择你想要的试课时间</span><span data-lang="en">Pick Your Trial Time</span></h1>
       <p class="hero-sub">
-        <span data-lang="zh">先选一个你希望的试课日期与时段，下一步再填写联系方式。首次试课完全免费，无需预付。</span>
-        <span data-lang="en">Choose your preferred trial date and time first. You'll fill in contact info on the next step. The first trial is free — no prepayment.</span>
+        <span data-lang="zh">先选校区，再选试课日期与时段，下一步填写联系方式。首次试课完全免费，无需预付。</span>
+        <span data-lang="en">Pick a campus, then a trial date and time — contact info comes on the next step. The first trial is free, no prepayment.</span>
       </p>
     </div>
   </div>
@@ -194,8 +194,8 @@
         </div>
 
         <div class="field-block">
-          <label class="field-label" for="subject" data-i18n="subject"></label>
-          <select id="subject" name="subject" required></select>
+          <label class="field-label" for="campus" data-i18n="campus"></label>
+          <select id="campus" name="campus" required></select>
         </div>
 
         <div class="field-block">
@@ -284,25 +284,31 @@
 
       var I18N = {
         "zh-CN": {
-          pageTitle: "试课预约 · 选择时间",
-          formTitle: "第 1 步：选择你的试课时间",
-          formDesc: "先选一个意向科目，再选一个合适的日期和时段。下一步你将填写联系方式并完成预约。",
-          subject: "意向科目",
+          pageTitle: "试课预约 · 选择校区与时间",
+          formTitle: "第 1 步：选择校区与试课时间",
+          formDesc: "先选一个校区，再选一个合适的日期和时段。下一步你将填写联系方式并完成预约。",
+          campus: "选择校区",
           trialDate: "试课日期",
           trialTime: "试课时段",
           dateHelper: "未来 12 天内可选，今日过期时段自动置灰",
           timeHelper: "工作日 15:00–19:00 / 周末 09:00–19:00；点击可选中，需先选日期",
           todayLabel: "今天",
           tomorrowLabel: "明天",
-          selectionHint: "请先选择科目、日期和时段，然后点击\"下一步\"。",
-          prevSelectionText: "你之前选择过：{date} {time}（{subject}）。如需修改直接重新选择即可。",
-          subjectOptions: [
-            { value: "", label: "请选择 AI 方向" },
-            { value: "ai-basics", label: "AI 启蒙入门（6-10 岁）" },
-            { value: "ai-creative", label: "AI 创意工坊（8-12 岁）" },
-            { value: "ai-coding", label: "AI 编程进阶（10-14 岁）" },
-            { value: "ai-project", label: "AI 项目营（12-16 岁）" },
-            { value: "ai-competition", label: "AI 竞赛冲刺（14-18 岁）" }
+          selectionHint: "请先选择校区、日期和时段，然后点击\"下一步\"。",
+          prevSelectionText: "你之前选择过：{date} {time}（{campus}）。如需修改直接重新选择即可。",
+          campusOptions: [
+            { value: "", label: "请选择校区" },
+            { value: "irvine", label: "加州 · 尔湾校区" },
+            { value: "arcadia", label: "加州 · 阿凯迪亚校区" },
+            { value: "diamond-bar", label: "加州 · 钻石吧校区" },
+            { value: "san-diego", label: "加州 · 圣地亚哥校区" },
+            { value: "hollywood", label: "加州 · 好莱坞校区" },
+            { value: "redmond", label: "华州 · 雷德蒙德校区" },
+            { value: "bothell", label: "华州 · 博塞尔校区" },
+            { value: "factoria", label: "华州 · 法克托里亚（贝尔维尤）" },
+            { value: "west-lafayette", label: "印第安纳 · 西拉斐特校区" },
+            { value: "ottawa", label: "加拿大 · 渥太华校区" },
+            { value: "online", label: "线上小班直播" }
           ],
           trialTimeWeekday: [
             { value: "15:00", label: "15:00 – 16:00" },
@@ -324,25 +330,31 @@
           ]
         },
         en: {
-          pageTitle: "Book Trial · Select Time",
-          formTitle: "Step 1: Pick Your Trial Time",
-          formDesc: "Choose a subject, then a date and time that works for you. You'll fill in contact info on the next step.",
-          subject: "Interested Subject",
+          pageTitle: "Book Trial · Select Campus & Time",
+          formTitle: "Step 1: Pick Your Campus & Trial Time",
+          formDesc: "Choose a campus, then a date and time that works for you. You'll fill in contact info on the next step.",
+          campus: "Select Campus",
           trialDate: "Trial Date",
           trialTime: "Trial Time",
           dateHelper: "Next 12 days available — expired times are disabled automatically",
           timeHelper: "Weekdays 3:00pm–7:00pm / Weekends 9:00am–7:00pm; pick a date first",
           todayLabel: "Today",
           tomorrowLabel: "Tomorrow",
-          selectionHint: "Please select subject, date and time, then click \"Next\".",
-          prevSelectionText: "Previously selected: {date} {time} ({subject}). Re-select to change.",
-          subjectOptions: [
-            { value: "", label: "Pick your AI track" },
-            { value: "ai-basics", label: "AI Fundamentals (ages 6-10)" },
-            { value: "ai-creative", label: "AI Creative Studio (ages 8-12)" },
-            { value: "ai-coding", label: "AI Programming (ages 10-14)" },
-            { value: "ai-project", label: "AI Project Camp (ages 12-16)" },
-            { value: "ai-competition", label: "AI Competition Track (ages 14-18)" }
+          selectionHint: "Please select campus, date and time, then click \"Next\".",
+          prevSelectionText: "Previously selected: {date} {time} ({campus}). Re-select to change.",
+          campusOptions: [
+            { value: "", label: "Choose a campus" },
+            { value: "irvine", label: "California · Irvine" },
+            { value: "arcadia", label: "California · Arcadia" },
+            { value: "diamond-bar", label: "California · Diamond Bar" },
+            { value: "san-diego", label: "California · San Diego" },
+            { value: "hollywood", label: "California · Hollywood" },
+            { value: "redmond", label: "Washington · Redmond" },
+            { value: "bothell", label: "Washington · Bothell" },
+            { value: "factoria", label: "Washington · Factoria (Bellevue)" },
+            { value: "west-lafayette", label: "Indiana · West Lafayette" },
+            { value: "ottawa", label: "Canada · Ottawa" },
+            { value: "online", label: "Online Live Small-Group" }
           ],
           trialTimeWeekday: [
             { value: "15:00", label: "15:00 – 16:00" },
@@ -367,7 +379,7 @@
 
       var html = document.documentElement;
       var langButtons = document.querySelectorAll("[data-set-lang]");
-      var subjectSel = document.getElementById("subject");
+      var campusSel = document.getElementById("campus");
       var trialDateInput = document.getElementById("trialDate");
       var calendarGrid = document.getElementById("calendarGrid");
       var timeGrid = document.getElementById("timeGrid");
@@ -376,7 +388,7 @@
       var prevSelection = document.getElementById("prevSelection");
       var prevSelectionText = document.getElementById("prevSelectionText");
 
-      var state = { subject: "", subjectLabel: "", trialDate: "", trialTime: "" };
+      var state = { campus: "", campusLabel: "", trialDate: "", trialTime: "" };
 
       function pad(n) { return String(n).padStart(2,"0"); }
       function toDateValue(d) { return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()); }
@@ -385,9 +397,9 @@
       function isTimeExpired(dateV, timeV) { if (!dateV || !timeV) return false; var c = new Date(dateV + "T" + timeV + ":00"); return !Number.isNaN(c.getTime()) && c.getTime() <= Date.now(); }
       function langOf() { return html.getAttribute("lang") === "en" ? "en" : "zh-CN"; }
 
-      function buildSubjects(opts) {
-        subjectSel.innerHTML = opts.map(function (o) {
-          var sel = state.subject === o.value ? " selected" : "";
+      function buildCampuses(opts) {
+        campusSel.innerHTML = opts.map(function (o) {
+          var sel = state.campus === o.value ? " selected" : "";
           return "<option value=\"" + o.value + "\"" + sel + ">" + o.label + "</option>";
         }).join("");
       }
@@ -449,15 +461,15 @@
       }
 
       function updateButtonState() {
-        var valid = !!(state.subject && state.trialDate && state.trialTime && !isTimeExpired(state.trialDate, state.trialTime));
+        var valid = !!(state.campus && state.trialDate && state.trialTime && !isTimeExpired(state.trialDate, state.trialTime));
         nextBtn.disabled = !valid;
         selectionHint.style.display = valid ? "none" : "block";
       }
 
       function saveToSession() {
         var payload = {
-          subject: state.subject,
-          subjectLabel: state.subjectLabel,
+          campus: state.campus,
+          campusLabel: state.campusLabel,
           trialDate: state.trialDate,
           trialTime: state.trialTime,
           preferredTrialDateTime: state.trialDate && state.trialTime ? new Date(state.trialDate + "T" + state.trialTime + ":00").toISOString() : "",
@@ -489,9 +501,9 @@
           if (t[k]) el.textContent = t[k];
         });
 
-        buildSubjects(t.subjectOptions);
-        var label = (t.subjectOptions.find(function(o){ return o.value === state.subject; }) || {}).label || "";
-        state.subjectLabel = label;
+        buildCampuses(t.campusOptions);
+        var label = (t.campusOptions.find(function(o){ return o.value === state.campus; }) || {}).label || "";
+        state.campusLabel = label;
 
         renderCalendar(t);
         renderTimeGrid(t);
@@ -506,19 +518,19 @@
       function updatePrevSelection(t) {
         var prev = loadFromSession();
         if (!prev || state.trialDate) { prev && (prevSelection.classList.remove("active")); return; }
-        var label = (t.subjectOptions.find(function(o){ return o.value === prev.subject; }) || {}).label || prev.subjectLabel || "—";
+        var label = (t.campusOptions.find(function(o){ return o.value === prev.campus; }) || {}).label || prev.campusLabel || "—";
         prevSelectionText.textContent = t.prevSelectionText
           .replace("{date}", formatSelectedDate(prev.trialDate))
           .replace("{time}", prev.trialTime)
-          .replace("{subject}", label);
+          .replace("{campus}", label);
         prevSelection.classList.add("active");
       }
 
       // Restore previous selection if exists
       var prev = loadFromSession();
       if (prev) {
-        state.subject = prev.subject || "";
-        state.subjectLabel = prev.subjectLabel || "";
+        state.campus = prev.campus || "";
+        state.campusLabel = prev.campusLabel || "";
         state.trialDate = prev.trialDate || "";
         state.trialTime = prev.trialTime || "";
       }
@@ -526,11 +538,11 @@
       var savedLang = localStorage.getItem("minddo_lang");
       setLang(savedLang === "en" ? "en" : "zh-CN");
 
-      subjectSel.addEventListener("change", function () {
-        state.subject = subjectSel.value;
+      campusSel.addEventListener("change", function () {
+        state.campus = campusSel.value;
         var t = I18N[langOf()];
-        var opt = t.subjectOptions.find(function (o) { return o.value === state.subject; });
-        state.subjectLabel = opt ? opt.label : "";
+        var opt = t.campusOptions.find(function (o) { return o.value === state.campus; });
+        state.campusLabel = opt ? opt.label : "";
         updateButtonState();
       });
 

@@ -340,7 +340,7 @@
           error: "请先完成必填项后再提交。",
           noTrial: "暂无试课记录",
           noTrialDesc: "请先前往 Trial 页面完成预约。",
-          trialLabels: ["学生姓名", "试课科目", "试课时间", "时间备注"],
+          trialLabels: ["学生姓名", "试课校区", "试课时间", "时间备注"],
           ratingOptions: ["请选择", "5 - 非常满意", "4 - 满意", "3 - 一般", "2 - 不满意", "1 - 很不满意"],
           nextStepOptions: ["请选择", "希望继续正式课", "希望再安排一次试课", "需要顾问联系", "暂时观望"]
         },
@@ -359,7 +359,7 @@
           error: "Please complete the required fields first.",
           noTrial: "No trial record yet",
           noTrialDesc: "Please complete the Trial page first.",
-          trialLabels: ["Student Name", "Subject", "Trial Time", "Time Note"],
+          trialLabels: ["Student Name", "Trial Campus", "Trial Time", "Time Note"],
           ratingOptions: ["Please select", "5 - Very Satisfied", "4 - Satisfied", "3 - Neutral", "2 - Unsatisfied", "1 - Very Unsatisfied"],
           nextStepOptions: ["Please select", "Continue to formal course", "Schedule another trial", "Need consultant contact", "Still deciding"]
         }
@@ -397,7 +397,7 @@
         }
         var values = [
           lead.studentName || "-",
-          lead.subjectLabel || lead.subject || "-",
+          lead.campusLabel || lead.campus || "-",
           (lead.trialDate && lead.trialTime) ? (lead.trialDate + " " + lead.trialTime) : "-",
           lead.timeNote || "-"
         ];
@@ -451,7 +451,7 @@
           studentName: latestLead ? latestLead.studentName : "",
           trialDate: latestLead ? latestLead.trialDate : "",
           trialTime: latestLead ? latestLead.trialTime : "",
-          subject: latestLead ? (latestLead.subjectLabel || latestLead.subject) : "",
+          campus: latestLead ? (latestLead.campusLabel || latestLead.campus) : "",
           rating: rating.value,
           nextStep: nextStep.value,
           highlights: form.highlights.value.trim(),

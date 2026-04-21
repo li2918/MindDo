@@ -561,7 +561,7 @@
       var I18N = {
         "zh-CN": {
           pageTitle: "试课预约 · 完善信息",
-          selectedPrefix: "{date} · {time} · {subject}",
+          selectedPrefix: "{date} · {time} · {campus}",
           codeSent: "验证码已发送：{code}（演示环境直接显示）",
           codeSentMasked: "验证码已发送到 {target}",
           codeExpired: "验证码已过期，请重新获取。",
@@ -581,7 +581,7 @@
           submitErrorBot: "请先通过安全验证。",
           submitErrorAgreement: "请阅读并同意试课须知。",
           confirmTitle: "✓ 试课预约已确认",
-          confirmSubTmpl: "{parent}家长您好，我们已为 {student} 安排 {date} {time} 的 {subject}。确认邮件已发送到您的邮箱，顾问将在 24 小时内与您联系。",
+          confirmSubTmpl: "{parent}家长您好，我们已为 {student} 安排 {date} {time} 的试课，地点：{campus}。确认邮件已发送到您的邮箱，顾问将在 24 小时内与您联系。",
           emailSentTitle: "确认邮件已发送",
           emailPreviewToggle: "查看确认邮件内容",
           confirmContinue: "继续创建账户 →",
@@ -590,9 +590,9 @@
           confirmDetailKeys: {
             student: "学员",
             parent: "家长",
-            subject: "试课方向",
+            trialCampus: "试课校区",
             dateTime: "试课时间",
-            campus: "校区",
+            city: "所在城市",
             contact: "联系方式",
             reference: "预约编号"
           },
@@ -613,17 +613,23 @@
             signature: "MindDo 学习中心 · 顾问团队",
             footer: "本邮件由系统自动发送。如有问题请回复或联系 hello@minddo.com。"
           },
-          subjectMap: {
-            "ai-basics": "AI 启蒙入门",
-            "ai-creative": "AI 创意工坊",
-            "ai-coding": "AI 编程进阶",
-            "ai-project": "AI 项目营",
-            "ai-competition": "AI 竞赛冲刺"
+          campusMap: {
+            "irvine": "加州 · 尔湾校区",
+            "arcadia": "加州 · 阿凯迪亚校区",
+            "diamond-bar": "加州 · 钻石吧校区",
+            "san-diego": "加州 · 圣地亚哥校区",
+            "hollywood": "加州 · 好莱坞校区",
+            "redmond": "华州 · 雷德蒙德校区",
+            "bothell": "华州 · 博塞尔校区",
+            "factoria": "华州 · 法克托里亚（贝尔维尤）",
+            "west-lafayette": "印第安纳 · 西拉斐特校区",
+            "ottawa": "加拿大 · 渥太华校区",
+            "online": "线上小班直播"
           }
         },
         en: {
           pageTitle: "Book Trial · Registration",
-          selectedPrefix: "{date} · {time} · {subject}",
+          selectedPrefix: "{date} · {time} · {campus}",
           codeSent: "Code sent: {code} (shown for demo)",
           codeSentMasked: "Code sent to {target}",
           codeExpired: "Code expired, please resend.",
@@ -643,7 +649,7 @@
           submitErrorBot: "Please pass the security check first.",
           submitErrorAgreement: "Please read and agree to the Trial Terms.",
           confirmTitle: "✓ Trial Booking Confirmed",
-          confirmSubTmpl: "Dear {parent}, we've booked {student}'s {subject} trial on {date} at {time}. A confirmation email is on its way, and an advisor will reach out within 24 hours.",
+          confirmSubTmpl: "Dear {parent}, we've booked {student}'s trial on {date} at {time}, at {campus}. A confirmation email is on its way, and an advisor will reach out within 24 hours.",
           emailSentTitle: "Confirmation email sent",
           emailPreviewToggle: "Preview the confirmation email",
           confirmContinue: "Create Your Account →",
@@ -652,9 +658,9 @@
           confirmDetailKeys: {
             student: "Student",
             parent: "Parent",
-            subject: "Trial Track",
+            trialCampus: "Trial Campus",
             dateTime: "Trial Time",
-            campus: "Campus",
+            city: "City",
             contact: "Contact",
             reference: "Booking Ref"
           },
@@ -675,12 +681,18 @@
             signature: "MindDo Learning Center · Advisor Team",
             footer: "This email was sent automatically. Reply or contact hello@minddo.com with any questions."
           },
-          subjectMap: {
-            "ai-basics": "AI Fundamentals",
-            "ai-creative": "AI Creative Studio",
-            "ai-coding": "AI Programming",
-            "ai-project": "AI Project Camp",
-            "ai-competition": "AI Competition"
+          campusMap: {
+            "irvine": "California · Irvine",
+            "arcadia": "California · Arcadia",
+            "diamond-bar": "California · Diamond Bar",
+            "san-diego": "California · San Diego",
+            "hollywood": "California · Hollywood",
+            "redmond": "Washington · Redmond",
+            "bothell": "Washington · Bothell",
+            "factoria": "Washington · Factoria (Bellevue)",
+            "west-lafayette": "Indiana · West Lafayette",
+            "ottawa": "Canada · Ottawa",
+            "online": "Online Live Small-Group"
           }
         }
       };
@@ -741,11 +753,11 @@
       function renderSelectedSummary() {
         if (!selection) return;
         var t = I18N[langOf()];
-        var subj = (t.subjectMap && t.subjectMap[selection.subject]) || selection.subjectLabel || selection.subject || "—";
+        var camp = (t.campusMap && t.campusMap[selection.campus]) || selection.campusLabel || selection.campus || "—";
         selectedValue.textContent = t.selectedPrefix
           .replace("{date}", formatSelectedDate(selection.trialDate))
           .replace("{time}", selection.trialTime)
-          .replace("{subject}", subj);
+          .replace("{campus}", camp);
       }
 
       function switchVerifyMode(mode) {
@@ -943,7 +955,7 @@
         }
 
         // Build lead
-        var subjectLabel = (t.subjectMap && t.subjectMap[selection.subject]) || selection.subjectLabel || "";
+        var campusLabel = (t.campusMap && t.campusMap[selection.campus]) || selection.campusLabel || "";
         var payload = {
           studentName: studentName,
           grade: grade,
@@ -952,8 +964,8 @@
           parentName: parentName,
           phone: contactPhone,
           city: city,
-          subject: selection.subject,
-          subjectLabel: subjectLabel,
+          campus: selection.campus,
+          campusLabel: campusLabel,
           trialDate: selection.trialDate,
           trialTime: selection.trialTime,
           trialTimeLabel: selection.trialTime,
@@ -1020,7 +1032,7 @@
       function buildEmailBodyHTML(lead, ref) {
         var t = I18N[langOf()];
         var body = t.emailBody;
-        var subject = (t.subjectMap && t.subjectMap[lead.subject]) || lead.subjectLabel || lead.subject || "";
+        var subject = (t.campusMap && t.campusMap[lead.campus]) || lead.campusLabel || lead.campus || "";
         var when = formatTrialDateTime(lead.trialDate, lead.trialTime);
         var rep = function (tmpl) {
           return String(tmpl)
@@ -1029,9 +1041,9 @@
         };
         var items =
           "<li><strong>" + esc(t.confirmDetailKeys.student) + ":</strong> " + esc(lead.studentName || "") + "</li>" +
-          "<li><strong>" + esc(t.confirmDetailKeys.subject) + ":</strong> " + esc(subject) + "</li>" +
+          "<li><strong>" + esc(t.confirmDetailKeys.trialCampus) + ":</strong> " + esc(subject) + "</li>" +
           "<li><strong>" + esc(t.confirmDetailKeys.dateTime) + ":</strong> " + esc(when) + "</li>" +
-          (lead.city ? "<li><strong>" + esc(t.confirmDetailKeys.campus) + ":</strong> " + esc(lead.city) + "</li>" : "") +
+          (lead.city ? "<li><strong>" + esc(t.confirmDetailKeys.city) + ":</strong> " + esc(lead.city) + "</li>" : "") +
           "<li><strong>" + esc(t.confirmDetailKeys.reference) + ":</strong> " + esc(ref) + "</li>";
         return "<p>" + rep(body.greeting) + "</p>" +
           "<p>" + rep(body.intro) + "</p>" +
@@ -1045,7 +1057,7 @@
       function buildEmailBodyText(lead, ref) {
         var t = I18N[langOf()];
         var b = t.emailBody;
-        var subject = (t.subjectMap && t.subjectMap[lead.subject]) || lead.subjectLabel || lead.subject || "";
+        var subject = (t.campusMap && t.campusMap[lead.campus]) || lead.campusLabel || lead.campus || "";
         var when = formatTrialDateTime(lead.trialDate, lead.trialTime);
         var rep = function (tmpl) {
           return String(tmpl)
@@ -1059,9 +1071,9 @@
           "",
           b.itemsTitle + ":",
           "  - " + t.confirmDetailKeys.student + ": " + (lead.studentName || ""),
-          "  - " + t.confirmDetailKeys.subject + ": " + subject,
+          "  - " + t.confirmDetailKeys.trialCampus + ": " + subject,
           "  - " + t.confirmDetailKeys.dateTime + ": " + when,
-          (lead.city ? "  - " + t.confirmDetailKeys.campus + ": " + lead.city : ""),
+          (lead.city ? "  - " + t.confirmDetailKeys.city + ": " + lead.city : ""),
           "  - " + t.confirmDetailKeys.reference + ": " + ref,
           "",
           b.afterList,
@@ -1077,7 +1089,7 @@
       function dispatchConfirmationEmail(lead, ref) {
         if (!lead || !lead.email) return null;
         var t = I18N[langOf()];
-        var subjLabel = (t.subjectMap && t.subjectMap[lead.subject]) || lead.subjectLabel || lead.subject || "";
+        var subjLabel = (t.campusMap && t.campusMap[lead.campus]) || lead.campusLabel || lead.campus || "";
         var when = formatTrialDateTime(lead.trialDate, lead.trialTime);
         var subjectLine = t.emailSubjectTmpl
           .replace("{date}", lead.trialDate || "")
@@ -1104,7 +1116,7 @@
 
       function renderConfirmation(lead, ref, email) {
         var t = I18N[langOf()];
-        var subj = (t.subjectMap && t.subjectMap[lead.subject]) || lead.subjectLabel || lead.subject || "";
+        var subj = (t.campusMap && t.campusMap[lead.campus]) || lead.campusLabel || lead.campus || "";
         var when = formatTrialDateTime(lead.trialDate, lead.trialTime);
 
         // Apply all data-i18n static keys inside the confirmation card
@@ -1118,14 +1130,14 @@
           .replace("{student}", lead.studentName || "")
           .replace("{date}", lead.trialDate || "")
           .replace("{time}", lead.trialTime || "")
-          .replace("{subject}", subj);
+          .replace("{campus}", subj);
 
         var details = [
           { k: t.confirmDetailKeys.student, v: lead.studentName || "—" },
           { k: t.confirmDetailKeys.parent, v: lead.parentName || "—" },
-          { k: t.confirmDetailKeys.subject, v: subj || "—" },
+          { k: t.confirmDetailKeys.trialCampus, v: subj || "—" },
           { k: t.confirmDetailKeys.dateTime, v: when || "—" },
-          { k: t.confirmDetailKeys.campus, v: lead.city || "—" },
+          { k: t.confirmDetailKeys.city, v: lead.city || "—" },
           { k: t.confirmDetailKeys.contact, v: [lead.email, lead.phone].filter(Boolean).join(" · ") || "—" },
           { k: t.confirmDetailKeys.reference, v: ref }
         ];

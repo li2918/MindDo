@@ -198,7 +198,7 @@
               <tr>
                 <th><span data-lang="zh">学生</span><span data-lang="en">Student</span></th>
                 <th><span data-lang="zh">邮箱</span><span data-lang="en">Email</span></th>
-                <th><span data-lang="zh">科目</span><span data-lang="en">Subject</span></th>
+                <th><span data-lang="zh">试课校区</span><span data-lang="en">Trial Campus</span></th>
                 <th><span data-lang="zh">渠道</span><span data-lang="en">Channel</span></th>
                 <th><span data-lang="zh">试课时间</span><span data-lang="en">Trial Time</span></th>
                 <th><span data-lang="zh">创建时间</span><span data-lang="en">Created</span></th>
@@ -292,7 +292,7 @@
       tbody.innerHTML = rows.length ? rows.map(function (item) {
         var trialTime = (item.trialDate || "-") + " " + (item.trialTime || "");
         var created = safeDate(item.createdAt);
-        return "<tr><td>" + (item.studentName || "-") + "</td><td>" + (item.email || "-") + "</td><td>" + (item.subjectLabel || item.subject || "-") + "</td><td>" + (item.channelLabel || item.channel || "-") + "</td><td>" + trialTime + "</td><td>" + (created ? created.toLocaleString() : "-") + "</td></tr>";
+        return "<tr><td>" + (item.studentName || "-") + "</td><td>" + (item.email || "-") + "</td><td>" + (item.campusLabel || item.campus || "-") + "</td><td>" + (item.channelLabel || item.channel || "-") + "</td><td>" + trialTime + "</td><td>" + (created ? created.toLocaleString() : "-") + "</td></tr>";
       }).join("") : "<tr><td colspan='6' style='color:var(--muted);text-align:center;padding:24px;'><span data-lang='zh'>今天暂无新注册试课。</span><span data-lang='en'>No new trial registrations today.</span></td></tr>";
     })();
   </script>
