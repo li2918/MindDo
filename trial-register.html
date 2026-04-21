@@ -281,8 +281,8 @@
               <input id="email" name="email" type="email" autocomplete="email" required placeholder="parent@example.com" />
             </div>
             <div class="field">
-              <label for="phone"><span data-lang="zh">手机号码（选填）</span><span data-lang="en">Phone Number (Optional)</span></label>
-              <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+1 (317) 555-0100" />
+              <label for="phone"><span class="required"><span data-lang="zh">手机号码</span><span data-lang="en">Phone Number</span></span></label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="+1 (317) 555-0100" />
             </div>
           </div>
 
@@ -627,7 +627,7 @@
         var contactEmail = emailInput.value.trim();
         var contactPhone = phoneInput.value.trim();
 
-        if (!studentName || !grade || !contactEmail) {
+        if (!studentName || !grade || !contactEmail || !contactPhone) {
           submitResult.className = "result error";
           submitResult.textContent = t.submitErrorRequired;
           return;
@@ -640,7 +640,7 @@
           return;
         }
 
-        if (contactPhone && !isValidPhone(contactPhone)) {
+        if (!isValidPhone(contactPhone)) {
           submitResult.className = "result error";
           submitResult.textContent = t.phoneInvalid;
           phoneInput.focus();
