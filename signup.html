@@ -412,6 +412,19 @@
       var SAFE_NEXT = /^[a-z0-9_-]+\.html(#[a-z0-9_-]+)?$/i;
       var nextUrl = (nextParam && SAFE_NEXT.test(nextParam)) ? nextParam : "student-account.html";
 
+      // Invite-link prefill: `?email=` and `?name=` come from the account
+      // invite / registration reminder sent by ops. When they arrive, seed the
+      // current-student object so the signup adopts the lead's original
+      // studentId — keeping ops evaluations, level overrides, and outbox logs
+      // correctly linked across browser sessions.
+      var paramEmail = (urlParams.get("email") || "").trim();
+      var paramName = (urlParams.get("name") || "").trim();
+      if (paramEmail && window.MindDoFlow && window.MindDoFlow.setCurrentStudent) {
+        var seed = { email: paramEmail };
+        if (paramName) { seed.studentName = paramName; seed.name = paramName; }
+        window.MindDoFlow.setCurrentStudent(seed);
+      }
+
       var html = document.documentElement;
       var langButtons = document.querySelectorAll("[data-set-lang]");
       var form = document.getElementById("signupForm");
@@ -537,6 +550,14 @@
       setLang(savedLang === "en" ? "en" : "zh-CN");
 
       langButtons.forEach(function (btn) { btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); }); });
+
+      // Prefill from invite link params + any prior trial lead on the same device.
+      if (window.MindDoFlow && window.MindDoFlow.prefillSignupForm) {
+        window.MindDoFlow.prefillSignupForm(form);
+      }
+      if (paramEmail && !emailInput.value) emailInput.value = paramEmail;
+      var studentNameInput = document.getElementById("studentName");
+      if (paramName && studentNameInput && !studentNameInput.value) studentNameInput.value = paramName;
 
       emailInput.addEventListener("blur", validateEmailLive);
       pwInput.addEventListener("input", function () { renderPwMeter(); validateConfirmLive(); });

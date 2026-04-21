@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MindDo 邮件发件箱 (内部)。 · MindDo email outbox (internal)." />
+  <meta name="author" content="MindDo AI Learning Center" />
+  <meta name="theme-color" content="#1e3a5f" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="email-outbox.html" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <title>邮件发件箱 | Email Outbox</title>
+  <style>
+    .skip-link { position:absolute; left:-9999px; top:0; background:#1e3a5f; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #0ea5e9; outline-offset:2px; }
+
+    :root {
+      --bg:#f6f8fb; --sand:#e8eef5; --card:rgba(240,249,255,0.94);
+      --line:rgba(30,58,95,0.14); --text:#0f172a; --muted:#5a6b81;
+      --gold:#0ea5e9; --gold-deep:#0284c7; --clay:#1e3a5f; --brown:#14294a;
+      --shadow:0 24px 60px rgba(15,23,42,0.12);
+      --ok:#6f8f57; --warn:#d89c36; --danger:#c46a4d;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
+    a { color:inherit; text-decoration:none; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+
+    .navbar { position:sticky; top:0; z-index:100; background:rgba(240,249,255,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:44px; height:44px; object-fit:contain; }
+    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
+    .nav-menu { display:flex; align-items:center; gap:4px; list-style:none; }
+    .nav-menu a { padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600; color:var(--muted); transition:0.15s; }
+    .nav-menu a:hover { color:var(--clay); background:rgba(30,58,95,0.06); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .nav-login { background:none; border:1px solid var(--line); border-radius:999px; padding:8px 16px; cursor:pointer; font-size:13px; font-weight:700; color:var(--clay); font-family:inherit; text-decoration:none; transition:0.15s; }
+    .btn-primary { background:linear-gradient(135deg,#bae6fd,var(--gold)); color:#0b2540; border:none; border-radius:999px; padding:10px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(14,165,233,0.28); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-secondary { background:rgba(240,249,255,0.98); color:var(--clay); border:1px solid var(--line); border-radius:999px; padding:10px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(14,165,233,0.38); }
+
+    .page-hero { background:linear-gradient(145deg,#0b1a2e 0%,#14294a 50%,#1e3a5f 100%); padding:52px 0; }
+    .page-hero-inner { max-width:1280px; margin:0 auto; padding:0 48px; color:#f0f9ff; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(14,165,233,0.18); border:1px solid rgba(14,165,233,0.3); color:#bae6fd; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
+    .page-hero h1 { font-size:clamp(28px,3.5vw,42px); font-weight:900; color:#f0f9ff; letter-spacing:-0.02em; margin-bottom:10px; }
+    .page-hero p { font-size:15px; color:rgba(224,242,254,0.78); line-height:1.7; max-width:720px; }
+    .hero-quick-links { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+    .hero-quick-link { background:rgba(240,249,255,0.1); color:#f0f9ff; border:1px solid rgba(224,242,254,0.24); border-radius:999px; padding:8px 16px; font-size:13px; font-weight:600; transition:0.2s; }
+    .hero-quick-link:hover { background:rgba(240,249,255,0.18); }
+
+    .page-content { padding:40px 0 80px; }
+    .content-inner { max-width:1280px; margin:0 auto; padding:0 48px; }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:22px; }
+    .metric { background:var(--card); border:1px solid var(--line); border-radius:18px; box-shadow:0 12px 30px rgba(30,58,95,0.08); padding:16px; text-align:left; }
+    .metric span { display:block; font-size:11px; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; }
+    .metric strong { font-size:26px; color:var(--clay); font-weight:900; }
+
+    .panel { background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(30,58,95,0.08); padding:24px; margin-bottom:20px; }
+    .panel h2 { font-size:19px; color:var(--clay); font-weight:800; margin-bottom:4px; }
+    .panel .desc { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:16px; }
+    .filter-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+    .filter-pill { border:1px solid var(--line); background:#fff; color:var(--muted); font-size:12px; font-weight:700; padding:7px 14px; border-radius:999px; cursor:pointer; font-family:inherit; transition:0.15s; }
+    .filter-pill:hover { border-color:rgba(2,132,199,0.5); color:var(--clay); }
+    .filter-pill.active { background:var(--clay); color:#f0f9ff; border-color:var(--clay); }
+
+    .mail-list { display:grid; gap:12px; }
+    .mail-card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px 18px; display:grid; gap:10px; }
+    .mail-row { display:flex; justify-content:space-between; gap:14px; align-items:center; flex-wrap:wrap; }
+    .mail-subject { font-size:14px; font-weight:800; color:var(--clay); flex:1; min-width:0; }
+    .mail-meta { font-size:11px; color:var(--muted); font-weight:700; letter-spacing:0.04em; text-transform:uppercase; display:flex; gap:10px; align-items:center; }
+    .mail-template { display:inline-flex; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; }
+    .mail-template.invite { background:rgba(14,165,233,0.14); color:#0b4d70; border:1px solid rgba(14,165,233,0.32); }
+    .mail-template.reminder { background:rgba(216,156,54,0.14); color:#8a5d11; border:1px solid rgba(216,156,54,0.32); }
+    .mail-template.generic { background:rgba(30,58,95,0.08); color:var(--clay); border:1px solid rgba(30,58,95,0.18); }
+    .mail-kv { display:grid; grid-template-columns:auto 1fr; gap:4px 14px; font-size:13px; }
+    .mail-kv span { color:var(--muted); font-weight:700; }
+    .mail-kv strong { color:var(--text); font-weight:600; word-break:break-all; }
+    .mail-body { white-space:pre-wrap; background:rgba(240,249,255,0.8); border:1px dashed rgba(30,58,95,0.18); border-radius:12px; padding:12px 14px; font-size:12.5px; line-height:1.6; color:#243b5c; max-height:180px; overflow:auto; }
+    .mail-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .mail-btn { background:none; border:1px solid var(--line); color:var(--clay); padding:6px 12px; border-radius:999px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.15s; }
+    .mail-btn:hover { border-color:var(--gold); background:var(--sand); }
+    .empty { padding:28px; text-align:center; color:var(--muted); font-size:14px; }
+
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--clay); color:#f0f9ff; padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:0 12px 28px rgba(30,58,95,0.3); opacity:0; transform:translateY(10px); transition:0.25s; pointer-events:none; z-index:2000; }
+    .toast.show { opacity:1; transform:translateY(0); }
+
+    .footer { background:var(--brown); color:rgba(240,249,255,0.78); padding:48px 48px 28px; }
+    .footer-inner { max-width:1280px; margin:0 auto; font-size:13px; }
+    .footer-bottom { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(240,249,255,0.45); margin-top:24px; padding-top:20px; border-top:1px solid rgba(224,242,254,0.1); }
+
+    @media (max-width:900px) { .navbar { padding:0 24px; } .nav-menu { display:none; } .page-hero-inner, .content-inner { padding:0 24px; } .metrics { grid-template-columns:repeat(2,1fr); } }
+  </style>
+  <link rel="stylesheet" href="assets/minddo-theme.css" />
+  <link rel="stylesheet" href="assets/minddo-responsive.css" />
+</head>
+<body>
+  <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
+
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <ul class="nav-menu">
+      <li><a href="dashboard.html"><span data-lang="zh">运营看板</span><span data-lang="en">Dashboard</span></a></li>
+      <li><a href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a></li>
+      <li><a href="new-trials.html"><span data-lang="zh">新试课</span><span data-lang="en">New Trials</span></a></li>
+      <li><a href="course-offerings.html"><span data-lang="zh">课程时段</span><span data-lang="en">Time Slots</span></a></li>
+      <li><a href="request-center.html"><span data-lang="zh">申请处理</span><span data-lang="en">Requests</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-switcher" data-lang-switcher>
+        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span class="lang-trigger-label">中文</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="lang-menu" role="listbox">
+          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
+          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+        </div>
+      </div>
+      <a class="nav-login" href="login.html"><span data-lang="zh">登录</span><span data-lang="en">Log In</span></a>
+      <a class="btn-primary" href="dashboard.html"><span data-lang="zh">返回看板</span><span data-lang="en">Back To Dashboard</span></a>
+    </div>
+  </nav>
+
+  <main id="main" class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-tag"><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></div>
+      <h1><span data-lang="zh">邮件发件箱</span><span data-lang="en">Email Outbox</span></h1>
+      <p><span data-lang="zh">运营从各处触发的邮件（开户邀请、注册提醒等）都会汇总在此。此版本是前端演示 —— 内容实际未发送，而是写入 localStorage 供核对。</span><span data-lang="en">Every ops-triggered email (account invite, registration reminder, etc.) lands here. This is a frontend demo — nothing is actually sent; records are written to localStorage for review.</span></p>
+      <div class="hero-quick-links">
+        <a class="hero-quick-link" href="new-trials.html"><span data-lang="zh">新试课</span><span data-lang="en">New Trials</span></a>
+        <a class="hero-quick-link" href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a>
+        <a class="hero-quick-link" href="course-offerings.html"><span data-lang="zh">课程时段</span><span data-lang="en">Time Slots</span></a>
+      </div>
+    </div>
+  </main>
+
+  <section class="page-content">
+    <div class="content-inner">
+      <div class="metrics" id="metrics"></div>
+      <article class="panel">
+        <h2><span data-lang="zh">发件记录</span><span data-lang="en">Sent Items</span></h2>
+        <p class="desc"><span data-lang="zh">按模板筛选。最新的邮件排在最上方。</span><span data-lang="en">Filter by template. Newest first.</span></p>
+        <div class="filter-bar" id="filterBar"></div>
+        <div id="mailList" class="mail-list"></div>
+      </article>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <span>© 2025 MindDo Learning Center · <span data-lang="zh">运营后台</span><span data-lang="en">Ops Admin</span></span>
+        <span><a href="dashboard.html" style="color:inherit;"><span data-lang="zh">返回看板</span><span data-lang="en">Back To Dashboard</span></a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/minddo-flow.js"></script>
+  <script>
+    (function () {
+      var I18N = {
+        "zh-CN": {
+          pageTitle: "邮件发件箱",
+          metricsTotal: "总发件数",
+          metricsInvite: "开户邀请",
+          metricsReminder: "注册提醒",
+          metricsOther: "其他邮件",
+          templateLabel: {
+            account_invite: "开户邀请",
+            registration_reminder: "注册提醒",
+            generic: "普通邮件",
+            all: "全部"
+          },
+          to: "收件人",
+          subject: "主题",
+          sentAt: "发送时间",
+          body: "正文",
+          empty: "暂无发件记录。",
+          resend: "重发",
+          toastResent: "已重新入队至 {email}",
+          queued: "已入队",
+          statusLabel: "状态"
+        },
+        en: {
+          pageTitle: "Email Outbox",
+          metricsTotal: "Total Sent",
+          metricsInvite: "Account Invites",
+          metricsReminder: "Register Reminders",
+          metricsOther: "Other",
+          templateLabel: {
+            account_invite: "Account Invite",
+            registration_reminder: "Register Reminder",
+            generic: "Generic",
+            all: "All"
+          },
+          to: "To",
+          subject: "Subject",
+          sentAt: "Sent At",
+          body: "Body",
+          empty: "No emails sent yet.",
+          resend: "Resend",
+          toastResent: "Re-queued to {email}",
+          queued: "Queued",
+          statusLabel: "Status"
+        }
+      };
+
+      var html = document.documentElement;
+      var langButtons = document.querySelectorAll("[data-set-lang]");
+      var mailList = document.getElementById("mailList");
+      var metricsEl = document.getElementById("metrics");
+      var filterBar = document.getElementById("filterBar");
+      var toast = document.getElementById("toast");
+      var lang = localStorage.getItem("minddo_lang") === "en" ? "en" : "zh-CN";
+      var filter = "all";
+
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add("show");
+        setTimeout(function () { toast.classList.remove("show"); }, 1800);
+      }
+
+      function safeDate(v) { var d = new Date(v); return Number.isNaN(d.getTime()) ? null : d; }
+      function escapeHtml(s) {
+        return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+
+      function templateKey(tpl) {
+        if (tpl === "account_invite" || tpl === "registration_reminder") return tpl;
+        return "generic";
+      }
+
+      function allMails() {
+        return (window.MindDoFlow && window.MindDoFlow.getEmailOutbox)
+          ? window.MindDoFlow.getEmailOutbox().slice()
+          : [];
+      }
+
+      function render() {
+        var t = I18N[lang];
+        html.setAttribute("lang", lang);
+        localStorage.setItem("minddo_lang", lang);
+        document.title = t.pageTitle + " | MindDo";
+        langButtons.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
+        });
+
+        var list = allMails().sort(function (a, b) {
+          return new Date(b.sentAt || 0) - new Date(a.sentAt || 0);
+        });
+
+        var counts = { all: list.length, account_invite: 0, registration_reminder: 0, generic: 0 };
+        list.forEach(function (m) { counts[templateKey(m.template)] += 1; });
+
+        metricsEl.innerHTML = [
+          { l: t.metricsTotal, v: counts.all },
+          { l: t.metricsInvite, v: counts.account_invite },
+          { l: t.metricsReminder, v: counts.registration_reminder },
+          { l: t.metricsOther, v: counts.generic }
+        ].map(function (item) {
+          return "<article class='metric'><span>" + item.l + "</span><strong>" + item.v + "</strong></article>";
+        }).join("");
+
+        var filterOrder = ["all", "account_invite", "registration_reminder", "generic"];
+        filterBar.innerHTML = filterOrder.map(function (key) {
+          var label = t.templateLabel[key] || key;
+          var num = key === "all" ? counts.all : counts[key];
+          return "<button type='button' class='filter-pill" + (filter === key ? " active" : "") + "' data-filter='" + key + "'>" + label + " · " + num + "</button>";
+        }).join("");
+
+        var visible = filter === "all" ? list : list.filter(function (m) { return templateKey(m.template) === filter; });
+        if (!visible.length) {
+          mailList.innerHTML = "<div class='empty'>" + t.empty + "</div>";
+          return;
+        }
+
+        mailList.innerHTML = visible.map(function (m, i) {
+          var tk = templateKey(m.template);
+          var tplLabel = t.templateLabel[tk] || tk;
+          var sent = safeDate(m.sentAt);
+          var body = lang === "en" ? (m.bodyEn || m.bodyZh || m.body || "") : (m.bodyZh || m.bodyEn || m.body || "");
+          var toName = m.toName ? " <span style='color:var(--muted);font-weight:600;'>(" + escapeHtml(m.toName) + ")</span>" : "";
+          return "<article class='mail-card'>" +
+            "<div class='mail-row'>" +
+              "<span class='mail-subject'>" + escapeHtml(m.subject || "(no subject)") + "</span>" +
+              "<span class='mail-template " + tk + "'>" + tplLabel + "</span>" +
+            "</div>" +
+            "<div class='mail-kv'>" +
+              "<span>" + t.to + "</span><strong>" + escapeHtml(m.to || "-") + toName + "</strong>" +
+              "<span>" + t.sentAt + "</span><strong>" + (sent ? sent.toLocaleString() : "-") + "</strong>" +
+              "<span>" + t.statusLabel + "</span><strong>" + (m.status || t.queued) + "</strong>" +
+            "</div>" +
+            (body ? "<div class='mail-body'>" + escapeHtml(body) + "</div>" : "") +
+            "<div class='mail-actions'><button type='button' class='mail-btn' data-resend-id='" + escapeHtml(m.id || "") + "'>" + t.resend + "</button></div>" +
+            "</article>";
+        }).join("");
+      }
+
+      filterBar.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-filter]");
+        if (!btn) return;
+        filter = btn.getAttribute("data-filter");
+        render();
+      });
+
+      mailList.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-resend-id]");
+        if (!btn) return;
+        var id = btn.getAttribute("data-resend-id");
+        var list = allMails();
+        var original = list.filter(function (m) { return m.id === id; })[0];
+        if (!original || !window.MindDoFlow || !window.MindDoFlow.sendMockEmail) return;
+        var copy = Object.assign({}, original);
+        delete copy.id; delete copy.sentAt; delete copy.status;
+        var record = window.MindDoFlow.sendMockEmail(copy);
+        showToast(I18N[lang].toastResent.replace("{email}", record.to || "—"));
+        render();
+      });
+
+      langButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          lang = btn.getAttribute("data-set-lang");
+          render();
+        });
+      });
+
+      render();
+    })();
+  </script>
+  <script src="assets/lang-switcher.js" defer></script>
+  <script src="assets/minddo-nav.js" defer></script>
+  <script src="assets/consent.js" defer></script>
+</body>
+</html>

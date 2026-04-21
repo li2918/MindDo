@@ -299,7 +299,23 @@
       function saveState(s) { try { sessionStorage.setItem(KEY, JSON.stringify(s)); } catch (_) {} }
 
       var state = loadState();
-      if (!state.plan || !PLANS[state.plan]) { window.location.replace("course-selection.html"); return; }
+      if (!state.plan || !PLANS[state.plan]) {
+        // Don't strand the user on a blank page — show a friendly note and
+        // then bounce them to the plan picker.
+        try {
+          var lng = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+          var msg = lng === "en"
+            ? "Please pick a membership plan first — taking you back to Step 1."
+            : "还没有选择 Membership 方案，正在返回第 1 步。";
+          var notice = document.createElement("div");
+          notice.setAttribute("role", "status");
+          notice.style.cssText = "position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1e3a5f;color:#f0f9ff;padding:14px 22px;border-radius:14px;font-size:14px;font-weight:700;box-shadow:0 20px 40px rgba(15,23,42,0.35);z-index:3000;";
+          notice.textContent = msg;
+          document.body.appendChild(notice);
+        } catch (_) {}
+        setTimeout(function () { window.location.replace("course-selection.html"); }, 1600);
+        return;
+      }
 
       var need = PLANS[state.plan].sessions;
 
@@ -418,7 +434,25 @@
             (visible.length ? "<div class=\"offer-grid\">" + cards + "</div>" : cards) +
             "</div>";
         }).join("");
-        document.getElementById("sessionList").innerHTML = blocks;
+        var sessionListEl = document.getElementById("sessionList");
+        if (studentLevel && !OFFERINGS.length) {
+          // Level is set but zero offerings match — tell the parent instead of
+          // silently rendering an empty grid.
+          var zhLevelFull = ({ Beginner: "入门", Intermediate: "中级", Advanced: "进阶", Competition: "竞赛", "Project Camp": "项目营" }[studentLevel] || studentLevel);
+          var headline = k() === "zh"
+            ? "当前校区暂无与「" + zhLevelFull + "」等级匹配的开放班次。"
+            : "No open classes currently match your assigned level (" + studentLevel + ").";
+          var subline = k() === "zh"
+            ? "请联系顾问安排合适的班次，或稍后再查看是否有新开放的时段。"
+            : "Please reach out to your advisor for an alternative class, or check back later for new openings.";
+          sessionListEl.innerHTML =
+            "<div class=\"empty-offers\" style=\"padding:28px;line-height:1.7;\">" +
+            "<strong style=\"display:block;color:var(--clay);font-size:15px;margin-bottom:6px;\">" + headline + "</strong>" +
+            "<span style=\"color:var(--muted);font-size:13px;\">" + subline + "</span>" +
+            "</div>";
+        } else {
+          sessionListEl.innerHTML = blocks;
+        }
         var baseHint = (k() === "zh"
           ? "当前方案每周 " + need + " 节课，以下为校区已开放的班次。座位有限，先选先得。"
           : "Your plan includes " + need + " class" + (need > 1 ? "es" : "") + " per week. Seats are limited — first come first served.");

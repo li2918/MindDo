@@ -31,11 +31,12 @@
     return String(v || "").trim().toLowerCase();
   }
 
-  function latestByDate(list, matcher) {
+  function latestByDate(list, matcher, dateKey) {
+    var key = dateKey || "createdAt";
     return list
       .filter(function (item) { return typeof matcher === "function" ? matcher(item) : true; })
       .sort(function (a, b) {
-        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        return new Date(b[key] || b.createdAt || 0) - new Date(a[key] || a.createdAt || 0);
       })[0] || null;
   }
 
@@ -54,12 +55,42 @@
     return readJson(KEYS.currentStudent, null);
   }
 
+  // Reconcile a studentId by scanning prior records (leads, signups, assessments,
+  // completions, evaluations, invites) for the same email. Returns the first
+  // matching studentId found, or "" if none. This prevents a fresh-browser
+  // signup-via-invite from creating a new studentId that orphans the ops
+  // records keyed to the lead's original studentId.
+  function findStudentIdByEmail(email) {
+    var target = norm(email);
+    if (!target) return "";
+    var sources = [
+      readJson(KEYS.leads, []),
+      readJson(KEYS.signups, []),
+      readJson(KEYS.assessments, []),
+      readJson(KEYS.completions, []),
+      readJson(KEYS.evaluations, []),
+      readJson(KEYS.invites, [])
+    ];
+    for (var i = 0; i < sources.length; i++) {
+      var list = sources[i];
+      for (var j = 0; j < list.length; j++) {
+        var rec = list[j];
+        if (rec && norm(rec.email) === target && rec.studentId) return rec.studentId;
+      }
+    }
+    return "";
+  }
+
   function setCurrentStudent(student) {
     if (!student) return null;
     var current = getCurrentStudent() || {};
     var merged = Object.assign({}, current, student);
-    if (!merged.studentId) merged.studentId = current.studentId || createStudentId();
     if (!merged.email && merged.phone) merged.email = demoEmailFromPhone(merged.phone);
+    if (!merged.studentId) {
+      merged.studentId = current.studentId
+        || findStudentIdByEmail(merged.email)
+        || createStudentId();
+    }
     writeJson(KEYS.currentStudent, merged);
     return merged;
   }
@@ -79,7 +110,13 @@
     });
 
     if (index >= 0) {
-      list[index] = Object.assign({}, list[index], payload);
+      // Preserve the existing record's studentId if the incoming payload
+      // arrives without one (or with a freshly-minted one that would
+      // overwrite the original linkage).
+      var existing = list[index];
+      var keepStudentId = existing && existing.studentId ? existing.studentId : payload.studentId;
+      list[index] = Object.assign({}, existing, payload, { studentId: keepStudentId });
+      payload = list[index];
     } else {
       list.push(payload);
     }
@@ -92,11 +129,20 @@
     var current = getCurrentStudent() || {};
     var email = norm(current.email);
     var name = norm(current.studentName || current.name);
+    var id = String(current.studentId || "");
+    // Matcher: email/name-based for records without a studentId; email or
+    // studentId for records written post-trial (completions/evaluations/invites).
     var match = function (item) {
       if (!item) return false;
       var itemEmail = norm(item.email);
       var itemName = norm(item.studentName || item.name);
       return (email && itemEmail === email) || (name && itemName === name);
+    };
+    var matchOps = function (item) {
+      if (!item) return false;
+      var itemEmail = norm(item.email);
+      var itemId = String(item.studentId || "");
+      return (email && itemEmail === email) || (id && itemId === id);
     };
 
     return {
@@ -106,7 +152,10 @@
       signup: latestByDate(readJson(KEYS.signups, []), match),
       payment: latestByDate(readJson(KEYS.payments, []), match),
       membership: latestByDate(readJson(KEYS.memberships, []), match),
-      feedback: latestByDate(readJson(KEYS.feedback, []), match)
+      feedback: latestByDate(readJson(KEYS.feedback, []), match),
+      completion: latestByDate(readJson(KEYS.completions, []), matchOps, "completedAt"),
+      evaluation: latestByDate(readJson(KEYS.evaluations, []), matchOps, "evaluatedAt"),
+      invite: latestByDate(readJson(KEYS.invites, []), matchOps, "sentAt")
     };
   }
 
@@ -115,10 +164,12 @@
     if (s.feedback) return "feedback";
     if (s.membership) return "membership";
     if (s.payment) return "payment";
-    // Flow order: trial → signup → assessment → course-selection
-    // Assessment is a later stage than signup, so it takes priority in detection.
+    // Flow order: trial → trial_complete → trial_evaluated → signup → assessment → course-selection.
+    // Assessment is later than signup in the path, so it takes priority when detected.
     if (s.assessment) return "assessment";
     if (s.signup) return "signup";
+    if (s.evaluation) return "trial_evaluated";
+    if (s.completion) return "trial_complete";
     if (s.lead) return "trial";
     return "start";
   }
@@ -127,6 +178,8 @@
     var map = {
       start: "trial.html",
       trial: "signup.html",
+      trial_complete: "signup.html",
+      trial_evaluated: "signup.html",
       signup: "assessment.html",
       assessment: "course-selection.html",
       payment: "course-selection.html",
@@ -441,6 +494,10 @@
     var list = getTrialEvaluations();
     var email = norm(lead.email);
     var id = String(lead.studentId || "");
+    // OR-match is intentional: records may be written keyed to the lead's
+    // original studentId, while the caller may pass the current student's ID
+    // (different if the parent signed up in a fresh session). Email-match
+    // covers that gap; studentId-match covers the happy path.
     return list.filter(function (r) {
       return (email && norm(r.email) === email) || (id && String(r.studentId || "") === id);
     }).sort(function (a, b) {
@@ -710,6 +767,7 @@
     writeJson: writeJson,
     getCurrentStudent: getCurrentStudent,
     setCurrentStudent: setCurrentStudent,
+    findStudentIdByEmail: findStudentIdByEmail,
     getSnapshot: getSnapshot,
     getStage: getStage,
     saveLead: saveLead,

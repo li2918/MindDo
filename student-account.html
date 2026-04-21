@@ -1102,11 +1102,24 @@
           stageMap: {
             start: "未开始",
             trial: "试课阶段",
+            trial_complete: "试课已完成",
+            trial_evaluated: "试课评估完成",
             assessment: "评估阶段",
             signup: "注册阶段",
             payment: "支付阶段",
             membership: "排课阶段",
             feedback: "反馈阶段"
+          },
+          levelTitle: "试课后等级",
+          levelUnset: "尚未评定",
+          levelNoteLabel: "评估备注",
+          levelEvaluatorLabel: "评估人",
+          levelEvaluatedAtLabel: "评估时间",
+          levelSource: { ops: "运营评估", assessment: "自测评估" },
+          levelOptionsZh: { Beginner: "入门", Intermediate: "中级", Advanced: "进阶", Competition: "竞赛", "Project Camp": "项目营" },
+          completionItems: {
+            opsMarked: "试课已由校区标记完成，评估结果请见下方。",
+            feedbackMarked: "你已提交课后反馈，我们会尽快跟进。"
           },
           defaultGoal: "AI Learning Growth",
           loggedOut: "你已退出当前账户，正在返回登录页面。",
@@ -1233,11 +1246,24 @@
           stageMap: {
             start: "Not Started",
             trial: "Trial",
+            trial_complete: "Trial Completed",
+            trial_evaluated: "Trial Evaluated",
             assessment: "Assessment",
             signup: "Signup",
             payment: "Payment",
             membership: "Scheduling",
             feedback: "Feedback"
+          },
+          levelTitle: "Post-Trial Level",
+          levelUnset: "Not assigned yet",
+          levelNoteLabel: "Notes",
+          levelEvaluatorLabel: "Evaluator",
+          levelEvaluatedAtLabel: "Evaluated at",
+          levelSource: { ops: "Ops evaluation", assessment: "Self assessment" },
+          levelOptionsZh: { Beginner: "Beginner", Intermediate: "Intermediate", Advanced: "Advanced", Competition: "Competition", "Project Camp": "Project Camp" },
+          completionItems: {
+            opsMarked: "The campus has marked your trial complete. See your assigned level below.",
+            feedbackMarked: "Your class feedback has been submitted — our team will follow up shortly."
           },
           defaultGoal: "AI Learning Growth",
           loggedOut: "You have logged out. Returning to the login page.",
@@ -1499,13 +1525,25 @@
         heroGoalValue.textContent = (latestAssessment && latestAssessment.goal) || current.goal || t.defaultGoal;
         heroStageValue.textContent = (t.stageMap && t.stageMap[stage]) || stage;
 
-        statusBannerText.textContent = latestFeedback
-          ? t.statusItems.hasFeedback
-          : latestAssessment
-            ? t.statusItems.hasAssessment
-            : latestLead
-              ? t.statusItems.hasTrial
-              : t.statusItems.noTrial;
+        var latestCompletion = snapshot && snapshot.completion ? snapshot.completion : null;
+        var latestEvaluation = snapshot && snapshot.evaluation ? snapshot.evaluation : null;
+        // Definitive post-trial level: ops override wins over self-assessment.
+        var opsLevel = "";
+        if (window.MindDoFlow && window.MindDoFlow.getStudentLevel) {
+          opsLevel = window.MindDoFlow.getStudentLevel(current.studentId) || "";
+        }
+
+        if (latestFeedback) {
+          statusBannerText.textContent = t.statusItems.hasFeedback;
+        } else if (latestCompletion) {
+          statusBannerText.textContent = (t.completionItems && t.completionItems.opsMarked) || t.statusItems.hasFeedback;
+        } else if (latestAssessment) {
+          statusBannerText.textContent = t.statusItems.hasAssessment;
+        } else if (latestLead) {
+          statusBannerText.textContent = t.statusItems.hasTrial;
+        } else {
+          statusBannerText.textContent = t.statusItems.noTrial;
+        }
 
         // Flatten all sessions across active memberships, then pick the nearest upcoming one
         var allSessions = [];
@@ -1552,9 +1590,20 @@
           return "<li><span>" + item.label + "</span><strong>" + profileValues[index] + "</strong></li>";
         }).join("");
 
-        var assessmentLevel = latestAssessment
-          ? (latestAssessment.level || latestAssessment.quizScore || t.summaryItems[2].fallback)
-          : t.summaryItems[2].fallback;
+        // Post-trial level display: use ops override if present (localized),
+        // then the evaluation record, then the self-assessment, else fallback.
+        var levelForDisplay = "";
+        if (opsLevel) {
+          levelForDisplay = (lang === "zh-CN" && t.levelOptionsZh && t.levelOptionsZh[opsLevel]) ? t.levelOptionsZh[opsLevel] : opsLevel;
+        } else if (latestEvaluation && latestEvaluation.level) {
+          var evLevel = latestEvaluation.level;
+          levelForDisplay = (lang === "zh-CN" && t.levelOptionsZh && t.levelOptionsZh[evLevel]) ? t.levelOptionsZh[evLevel] : evLevel;
+        } else if (latestAssessment) {
+          levelForDisplay = latestAssessment.level || latestAssessment.quizScore || t.summaryItems[2].fallback;
+        } else {
+          levelForDisplay = t.summaryItems[2].fallback;
+        }
+        var assessmentLevel = levelForDisplay;
 
         var summaryValues = [
           latestLead ? (latestLead.campusLabel || latestLead.campus || t.summaryItems[0].fallback) : t.summaryItems[0].fallback,

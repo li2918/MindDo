@@ -269,6 +269,13 @@
   <div class="page-content">
     <div class="content-inner">
 
+      <div id="opsLevelNotice" style="display:none;margin-bottom:20px;padding:16px 20px;background:linear-gradient(135deg,rgba(186,230,253,0.55),rgba(125,211,252,0.35));border:1px solid rgba(2,132,199,0.38);border-radius:16px;color:#0b2540;font-size:14px;line-height:1.7;">
+        <strong style="display:block;font-size:13px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:#0284c7;margin-bottom:6px;">
+          <span data-lang="zh">校区已分配等级</span><span data-lang="en">Level already assigned</span>
+        </strong>
+        <span id="opsLevelNoticeBody"></span>
+      </div>
+
       <!-- INTAKE SCREEN -->
       <div id="intakeScreen">
         <div class="card">
@@ -830,6 +837,26 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
+      var OPS_LEVEL_ZH = { Beginner: "入门", Intermediate: "中级", Advanced: "进阶", Competition: "竞赛", "Project Camp": "项目营" };
+
+      function renderOpsLevelNotice(lang) {
+        var notice = document.getElementById("opsLevelNotice");
+        var body = document.getElementById("opsLevelNoticeBody");
+        if (!notice || !body) return;
+        if (!window.MindDoFlow || !window.MindDoFlow.getStudentLevel || !window.MindDoFlow.getCurrentStudent) {
+          notice.style.display = "none";
+          return;
+        }
+        var cs = window.MindDoFlow.getCurrentStudent();
+        var opsLevel = cs && cs.studentId ? window.MindDoFlow.getStudentLevel(cs.studentId) : "";
+        if (!opsLevel) { notice.style.display = "none"; return; }
+        var display = lang === "en" ? opsLevel : (OPS_LEVEL_ZH[opsLevel] || opsLevel);
+        body.textContent = lang === "en"
+          ? "Our team has already set your level to \"" + display + "\" based on your trial. Retaking this quiz is optional and will not override it."
+          : "校区已根据你的试课表现将等级设为「" + display + "」。再测一次仍然欢迎，但不会覆盖校区分配的等级。";
+        notice.style.display = "block";
+      }
+
       function setLang(lang) {
         html.setAttribute("lang", lang);
         localStorage.setItem("minddo_lang", lang);
@@ -837,6 +864,7 @@
         langButtons.forEach(function (btn) {
           btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
         });
+        renderOpsLevelNotice(lang);
         if (state.started && !state.submitted) renderQuestions();
         else if (state.submitted) renderResults(computeResults());
       }
