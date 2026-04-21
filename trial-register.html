@@ -256,7 +256,22 @@
             </div>
             <div class="field">
               <label for="grade"><span class="required"><span data-lang="zh">年级</span><span data-lang="en">Grade</span></span></label>
-              <input id="grade" name="grade" type="text" required placeholder="e.g. 六年级 / Grade 6" />
+              <select id="grade" name="grade" required>
+                <option value="" disabled selected data-zh="请选择年级" data-en="Select grade">请选择年级</option>
+                <option value="K">K</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+              </select>
             </div>
           </div>
 
@@ -562,6 +577,10 @@
 
         document.querySelectorAll("[data-lang-block]").forEach(function (el) {
           el.style.display = el.getAttribute("data-lang-block") === (lang === "en" ? "en" : "zh") ? "block" : "none";
+        });
+
+        document.querySelectorAll("option[data-zh][data-en]").forEach(function (opt) {
+          opt.textContent = opt.getAttribute(lang === "en" ? "data-en" : "data-zh");
         });
 
         renderSelectedSummary();
