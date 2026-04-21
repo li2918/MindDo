@@ -101,11 +101,20 @@
     .modal .modal-kv span { color: var(--muted); font-weight: 700; }
     .modal .modal-kv strong { color: var(--clay); font-weight: 800; }
     .modal label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-    .modal select, .modal textarea { width: 100%; border: 1px solid var(--line); background: #f8fafc; color: var(--text); padding: 10px 12px; border-radius: 12px; font: inherit; font-size: 13px; outline: none; margin-bottom: 14px; resize: vertical; }
-    .modal select:focus, .modal textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.15); }
+    .modal input, .modal select, .modal textarea { width: 100%; border: 1px solid var(--line); background: #f8fafc; color: var(--text); padding: 10px 12px; border-radius: 12px; font: inherit; font-size: 13px; outline: none; margin-bottom: 14px; resize: vertical; }
+    .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.15); }
     .modal textarea { min-height: 80px; }
+    .modal.wide { width: min(640px, 100%); }
+    .modal .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; margin-bottom: 6px; }
+    .modal .form-grid .field-full { grid-column: 1 / -1; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
     .modal-actions .btn-primary, .modal-actions .btn-secondary { padding: 9px 20px; font-size: 13px; }
+    .modal .form-hint { font-size: 12px; color: var(--muted); margin-top: -8px; margin-bottom: 14px; line-height: 1.5; }
+
+    .edit-link { background: none; border: none; color: var(--gold-deep); font: inherit; font-size: 11px; font-weight: 700; padding: 0; margin-top: 2px; cursor: pointer; text-decoration: underline; letter-spacing: 0.02em; }
+    .edit-link:hover { color: var(--clay); }
+    .student-cell { display: flex; flex-direction: column; gap: 2px; }
+    .student-cell strong { font-weight: 700; color: var(--text); }
 
     /* FOOTER */
     .footer { background: var(--brown); color: rgba(240,249,255,0.78); padding: 60px 48px 32px; }
@@ -267,6 +276,71 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="editLeadModal" role="dialog" aria-modal="true" aria-labelledby="editLeadTitle">
+    <div class="modal wide">
+      <h3 id="editLeadTitle"><span data-lang="zh">编辑试课学员资料</span><span data-lang="en">Edit Trial Lead Profile</span></h3>
+      <p class="modal-sub"><span data-lang="zh">如家长填写的信息有误，在此修改后再发送注册邀请。邮箱更改会同步到已有的评估与邀请记录。</span><span data-lang="en">Correct any info the parent entered incorrectly before sending the registration invite. Email changes are propagated to related ops records.</span></p>
+      <div class="form-grid">
+        <div>
+          <label for="editStudentName"><span data-lang="zh">学员姓名</span><span data-lang="en">Student Name</span></label>
+          <input id="editStudentName" type="text" />
+        </div>
+        <div>
+          <label for="editParentName"><span data-lang="zh">家长姓名</span><span data-lang="en">Parent Name</span></label>
+          <input id="editParentName" type="text" />
+        </div>
+        <div>
+          <label for="editGrade"><span data-lang="zh">年级</span><span data-lang="en">Grade</span></label>
+          <select id="editGrade">
+            <option value=""></option>
+            <option value="K">K</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+          </select>
+        </div>
+        <div>
+          <label for="editBirthday"><span data-lang="zh">出生日期</span><span data-lang="en">Birthday</span></label>
+          <input id="editBirthday" type="date" />
+        </div>
+        <div>
+          <label for="editEmail"><span data-lang="zh">邮箱</span><span data-lang="en">Email</span></label>
+          <input id="editEmail" type="email" />
+        </div>
+        <div>
+          <label for="editPhone"><span data-lang="zh">手机号码</span><span data-lang="en">Phone</span></label>
+          <input id="editPhone" type="tel" />
+        </div>
+        <div>
+          <label for="editCity"><span data-lang="zh">城市</span><span data-lang="en">City</span></label>
+          <input id="editCity" type="text" />
+        </div>
+        <div>
+          <label for="editChannel"><span data-lang="zh">获客渠道</span><span data-lang="en">Channel</span></label>
+          <input id="editChannel" type="text" />
+        </div>
+        <div class="field-full">
+          <label for="editGoal"><span data-lang="zh">学习目标 / 备注</span><span data-lang="en">Goal / Notes</span></label>
+          <textarea id="editGoal"></textarea>
+        </div>
+      </div>
+      <p class="form-hint"><span data-lang="zh">学员 ID 和创建时间不可修改。</span><span data-lang="en">Student ID and creation time cannot be edited.</span></p>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="editLeadCancel"><span data-lang="zh">取消</span><span data-lang="en">Cancel</span></button>
+        <button type="button" class="btn-primary" id="editLeadSave"><span data-lang="zh">保存修改</span><span data-lang="en">Save Changes</span></button>
+      </div>
+    </div>
+  </div>
+
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-brand">
@@ -330,6 +404,9 @@
           statusPending: "待完成",
           markDone: "标记试课完成",
           undoDone: "撤销",
+          editLink: "编辑资料",
+          editSaved: "资料已更新：{name}",
+          editEmailExists: "该邮箱已被其他记录使用，请检查。",
           invite: "发送开户邀请",
           inviteBlocked: "需先完成试课",
           inviteSent: "已发送 ✓",
@@ -363,6 +440,9 @@
           statusPending: "Pending",
           markDone: "Mark Trial Done",
           undoDone: "Undo",
+          editLink: "Edit profile",
+          editSaved: "Profile updated: {name}",
+          editEmailExists: "Another record already uses this email — please check.",
           invite: "Send Invite",
           inviteBlocked: "Trial not done yet",
           inviteSent: "Sent ✓",
@@ -522,7 +602,10 @@
           }
 
           return "<tr data-lead-idx='" + idx + "'>" +
-            "<td>" + (item.studentName || "-") + "</td>" +
+            "<td><div class='student-cell'>" +
+              "<strong>" + (item.studentName || "-") + "</strong>" +
+              "<button type='button' class='edit-link' data-edit-idx='" + idx + "'>" + t.editLink + "</button>" +
+            "</div></td>" +
             "<td>" + (item.email || "-") + "</td>" +
             "<td>" + (item.campusLabel || item.campus || "-") + "</td>" +
             "<td>" + (item.channelLabel || item.channel || "-") + "</td>" +
@@ -574,6 +657,11 @@
         var evalBtn = e.target.closest("[data-eval-idx]");
         if (evalBtn) {
           openEvalModal(Number(evalBtn.getAttribute("data-eval-idx")));
+          return;
+        }
+        var editBtn = e.target.closest("[data-edit-idx]");
+        if (editBtn) {
+          openEditLeadModal(Number(editBtn.getAttribute("data-edit-idx")));
         }
       });
 
@@ -645,6 +733,90 @@
           showToast(t.toastEvaluated.replace("{name}", record.studentName || "—").replace("{level}", levelLabel));
         }
         closeEvalModal();
+        render();
+      });
+
+      // ---- Edit lead profile modal ----
+      var editLeadModal = document.getElementById("editLeadModal");
+      var editFields = {
+        studentName: document.getElementById("editStudentName"),
+        parentName: document.getElementById("editParentName"),
+        grade: document.getElementById("editGrade"),
+        birthday: document.getElementById("editBirthday"),
+        email: document.getElementById("editEmail"),
+        phone: document.getElementById("editPhone"),
+        city: document.getElementById("editCity"),
+        channel: document.getElementById("editChannel"),
+        goal: document.getElementById("editGoal")
+      };
+      var editLeadCancelBtn = document.getElementById("editLeadCancel");
+      var editLeadSaveBtn = document.getElementById("editLeadSave");
+      var activeEditLead = null;
+
+      function openEditLeadModal(idx) {
+        var lead = tbody._leads && tbody._leads[idx];
+        if (!lead) return;
+        activeEditLead = lead;
+        editFields.studentName.value = lead.studentName || "";
+        editFields.parentName.value = lead.parentName || "";
+        editFields.grade.value = lead.grade || "";
+        editFields.birthday.value = lead.birthday || "";
+        editFields.email.value = lead.email || "";
+        editFields.phone.value = lead.phone || "";
+        editFields.city.value = lead.city || "";
+        editFields.channel.value = lead.channelLabel || lead.channel || "";
+        editFields.goal.value = lead.goal || "";
+        editLeadModal.classList.add("open");
+        setTimeout(function () { editFields.studentName.focus(); }, 50);
+      }
+
+      function closeEditLeadModal() {
+        editLeadModal.classList.remove("open");
+        activeEditLead = null;
+      }
+
+      editLeadCancelBtn.addEventListener("click", closeEditLeadModal);
+      editLeadModal.addEventListener("click", function (e) {
+        if (e.target === editLeadModal) closeEditLeadModal();
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && editLeadModal.classList.contains("open")) closeEditLeadModal();
+      });
+
+      function emailInUseByOther(newEmail, currentLead) {
+        var target = norm(newEmail);
+        if (!target) return false;
+        var allLeads = readJson("minddo_trial_leads");
+        return allLeads.some(function (l) {
+          return l && l.createdAt !== currentLead.createdAt && norm(l.email) === target;
+        });
+      }
+
+      editLeadSaveBtn.addEventListener("click", function () {
+        if (!activeEditLead || !window.MindDoFlow || !window.MindDoFlow.updateLead) return;
+        var t = I18N[lang];
+        var newEmail = editFields.email.value.trim();
+        if (newEmail && norm(newEmail) !== norm(activeEditLead.email) && emailInUseByOther(newEmail, activeEditLead)) {
+          showToast(t.editEmailExists);
+          editFields.email.focus();
+          return;
+        }
+        var patch = {
+          studentName: editFields.studentName.value.trim(),
+          parentName: editFields.parentName.value.trim(),
+          grade: editFields.grade.value,
+          birthday: editFields.birthday.value,
+          email: newEmail,
+          phone: editFields.phone.value.trim(),
+          city: editFields.city.value.trim(),
+          channelLabel: editFields.channel.value.trim(),
+          goal: editFields.goal.value.trim()
+        };
+        var updated = window.MindDoFlow.updateLead(activeEditLead.createdAt, patch);
+        if (updated) {
+          showToast(t.editSaved.replace("{name}", updated.studentName || "—"));
+        }
+        closeEditLeadModal();
         render();
       });
 

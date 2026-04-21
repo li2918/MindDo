@@ -207,6 +207,73 @@
     }));
   }
 
+  // Ops-side lead profile editing. Locates a lead by its createdAt (stable
+  // identifier since leads are append-only). Applies the patch, keeps
+  // studentId immutable, and propagates email/name changes to every
+  // downstream record that's keyed on the old email so lookups keep working.
+  function updateLead(leadCreatedAt, patch) {
+    if (!leadCreatedAt || !patch || typeof patch !== "object") return null;
+    var list = readJson(KEYS.leads, []);
+    var idx = list.findIndex(function (l) { return l && l.createdAt === leadCreatedAt; });
+    if (idx < 0) return null;
+    var before = list[idx];
+    var after = Object.assign({}, before, patch);
+    after.studentId = before.studentId; // immutable
+    after.createdAt = before.createdAt;  // immutable identifier
+    list[idx] = after;
+    writeJson(KEYS.leads, list);
+
+    if (patch.email && norm(patch.email) !== norm(before.email)) {
+      migrateEmailAcrossRecords(before.email, after.email, before.studentId);
+    }
+
+    // Refresh current student if this lead is the active one.
+    var cur = getCurrentStudent();
+    if (cur && (
+      (before.studentId && String(cur.studentId || "") === String(before.studentId)) ||
+      (before.email && norm(cur.email) === norm(before.email))
+    )) {
+      setCurrentStudent({
+        studentName: after.studentName,
+        name: after.studentName,
+        email: after.email,
+        phone: after.phone,
+        parentName: after.parentName,
+        grade: after.grade,
+        birthday: after.birthday,
+        city: after.city
+      });
+    }
+
+    return after;
+  }
+
+  function migrateEmailAcrossRecords(oldEmail, newEmail, studentId) {
+    var oldNorm = norm(oldEmail);
+    var newNorm = norm(newEmail);
+    if (!oldNorm || oldNorm === newNorm) return;
+    var targets = [
+      KEYS.signups, KEYS.assessments, KEYS.payments, KEYS.memberships,
+      KEYS.feedback, KEYS.requests, KEYS.completions, KEYS.evaluations,
+      KEYS.invites
+    ];
+    targets.forEach(function (key) {
+      var list = readJson(key, []);
+      if (!Array.isArray(list)) return;
+      var changed = false;
+      list.forEach(function (r) {
+        if (!r) return;
+        var matchStudent = studentId && String(r.studentId || "") === String(studentId);
+        var matchEmail = norm(r.email) === oldNorm;
+        if (matchStudent || matchEmail) {
+          r.email = newEmail;
+          changed = true;
+        }
+      });
+      if (changed) writeJson(key, list);
+    });
+  }
+
   function saveAssessment(data) {
     var current = setCurrentStudent({
       studentName: data.name || data.studentName,
@@ -755,6 +822,7 @@
     getSnapshot: getSnapshot,
     getStage: getStage,
     saveLead: saveLead,
+    updateLead: updateLead,
     saveAssessment: saveAssessment,
     saveSignupUser: saveSignupUser,
     savePayment: savePayment,
