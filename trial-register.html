@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="预约 MindDo 免费体验课 · 第 2 步：填写联系方式并完成验证。 · Book a free MindDo trial · Step 2: fill in contact info and verify." />
+  <meta name="description" content="预约 MindDo 免费体验课 · 第 2 步：填写联系方式。 · Book a free MindDo trial · Step 2: fill in contact info." />
   <meta name="author" content="MindDo AI Learning Center" />
   <meta name="theme-color" content="#1e3a5f" />
   <meta name="robots" content="index, follow" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="MindDo" />
   <meta property="og:title" content="试课预约 · 完善信息" />
-  <meta property="og:description" content="Book a free MindDo trial · Step 2: fill in contact info and verify." />
+  <meta property="og:description" content="Book a free MindDo trial · Step 2: fill in contact info." />
   <meta property="og:image" content="assets/favicon.svg" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="试课预约 · 完善信息" />
-  <meta name="twitter:description" content="Book a free MindDo trial · Step 2: fill in contact info and verify." />
+  <meta name="twitter:description" content="Book a free MindDo trial · Step 2: fill in contact info." />
   <link rel="canonical" href="trial-register.html" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="apple-touch-icon" href="assets/favicon.svg" />
@@ -58,9 +58,6 @@
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
     .btn-secondary { background: rgba(240,249,255,0.98); color: var(--clay); border: 1px solid var(--line); border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
     .btn-secondary:hover { transform: translateY(-2px); border-color: rgba(14,165,233,0.38); }
-    .btn-sm { padding: 8px 14px; font-size: 13px; font-weight: 700; border-radius: 999px; cursor: pointer; font-family: inherit; transition: 0.2s; border: 1px solid rgba(30,58,95,0.18); background: rgba(240,249,255,0.98); color: var(--clay); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-    .btn-sm:hover:not(:disabled) { background: linear-gradient(135deg,#e0f2fe,#7dd3fc); border-color: rgba(2,132,199,0.5); }
-    .btn-sm:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* PAGE HERO */
     .page-hero { background: linear-gradient(145deg,#0b1a2e 0%,#14294a 50%,#1e3a5f 100%); padding: 56px 0 40px; position: relative; overflow: hidden; }
@@ -108,44 +105,6 @@
     .field textarea { min-height: 88px; resize: vertical; }
     .field-full { margin-bottom: 14px; }
 
-    /* VERIFICATION */
-    .verify-tabs { display: flex; gap: 8px; margin-bottom: 16px; padding: 4px; border-radius: 999px; background: rgba(242,228,201,0.6); border: 1px solid var(--line); width: fit-content; }
-    .verify-tab { border: none; background: transparent; color: var(--muted); padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.15s; }
-    .verify-tab.active { background: linear-gradient(135deg,#bae6fd,var(--gold)); color: #0b2540; box-shadow: 0 4px 12px rgba(14,165,233,0.22); }
-    .verify-grid { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
-    .verify-grid .field { gap: 6px; }
-    .code-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; margin-top: 14px; }
-    .verify-status { margin-top: 12px; font-size: 13px; padding: 10px 14px; border-radius: 12px; display: none; }
-    .verify-status.info { display: block; background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.25); color: var(--gold-deep); }
-    .verify-status.success { display: block; background: rgba(111,143,87,0.1); border: 1px solid rgba(111,143,87,0.3); color: var(--success); }
-    .verify-status.error { display: block; background: rgba(196,106,77,0.1); border: 1px solid rgba(196,106,77,0.3); color: var(--error); }
-
-    /* BOT CHECK */
-    .bot-check { display: grid; grid-template-columns: 1fr auto; gap: 14px; padding: 16px 18px; background: rgba(240,249,255,0.7); border: 1px solid rgba(30,58,95,0.12); border-radius: 14px; align-items: center; }
-    .bot-challenge { font-size: 14px; color: var(--text); }
-    .bot-challenge strong { color: var(--clay); font-size: 18px; font-weight: 900; letter-spacing: 0.05em; }
-    .bot-answer { width: 100px !important; text-align: center; font-size: 16px !important; font-weight: 700; }
-    .bot-refresh { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; text-decoration: underline; margin-top: 6px; font-family: inherit; }
-    .bot-refresh:hover { color: var(--clay); }
-    .bot-status { margin-top: 10px; font-size: 12px; font-weight: 700; }
-    .bot-status.ok { color: var(--success); }
-    .bot-status.bad { color: var(--error); }
-
-    /* AGREEMENT */
-    .agreement-box { border: 1px solid var(--line); border-radius: 16px; background: rgba(240,249,255,0.7); overflow: hidden; }
-    .agreement-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; cursor: pointer; user-select: none; }
-    .agreement-head .title { font-size: 14px; font-weight: 800; color: var(--clay); }
-    .agreement-head .toggle { font-size: 12px; color: var(--muted); font-weight: 700; }
-    .agreement-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; padding: 0 18px; font-size: 13px; line-height: 1.7; color: var(--muted); }
-    .agreement-box.open .agreement-body { max-height: 480px; padding: 0 18px 16px; overflow-y: auto; }
-    .agreement-body h4 { font-size: 13px; font-weight: 800; color: var(--clay); margin: 12px 0 6px; }
-    .agreement-body p { margin-bottom: 8px; }
-    .agreement-body ul { padding-left: 20px; margin-bottom: 8px; }
-    .consent-row { display: flex; align-items: flex-start; gap: 10px; padding: 14px 18px; border-top: 1px solid var(--line); background: rgba(240,249,255,0.5); }
-    .consent-row input { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; cursor: pointer; }
-    .consent-row label { font-size: 13px; color: var(--text); line-height: 1.55; cursor: pointer; }
-    .consent-row label .accent { color: var(--clay); font-weight: 700; }
-
     /* RESULT */
     .result { font-size: 14px; padding: 14px 16px; border-radius: 14px; margin-top: 18px; display: none; }
     .result.success { display: block; border: 1px solid rgba(111,143,87,0.3); background: rgba(111,143,87,0.1); color: var(--success); }
@@ -171,7 +130,7 @@
     .footer-bottom { max-width: 1280px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(224,242,254,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: rgba(240,249,255,0.45); }
 
     @media (max-width: 900px) { .navbar { padding: 0 24px; } .nav-menu { display: none; } .page-hero-inner, .content-inner { padding: 0 24px; } .footer-inner { grid-template-columns: repeat(2,1fr); } .selected-summary { grid-template-columns: auto 1fr; } .selected-summary a { grid-column: 1 / -1; text-align: center; justify-self: start; } }
-    @media (max-width: 640px) { .row { grid-template-columns: 1fr; } .footer-inner { grid-template-columns: 1fr; } .footer { padding: 48px 24px 28px; } .card { padding: 24px 20px; } .bot-check { grid-template-columns: 1fr; } .bot-answer { width: 100% !important; } .action-row { flex-direction: column-reverse; } .action-row > * { width: 100%; justify-content: center; } }
+    @media (max-width: 640px) { .row { grid-template-columns: 1fr; } .footer-inner { grid-template-columns: 1fr; } .footer { padding: 48px 24px 28px; } .card { padding: 24px 20px; } .action-row { flex-direction: column-reverse; } .action-row > * { width: 100%; justify-content: center; } }
 
     /* Confirmation panel shown after successful submission */
     .confirm-card { background: var(--card); border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 24px 56px rgba(30,58,95,0.08); padding: 36px 32px; margin-bottom: 20px; }
@@ -246,8 +205,8 @@
       </div>
       <h1><span data-lang="zh">完善试课报名信息</span><span data-lang="en">Complete Your Registration</span></h1>
       <p class="hero-sub">
-        <span data-lang="zh">最后一步：填写联系方式、完成邮箱或手机验证、阅读并同意试课须知。我们会在 24 小时内确认您的试课。</span>
-        <span data-lang="en">Last step: fill in contact info, complete verification, and confirm the trial agreement. We'll confirm within 24 hours.</span>
+        <span data-lang="zh">最后一步：填写联系方式，我们会在 24 小时内确认您的试课。</span>
+        <span data-lang="en">Last step: fill in your contact info — we'll confirm within 24 hours.</span>
       </p>
       <div id="selectedSummary" class="selected-summary" style="display:none;">
         <div class="icon">📅</div>
@@ -268,11 +227,11 @@
       </div>
 
       <form id="registerForm" novalidate style="display:none;">
-        <!-- Section 1: Personal Info -->
+        <!-- Section 1: Student Info -->
         <div class="card">
           <div class="card-head">
-            <h2><span class="step-num">1</span><span data-lang="zh">学员与家长信息</span><span data-lang="en">Student & Parent Info</span></h2>
-            <p><span data-lang="zh">请如实填写信息，方便我们联系并准备合适的试课内容。</span><span data-lang="en">Please fill in accurately so we can contact you and prepare the right trial content.</span></p>
+            <h2><span class="step-num">1</span><span data-lang="zh">学员信息</span><span data-lang="en">Student Info</span></h2>
+            <p><span data-lang="zh">请如实填写信息，方便我们准备合适的试课内容。</span><span data-lang="en">Please fill in accurately so we can prepare the right trial content.</span></p>
           </div>
 
           <div class="row">
@@ -286,26 +245,9 @@
             </div>
           </div>
 
-          <div class="row">
-            <div class="field">
-              <label for="birthday"><span class="required"><span data-lang="zh">生日</span><span data-lang="en">Birthday</span></span></label>
-              <input id="birthday" name="birthday" type="date" autocomplete="bday" required />
-            </div>
-            <div class="field">
-              <label for="city"><span class="required"><span data-lang="zh">所在城市</span><span data-lang="en">City</span></span></label>
-              <input id="city" name="city" type="text" autocomplete="address-level2" required />
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label for="parentName"><span class="required"><span data-lang="zh">家长姓名</span><span data-lang="en">Parent Name</span></span></label>
-              <input id="parentName" name="parentName" type="text" autocomplete="name" required />
-            </div>
-            <div class="field">
-              <label for="goal"><span data-lang="zh">学习目标（选填）</span><span data-lang="en">Learning Goal (Optional)</span></label>
-              <input id="goal" name="goal" type="text" />
-            </div>
+          <div class="field field-full">
+            <label for="city"><span class="required"><span data-lang="zh">所在城市</span><span data-lang="en">City</span></span></label>
+            <input id="city" name="city" type="text" autocomplete="address-level2" required />
           </div>
 
           <div class="field field-full">
@@ -319,141 +261,23 @@
               <option value="offline-event" data-lang-zh="线下活动" data-lang-en="Offline Event">线下活动</option>
             </select>
           </div>
-
-          <div class="field field-full">
-            <label for="timeNote"><span data-lang="zh">时间备注（选填）</span><span data-lang="en">Time Note (Optional)</span></label>
-            <input id="timeNote" name="timeNote" type="text" placeholder="" />
-          </div>
         </div>
 
-        <!-- Section 2: Contact Verification -->
+        <!-- Section 2: Contact -->
         <div class="card">
           <div class="card-head">
-            <h2><span class="step-num">2</span><span data-lang="zh">联系方式验证</span><span data-lang="en">Contact Verification</span></h2>
-            <p><span data-lang="zh">选择一种联系方式并完成验证，确保我们能第一时间与您联系。</span><span data-lang="en">Choose one contact method and verify it so we can reach you quickly.</span></p>
+            <h2><span class="step-num">2</span><span data-lang="zh">联系方式</span><span data-lang="en">Contact Info</span></h2>
+            <p><span data-lang="zh">留下邮箱或手机，顾问会在 24 小时内联系确认。</span><span data-lang="en">Leave your email or phone; an advisor will reach out within 24 hours to confirm.</span></p>
           </div>
 
-          <div class="verify-tabs" role="tablist">
-            <button type="button" class="verify-tab active" data-verify-mode="email"><span data-lang="zh">邮箱验证</span><span data-lang="en">Email</span></button>
-            <button type="button" class="verify-tab" data-verify-mode="phone"><span data-lang="zh">手机验证</span><span data-lang="en">Phone</span></button>
-          </div>
-
-          <div id="emailPanel" class="verify-panel">
-            <div class="verify-grid">
-              <div class="field">
-                <label for="email"><span class="required"><span data-lang="zh">邮箱地址</span><span data-lang="en">Email Address</span></span></label>
-                <input id="email" name="email" type="email" autocomplete="email" required placeholder="parent@example.com" />
-              </div>
-              <button type="button" class="btn-sm" id="emailSendBtn"><span data-lang="zh">发送验证码</span><span data-lang="en">Send Code</span></button>
+          <div class="row">
+            <div class="field">
+              <label for="email"><span class="required"><span data-lang="zh">邮箱地址</span><span data-lang="en">Email Address</span></span></label>
+              <input id="email" name="email" type="email" autocomplete="email" required placeholder="parent@example.com" />
             </div>
-            <div class="code-row" id="emailCodeRow" style="display:none;">
-              <div class="field">
-                <label for="emailCode"><span class="required"><span data-lang="zh">邮箱验证码</span><span data-lang="en">Verification Code</span></span></label>
-                <input id="emailCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 位数字 / 6 digits" />
-              </div>
-              <button type="button" class="btn-sm" id="emailVerifyBtn"><span data-lang="zh">验证</span><span data-lang="en">Verify</span></button>
-            </div>
-            <div class="verify-status" id="emailStatus"></div>
-          </div>
-
-          <div id="phonePanel" class="verify-panel" style="display:none;">
-            <div class="verify-grid">
-              <div class="field">
-                <label for="phone"><span class="required"><span data-lang="zh">手机号码</span><span data-lang="en">Phone Number</span></span></label>
-                <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+86 138-0000-0000 / (317) 555-0100" />
-              </div>
-              <button type="button" class="btn-sm" id="phoneSendBtn"><span data-lang="zh">发送短信</span><span data-lang="en">Send Code</span></button>
-            </div>
-            <div class="code-row" id="phoneCodeRow" style="display:none;">
-              <div class="field">
-                <label for="phoneCode"><span class="required"><span data-lang="zh">短信验证码</span><span data-lang="en">SMS Code</span></span></label>
-                <input id="phoneCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 位数字 / 6 digits" />
-              </div>
-              <button type="button" class="btn-sm" id="phoneVerifyBtn"><span data-lang="zh">验证</span><span data-lang="en">Verify</span></button>
-            </div>
-            <div class="verify-status" id="phoneStatus"></div>
-          </div>
-        </div>
-
-        <!-- Section 3: Bot Check -->
-        <div class="card">
-          <div class="card-head">
-            <h2><span class="step-num">3</span><span data-lang="zh">安全验证</span><span data-lang="en">Security Check</span></h2>
-            <p><span data-lang="zh">请完成以下简单计算以证明你不是机器人。</span><span data-lang="en">Solve the simple math below to confirm you're not a bot.</span></p>
-          </div>
-
-          <div class="bot-check">
-            <div>
-              <div class="bot-challenge" id="botChallengeText"><span data-lang="zh">请计算：</span><span data-lang="en">Please solve:</span> <strong id="botChallenge">? + ? = ?</strong></div>
-              <button type="button" class="bot-refresh" id="botRefresh"><span data-lang="zh">换一题</span><span data-lang="en">New challenge</span></button>
-              <div id="botStatus" class="bot-status" role="status" aria-live="polite"></div>
-            </div>
-            <input id="botAnswer" class="bot-answer" type="text" inputmode="numeric" autocomplete="off" aria-labelledby="botChallengeText" />
-          </div>
-        </div>
-
-        <!-- Section 4: Liability Agreement -->
-        <div class="card">
-          <div class="card-head">
-            <h2><span class="step-num">4</span><span data-lang="zh">试课免责协议</span><span data-lang="en">Trial Class Agreement</span></h2>
-            <p><span data-lang="zh">请点击查看完整协议内容，仔细阅读并勾选同意。</span><span data-lang="en">Click to expand the full agreement, read carefully, then check the box to agree.</span></p>
-          </div>
-
-          <div class="agreement-box" id="agreementBox">
-            <div class="agreement-head" id="agreementToggle">
-              <span class="title"><span data-lang="zh">MindDo 试课须知与免责声明</span><span data-lang="en">MindDo Trial Terms & Liability Disclaimer</span></span>
-              <span class="toggle"><span data-lang="zh">展开 ▼</span><span data-lang="en">Expand ▼</span></span>
-            </div>
-            <div class="agreement-body">
-              <div data-lang-block="zh" style="display:none;">
-                <h4>一、试课安排</h4>
-                <p>1.1 本次试课为免费体验课程，时长约 45–60 分钟。</p>
-                <p>1.2 学员须按约定时间到达线下教室或进入线上会议室，迟到超过 15 分钟视为自动放弃。</p>
-                <p>1.3 如需改期，请至少提前 24 小时联系顾问，否则视为完成一次试课。</p>
-                <h4>二、安全与健康</h4>
-                <p>2.1 线下试课期间，学员须遵守教室规则，家长需确保学员身体状况适合参加课程。</p>
-                <p>2.2 MindDo 对学员在课程外的行为不承担责任；课程中因自身原因造成的意外，机构仅承担合理范围内的协助义务。</p>
-                <p>2.3 家长需签字确认自愿参加试课，了解课程内容与潜在风险。</p>
-                <h4>三、信息与隐私</h4>
-                <ul>
-                  <li>我们仅会将您提交的信息用于试课安排、课程咨询与后续回访。</li>
-                  <li>不会将联系方式出售或披露给第三方。</li>
-                  <li>您可以随时联系顾问要求更新或删除个人资料。</li>
-                </ul>
-                <h4>四、知识产权与录像</h4>
-                <p>4.1 试课过程中教师使用的教学材料、课件版权归 MindDo 所有，未经许可不得复制或传播。</p>
-                <p>4.2 部分课程可能进行视频回放录制，用于教学改进。如您不希望被录制，请在课前告知顾问。</p>
-                <h4>五、争议解决</h4>
-                <p>5.1 本协议适用中华人民共和国法律。如就试课产生争议，双方应友好协商解决；协商不成的，任何一方可向有管辖权的人民法院提起诉讼。</p>
-              </div>
-              <div data-lang-block="en" style="display:none;">
-                <h4>1. Trial Arrangements</h4>
-                <p>1.1 This is a complimentary trial class of approximately 45–60 minutes.</p>
-                <p>1.2 Students must arrive at the scheduled time (on-site or online). Being more than 15 minutes late is considered forfeiture.</p>
-                <p>1.3 To reschedule, please notify your consultant at least 24 hours in advance; otherwise the session counts as completed.</p>
-                <h4>2. Safety & Health</h4>
-                <p>2.1 Students must follow classroom rules during on-site trials. Parents are responsible for ensuring the student is in suitable physical condition to attend.</p>
-                <p>2.2 MindDo assumes no responsibility for student behavior outside of the class session. For incidents during class caused by the student, our obligation is limited to reasonable assistance.</p>
-                <p>2.3 Parents confirm voluntary participation and understanding of class content and potential risks.</p>
-                <h4>3. Information & Privacy</h4>
-                <ul>
-                  <li>Submitted information is used only for scheduling, consultation, and follow-up.</li>
-                  <li>Contact details are never sold or disclosed to third parties.</li>
-                  <li>You may contact your consultant to update or delete your information at any time.</li>
-                </ul>
-                <h4>4. Intellectual Property & Recording</h4>
-                <p>4.1 Teaching materials used by MindDo instructors are proprietary and may not be copied or distributed without permission.</p>
-                <p>4.2 Some sessions may be recorded for instructional improvement. If you prefer not to be recorded, please inform your consultant before class.</p>
-                <h4>5. Dispute Resolution</h4>
-                <p>5.1 This agreement is governed by applicable law. Disputes should first be resolved through friendly negotiation; if unresolved, either party may pursue legal remedies through a competent court.</p>
-              </div>
-            </div>
-            <div class="consent-row">
-              <input id="agreementConsent" type="checkbox" />
-              <label for="agreementConsent">
-                <span data-lang="zh">我已阅读并同意上述 <span class="accent">《MindDo 试课须知与免责声明》</span>，并确认所填信息真实有效。</span>
-                <span data-lang="en">I have read and agree to the <span class="accent">MindDo Trial Terms &amp; Liability Disclaimer</span>, and confirm the information is accurate.</span>
-              </label>
+            <div class="field">
+              <label for="phone"><span data-lang="zh">手机号码（选填）</span><span data-lang="en">Phone Number (Optional)</span></label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+1 (317) 555-0100" />
             </div>
           </div>
         </div>
@@ -562,26 +386,13 @@
         "zh-CN": {
           pageTitle: "试课预约 · 完善信息",
           selectedPrefix: "{date} · {time} · {campus}",
-          codeSent: "验证码已发送：{code}（演示环境直接显示）",
-          codeSentMasked: "验证码已发送到 {target}",
-          codeExpired: "验证码已过期，请重新获取。",
-          codeIncorrect: "验证码不正确，请重新输入。",
-          verifiedEmail: "邮箱已验证 ✓",
-          verifiedPhone: "手机号已验证 ✓",
           emailInvalid: "请输入有效的邮箱地址。",
           phoneInvalid: "请输入有效的手机号（6–20 位）。",
-          botCorrect: "验证通过 ✓",
-          botWrong: "答案不正确，请重试或换一题。",
-          agreementExpand: "展开 ▼",
-          agreementCollapse: "收起 ▲",
           noSelection: "尚未选择试课时间。",
           submitOk: "报名提交成功！",
           submitErrorRequired: "请完整填写必填信息。",
-          submitErrorVerify: "请先完成邮箱或手机验证。",
-          submitErrorBot: "请先通过安全验证。",
-          submitErrorAgreement: "请阅读并同意试课须知。",
           confirmTitle: "✓ 试课预约已确认",
-          confirmSubTmpl: "{parent}家长您好，我们已为 {student} 安排 {date} {time} 的试课，地点：{campus}。确认邮件已发送到您的邮箱，顾问将在 24 小时内与您联系。",
+          confirmSubTmpl: "您好，我们已为 {student} 安排 {date} {time} 的试课，地点：{campus}。确认邮件已发送到您的邮箱，顾问将在 24 小时内与您联系。",
           emailSentTitle: "确认邮件已发送",
           emailPreviewToggle: "查看确认邮件内容",
           confirmContinue: "继续创建账户 →",
@@ -589,7 +400,6 @@
           demoNote: "演示环境：为避免真实外发邮件，确认邮件以本地预览形式呈现。",
           confirmDetailKeys: {
             student: "学员",
-            parent: "家长",
             trialCampus: "试课校区",
             dateTime: "试课时间",
             city: "所在城市",
@@ -605,7 +415,7 @@
           emailFromAddr: "hello@minddo.com",
           emailSubjectTmpl: "【MindDo】试课预约确认 · {date} {time}",
           emailBody: {
-            greeting: "{parent}家长您好，",
+            greeting: "您好，",
             intro: "感谢您为 {student} 预约 MindDo 的 AI 试课。以下是本次预约的详细信息，请您留意：",
             itemsTitle: "试课信息",
             afterList: "请您于试课前 10 分钟到达，前台会有工作人员引导。如需改期或取消，请至少提前 24 小时回复本邮件或拨打 (949) 236-7896。",
@@ -630,26 +440,13 @@
         en: {
           pageTitle: "Book Trial · Registration",
           selectedPrefix: "{date} · {time} · {campus}",
-          codeSent: "Code sent: {code} (shown for demo)",
-          codeSentMasked: "Code sent to {target}",
-          codeExpired: "Code expired, please resend.",
-          codeIncorrect: "Incorrect code, please try again.",
-          verifiedEmail: "Email verified ✓",
-          verifiedPhone: "Phone verified ✓",
           emailInvalid: "Please enter a valid email.",
           phoneInvalid: "Please enter a valid phone (6–20 digits).",
-          botCorrect: "Verification passed ✓",
-          botWrong: "Incorrect answer, try again or get a new challenge.",
-          agreementExpand: "Expand ▼",
-          agreementCollapse: "Collapse ▲",
           noSelection: "No trial time selected.",
           submitOk: "Registration submitted!",
           submitErrorRequired: "Please complete all required fields.",
-          submitErrorVerify: "Please complete email or phone verification.",
-          submitErrorBot: "Please pass the security check first.",
-          submitErrorAgreement: "Please read and agree to the Trial Terms.",
           confirmTitle: "✓ Trial Booking Confirmed",
-          confirmSubTmpl: "Dear {parent}, we've booked {student}'s trial on {date} at {time}, at {campus}. A confirmation email is on its way, and an advisor will reach out within 24 hours.",
+          confirmSubTmpl: "Hi! We've booked {student}'s trial on {date} at {time}, at {campus}. A confirmation email is on its way, and an advisor will reach out within 24 hours.",
           emailSentTitle: "Confirmation email sent",
           emailPreviewToggle: "Preview the confirmation email",
           confirmContinue: "Create Your Account →",
@@ -657,7 +454,6 @@
           demoNote: "Demo environment: no real email is dispatched — a local preview is shown for transparency.",
           confirmDetailKeys: {
             student: "Student",
-            parent: "Parent",
             trialCampus: "Trial Campus",
             dateTime: "Trial Time",
             city: "City",
@@ -673,7 +469,7 @@
           emailFromAddr: "hello@minddo.com",
           emailSubjectTmpl: "[MindDo] Trial Booking Confirmed · {date} {time}",
           emailBody: {
-            greeting: "Dear {parent},",
+            greeting: "Hi,",
             intro: "Thank you for booking a MindDo AI trial for {student}. Here are the details we've confirmed for you:",
             itemsTitle: "Trial details",
             afterList: "Please arrive 10 minutes early — our front desk will guide you in. To reschedule or cancel, please reply to this email or call (949) 236-7896 at least 24 hours in advance.",
@@ -705,35 +501,8 @@
       var selectedSummary = document.getElementById("selectedSummary");
       var selectedValue = document.getElementById("selectedValue");
       var submitResult = document.getElementById("submitResult");
-      var verifyTabs = document.querySelectorAll("[data-verify-mode]");
-      var emailPanel = document.getElementById("emailPanel");
-      var phonePanel = document.getElementById("phonePanel");
       var emailInput = document.getElementById("email");
       var phoneInput = document.getElementById("phone");
-      var emailSendBtn = document.getElementById("emailSendBtn");
-      var emailVerifyBtn = document.getElementById("emailVerifyBtn");
-      var emailCodeRow = document.getElementById("emailCodeRow");
-      var emailCodeInput = document.getElementById("emailCode");
-      var emailStatus = document.getElementById("emailStatus");
-      var phoneSendBtn = document.getElementById("phoneSendBtn");
-      var phoneVerifyBtn = document.getElementById("phoneVerifyBtn");
-      var phoneCodeRow = document.getElementById("phoneCodeRow");
-      var phoneCodeInput = document.getElementById("phoneCode");
-      var phoneStatus = document.getElementById("phoneStatus");
-      var botChallengeEl = document.getElementById("botChallenge");
-      var botAnswerInput = document.getElementById("botAnswer");
-      var botRefreshBtn = document.getElementById("botRefresh");
-      var botStatus = document.getElementById("botStatus");
-      var agreementBox = document.getElementById("agreementBox");
-      var agreementToggle = document.getElementById("agreementToggle");
-      var agreementConsent = document.getElementById("agreementConsent");
-
-      var verifyMode = "email";
-      var emailVerified = false;
-      var phoneVerified = false;
-      var emailCodeExpected = null;
-      var phoneCodeExpected = null;
-      var botAnswer = 0;
 
       function langOf() { return html.getAttribute("lang") === "en" ? "en" : "zh-CN"; }
       function formatSelectedDate(v) { if (!v) return ""; var p = v.split("-"); var d = new Date(Number(p[0]), Number(p[1])-1, Number(p[2])); return new Intl.DateTimeFormat(langOf()==="en"?"en-US":"zh-CN", { month: "short", day: "numeric", weekday: "short" }).format(d); }
@@ -760,96 +529,8 @@
           .replace("{campus}", camp);
       }
 
-      function switchVerifyMode(mode) {
-        verifyMode = mode;
-        verifyTabs.forEach(function (tab) {
-          tab.classList.toggle("active", tab.getAttribute("data-verify-mode") === mode);
-        });
-        emailPanel.style.display = mode === "email" ? "block" : "none";
-        phonePanel.style.display = mode === "phone" ? "block" : "none";
-      }
-
       function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
       function isValidPhone(v) { return /^[0-9+\-\s()]{6,20}$/.test(v); }
-
-      function genCode() { return String(Math.floor(100000 + Math.random() * 900000)); }
-      function setStatus(el, cls, text) {
-        el.className = "verify-status " + cls;
-        el.textContent = text;
-      }
-
-      function sendEmailCode() {
-        var t = I18N[langOf()];
-        if (!isValidEmail(emailInput.value.trim())) {
-          setStatus(emailStatus, "error", t.emailInvalid);
-          return;
-        }
-        emailCodeExpected = genCode();
-        emailVerified = false;
-        emailCodeRow.style.display = "grid";
-        setStatus(emailStatus, "info", t.codeSent.replace("{code}", emailCodeExpected));
-      }
-      function verifyEmailCode() {
-        var t = I18N[langOf()];
-        if (!emailCodeExpected) { setStatus(emailStatus, "error", t.codeExpired); return; }
-        if ((emailCodeInput.value || "").trim() === emailCodeExpected) {
-          emailVerified = true;
-          setStatus(emailStatus, "success", t.verifiedEmail);
-        } else {
-          emailVerified = false;
-          setStatus(emailStatus, "error", t.codeIncorrect);
-        }
-      }
-
-      function sendPhoneCode() {
-        var t = I18N[langOf()];
-        if (!isValidPhone(phoneInput.value.trim())) {
-          setStatus(phoneStatus, "error", t.phoneInvalid);
-          return;
-        }
-        phoneCodeExpected = genCode();
-        phoneVerified = false;
-        phoneCodeRow.style.display = "grid";
-        setStatus(phoneStatus, "info", t.codeSent.replace("{code}", phoneCodeExpected));
-      }
-      function verifyPhoneCode() {
-        var t = I18N[langOf()];
-        if (!phoneCodeExpected) { setStatus(phoneStatus, "error", t.codeExpired); return; }
-        if ((phoneCodeInput.value || "").trim() === phoneCodeExpected) {
-          phoneVerified = true;
-          setStatus(phoneStatus, "success", t.verifiedPhone);
-        } else {
-          phoneVerified = false;
-          setStatus(phoneStatus, "error", t.codeIncorrect);
-        }
-      }
-
-      function newBotChallenge() {
-        var a = Math.floor(Math.random() * 9) + 1;
-        var b = Math.floor(Math.random() * 9) + 1;
-        var op = Math.random() > 0.5 ? "+" : "-";
-        if (op === "-" && b > a) { var tmp = a; a = b; b = tmp; }
-        botAnswer = op === "+" ? a + b : a - b;
-        botChallengeEl.textContent = a + " " + op + " " + b + " = ?";
-        botAnswerInput.value = "";
-        botStatus.textContent = "";
-        botStatus.className = "bot-status";
-      }
-
-      function checkBot() {
-        var t = I18N[langOf()];
-        var v = parseInt((botAnswerInput.value || "").trim(), 10);
-        if (v === botAnswer) {
-          botStatus.textContent = t.botCorrect;
-          botStatus.className = "bot-status ok";
-          return true;
-        }
-        if (!Number.isNaN(v)) {
-          botStatus.textContent = t.botWrong;
-          botStatus.className = "bot-status bad";
-        }
-        return false;
-      }
 
       function setLang(lang) {
         var t = I18N[lang] || I18N["zh-CN"];
@@ -882,7 +563,6 @@
 
       var savedLang = localStorage.getItem("minddo_lang");
       setLang(savedLang === "en" ? "en" : "zh-CN");
-      newBotChallenge();
 
       // Prefill from flow
       if (window.MindDoFlow && window.MindDoFlow.prefillTrialForm) {
@@ -893,21 +573,6 @@
       langButtons.forEach(function (btn) {
         btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); });
       });
-      verifyTabs.forEach(function (tab) {
-        tab.addEventListener("click", function () { switchVerifyMode(tab.getAttribute("data-verify-mode")); });
-      });
-      emailSendBtn.addEventListener("click", sendEmailCode);
-      emailVerifyBtn.addEventListener("click", verifyEmailCode);
-      phoneSendBtn.addEventListener("click", sendPhoneCode);
-      phoneVerifyBtn.addEventListener("click", verifyPhoneCode);
-      botRefreshBtn.addEventListener("click", newBotChallenge);
-      botAnswerInput.addEventListener("input", checkBot);
-      agreementToggle.addEventListener("click", function () {
-        agreementBox.classList.toggle("open");
-        var open = agreementBox.classList.contains("open");
-        var t = I18N[langOf()];
-        agreementToggle.querySelector(".toggle").textContent = open ? t.agreementCollapse : t.agreementExpand;
-      });
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -917,40 +582,28 @@
 
         var studentName = document.getElementById("studentName").value.trim();
         var grade = document.getElementById("grade").value.trim();
-        var birthday = document.getElementById("birthday").value;
         var city = document.getElementById("city").value.trim();
-        var parentName = document.getElementById("parentName").value.trim();
         var channel = document.getElementById("channel").value;
-        var timeNote = document.getElementById("timeNote").value.trim();
-        var goal = document.getElementById("goal").value.trim();
+        var contactEmail = emailInput.value.trim();
+        var contactPhone = phoneInput.value.trim();
 
-        if (!studentName || !grade || !birthday || !city || !parentName) {
+        if (!studentName || !grade || !city || !contactEmail) {
           submitResult.className = "result error";
           submitResult.textContent = t.submitErrorRequired;
           return;
         }
 
-        // Require at least one verification method
-        var contactEmail = emailInput.value.trim();
-        var contactPhone = phoneInput.value.trim();
-        var verified = (verifyMode === "email" && emailVerified) || (verifyMode === "phone" && phoneVerified);
-        if (!verified) {
+        if (!isValidEmail(contactEmail)) {
           submitResult.className = "result error";
-          submitResult.textContent = t.submitErrorVerify;
+          submitResult.textContent = t.emailInvalid;
+          emailInput.focus();
           return;
         }
 
-        if (!checkBot()) {
+        if (contactPhone && !isValidPhone(contactPhone)) {
           submitResult.className = "result error";
-          submitResult.textContent = t.submitErrorBot;
-          botAnswerInput.focus();
-          return;
-        }
-
-        if (!agreementConsent.checked) {
-          submitResult.className = "result error";
-          submitResult.textContent = t.submitErrorAgreement;
-          if (!agreementBox.classList.contains("open")) agreementToggle.click();
+          submitResult.textContent = t.phoneInvalid;
+          phoneInput.focus();
           return;
         }
 
@@ -959,9 +612,7 @@
         var payload = {
           studentName: studentName,
           grade: grade,
-          birthday: birthday,
           email: contactEmail,
-          parentName: parentName,
           phone: contactPhone,
           city: city,
           campus: selection.campus,
@@ -972,12 +623,7 @@
           preferredTrialDateTime: selection.preferredTrialDateTime || "",
           channel: channel,
           channelLabel: channel,
-          timeNote: timeNote,
-          goal: goal,
-          verifiedVia: verifyMode,
-          verifiedAt: new Date().toISOString(),
           consent: true,
-          agreementAccepted: true,
           createdAt: new Date().toISOString()
         };
 
@@ -1036,7 +682,6 @@
         var when = formatTrialDateTime(lead.trialDate, lead.trialTime);
         var rep = function (tmpl) {
           return String(tmpl)
-            .replace(/\{parent\}/g, esc(lead.parentName || ""))
             .replace(/\{student\}/g, esc(lead.studentName || ""));
         };
         var items =
@@ -1061,7 +706,6 @@
         var when = formatTrialDateTime(lead.trialDate, lead.trialTime);
         var rep = function (tmpl) {
           return String(tmpl)
-            .replace(/\{parent\}/g, lead.parentName || "")
             .replace(/\{student\}/g, lead.studentName || "");
         };
         return [
@@ -1098,7 +742,7 @@
           type: "trial_confirmation",
           from: t.emailFromLabel + " <" + t.emailFromAddr + ">",
           to: lead.email,
-          toName: lead.parentName || lead.studentName || "",
+          toName: lead.studentName || "",
           subject: subjectLine,
           htmlBody: buildEmailBodyHTML(lead, ref),
           textBody: buildEmailBodyText(lead, ref),
@@ -1126,7 +770,6 @@
         });
 
         document.getElementById("confirmSub").textContent = t.confirmSubTmpl
-          .replace("{parent}", lead.parentName || "")
           .replace("{student}", lead.studentName || "")
           .replace("{date}", lead.trialDate || "")
           .replace("{time}", lead.trialTime || "")
@@ -1134,7 +777,6 @@
 
         var details = [
           { k: t.confirmDetailKeys.student, v: lead.studentName || "—" },
-          { k: t.confirmDetailKeys.parent, v: lead.parentName || "—" },
           { k: t.confirmDetailKeys.trialCampus, v: subj || "—" },
           { k: t.confirmDetailKeys.dateTime, v: when || "—" },
           { k: t.confirmDetailKeys.city, v: lead.city || "—" },
@@ -1150,7 +792,7 @@
         var headTmpl = t.emailHeadTmpl;
         document.getElementById("emailHead").innerHTML =
           "<div><strong>" + esc(headTmpl.from) + ":</strong> " + esc(t.emailFromLabel) + " &lt;" + esc(t.emailFromAddr) + "&gt;</div>" +
-          "<div><strong>" + esc(headTmpl.to) + ":</strong> " + esc(lead.parentName || "") + " &lt;" + esc(lead.email || "") + "&gt;</div>" +
+          "<div><strong>" + esc(headTmpl.to) + ":</strong> " + esc(lead.studentName || "") + " &lt;" + esc(lead.email || "") + "&gt;</div>" +
           "<div><strong>" + esc(headTmpl.subject) + ":</strong> " + esc((email && email.subject) || "") + "</div>";
         document.getElementById("emailBody").innerHTML = buildEmailBodyHTML(lead, ref);
 
