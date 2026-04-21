@@ -105,6 +105,22 @@
     .field textarea { min-height: 88px; resize: vertical; }
     .field-full { margin-bottom: 14px; }
 
+    /* CHIP GROUP (single-select pills) */
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      padding: 8px 16px; border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(240,249,255,0.6);
+      font-size: 13px; font-weight: 600; color: var(--muted);
+      cursor: pointer; transition: 0.15s; font-family: inherit;
+    }
+    .chip:hover { border-color: var(--gold); color: var(--clay); }
+    .chip.active {
+      background: linear-gradient(135deg,#bae6fd,var(--gold));
+      border-color: var(--gold-deep); color: #0b2540;
+      box-shadow: 0 4px 12px rgba(14,165,233,0.22);
+    }
+
     /* RESULT */
     .result { font-size: 14px; padding: 14px 16px; border-radius: 14px; margin-top: 18px; display: none; }
     .result.success { display: block; border: 1px solid rgba(111,143,87,0.3); background: rgba(111,143,87,0.1); color: var(--success); }
@@ -227,11 +243,10 @@
       </div>
 
       <form id="registerForm" novalidate style="display:none;">
-        <!-- Section 1: Student Info -->
         <div class="card">
           <div class="card-head">
-            <h2><span class="step-num">1</span><span data-lang="zh">学员信息</span><span data-lang="en">Student Info</span></h2>
-            <p><span data-lang="zh">请如实填写信息，方便我们准备合适的试课内容。</span><span data-lang="en">Please fill in accurately so we can prepare the right trial content.</span></p>
+            <h2><span data-lang="zh">填写报名信息</span><span data-lang="en">Registration Info</span></h2>
+            <p><span data-lang="zh">请如实填写，顾问会在 24 小时内联系确认你的试课。</span><span data-lang="en">Please fill in accurately — an advisor will confirm your trial within 24 hours.</span></p>
           </div>
 
           <div class="row">
@@ -245,26 +260,6 @@
             </div>
           </div>
 
-          <div class="field field-full">
-            <label for="channel"><span data-lang="zh">您从哪里了解到我们</span><span data-lang="en">How did you hear about us?</span></label>
-            <select id="channel" name="channel">
-              <option value="">—</option>
-              <option value="douyin" data-lang-zh="抖音" data-lang-en="Douyin">抖音</option>
-              <option value="xiaohongshu" data-lang-zh="小红书" data-lang-en="Xiaohongshu">小红书</option>
-              <option value="official-account" data-lang-zh="公众号" data-lang-en="Official Account">公众号</option>
-              <option value="referral" data-lang-zh="朋友推荐" data-lang-en="Referral">朋友推荐</option>
-              <option value="offline-event" data-lang-zh="线下活动" data-lang-en="Offline Event">线下活动</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Section 2: Contact -->
-        <div class="card">
-          <div class="card-head">
-            <h2><span class="step-num">2</span><span data-lang="zh">联系方式</span><span data-lang="en">Contact Info</span></h2>
-            <p><span data-lang="zh">留下邮箱或手机，顾问会在 24 小时内联系确认。</span><span data-lang="en">Leave your email or phone; an advisor will reach out within 24 hours to confirm.</span></p>
-          </div>
-
           <div class="row">
             <div class="field">
               <label for="email"><span class="required"><span data-lang="zh">邮箱地址</span><span data-lang="en">Email Address</span></span></label>
@@ -274,6 +269,18 @@
               <label for="phone"><span data-lang="zh">手机号码（选填）</span><span data-lang="en">Phone Number (Optional)</span></label>
               <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+1 (317) 555-0100" />
             </div>
+          </div>
+
+          <div class="field field-full">
+            <label id="channelLabel"><span data-lang="zh">您从哪里了解到我们</span><span data-lang="en">How did you hear about us?</span></label>
+            <div class="chip-group" id="channelChips" role="radiogroup" aria-labelledby="channelLabel">
+              <button type="button" class="chip" data-channel="douyin" role="radio" aria-checked="false"><span data-lang="zh">抖音</span><span data-lang="en">Douyin</span></button>
+              <button type="button" class="chip" data-channel="xiaohongshu" role="radio" aria-checked="false"><span data-lang="zh">小红书</span><span data-lang="en">Xiaohongshu</span></button>
+              <button type="button" class="chip" data-channel="official-account" role="radio" aria-checked="false"><span data-lang="zh">公众号</span><span data-lang="en">Official Account</span></button>
+              <button type="button" class="chip" data-channel="referral" role="radio" aria-checked="false"><span data-lang="zh">朋友推荐</span><span data-lang="en">Referral</span></button>
+              <button type="button" class="chip" data-channel="offline-event" role="radio" aria-checked="false"><span data-lang="zh">线下活动</span><span data-lang="en">Offline Event</span></button>
+            </div>
+            <input type="hidden" id="channel" name="channel" value="" />
           </div>
         </div>
 
@@ -498,6 +505,23 @@
       var submitResult = document.getElementById("submitResult");
       var emailInput = document.getElementById("email");
       var phoneInput = document.getElementById("phone");
+      var channelInput = document.getElementById("channel");
+      var channelChips = document.getElementById("channelChips");
+
+      function setChannel(value) {
+        channelInput.value = value || "";
+        channelChips.querySelectorAll(".chip").forEach(function (c) {
+          var match = c.getAttribute("data-channel") === value;
+          c.classList.toggle("active", match);
+          c.setAttribute("aria-checked", match ? "true" : "false");
+        });
+      }
+
+      channelChips.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-channel]");
+        if (!btn) return;
+        setChannel(btn.getAttribute("data-channel"));
+      });
 
       function langOf() { return html.getAttribute("lang") === "en" ? "en" : "zh-CN"; }
       function formatSelectedDate(v) { if (!v) return ""; var p = v.split("-"); var d = new Date(Number(p[0]), Number(p[1])-1, Number(p[2])); return new Intl.DateTimeFormat(langOf()==="en"?"en-US":"zh-CN", { month: "short", day: "numeric", weekday: "short" }).format(d); }
