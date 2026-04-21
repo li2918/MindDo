@@ -198,6 +198,12 @@
           <select id="campus" name="campus" required></select>
         </div>
 
+        <div class="field-block" id="timezoneField" hidden>
+          <label class="field-label" for="timezone" data-i18n="timezone"></label>
+          <select id="timezone" name="timezone"></select>
+          <div class="picker-helper" data-i18n="timezoneHelper"></div>
+        </div>
+
         <div class="field-block">
           <div class="field-label" data-i18n="trialDate"></div>
           <input id="trialDate" type="date" class="sr-only" />
@@ -288,6 +294,8 @@
           formTitle: "第 1 步：选择校区与试课时间",
           formDesc: "先选一个校区，再选一个合适的日期和时段。下一步你将填写联系方式并完成预约。",
           campus: "选择校区",
+          timezone: "所在时区",
+          timezoneHelper: "线上小班需要这一项，用于匹配上课时间。",
           trialDate: "试课日期",
           trialTime: "试课时段",
           dateHelper: "未来 12 天内可选，今日过期时段自动置灰",
@@ -295,7 +303,18 @@
           todayLabel: "今天",
           tomorrowLabel: "明天",
           selectionHint: "请先选择校区、日期和时段，然后点击\"下一步\"。",
+          selectionHintOnline: "线上小班需要选择时区，再选择日期和时段。",
           prevSelectionText: "你之前选择过：{date} {time}（{campus}）。如需修改直接重新选择即可。",
+          timezoneOptions: [
+            { value: "", label: "请选择所在时区" },
+            { value: "America/Los_Angeles", label: "太平洋时间 (PT) · 加州 / 西雅图" },
+            { value: "America/Denver", label: "山区时间 (MT) · 丹佛 / 凤凰城" },
+            { value: "America/Chicago", label: "中部时间 (CT) · 芝加哥 / 休斯顿" },
+            { value: "America/New_York", label: "东部时间 (ET) · 纽约 / 多伦多" },
+            { value: "America/Anchorage", label: "阿拉斯加时间 (AKT)" },
+            { value: "Pacific/Honolulu", label: "夏威夷时间 (HT)" },
+            { value: "other", label: "其他时区（请在下一步备注）" }
+          ],
           campusOptions: [
             { value: "", label: "请选择校区" },
             { value: "irvine", label: "加州 · 尔湾校区" },
@@ -334,6 +353,8 @@
           formTitle: "Step 1: Pick Your Campus & Trial Time",
           formDesc: "Choose a campus, then a date and time that works for you. You'll fill in contact info on the next step.",
           campus: "Select Campus",
+          timezone: "Your Timezone",
+          timezoneHelper: "Required for the online classroom — used to match a class time that fits.",
           trialDate: "Trial Date",
           trialTime: "Trial Time",
           dateHelper: "Next 12 days available — expired times are disabled automatically",
@@ -341,7 +362,18 @@
           todayLabel: "Today",
           tomorrowLabel: "Tomorrow",
           selectionHint: "Please select campus, date and time, then click \"Next\".",
+          selectionHintOnline: "Online classes require selecting your timezone, then date and time.",
           prevSelectionText: "Previously selected: {date} {time} ({campus}). Re-select to change.",
+          timezoneOptions: [
+            { value: "", label: "Choose your timezone" },
+            { value: "America/Los_Angeles", label: "Pacific Time (PT) · CA / Seattle" },
+            { value: "America/Denver", label: "Mountain Time (MT) · Denver / Phoenix" },
+            { value: "America/Chicago", label: "Central Time (CT) · Chicago / Houston" },
+            { value: "America/New_York", label: "Eastern Time (ET) · NYC / Toronto" },
+            { value: "America/Anchorage", label: "Alaska Time (AKT)" },
+            { value: "Pacific/Honolulu", label: "Hawaii Time (HT)" },
+            { value: "other", label: "Other (note on the next step)" }
+          ],
           campusOptions: [
             { value: "", label: "Choose a campus" },
             { value: "irvine", label: "California · Irvine" },
@@ -380,6 +412,8 @@
       var html = document.documentElement;
       var langButtons = document.querySelectorAll("[data-set-lang]");
       var campusSel = document.getElementById("campus");
+      var timezoneField = document.getElementById("timezoneField");
+      var timezoneSel = document.getElementById("timezone");
       var trialDateInput = document.getElementById("trialDate");
       var calendarGrid = document.getElementById("calendarGrid");
       var timeGrid = document.getElementById("timeGrid");
@@ -388,7 +422,9 @@
       var prevSelection = document.getElementById("prevSelection");
       var prevSelectionText = document.getElementById("prevSelectionText");
 
-      var state = { campus: "", campusLabel: "", trialDate: "", trialTime: "" };
+      var state = { campus: "", campusLabel: "", timezone: "", timezoneLabel: "", trialDate: "", trialTime: "" };
+
+      function isOnlineCampus() { return state.campus === "online"; }
 
       function pad(n) { return String(n).padStart(2,"0"); }
       function toDateValue(d) { return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()); }
@@ -402,6 +438,26 @@
           var sel = state.campus === o.value ? " selected" : "";
           return "<option value=\"" + o.value + "\"" + sel + ">" + o.label + "</option>";
         }).join("");
+      }
+
+      function buildTimezones(opts) {
+        timezoneSel.innerHTML = opts.map(function (o) {
+          var sel = state.timezone === o.value ? " selected" : "";
+          return "<option value=\"" + o.value + "\"" + sel + ">" + o.label + "</option>";
+        }).join("");
+      }
+
+      function syncTimezoneVisibility() {
+        var online = isOnlineCampus();
+        timezoneField.hidden = !online;
+        if (online) {
+          timezoneSel.setAttribute("required", "required");
+        } else {
+          timezoneSel.removeAttribute("required");
+          state.timezone = "";
+          state.timezoneLabel = "";
+          timezoneSel.value = "";
+        }
       }
 
       function getDateTag(date, t) {
@@ -461,15 +517,31 @@
       }
 
       function updateButtonState() {
-        var valid = !!(state.campus && state.trialDate && state.trialTime && !isTimeExpired(state.trialDate, state.trialTime));
+        var valid = !!(
+          state.campus &&
+          (!isOnlineCampus() || state.timezone) &&
+          state.trialDate &&
+          state.trialTime &&
+          !isTimeExpired(state.trialDate, state.trialTime)
+        );
         nextBtn.disabled = !valid;
-        selectionHint.style.display = valid ? "none" : "block";
+        if (valid) {
+          selectionHint.style.display = "none";
+          return;
+        }
+        var t = I18N[langOf()];
+        selectionHint.textContent = (isOnlineCampus() && !state.timezone)
+          ? (t.selectionHintOnline || t.selectionHint)
+          : t.selectionHint;
+        selectionHint.style.display = "block";
       }
 
       function saveToSession() {
         var payload = {
           campus: state.campus,
           campusLabel: state.campusLabel,
+          timezone: state.timezone,
+          timezoneLabel: state.timezoneLabel,
           trialDate: state.trialDate,
           trialTime: state.trialTime,
           preferredTrialDateTime: state.trialDate && state.trialTime ? new Date(state.trialDate + "T" + state.trialTime + ":00").toISOString() : "",
@@ -505,6 +577,11 @@
         var label = (t.campusOptions.find(function(o){ return o.value === state.campus; }) || {}).label || "";
         state.campusLabel = label;
 
+        buildTimezones(t.timezoneOptions);
+        var tzLabel = (t.timezoneOptions.find(function(o){ return o.value === state.timezone; }) || {}).label || "";
+        state.timezoneLabel = tzLabel;
+        syncTimezoneVisibility();
+
         renderCalendar(t);
         renderTimeGrid(t);
         updateButtonState();
@@ -531,6 +608,8 @@
       if (prev) {
         state.campus = prev.campus || "";
         state.campusLabel = prev.campusLabel || "";
+        state.timezone = prev.timezone || "";
+        state.timezoneLabel = prev.timezoneLabel || "";
         state.trialDate = prev.trialDate || "";
         state.trialTime = prev.trialTime || "";
       }
@@ -543,6 +622,15 @@
         var t = I18N[langOf()];
         var opt = t.campusOptions.find(function (o) { return o.value === state.campus; });
         state.campusLabel = opt ? opt.label : "";
+        syncTimezoneVisibility();
+        updateButtonState();
+      });
+
+      timezoneSel.addEventListener("change", function () {
+        state.timezone = timezoneSel.value;
+        var t = I18N[langOf()];
+        var opt = t.timezoneOptions.find(function (o) { return o.value === state.timezone; });
+        state.timezoneLabel = opt ? opt.label : "";
         updateButtonState();
       });
 
