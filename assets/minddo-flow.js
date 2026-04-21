@@ -7,7 +7,10 @@
     payments: "minddo_payments",
     feedback: "minddo_feedback",
     memberships: "minddo_membership_orders",
-    requests: "minddo_schedule_requests"
+    requests: "minddo_schedule_requests",
+    offerings: "minddo_class_offerings",
+    studentLevels: "minddo_student_levels",
+    invites: "minddo_account_invites"
   };
 
   function readJson(key, fallback) {
@@ -309,13 +312,120 @@
   ];
 
   function getClassOfferings() {
+    var override = readJson(KEYS.offerings, null);
+    if (Array.isArray(override) && override.length) return override.slice();
+    return CLASS_OFFERINGS.slice();
+  }
+  function saveClassOfferings(list) {
+    if (!Array.isArray(list)) return null;
+    writeJson(KEYS.offerings, list);
+    return list;
+  }
+  function resetClassOfferings() {
+    localStorage.removeItem(KEYS.offerings);
+    return CLASS_OFFERINGS.slice();
+  }
+  function getDefaultClassOfferings() {
     return CLASS_OFFERINGS.slice();
   }
   function getOfferingById(id) {
-    for (var i = 0; i < CLASS_OFFERINGS.length; i++) {
-      if (CLASS_OFFERINGS[i].id === id) return CLASS_OFFERINGS[i];
+    var all = getClassOfferings();
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].id === id) return all[i];
     }
     return null;
+  }
+
+  // Level override map: { studentId: "Beginner" | "Intermediate" | ... }.
+  // Falls back to the latest assessment.level if no override is set.
+  var LEVEL_CANON = ["Beginner", "Intermediate", "Advanced", "Competition", "Project Camp"];
+  var LEVEL_ZH = { Beginner: "入门", Intermediate: "中级", Advanced: "进阶", Competition: "竞赛", "Project Camp": "项目营" };
+  function getLevelCanon() { return LEVEL_CANON.slice(); }
+  function canonicalLevel(value) {
+    if (!value) return "";
+    var s = String(value).trim();
+    for (var i = 0; i < LEVEL_CANON.length; i++) {
+      if (s.toLowerCase() === LEVEL_CANON[i].toLowerCase()) return LEVEL_CANON[i];
+    }
+    // Map from Chinese label back to canonical EN
+    for (var k in LEVEL_ZH) {
+      if (LEVEL_ZH[k] === s) return k;
+    }
+    return s;
+  }
+  function getStudentLevelMap() {
+    var map = readJson(KEYS.studentLevels, {});
+    return (map && typeof map === "object") ? map : {};
+  }
+  function getStudentLevel(studentId) {
+    if (!studentId) return "";
+    var map = getStudentLevelMap();
+    if (map[studentId]) return canonicalLevel(map[studentId]);
+    // Fallback: latest assessment for this studentId
+    var assessments = readJson(KEYS.assessments, []);
+    var match = latestByDate(assessments, function (a) {
+      return a && String(a.studentId || "") === String(studentId);
+    });
+    return match && match.level ? canonicalLevel(match.level) : "";
+  }
+  function setStudentLevel(studentId, level) {
+    if (!studentId) return null;
+    var map = getStudentLevelMap();
+    if (level) map[studentId] = canonicalLevel(level);
+    else delete map[studentId];
+    writeJson(KEYS.studentLevels, map);
+    return map[studentId] || "";
+  }
+
+  // Account-invite bookkeeping: records one invite per email. Returns the
+  // stored record so UIs can show "Sent at ..." state.
+  function getAccountInvites() {
+    return readJson(KEYS.invites, []);
+  }
+  function getAccountInviteFor(email) {
+    var target = norm(email);
+    if (!target) return null;
+    var list = getAccountInvites();
+    return list.filter(function (r) { return norm(r.email) === target; })
+      .sort(function (a, b) { return new Date(b.sentAt || 0) - new Date(a.sentAt || 0); })[0] || null;
+  }
+  function sendAccountInvite(lead) {
+    if (!lead || !lead.email) return null;
+    var origin = "";
+    try { origin = window.location.origin + window.location.pathname.replace(/[^\/]+$/, ""); } catch (_) {}
+    var signupUrl = (origin || "") + "signup.html?email=" + encodeURIComponent(lead.email) +
+      (lead.studentName ? "&name=" + encodeURIComponent(lead.studentName) : "");
+    var subjectZh = "MindDo · 为 " + (lead.studentName || "学员") + " 创建学员账户";
+    var subjectEn = "MindDo · Create your MindDo account";
+    var bodyZh = "您好 " + (lead.parentName || lead.studentName || "家长") + "，\n\n" +
+      "感谢您完成 MindDo 的试课体验。请通过下方链接为 " + (lead.studentName || "学员") + " 创建正式学员账户：\n\n" +
+      signupUrl + "\n\n开始正式的 AI 学习之旅。\nMindDo 团队";
+    var bodyEn = "Hi " + (lead.parentName || lead.studentName || "there") + ",\n\n" +
+      "Thanks for joining the trial. Please use the link below to create your MindDo student account:\n\n" +
+      signupUrl + "\n\nSee you in class.\n— MindDo Team";
+    var mail = sendMockEmail({
+      to: lead.email,
+      toName: lead.parentName || lead.studentName || "",
+      studentName: lead.studentName || "",
+      studentId: lead.studentId || "",
+      subject: subjectZh + " / " + subjectEn,
+      bodyZh: bodyZh,
+      bodyEn: bodyEn,
+      template: "account_invite",
+      signupUrl: signupUrl
+    });
+    var record = {
+      email: lead.email,
+      studentName: lead.studentName || "",
+      studentId: lead.studentId || "",
+      mailId: mail.id,
+      signupUrl: signupUrl,
+      sentAt: mail.sentAt
+    };
+    var list = getAccountInvites();
+    list.push(record);
+    writeJson(KEYS.invites, list);
+    return record;
   }
 
   // Simulated email outbox. In a real deployment this would be an API call to a
@@ -493,9 +603,19 @@
     seedDemoData: seedDemoData,
     mockPaymentForCurrentStudent: mockPaymentForCurrentStudent,
     getClassOfferings: getClassOfferings,
+    saveClassOfferings: saveClassOfferings,
+    resetClassOfferings: resetClassOfferings,
+    getDefaultClassOfferings: getDefaultClassOfferings,
     getOfferingById: getOfferingById,
+    getLevelCanon: getLevelCanon,
+    getStudentLevel: getStudentLevel,
+    setStudentLevel: setStudentLevel,
+    canonicalLevel: canonicalLevel,
     requireLogin: requireLogin,
     sendMockEmail: sendMockEmail,
-    getEmailOutbox: getEmailOutbox
+    getEmailOutbox: getEmailOutbox,
+    sendAccountInvite: sendAccountInvite,
+    getAccountInviteFor: getAccountInviteFor,
+    getAccountInvites: getAccountInvites
   };
 })();

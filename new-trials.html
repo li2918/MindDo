@@ -71,6 +71,16 @@
     th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); font-size: 13px; }
     th { background: rgba(14,165,233,0.1); color: var(--clay); font-weight: 700; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
     tr:hover td { background: rgba(14,165,233,0.04); }
+    .trial-status { display: inline-flex; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
+    .trial-status.pending { background: rgba(216,156,54,0.12); color: #b3801e; border: 1px solid rgba(216,156,54,0.32); }
+    .trial-status.done { background: rgba(111,143,87,0.14); color: #4f6f38; border: 1px solid rgba(111,143,87,0.32); }
+    .btn-invite { background: linear-gradient(135deg,#bae6fd,var(--gold)); color: #0b2540; border: none; border-radius: 999px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.15s; box-shadow: 0 4px 10px rgba(14,165,233,0.22); white-space: nowrap; }
+    .btn-invite:hover { transform: translateY(-1px); }
+    .btn-invite[disabled] { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-invite.sent { background: linear-gradient(135deg,#dcfce7,#86efac); color: #2f4a1e; box-shadow: none; cursor: default; }
+    .invite-hint { display: block; font-size: 10.5px; color: var(--muted); margin-top: 4px; }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--clay); color: #f0f9ff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 700; box-shadow: 0 12px 28px rgba(30,58,95,0.3); opacity: 0; transform: translateY(10px); transition: 0.25s; pointer-events: none; z-index: 2000; }
+    .toast.show { opacity: 1; transform: translateY(0); }
 
     /* FOOTER */
     .footer { background: var(--brown); color: rgba(240,249,255,0.78); padding: 60px 48px 32px; }
@@ -202,6 +212,8 @@
                 <th><span data-lang="zh">渠道</span><span data-lang="en">Channel</span></th>
                 <th><span data-lang="zh">试课时间</span><span data-lang="en">Trial Time</span></th>
                 <th><span data-lang="zh">创建时间</span><span data-lang="en">Created</span></th>
+                <th><span data-lang="zh">试课状态</span><span data-lang="en">Trial Status</span></th>
+                <th><span data-lang="zh">开户邀请</span><span data-lang="en">Account Invite</span></th>
               </tr>
             </thead>
             <tbody id="trialTable"></tbody>
@@ -210,6 +222,8 @@
       </div>
     </div>
   </div>
+
+  <div class="toast" id="toast"></div>
 
   <footer class="footer">
     <div class="footer-inner">
@@ -265,35 +279,145 @@
     </div>
   </footer>
 
+  <script src="assets/minddo-flow.js"></script>
   <script>
     (function () {
+      var I18N = {
+        "zh-CN": {
+          statusDone: "已完成",
+          statusPending: "待完成",
+          invite: "发送开户邀请",
+          inviteBlocked: "需先完成试课",
+          inviteSent: "已发送 ✓",
+          inviteEmpty: "缺少邮箱",
+          toastSent: "开户邀请已发送到 {email}",
+          sentAtLabel: "发送于 {time}",
+          emptyRow: "今天暂无新注册试课。"
+        },
+        en: {
+          statusDone: "Done",
+          statusPending: "Pending",
+          invite: "Send Invite",
+          inviteBlocked: "Trial not done yet",
+          inviteSent: "Sent ✓",
+          inviteEmpty: "Missing email",
+          toastSent: "Account invite sent to {email}",
+          sentAtLabel: "Sent at {time}",
+          emptyRow: "No new trial registrations today."
+        }
+      };
+
       var html = document.documentElement;
       var langBtns = document.querySelectorAll("[data-set-lang]");
-      var saved = localStorage.getItem("minddo_lang");
-      var lang = saved === "en" ? "en" : "zh-CN";
-      html.setAttribute("lang", lang);
-      langBtns.forEach(function (btn) {
-        btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
-        btn.addEventListener("click", function () {
-          var l = btn.getAttribute("data-set-lang");
-          html.setAttribute("lang", l);
-          localStorage.setItem("minddo_lang", l);
-          langBtns.forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-set-lang") === l); });
-        });
-      });
+      var lang = localStorage.getItem("minddo_lang") === "en" ? "en" : "zh-CN";
+      var tbody = document.getElementById("trialTable");
+      var toast = document.getElementById("toast");
 
       function readJson(key) { try { return JSON.parse(localStorage.getItem(key) || "[]"); } catch (_) { return []; } }
       function safeDate(v) { var d = new Date(v); return Number.isNaN(d.getTime()) ? null : d; }
-      var startToday = new Date(); startToday.setHours(0,0,0,0);
-      var rows = readJson("minddo_trial_leads").filter(function (item) {
-        var d = safeDate(item.createdAt); return d && d >= startToday;
-      }).sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
-      var tbody = document.getElementById("trialTable");
-      tbody.innerHTML = rows.length ? rows.map(function (item) {
-        var trialTime = (item.trialDate || "-") + " " + (item.trialTime || "");
-        var created = safeDate(item.createdAt);
-        return "<tr><td>" + (item.studentName || "-") + "</td><td>" + (item.email || "-") + "</td><td>" + (item.campusLabel || item.campus || "-") + "</td><td>" + (item.channelLabel || item.channel || "-") + "</td><td>" + trialTime + "</td><td>" + (created ? created.toLocaleString() : "-") + "</td></tr>";
-      }).join("") : "<tr><td colspan='6' style='color:var(--muted);text-align:center;padding:24px;'><span data-lang='zh'>今天暂无新注册试课。</span><span data-lang='en'>No new trial registrations today.</span></td></tr>";
+      function norm(v) { return String(v || "").trim().toLowerCase(); }
+      function escapeAttr(s) { return String(s || "").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
+
+      // Trial is "complete" when a feedback record exists for that email/studentId.
+      function feedbackFor(lead) {
+        var fb = readJson("minddo_feedback");
+        var email = norm(lead.email);
+        var id = String(lead.studentId || "");
+        return fb.some(function (r) {
+          return (email && norm(r.email) === email) || (id && String(r.studentId || "") === id);
+        });
+      }
+
+      function inviteFor(lead) {
+        if (!window.MindDoFlow || !window.MindDoFlow.getAccountInviteFor) return null;
+        return window.MindDoFlow.getAccountInviteFor(lead.email);
+      }
+
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add("show");
+        setTimeout(function () { toast.classList.remove("show"); }, 2000);
+      }
+
+      function render() {
+        var t = I18N[lang];
+        var startToday = new Date(); startToday.setHours(0, 0, 0, 0);
+        var rows = readJson("minddo_trial_leads").filter(function (item) {
+          var d = safeDate(item.createdAt); return d && d >= startToday;
+        }).sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
+
+        if (!rows.length) {
+          tbody.innerHTML = "<tr><td colspan='8' style='color:var(--muted);text-align:center;padding:24px;'>" + t.emptyRow + "</td></tr>";
+          return;
+        }
+
+        tbody.innerHTML = rows.map(function (item, idx) {
+          var trialTime = (item.trialDate || "-") + " " + (item.trialTime || "");
+          var created = safeDate(item.createdAt);
+          var done = feedbackFor(item);
+          var invite = inviteFor(item);
+          var statusCls = done ? "done" : "pending";
+          var statusText = done ? t.statusDone : t.statusPending;
+          var hasEmail = !!(item.email && String(item.email).indexOf("@") > 0);
+
+          var inviteCell;
+          if (invite) {
+            var sentAt = safeDate(invite.sentAt);
+            inviteCell = "<button type='button' class='btn-invite sent' disabled>" + t.inviteSent + "</button>" +
+              (sentAt ? "<span class='invite-hint'>" + t.sentAtLabel.replace("{time}", sentAt.toLocaleString()) + "</span>" : "");
+          } else if (!hasEmail) {
+            inviteCell = "<button type='button' class='btn-invite' disabled>" + t.inviteEmpty + "</button>";
+          } else if (!done) {
+            inviteCell = "<button type='button' class='btn-invite' disabled>" + t.inviteBlocked + "</button>";
+          } else {
+            inviteCell = "<button type='button' class='btn-invite' data-invite-idx='" + idx + "'>" + t.invite + "</button>";
+          }
+
+          return "<tr data-lead-idx='" + idx + "'>" +
+            "<td>" + (item.studentName || "-") + "</td>" +
+            "<td>" + (item.email || "-") + "</td>" +
+            "<td>" + (item.campusLabel || item.campus || "-") + "</td>" +
+            "<td>" + (item.channelLabel || item.channel || "-") + "</td>" +
+            "<td>" + trialTime + "</td>" +
+            "<td>" + (created ? created.toLocaleString() : "-") + "</td>" +
+            "<td><span class='trial-status " + statusCls + "'>" + statusText + "</span></td>" +
+            "<td>" + inviteCell + "</td>" +
+            "</tr>";
+        }).join("");
+
+        // Stash the rendered leads so the click handler can fetch by index.
+        tbody._leads = rows;
+      }
+
+      tbody.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-invite-idx]");
+        if (!btn) return;
+        var idx = Number(btn.getAttribute("data-invite-idx"));
+        var lead = tbody._leads && tbody._leads[idx];
+        if (!lead) return;
+        if (!window.MindDoFlow || !window.MindDoFlow.sendAccountInvite) return;
+        var record = window.MindDoFlow.sendAccountInvite(lead);
+        if (record) {
+          showToast(I18N[lang].toastSent.replace("{email}", record.email));
+          render();
+        }
+      });
+
+      function setLang(l) {
+        lang = l;
+        html.setAttribute("lang", l);
+        localStorage.setItem("minddo_lang", l);
+        langBtns.forEach(function (b) {
+          b.classList.toggle("active", b.getAttribute("data-set-lang") === l);
+        });
+        render();
+      }
+
+      langBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); });
+      });
+
+      setLang(lang);
     })();
   </script>
   <script src="assets/lang-switcher.js" defer></script>

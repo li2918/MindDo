@@ -279,9 +279,16 @@
         weekly2: { price: 369, labelZh: "每周两节课", labelEn: "2 Classes / Week", sessions: 2 },
         weekly3: { price: 519, labelZh: "每周三节课", labelEn: "3 Classes / Week", sessions: 3 }
       };
-      var OFFERINGS = (window.MindDoFlow && window.MindDoFlow.getClassOfferings)
+      var ALL_OFFERINGS = (window.MindDoFlow && window.MindDoFlow.getClassOfferings)
         ? window.MindDoFlow.getClassOfferings()
         : [];
+      var currentForLevel = window.MindDoFlow && window.MindDoFlow.getCurrentStudent
+        ? window.MindDoFlow.getCurrentStudent() : null;
+      var studentLevel = (window.MindDoFlow && window.MindDoFlow.getStudentLevel && currentForLevel)
+        ? window.MindDoFlow.getStudentLevel(currentForLevel.studentId) : "";
+      var OFFERINGS = studentLevel
+        ? ALL_OFFERINGS.filter(function (o) { return o.level && o.level.en === studentLevel; })
+        : ALL_OFFERINGS;
       var html = document.documentElement;
       var langButtons = document.querySelectorAll("[data-set-lang]");
 
@@ -297,8 +304,14 @@
       var need = PLANS[state.plan].sessions;
 
       // Session shape: { offeringId, day, slot }. Backward-compat: drop raw day/slot-only entries.
+      // Also drop any offeringId no longer present in the level-filtered OFFERINGS list.
+      var validIds = {};
+      OFFERINGS.forEach(function (o) { validIds[o.id] = true; });
       if (!Array.isArray(state.sessions)) state.sessions = [];
-      state.sessions = state.sessions.map(function (s) { return s && s.offeringId ? s : {}; });
+      state.sessions = state.sessions.map(function (s) {
+        if (s && s.offeringId && validIds[s.offeringId]) return s;
+        return {};
+      });
       if (state.sessions.length > need) state.sessions = state.sessions.slice(0, need);
       while (state.sessions.length < need) state.sessions.push({});
       delete state.day;
@@ -406,9 +419,19 @@
             "</div>";
         }).join("");
         document.getElementById("sessionList").innerHTML = blocks;
-        document.getElementById("sessionHint").textContent = (k() === "zh"
+        var baseHint = (k() === "zh"
           ? "当前方案每周 " + need + " 节课，以下为校区已开放的班次。座位有限，先选先得。"
           : "Your plan includes " + need + " class" + (need > 1 ? "es" : "") + " per week. Seats are limited — first come first served.");
+        var levelHint = "";
+        if (studentLevel) {
+          var zhLevel = (window.MindDoFlow && window.MindDoFlow.canonicalLevel)
+            ? ({ Beginner: "入门", Intermediate: "中级", Advanced: "进阶", Competition: "竞赛", "Project Camp": "项目营" }[studentLevel] || studentLevel)
+            : studentLevel;
+          levelHint = k() === "zh"
+            ? " 本名单已根据学员试课评估锁定到「" + zhLevel + "」等级课程。"
+            : " Filtered to classes matching the trial-assessed level: " + studentLevel + ".";
+        }
+        document.getElementById("sessionHint").textContent = baseHint + levelHint;
       }
 
       function renderSummary() {

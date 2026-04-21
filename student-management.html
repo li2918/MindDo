@@ -255,6 +255,44 @@
       font-size: 13px;
     }
 
+    .level-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(224, 242, 254, 0.55);
+      border: 1px solid rgba(2, 132, 199, 0.22);
+      font-size: 13px;
+    }
+    .level-row span { color: var(--muted); font-weight: 700; }
+    .level-row .level-current { color: var(--clay); }
+    .level-row select {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--clay);
+      padding: 7px 10px;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 12px;
+      outline: none;
+    }
+    .level-row button {
+      border: 1px solid rgba(2, 132, 199, 0.38);
+      background: linear-gradient(135deg, #bae6fd, #7dd3fc);
+      color: var(--clay);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .level-row button:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(14, 165, 233, 0.25); }
+    .level-row button.saved { background: linear-gradient(135deg, #dcfce7, #86efac); border-color: rgba(111, 143, 87, 0.38); }
+
     .empty {
       padding: 18px;
       border-radius: 18px;
@@ -477,7 +515,19 @@
           },
           openProfile: "查看学员页",
           openRequestCenter: "查看申请",
-          noData: "当前没有符合条件的学员。"
+          noData: "当前没有符合条件的学员。",
+          levelTitle: "学员等级",
+          levelUnset: "未设定",
+          levelSave: "保存",
+          levelSaved: "已保存 ✓",
+          levelOptions: {
+            "": "— 未设定 —",
+            Beginner: "入门 · Beginner",
+            Intermediate: "中级 · Intermediate",
+            Advanced: "进阶 · Advanced",
+            Competition: "竞赛 · Competition",
+            "Project Camp": "项目营 · Project Camp"
+          }
         },
         en: {
           goDashboard: "Back To Dashboard",
@@ -524,7 +574,19 @@
           },
           openProfile: "Open Profile",
           openRequestCenter: "Open Requests",
-          noData: "There are no students matching this filter."
+          noData: "There are no students matching this filter.",
+          levelTitle: "Student Level",
+          levelUnset: "Not set",
+          levelSave: "Save",
+          levelSaved: "Saved ✓",
+          levelOptions: {
+            "": "— Not set —",
+            Beginner: "Beginner",
+            Intermediate: "Intermediate",
+            Advanced: "Advanced",
+            Competition: "Competition",
+            "Project Camp": "Project Camp"
+          }
         }
       };
 
@@ -679,6 +741,14 @@
           var assessmentText = latestAssessment ? (latestAssessment.level || latestAssessment.goal || "OK") : t.fallback.noAssessment;
           var source = student.provider || t.fallback.noSource;
 
+          var studentLevel = (window.MindDoFlow && window.MindDoFlow.getStudentLevel && student.studentId)
+            ? window.MindDoFlow.getStudentLevel(student.studentId) : "";
+          var levelOptions = Object.keys(t.levelOptions).map(function (val) {
+            var sel = val === studentLevel ? " selected" : "";
+            return "<option value=\"" + val + "\"" + sel + ">" + t.levelOptions[val] + "</option>";
+          }).join("");
+          var levelDisplay = studentLevel ? (t.levelOptions[studentLevel] || studentLevel) : t.levelUnset;
+
           return [
             "<article class='student-card'>",
             "<div class='card-top'>",
@@ -698,6 +768,11 @@
             "<div class='kv-row'><span>" + t.labels.feedback + "</span><strong>" + feedbackText + "</strong></div>",
             "<div class='kv-row'><span>" + t.labels.assessment + "</span><strong>" + assessmentText + "</strong></div>",
             "<div class='kv-row'><span>" + t.labels.source + "</span><strong>" + source + "</strong></div>",
+            "<div class='level-row' data-student-id=\"" + (student.studentId || "") + "\">",
+            "<span>" + t.levelTitle + "</span>",
+            "<select data-level-select>" + levelOptions + "</select>",
+            "<button type='button' data-level-save data-current=\"" + studentLevel + "\">" + t.levelSave + "</button>",
+            "</div>",
             "</div>",
             "<div class='card-actions'>",
             "<a class='btn' href='student-account.html?name=" + encodeURIComponent(student.studentName || "") + "&email=" + encodeURIComponent(student.email || "") + "'>" + t.openProfile + "</a>",
@@ -707,6 +782,22 @@
           ].join("");
         }).join("");
       }
+
+      studentGrid.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-level-save]");
+        if (!btn) return;
+        var row = btn.closest(".level-row");
+        if (!row) return;
+        var studentId = row.getAttribute("data-student-id");
+        var select = row.querySelector("[data-level-select]");
+        if (!studentId || !select) return;
+        if (window.MindDoFlow && window.MindDoFlow.setStudentLevel) {
+          window.MindDoFlow.setStudentLevel(studentId, select.value);
+        }
+        btn.classList.add("saved");
+        btn.textContent = I18N[state.lang].levelSaved;
+        setTimeout(render, 600);
+      });
 
       buttons.forEach(function (btn) {
         btn.addEventListener("click", function () {
