@@ -336,13 +336,8 @@
           statusPending: "待完成",
           markDone: "标记试课完成",
           undoDone: "撤销",
-          reminder: "发送注册邀请",
-          reminderSent: "注册邀请已发送 ✓",
-          reminderBlocked: "需先完成试课",
-          reminderEmpty: "缺少邮箱",
           invite: "发送开户邀请",
           inviteBlocked: "需先完成试课",
-          inviteNeedsEval: "需先完成评估",
           inviteSent: "已发送 ✓",
           inviteEmpty: "缺少邮箱",
           evalButton: "评估并分配等级",
@@ -355,7 +350,6 @@
           completedAtLabel: "完成于 {time}",
           toastCompleted: "已标记 {name} 的试课完成。",
           toastUncompleted: "已撤销 {name} 的完成标记。",
-          toastReminder: "注册邀请已发送到 {email}",
           toastSent: "开户邀请已发送到 {email}",
           toastEvaluated: "已保存 {name} 的试课评估：{level}",
           sentAtLabel: "发送于 {time}",
@@ -375,13 +369,8 @@
           statusPending: "Pending",
           markDone: "Mark Trial Done",
           undoDone: "Undo",
-          reminder: "Send Register Link",
-          reminderSent: "Register link sent ✓",
-          reminderBlocked: "Trial not done yet",
-          reminderEmpty: "Missing email",
           invite: "Send Invite",
           inviteBlocked: "Trial not done yet",
-          inviteNeedsEval: "Evaluate first",
           inviteSent: "Sent ✓",
           inviteEmpty: "Missing email",
           evalButton: "Evaluate & Assign",
@@ -394,7 +383,6 @@
           completedAtLabel: "Done at {time}",
           toastCompleted: "Marked {name}'s trial as done.",
           toastUncompleted: "Undid {name}'s completion mark.",
-          toastReminder: "Register link sent to {email}",
           toastSent: "Account invite sent to {email}",
           toastEvaluated: "Saved evaluation for {name}: {level}",
           sentAtLabel: "Sent at {time}",
@@ -488,7 +476,6 @@
           var done = !!completion;
           var evalRec = evaluationFor(item);
           var invite = inviteFor(item);
-          var reminderSent = !!reminderSentKeys[leadKey(item)];
           var hasEmail = !!(item.email && String(item.email).indexOf("@") > 0);
 
           var statusCell;
@@ -524,36 +511,21 @@
             evalCell = "<button type='button' class='btn-eval' data-eval-idx='" + idx + "'>" + t.evalButton + "</button>";
           }
 
-          // Account Invite cell: two actions stacked — a lightweight register-link
-          // reminder (enabled right after completion) and the full invite
-          // (enabled after evaluation).
-          var reminderBtn;
-          if (reminderSent) {
-            reminderBtn = "<button type='button' class='btn-invite sent' disabled>" + t.reminderSent + "</button>";
-          } else if (!hasEmail) {
-            reminderBtn = "<button type='button' class='btn-invite' disabled>" + t.reminderEmpty + "</button>";
-          } else if (!done) {
-            reminderBtn = "<button type='button' class='btn-invite' disabled>" + t.reminderBlocked + "</button>";
-          } else {
-            reminderBtn = "<button type='button' class='btn-invite' data-reminder-idx='" + idx + "'>" + t.reminder + "</button>";
-          }
-
-          var inviteBtn;
+          // Account Invite cell: single action. Gated on trial completion so
+          // ops can send the registration link as soon as the trial wraps; an
+          // existing evaluation (if present) enriches the email body.
+          var inviteCell;
           if (invite) {
             var sentAt = safeDate(invite.sentAt);
-            inviteBtn = "<button type='button' class='btn-invite sent' disabled>" + t.inviteSent + "</button>" +
+            inviteCell = "<button type='button' class='btn-invite sent' disabled>" + t.inviteSent + "</button>" +
               (sentAt ? "<span class='invite-hint'>" + t.sentAtLabel.replace("{time}", sentAt.toLocaleString()) + "</span>" : "");
           } else if (!hasEmail) {
-            inviteBtn = "<button type='button' class='btn-invite' disabled>" + t.inviteEmpty + "</button>";
+            inviteCell = "<button type='button' class='btn-invite' disabled>" + t.inviteEmpty + "</button>";
           } else if (!done) {
-            inviteBtn = "<button type='button' class='btn-invite' disabled>" + t.inviteBlocked + "</button>";
-          } else if (!evalRec) {
-            inviteBtn = "<button type='button' class='btn-invite' disabled>" + t.inviteNeedsEval + "</button>";
+            inviteCell = "<button type='button' class='btn-invite' disabled>" + t.inviteBlocked + "</button>";
           } else {
-            inviteBtn = "<button type='button' class='btn-invite' data-invite-idx='" + idx + "'>" + t.invite + "</button>";
+            inviteCell = "<button type='button' class='btn-invite' data-invite-idx='" + idx + "'>" + t.invite + "</button>";
           }
-
-          var inviteCell = "<div class='eval-cell'>" + reminderBtn + inviteBtn + "</div>";
 
           return "<tr data-lead-idx='" + idx + "'>" +
             "<td>" + (item.studentName || "-") + "</td>" +
@@ -571,11 +543,6 @@
         // Stash the rendered leads so the click handler can fetch by index.
         tbody._leads = rows;
       }
-
-      // Per-tab memory of registration-reminders already sent in this session.
-      // Each lead's record is stashed directly on the lead object via `_reminderSent`.
-      var reminderSentKeys = {};
-      function leadKey(lead) { return norm(lead.email) + "|" + String(lead.studentId || ""); }
 
       tbody.addEventListener("click", function (e) {
         var markBtn = e.target.closest("[data-mark-idx]");
@@ -596,19 +563,6 @@
           window.MindDoFlow.unmarkTrialComplete(uLead);
           showToast(I18N[lang].toastUncompleted.replace("{name}", uLead.studentName || "—"));
           render();
-          return;
-        }
-        var reminderBtn = e.target.closest("[data-reminder-idx]");
-        if (reminderBtn) {
-          var rIdx = Number(reminderBtn.getAttribute("data-reminder-idx"));
-          var rLead = tbody._leads && tbody._leads[rIdx];
-          if (!rLead || !window.MindDoFlow || !window.MindDoFlow.sendRegistrationReminder) return;
-          var rec = window.MindDoFlow.sendRegistrationReminder(rLead);
-          if (rec) {
-            reminderSentKeys[leadKey(rLead)] = true;
-            showToast(I18N[lang].toastReminder.replace("{email}", rec.email));
-            render();
-          }
           return;
         }
         var inviteBtnEl = e.target.closest("[data-invite-idx]");

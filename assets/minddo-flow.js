@@ -450,14 +450,28 @@
     try { origin = window.location.origin + window.location.pathname.replace(/[^\/]+$/, ""); } catch (_) {}
     var signupUrl = (origin || "") + "signup.html?email=" + encodeURIComponent(lead.email) +
       (lead.studentName ? "&name=" + encodeURIComponent(lead.studentName) : "");
+    // If an evaluation already exists for this lead, weave the assigned level
+    // and ops notes into the email body so the parent sees the path forward.
+    var evalRec = getTrialEvaluationFor(lead);
+    var levelZhMap = { Beginner: "入门", Intermediate: "中级", Advanced: "进阶", Competition: "竞赛", "Project Camp": "项目营" };
+    var evalBlockZh = evalRec
+      ? "\n\n校区评估结果：" + (levelZhMap[evalRec.level] || evalRec.level) + " 等级" +
+        (evalRec.notes ? "\n老师备注：" + evalRec.notes : "")
+      : "";
+    var evalBlockEn = evalRec
+      ? "\n\nAssigned level: " + evalRec.level +
+        (evalRec.notes ? "\nTeacher notes: " + evalRec.notes : "")
+      : "";
     var subjectZh = "MindDo · 为 " + (lead.studentName || "学员") + " 创建学员账户";
     var subjectEn = "MindDo · Create your MindDo account";
     var bodyZh = "您好 " + (lead.parentName || lead.studentName || "家长") + "，\n\n" +
       "感谢您完成 MindDo 的试课体验。请通过下方链接为 " + (lead.studentName || "学员") + " 创建正式学员账户：\n\n" +
-      signupUrl + "\n\n开始正式的 AI 学习之旅。\nMindDo 团队";
+      signupUrl + evalBlockZh +
+      "\n\n开始正式的 AI 学习之旅。\nMindDo 团队";
     var bodyEn = "Hi " + (lead.parentName || lead.studentName || "there") + ",\n\n" +
       "Thanks for joining the trial. Please use the link below to create your MindDo student account:\n\n" +
-      signupUrl + "\n\nSee you in class.\n— MindDo Team";
+      signupUrl + evalBlockEn +
+      "\n\nSee you in class.\n— MindDo Team";
     var mail = sendMockEmail({
       to: lead.email,
       toName: lead.parentName || lead.studentName || "",
@@ -578,36 +592,6 @@
     });
     writeJson(KEYS.completions, next);
     return next.length !== list.length;
-  }
-
-  // "Please register" reminder — a lighter-weight email than the full account
-  // invite. Uses the same outbox; parent sees a short prompt with a signup link.
-  function sendRegistrationReminder(lead) {
-    if (!lead || !lead.email) return null;
-    var origin = "";
-    try { origin = window.location.origin + window.location.pathname.replace(/[^\/]+$/, ""); } catch (_) {}
-    var signupUrl = (origin || "") + "signup.html?email=" + encodeURIComponent(lead.email) +
-      (lead.studentName ? "&name=" + encodeURIComponent(lead.studentName) : "");
-    var subjectZh = "MindDo · 请为 " + (lead.studentName || "学员") + " 注册学员账户";
-    var subjectEn = "MindDo · Please register your account";
-    var bodyZh = "您好 " + (lead.parentName || lead.studentName || "家长") + "，\n\n" +
-      "感谢您参与 MindDo 的试课。请通过下方链接完成学员账户注册，便于老师后续安排课程：\n\n" +
-      signupUrl + "\n\n— MindDo 团队";
-    var bodyEn = "Hi " + (lead.parentName || lead.studentName || "there") + ",\n\n" +
-      "Thanks for trying MindDo. Please register your student account via the link below so our team can schedule your classes:\n\n" +
-      signupUrl + "\n\n— MindDo Team";
-    var mail = sendMockEmail({
-      to: lead.email,
-      toName: lead.parentName || lead.studentName || "",
-      studentName: lead.studentName || "",
-      studentId: lead.studentId || "",
-      subject: subjectZh + " / " + subjectEn,
-      bodyZh: bodyZh,
-      bodyEn: bodyEn,
-      template: "registration_reminder",
-      signupUrl: signupUrl
-    });
-    return { mailId: mail.id, email: lead.email, sentAt: mail.sentAt, signupUrl: signupUrl };
   }
 
   // Simulated email outbox. In a real deployment this would be an API call to a
@@ -806,7 +790,6 @@
     markTrialComplete: markTrialComplete,
     unmarkTrialComplete: unmarkTrialComplete,
     getTrialCompletionFor: getTrialCompletionFor,
-    getTrialCompletions: getTrialCompletions,
-    sendRegistrationReminder: sendRegistrationReminder
+    getTrialCompletions: getTrialCompletions
   };
 })();
