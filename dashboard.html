@@ -148,6 +148,21 @@
       margin-bottom: 14px;
     }
 
+    .workspace { margin: 0 0 22px; padding: 20px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; box-shadow: 0 18px 44px rgba(30,58,95,0.08); scroll-margin-top: 90px; }
+    .workspace-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 4px; }
+    .workspace-head h2 { font-size: 18px; font-weight: 800; color: var(--clay); margin: 0; }
+    .workspace-sub { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+    .workspace-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .ws-card { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; background: #fff; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: inherit; transition: 0.15s; position: relative; }
+    .ws-card:hover { transform: translateY(-2px); border-color: rgba(2,132,199,0.45); box-shadow: 0 14px 28px rgba(14,165,233,0.14); }
+    .ws-card .ws-icon { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg,#e0f2fe,#bae6fd); display: inline-flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .ws-card .ws-body { min-width: 0; flex: 1; }
+    .ws-card .ws-title { display: block; font-size: 14px; font-weight: 800; color: var(--clay); margin-bottom: 2px; }
+    .ws-card .ws-desc { display: block; font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .ws-card .ws-badge { position: absolute; top: 12px; right: 14px; background: var(--danger); color: #fff; font-size: 10px; font-weight: 800; letter-spacing: 0.05em; padding: 3px 8px; border-radius: 999px; min-width: 22px; text-align: center; }
+    @media (max-width: 900px) { .workspace-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 560px) { .workspace-grid { grid-template-columns: 1fr; } }
+
     .alert-card {
       padding: 16px;
       border-radius: 18px;
@@ -354,12 +369,6 @@
     <ul class="nav-menu">
       <li><a href="index.html"><span data-lang="zh">首页</span><span data-lang="en">Home</span></a></li>
       <li><a href="campuses.html"><span data-lang="zh">校区选择</span><span data-lang="en">Campuses</span></a></li>
-      <li><a href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a></li>
-      <li><a href="new-trials.html"><span data-lang="zh">新试课</span><span data-lang="en">New Trials</span></a></li>
-      <li><a href="new-students.html"><span data-lang="zh">新学员</span><span data-lang="en">New Students</span></a></li>
-      <li><a href="request-center.html"><span data-lang="zh">请假中心</span><span data-lang="en">Requests</span></a></li>
-      <li><a href="course-offerings.html"><span data-lang="zh">课程时段</span><span data-lang="en">Time Slots</span></a></li>
-      <li><a href="email-outbox.html"><span data-lang="zh">发件箱</span><span data-lang="en">Outbox</span></a></li>
     </ul>
     <div class="nav-right">
       <div class="lang-switcher" data-lang-switcher>
@@ -385,12 +394,7 @@
           <h1 data-i18n="title"></h1>
           <p class="hero-sub"><span data-lang="zh">实时查看学员注册、付费、评估和申请数据，快速识别需要跟进的关键事项。</span><span data-lang="en">Monitor registrations, payments, assessments, and requests in real time to act on what matters.</span></p>
           <div class="hero-quick-links">
-            <a class="hero-quick-link" href="student-management.html"><span data-lang="zh">学员管理</span><span data-lang="en">Students</span></a>
-            <a class="hero-quick-link" href="new-trials.html"><span data-lang="zh">新试课</span><span data-lang="en">New Trials</span></a>
-            <a class="hero-quick-link" href="request-center.html"><span data-lang="zh">申请处理</span><span data-lang="en">Requests</span></a>
-            <a class="hero-quick-link" href="new-students.html"><span data-lang="zh">新学员</span><span data-lang="en">New Students</span></a>
-            <a class="hero-quick-link" href="course-offerings.html"><span data-lang="zh">课程时段</span><span data-lang="en">Time Slots</span></a>
-            <a class="hero-quick-link" href="email-outbox.html"><span data-lang="zh">发件箱</span><span data-lang="en">Outbox</span></a>
+            <a class="hero-quick-link" href="#opsWorkspace"><span data-lang="zh">↓ 运营工作台</span><span data-lang="en">↓ Ops Workspace</span></a>
           </div>
         </div>
         <div class="hero-ops-card">
@@ -417,6 +421,14 @@
 
   <div class="page-content">
     <div class="content-inner">
+
+      <section id="opsWorkspace" class="workspace">
+        <div class="workspace-head">
+          <h2><span data-lang="zh">运营工作台</span><span data-lang="en">Ops Workspace</span></h2>
+          <span class="workspace-sub" style="margin:0;"><span data-lang="zh">所有运营操作入口都在这里 — 学员、课程、邮件、申请。</span><span data-lang="en">Every ops entry in one place — students, classes, mail, requests.</span></span>
+        </div>
+        <div class="workspace-grid" id="workspaceGrid"></div>
+      </section>
 
       <section class="alert-strip" id="alertStrip"></section>
 
@@ -574,6 +586,14 @@
           alertEmpty: "当前没有新的提醒。",
           openList: "查看列表",
           openPage: "打开页面",
+          ws: {
+            students: { title: "学员管理", desc: "已注册学员档案、等级、课程状态。" },
+            newTrials: { title: "新试课", desc: "今日新预约、标记完成、评估、发邀请。" },
+            newStudents: { title: "新学员", desc: "今日新注册学员提醒。" },
+            requests: { title: "申请处理", desc: "请假 / 改期申请审批。" },
+            offerings: { title: "课程时段", desc: "编辑家长可选的班次与等级。" },
+            outbox: { title: "邮件发件箱", desc: "查看并重发已触发的邮件。" }
+          },
           ranges: [
             { key: "7", text: "近7天" },
             { key: "30", text: "近30天" },
@@ -644,6 +664,14 @@
           alertEmpty: "There are no fresh alerts right now.",
           openList: "View List",
           openPage: "Open Page",
+          ws: {
+            students: { title: "Students", desc: "Registered profiles, levels, and class status." },
+            newTrials: { title: "New Trials", desc: "Today's trials — mark done, evaluate, invite." },
+            newStudents: { title: "New Students", desc: "Today's fresh registrations." },
+            requests: { title: "Requests", desc: "Leave and reschedule approvals." },
+            offerings: { title: "Class Slots", desc: "Edit the offerings parents choose from." },
+            outbox: { title: "Email Outbox", desc: "Inspect and resend triggered emails." }
+          },
           ranges: [
             { key: "7", text: "Last 7 Days" },
             { key: "30", text: "Last 30 Days" },
@@ -707,6 +735,7 @@
       var buttons = document.querySelectorAll("[data-set-lang]");
       var metricGrid = document.getElementById("metricGrid");
       var alertStrip = document.getElementById("alertStrip");
+      var workspaceGrid = document.getElementById("workspaceGrid");
       var levelList = document.getElementById("levelList");
       var extraList = document.getElementById("extraList");
       var channelList = document.getElementById("channelList");
@@ -792,6 +821,29 @@
 
         el.innerHTML = items.map(function (it) {
           return "<li><span>" + it.label + "</span><span class='badge'>" + it.value + "</span></li>";
+        }).join("");
+      }
+
+      function renderWorkspace(data, t) {
+        if (!workspaceGrid) return;
+        var cards = [
+          { href: "student-management.html", icon: "👥", title: t.ws.students.title, desc: t.ws.students.desc, badge: null },
+          { href: "new-trials.html", icon: "📝", title: t.ws.newTrials.title, desc: t.ws.newTrials.desc, badge: data.newTrials > 0 ? data.newTrials : null },
+          { href: "new-students.html", icon: "🆕", title: t.ws.newStudents.title, desc: t.ws.newStudents.desc, badge: data.newStudents > 0 ? data.newStudents : null },
+          { href: "request-center.html", icon: "📥", title: t.ws.requests.title, desc: t.ws.requests.desc, badge: data.pending > 0 ? data.pending : null },
+          { href: "course-offerings.html", icon: "📅", title: t.ws.offerings.title, desc: t.ws.offerings.desc, badge: null },
+          { href: "email-outbox.html", icon: "📨", title: t.ws.outbox.title, desc: t.ws.outbox.desc, badge: null }
+        ];
+        workspaceGrid.innerHTML = cards.map(function (c) {
+          var badge = c.badge ? "<span class='ws-badge'>" + c.badge + "</span>" : "";
+          return "<a class='ws-card' href='" + c.href + "'>" +
+            "<span class='ws-icon'>" + c.icon + "</span>" +
+            "<span class='ws-body'>" +
+              "<span class='ws-title'>" + c.title + "</span>" +
+              "<span class='ws-desc'>" + c.desc + "</span>" +
+            "</span>" +
+            badge +
+            "</a>";
         }).join("");
       }
 
@@ -985,6 +1037,12 @@
         renderAlerts({
           newTrials: newTrials,
           newStudents: newStudents
+        }, t);
+
+        renderWorkspace({
+          newTrials: newTrials,
+          newStudents: newStudents,
+          pending: pendingRequests
         }, t);
 
         var levelItems = Object.entries(levels).sort(byCountDesc).map(function (x) {
