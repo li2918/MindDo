@@ -305,16 +305,29 @@
           selectionHint: "请先选择校区、日期和时段，然后点击\"下一步\"。",
           selectionHintOnline: "线上小班需要选择时区，再选择日期和时段。",
           prevSelectionText: "你之前选择过：{date} {time}（{campus}）。如需修改直接重新选择即可。",
-          timezoneOptions: [
-            { value: "", label: "请选择所在时区" },
+          timezonePlaceholder: "请选择所在时区",
+          timezoneCommonLabel: "常用 · 北美",
+          timezonePopular: [
             { value: "America/Los_Angeles", label: "太平洋时间 (PT) · 加州 / 西雅图" },
             { value: "America/Denver", label: "山区时间 (MT) · 丹佛 / 凤凰城" },
             { value: "America/Chicago", label: "中部时间 (CT) · 芝加哥 / 休斯顿" },
             { value: "America/New_York", label: "东部时间 (ET) · 纽约 / 多伦多" },
             { value: "America/Anchorage", label: "阿拉斯加时间 (AKT)" },
-            { value: "Pacific/Honolulu", label: "夏威夷时间 (HT)" },
-            { value: "other", label: "其他时区（请在下一步备注）" }
+            { value: "Pacific/Honolulu", label: "夏威夷时间 (HT)" }
           ],
+          timezoneRegionLabels: {
+            Africa: "非洲",
+            America: "美洲",
+            Antarctica: "南极",
+            Arctic: "北极",
+            Asia: "亚洲",
+            Atlantic: "大西洋",
+            Australia: "大洋洲",
+            Europe: "欧洲",
+            Indian: "印度洋",
+            Pacific: "太平洋",
+            Etc: "UTC 及其他"
+          },
           campusOptions: [
             { value: "", label: "请选择校区" },
             { value: "irvine", label: "加州 · 尔湾校区" },
@@ -364,16 +377,29 @@
           selectionHint: "Please select campus, date and time, then click \"Next\".",
           selectionHintOnline: "Online classes require selecting your timezone, then date and time.",
           prevSelectionText: "Previously selected: {date} {time} ({campus}). Re-select to change.",
-          timezoneOptions: [
-            { value: "", label: "Choose your timezone" },
+          timezonePlaceholder: "Choose your timezone",
+          timezoneCommonLabel: "Common · North America",
+          timezonePopular: [
             { value: "America/Los_Angeles", label: "Pacific Time (PT) · CA / Seattle" },
             { value: "America/Denver", label: "Mountain Time (MT) · Denver / Phoenix" },
             { value: "America/Chicago", label: "Central Time (CT) · Chicago / Houston" },
             { value: "America/New_York", label: "Eastern Time (ET) · NYC / Toronto" },
             { value: "America/Anchorage", label: "Alaska Time (AKT)" },
-            { value: "Pacific/Honolulu", label: "Hawaii Time (HT)" },
-            { value: "other", label: "Other (note on the next step)" }
+            { value: "Pacific/Honolulu", label: "Hawaii Time (HT)" }
           ],
+          timezoneRegionLabels: {
+            Africa: "Africa",
+            America: "Americas",
+            Antarctica: "Antarctica",
+            Arctic: "Arctic",
+            Asia: "Asia",
+            Atlantic: "Atlantic",
+            Australia: "Australia & Oceania",
+            Europe: "Europe",
+            Indian: "Indian Ocean",
+            Pacific: "Pacific",
+            Etc: "UTC & Other"
+          },
           campusOptions: [
             { value: "", label: "Choose a campus" },
             { value: "irvine", label: "California · Irvine" },
@@ -440,11 +466,97 @@
         }).join("");
       }
 
-      function buildTimezones(opts) {
-        timezoneSel.innerHTML = opts.map(function (o) {
-          var sel = state.timezone === o.value ? " selected" : "";
-          return "<option value=\"" + o.value + "\"" + sel + ">" + o.label + "</option>";
-        }).join("");
+      var FALLBACK_TIMEZONES = [
+        "Africa/Cairo","Africa/Casablanca","Africa/Johannesburg","Africa/Lagos","Africa/Nairobi",
+        "America/Anchorage","America/Argentina/Buenos_Aires","America/Bogota","America/Chicago",
+        "America/Denver","America/Halifax","America/Los_Angeles","America/Mexico_City",
+        "America/New_York","America/Phoenix","America/Santiago","America/Sao_Paulo",
+        "America/St_Johns","America/Toronto","America/Vancouver",
+        "Antarctica/McMurdo",
+        "Asia/Baghdad","Asia/Bangkok","Asia/Dhaka","Asia/Dubai","Asia/Hong_Kong","Asia/Jakarta",
+        "Asia/Jerusalem","Asia/Karachi","Asia/Kolkata","Asia/Kuala_Lumpur","Asia/Manila",
+        "Asia/Riyadh","Asia/Seoul","Asia/Shanghai","Asia/Singapore","Asia/Taipei","Asia/Tehran",
+        "Asia/Tokyo","Asia/Yangon","Asia/Yekaterinburg",
+        "Atlantic/Azores","Atlantic/Reykjavik",
+        "Australia/Adelaide","Australia/Brisbane","Australia/Melbourne","Australia/Perth","Australia/Sydney",
+        "Europe/Amsterdam","Europe/Athens","Europe/Berlin","Europe/Istanbul","Europe/Lisbon",
+        "Europe/London","Europe/Madrid","Europe/Moscow","Europe/Paris","Europe/Rome",
+        "Europe/Stockholm","Europe/Warsaw","Europe/Zurich",
+        "Pacific/Auckland","Pacific/Fiji","Pacific/Guam","Pacific/Honolulu","Pacific/Samoa",
+        "UTC"
+      ];
+      var REGION_ORDER = ["America","Europe","Asia","Africa","Australia","Pacific","Atlantic","Indian","Antarctica","Arctic","Etc"];
+
+      function getTzOffset(tz) {
+        try {
+          var fmt = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "shortOffset" });
+          var parts = fmt.formatToParts(new Date());
+          for (var i = 0; i < parts.length; i += 1) {
+            if (parts[i].type === "timeZoneName") return parts[i].value;
+          }
+        } catch (_) {}
+        return "";
+      }
+
+      function tzCityLabel(tz) {
+        var bits = tz.split("/");
+        if (bits.length < 2) return tz;
+        return bits.slice(1).join(" / ").replace(/_/g, " ");
+      }
+
+      function resolveTimezoneLabel(tz, t) {
+        if (!tz) return "";
+        var popular = (t.timezonePopular || []).find(function (o) { return o.value === tz; });
+        var offset = getTzOffset(tz);
+        if (popular) return popular.label + (offset ? " · " + offset : "");
+        return tzCityLabel(tz) + (offset ? " (" + offset + ")" : "");
+      }
+
+      function buildTimezones(t) {
+        var parts = ["<option value=\"\">" + t.timezonePlaceholder + "</option>"];
+        var popularSet = {};
+        (t.timezonePopular || []).forEach(function (o) { popularSet[o.value] = true; });
+
+        // 1) Common / popular group with curated bilingual labels
+        if (t.timezonePopular && t.timezonePopular.length) {
+          parts.push("<optgroup label=\"" + t.timezoneCommonLabel + "\">");
+          t.timezonePopular.forEach(function (o) {
+            var offset = getTzOffset(o.value);
+            var label = o.label + (offset ? " · " + offset : "");
+            var sel = state.timezone === o.value ? " selected" : "";
+            parts.push("<option value=\"" + o.value + "\"" + sel + ">" + label + "</option>");
+          });
+          parts.push("</optgroup>");
+        }
+
+        // 2) All other zones grouped by IANA region
+        var allTz;
+        try { allTz = (typeof Intl.supportedValuesOf === "function") ? Intl.supportedValuesOf("timeZone") : FALLBACK_TIMEZONES; }
+        catch (_) { allTz = FALLBACK_TIMEZONES; }
+
+        var groups = {};
+        allTz.forEach(function (tz) {
+          if (popularSet[tz]) return;
+          var region = tz.indexOf("/") === -1 ? "Etc" : tz.split("/")[0];
+          (groups[region] = groups[region] || []).push(tz);
+        });
+
+        REGION_ORDER.forEach(function (region) {
+          var list = groups[region];
+          if (!list || !list.length) return;
+          var regionLabel = (t.timezoneRegionLabels && t.timezoneRegionLabels[region]) || region;
+          parts.push("<optgroup label=\"" + regionLabel + "\">");
+          list.sort().forEach(function (tz) {
+            var city = tzCityLabel(tz);
+            var offset = getTzOffset(tz);
+            var display = city + (offset ? " (" + offset + ")" : "");
+            var sel = state.timezone === tz ? " selected" : "";
+            parts.push("<option value=\"" + tz + "\"" + sel + ">" + display + "</option>");
+          });
+          parts.push("</optgroup>");
+        });
+
+        timezoneSel.innerHTML = parts.join("");
       }
 
       function syncTimezoneVisibility() {
@@ -577,9 +689,8 @@
         var label = (t.campusOptions.find(function(o){ return o.value === state.campus; }) || {}).label || "";
         state.campusLabel = label;
 
-        buildTimezones(t.timezoneOptions);
-        var tzLabel = (t.timezoneOptions.find(function(o){ return o.value === state.timezone; }) || {}).label || "";
-        state.timezoneLabel = tzLabel;
+        buildTimezones(t);
+        state.timezoneLabel = resolveTimezoneLabel(state.timezone, t);
         syncTimezoneVisibility();
 
         renderCalendar(t);
@@ -628,9 +739,7 @@
 
       timezoneSel.addEventListener("change", function () {
         state.timezone = timezoneSel.value;
-        var t = I18N[langOf()];
-        var opt = t.timezoneOptions.find(function (o) { return o.value === state.timezone; });
-        state.timezoneLabel = opt ? opt.label : "";
+        state.timezoneLabel = resolveTimezoneLabel(state.timezone, I18N[langOf()]);
         updateButtonState();
       });
 
