@@ -334,6 +334,12 @@
         "zh-CN": {
           statusDone: "已完成",
           statusPending: "待完成",
+          markDone: "标记试课完成",
+          undoDone: "撤销",
+          reminder: "发送注册邀请",
+          reminderSent: "注册邀请已发送 ✓",
+          reminderBlocked: "需先完成试课",
+          reminderEmpty: "缺少邮箱",
           invite: "发送开户邀请",
           inviteBlocked: "需先完成试课",
           inviteNeedsEval: "需先完成评估",
@@ -345,6 +351,11 @@
           evalReopen: "重新评估",
           evalBlocked: "试课未完成",
           evalByLabel: "评估人：{name}",
+          completedByLabel: "由 {name} 标记",
+          completedAtLabel: "完成于 {time}",
+          toastCompleted: "已标记 {name} 的试课完成。",
+          toastUncompleted: "已撤销 {name} 的完成标记。",
+          toastReminder: "注册邀请已发送到 {email}",
           toastSent: "开户邀请已发送到 {email}",
           toastEvaluated: "已保存 {name} 的试课评估：{level}",
           sentAtLabel: "发送于 {time}",
@@ -362,6 +373,12 @@
         en: {
           statusDone: "Done",
           statusPending: "Pending",
+          markDone: "Mark Trial Done",
+          undoDone: "Undo",
+          reminder: "Send Register Link",
+          reminderSent: "Register link sent ✓",
+          reminderBlocked: "Trial not done yet",
+          reminderEmpty: "Missing email",
           invite: "Send Invite",
           inviteBlocked: "Trial not done yet",
           inviteNeedsEval: "Evaluate first",
@@ -373,6 +390,11 @@
           evalReopen: "Re-evaluate",
           evalBlocked: "Trial not done",
           evalByLabel: "By: {name}",
+          completedByLabel: "Marked by {name}",
+          completedAtLabel: "Done at {time}",
+          toastCompleted: "Marked {name}'s trial as done.",
+          toastUncompleted: "Undid {name}'s completion mark.",
+          toastReminder: "Register link sent to {email}",
           toastSent: "Account invite sent to {email}",
           toastEvaluated: "Saved evaluation for {name}: {level}",
           sentAtLabel: "Sent at {time}",
@@ -400,14 +422,34 @@
       function norm(v) { return String(v || "").trim().toLowerCase(); }
       function escapeAttr(s) { return String(s || "").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
 
-      // Trial is "complete" when a feedback record exists for that email/studentId.
-      function feedbackFor(lead) {
+      // Trial is "complete" when ops has marked it so, or (legacy fallback)
+      // when a parent-side feedback record already exists.
+      function completionFor(lead) {
+        if (window.MindDoFlow && window.MindDoFlow.getTrialCompletionFor) {
+          var rec = window.MindDoFlow.getTrialCompletionFor(lead);
+          if (rec) return rec;
+        }
         var fb = readJson("minddo_feedback");
         var email = norm(lead.email);
         var id = String(lead.studentId || "");
-        return fb.some(function (r) {
+        var match = fb.find(function (r) {
           return (email && norm(r.email) === email) || (id && String(r.studentId || "") === id);
         });
+        if (!match) return null;
+        return {
+          email: lead.email || "",
+          studentName: lead.studentName || "",
+          studentId: lead.studentId || "",
+          operator: "",
+          notes: "",
+          completedAt: match.createdAt || "",
+          source: "feedback"
+        };
+      }
+
+      function isOpsMarked(lead) {
+        if (!window.MindDoFlow || !window.MindDoFlow.getTrialCompletionFor) return false;
+        return !!window.MindDoFlow.getTrialCompletionFor(lead);
       }
 
       function inviteFor(lead) {
@@ -441,12 +483,32 @@
         tbody.innerHTML = rows.map(function (item, idx) {
           var trialTime = (item.trialDate || "-") + " " + (item.trialTime || "");
           var created = safeDate(item.createdAt);
-          var done = feedbackFor(item);
+          var completion = completionFor(item);
+          var opsMarked = isOpsMarked(item);
+          var done = !!completion;
           var evalRec = evaluationFor(item);
           var invite = inviteFor(item);
-          var statusCls = done ? "done" : "pending";
-          var statusText = done ? t.statusDone : t.statusPending;
+          var reminderSent = !!reminderSentKeys[leadKey(item)];
           var hasEmail = !!(item.email && String(item.email).indexOf("@") > 0);
+
+          var statusCell;
+          if (done) {
+            var ts = safeDate(completion.completedAt);
+            var meta = [];
+            if (ts) meta.push("<span class='invite-hint'>" + t.completedAtLabel.replace("{time}", ts.toLocaleString()) + "</span>");
+            if (completion.operator) meta.push("<span class='invite-hint'>" + t.completedByLabel.replace("{name}", completion.operator) + "</span>");
+            var undoBtn = opsMarked ? "<button type='button' class='btn-eval reopen' data-undo-idx='" + idx + "'>" + t.undoDone + "</button>" : "";
+            statusCell = "<div class='eval-cell'>" +
+              "<span class='trial-status done'>" + t.statusDone + "</span>" +
+              meta.join("") +
+              undoBtn +
+              "</div>";
+          } else {
+            statusCell = "<div class='eval-cell'>" +
+              "<span class='trial-status pending'>" + t.statusPending + "</span>" +
+              "<button type='button' class='btn-eval' data-mark-idx='" + idx + "'>" + t.markDone + "</button>" +
+              "</div>";
+          }
 
           var evalCell;
           if (evalRec) {
@@ -462,20 +524,36 @@
             evalCell = "<button type='button' class='btn-eval' data-eval-idx='" + idx + "'>" + t.evalButton + "</button>";
           }
 
-          var inviteCell;
+          // Account Invite cell: two actions stacked — a lightweight register-link
+          // reminder (enabled right after completion) and the full invite
+          // (enabled after evaluation).
+          var reminderBtn;
+          if (reminderSent) {
+            reminderBtn = "<button type='button' class='btn-invite sent' disabled>" + t.reminderSent + "</button>";
+          } else if (!hasEmail) {
+            reminderBtn = "<button type='button' class='btn-invite' disabled>" + t.reminderEmpty + "</button>";
+          } else if (!done) {
+            reminderBtn = "<button type='button' class='btn-invite' disabled>" + t.reminderBlocked + "</button>";
+          } else {
+            reminderBtn = "<button type='button' class='btn-invite' data-reminder-idx='" + idx + "'>" + t.reminder + "</button>";
+          }
+
+          var inviteBtn;
           if (invite) {
             var sentAt = safeDate(invite.sentAt);
-            inviteCell = "<button type='button' class='btn-invite sent' disabled>" + t.inviteSent + "</button>" +
+            inviteBtn = "<button type='button' class='btn-invite sent' disabled>" + t.inviteSent + "</button>" +
               (sentAt ? "<span class='invite-hint'>" + t.sentAtLabel.replace("{time}", sentAt.toLocaleString()) + "</span>" : "");
           } else if (!hasEmail) {
-            inviteCell = "<button type='button' class='btn-invite' disabled>" + t.inviteEmpty + "</button>";
+            inviteBtn = "<button type='button' class='btn-invite' disabled>" + t.inviteEmpty + "</button>";
           } else if (!done) {
-            inviteCell = "<button type='button' class='btn-invite' disabled>" + t.inviteBlocked + "</button>";
+            inviteBtn = "<button type='button' class='btn-invite' disabled>" + t.inviteBlocked + "</button>";
           } else if (!evalRec) {
-            inviteCell = "<button type='button' class='btn-invite' disabled>" + t.inviteNeedsEval + "</button>";
+            inviteBtn = "<button type='button' class='btn-invite' disabled>" + t.inviteNeedsEval + "</button>";
           } else {
-            inviteCell = "<button type='button' class='btn-invite' data-invite-idx='" + idx + "'>" + t.invite + "</button>";
+            inviteBtn = "<button type='button' class='btn-invite' data-invite-idx='" + idx + "'>" + t.invite + "</button>";
           }
+
+          var inviteCell = "<div class='eval-cell'>" + reminderBtn + inviteBtn + "</div>";
 
           return "<tr data-lead-idx='" + idx + "'>" +
             "<td>" + (item.studentName || "-") + "</td>" +
@@ -484,7 +562,7 @@
             "<td>" + (item.channelLabel || item.channel || "-") + "</td>" +
             "<td>" + trialTime + "</td>" +
             "<td>" + (created ? created.toLocaleString() : "-") + "</td>" +
-            "<td><span class='trial-status " + statusCls + "'>" + statusText + "</span></td>" +
+            "<td>" + statusCell + "</td>" +
             "<td>" + evalCell + "</td>" +
             "<td>" + inviteCell + "</td>" +
             "</tr>";
@@ -494,13 +572,51 @@
         tbody._leads = rows;
       }
 
+      // Per-tab memory of registration-reminders already sent in this session.
+      // Each lead's record is stashed directly on the lead object via `_reminderSent`.
+      var reminderSentKeys = {};
+      function leadKey(lead) { return norm(lead.email) + "|" + String(lead.studentId || ""); }
+
       tbody.addEventListener("click", function (e) {
-        var inviteBtn = e.target.closest("[data-invite-idx]");
-        if (inviteBtn) {
-          var iIdx = Number(inviteBtn.getAttribute("data-invite-idx"));
-          var lead = tbody._leads && tbody._leads[iIdx];
-          if (!lead || !window.MindDoFlow || !window.MindDoFlow.sendAccountInvite) return;
-          var record = window.MindDoFlow.sendAccountInvite(lead);
+        var markBtn = e.target.closest("[data-mark-idx]");
+        if (markBtn) {
+          var mIdx = Number(markBtn.getAttribute("data-mark-idx"));
+          var lead = tbody._leads && tbody._leads[mIdx];
+          if (!lead || !window.MindDoFlow || !window.MindDoFlow.markTrialComplete) return;
+          window.MindDoFlow.markTrialComplete(lead, {});
+          showToast(I18N[lang].toastCompleted.replace("{name}", lead.studentName || "—"));
+          render();
+          return;
+        }
+        var undoBtn = e.target.closest("[data-undo-idx]");
+        if (undoBtn) {
+          var uIdx = Number(undoBtn.getAttribute("data-undo-idx"));
+          var uLead = tbody._leads && tbody._leads[uIdx];
+          if (!uLead || !window.MindDoFlow || !window.MindDoFlow.unmarkTrialComplete) return;
+          window.MindDoFlow.unmarkTrialComplete(uLead);
+          showToast(I18N[lang].toastUncompleted.replace("{name}", uLead.studentName || "—"));
+          render();
+          return;
+        }
+        var reminderBtn = e.target.closest("[data-reminder-idx]");
+        if (reminderBtn) {
+          var rIdx = Number(reminderBtn.getAttribute("data-reminder-idx"));
+          var rLead = tbody._leads && tbody._leads[rIdx];
+          if (!rLead || !window.MindDoFlow || !window.MindDoFlow.sendRegistrationReminder) return;
+          var rec = window.MindDoFlow.sendRegistrationReminder(rLead);
+          if (rec) {
+            reminderSentKeys[leadKey(rLead)] = true;
+            showToast(I18N[lang].toastReminder.replace("{email}", rec.email));
+            render();
+          }
+          return;
+        }
+        var inviteBtnEl = e.target.closest("[data-invite-idx]");
+        if (inviteBtnEl) {
+          var iIdx = Number(inviteBtnEl.getAttribute("data-invite-idx"));
+          var iLead = tbody._leads && tbody._leads[iIdx];
+          if (!iLead || !window.MindDoFlow || !window.MindDoFlow.sendAccountInvite) return;
+          var record = window.MindDoFlow.sendAccountInvite(iLead);
           if (record) {
             showToast(I18N[lang].toastSent.replace("{email}", record.email));
             render();

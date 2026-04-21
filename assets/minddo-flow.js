@@ -11,7 +11,8 @@
     offerings: "minddo_class_offerings",
     studentLevels: "minddo_student_levels",
     invites: "minddo_account_invites",
-    evaluations: "minddo_trial_evaluations"
+    evaluations: "minddo_trial_evaluations",
+    completions: "minddo_trial_completions"
   };
 
   function readJson(key, fallback) {
@@ -472,6 +473,86 @@
     return record;
   }
 
+  // Trial completion: ops-side "mark trial done" marker, independent from
+  // parent-submitted feedback. One record per email/studentId.
+  function getTrialCompletions() {
+    return readJson(KEYS.completions, []);
+  }
+  function getTrialCompletionFor(lead) {
+    if (!lead) return null;
+    var list = getTrialCompletions();
+    var email = norm(lead.email);
+    var id = String(lead.studentId || "");
+    return list.filter(function (r) {
+      return (email && norm(r.email) === email) || (id && String(r.studentId || "") === id);
+    }).sort(function (a, b) {
+      return new Date(b.completedAt || 0) - new Date(a.completedAt || 0);
+    })[0] || null;
+  }
+  function markTrialComplete(lead, payload) {
+    if (!lead) return null;
+    payload = payload || {};
+    var record = {
+      email: lead.email || "",
+      studentName: lead.studentName || "",
+      studentId: lead.studentId || "",
+      operator: payload.operator || "",
+      notes: payload.notes || "",
+      completedAt: new Date().toISOString()
+    };
+    var list = getTrialCompletions();
+    var email = norm(record.email);
+    var id = String(record.studentId || "");
+    var idx = list.findIndex(function (r) {
+      return (email && norm(r.email) === email) || (id && String(r.studentId || "") === id);
+    });
+    if (idx >= 0) list[idx] = record;
+    else list.push(record);
+    writeJson(KEYS.completions, list);
+    return record;
+  }
+  function unmarkTrialComplete(lead) {
+    if (!lead) return false;
+    var list = getTrialCompletions();
+    var email = norm(lead.email);
+    var id = String(lead.studentId || "");
+    var next = list.filter(function (r) {
+      return !((email && norm(r.email) === email) || (id && String(r.studentId || "") === id));
+    });
+    writeJson(KEYS.completions, next);
+    return next.length !== list.length;
+  }
+
+  // "Please register" reminder — a lighter-weight email than the full account
+  // invite. Uses the same outbox; parent sees a short prompt with a signup link.
+  function sendRegistrationReminder(lead) {
+    if (!lead || !lead.email) return null;
+    var origin = "";
+    try { origin = window.location.origin + window.location.pathname.replace(/[^\/]+$/, ""); } catch (_) {}
+    var signupUrl = (origin || "") + "signup.html?email=" + encodeURIComponent(lead.email) +
+      (lead.studentName ? "&name=" + encodeURIComponent(lead.studentName) : "");
+    var subjectZh = "MindDo · 请为 " + (lead.studentName || "学员") + " 注册学员账户";
+    var subjectEn = "MindDo · Please register your account";
+    var bodyZh = "您好 " + (lead.parentName || lead.studentName || "家长") + "，\n\n" +
+      "感谢您参与 MindDo 的试课。请通过下方链接完成学员账户注册，便于老师后续安排课程：\n\n" +
+      signupUrl + "\n\n— MindDo 团队";
+    var bodyEn = "Hi " + (lead.parentName || lead.studentName || "there") + ",\n\n" +
+      "Thanks for trying MindDo. Please register your student account via the link below so our team can schedule your classes:\n\n" +
+      signupUrl + "\n\n— MindDo Team";
+    var mail = sendMockEmail({
+      to: lead.email,
+      toName: lead.parentName || lead.studentName || "",
+      studentName: lead.studentName || "",
+      studentId: lead.studentId || "",
+      subject: subjectZh + " / " + subjectEn,
+      bodyZh: bodyZh,
+      bodyEn: bodyEn,
+      template: "registration_reminder",
+      signupUrl: signupUrl
+    });
+    return { mailId: mail.id, email: lead.email, sentAt: mail.sentAt, signupUrl: signupUrl };
+  }
+
   // Simulated email outbox. In a real deployment this would be an API call to a
   // transactional mailer (SendGrid / Postmark / etc). Here we just persist so the
   // flow is transparent: the parent sees what would be mailed.
@@ -663,6 +744,11 @@
     getAccountInvites: getAccountInvites,
     saveTrialEvaluation: saveTrialEvaluation,
     getTrialEvaluationFor: getTrialEvaluationFor,
-    getTrialEvaluations: getTrialEvaluations
+    getTrialEvaluations: getTrialEvaluations,
+    markTrialComplete: markTrialComplete,
+    unmarkTrialComplete: unmarkTrialComplete,
+    getTrialCompletionFor: getTrialCompletionFor,
+    getTrialCompletions: getTrialCompletions,
+    sendRegistrationReminder: sendRegistrationReminder
   };
 })();
