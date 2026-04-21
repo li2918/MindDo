@@ -10,7 +10,8 @@
     requests: "minddo_schedule_requests",
     offerings: "minddo_class_offerings",
     studentLevels: "minddo_student_levels",
-    invites: "minddo_account_invites"
+    invites: "minddo_account_invites",
+    evaluations: "minddo_trial_evaluations"
   };
 
   function readJson(key, fallback) {
@@ -428,6 +429,49 @@
     return record;
   }
 
+  // Trial evaluations: ops records that the trial was assessed and assigns a
+  // post-trial level. One evaluation per email/studentId; re-submitting
+  // overwrites the prior record.
+  function getTrialEvaluations() {
+    return readJson(KEYS.evaluations, []);
+  }
+  function getTrialEvaluationFor(lead) {
+    if (!lead) return null;
+    var list = getTrialEvaluations();
+    var email = norm(lead.email);
+    var id = String(lead.studentId || "");
+    return list.filter(function (r) {
+      return (email && norm(r.email) === email) || (id && String(r.studentId || "") === id);
+    }).sort(function (a, b) {
+      return new Date(b.evaluatedAt || 0) - new Date(a.evaluatedAt || 0);
+    })[0] || null;
+  }
+  function saveTrialEvaluation(lead, payload) {
+    if (!lead || !payload) return null;
+    var level = canonicalLevel(payload.level);
+    if (!level) return null;
+    var record = {
+      email: lead.email || "",
+      studentName: lead.studentName || "",
+      studentId: lead.studentId || "",
+      level: level,
+      notes: payload.notes || "",
+      evaluator: payload.evaluator || "",
+      evaluatedAt: new Date().toISOString()
+    };
+    var list = getTrialEvaluations();
+    var email = norm(record.email);
+    var id = String(record.studentId || "");
+    var idx = list.findIndex(function (r) {
+      return (email && norm(r.email) === email) || (id && String(r.studentId || "") === id);
+    });
+    if (idx >= 0) list[idx] = record;
+    else list.push(record);
+    writeJson(KEYS.evaluations, list);
+    if (record.studentId) setStudentLevel(record.studentId, record.level);
+    return record;
+  }
+
   // Simulated email outbox. In a real deployment this would be an API call to a
   // transactional mailer (SendGrid / Postmark / etc). Here we just persist so the
   // flow is transparent: the parent sees what would be mailed.
@@ -616,6 +660,9 @@
     getEmailOutbox: getEmailOutbox,
     sendAccountInvite: sendAccountInvite,
     getAccountInviteFor: getAccountInviteFor,
-    getAccountInvites: getAccountInvites
+    getAccountInvites: getAccountInvites,
+    saveTrialEvaluation: saveTrialEvaluation,
+    getTrialEvaluationFor: getTrialEvaluationFor,
+    getTrialEvaluations: getTrialEvaluations
   };
 })();

@@ -82,6 +82,31 @@
     .toast { position: fixed; bottom: 24px; right: 24px; background: var(--clay); color: #f0f9ff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 700; box-shadow: 0 12px 28px rgba(30,58,95,0.3); opacity: 0; transform: translateY(10px); transition: 0.25s; pointer-events: none; z-index: 2000; }
     .toast.show { opacity: 1; transform: translateY(0); }
 
+    .eval-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 0.04em; }
+    .eval-pill.done { background: rgba(111,143,87,0.14); color: #4f6f38; border: 1px solid rgba(111,143,87,0.32); }
+    .eval-pill.pending { background: rgba(216,156,54,0.12); color: #b3801e; border: 1px solid rgba(216,156,54,0.32); }
+    .btn-eval { background: rgba(240,249,255,0.95); color: var(--clay); border: 1px solid rgba(2,132,199,0.42); border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.15s; white-space: nowrap; }
+    .btn-eval:hover { background: var(--sand); border-color: var(--gold); }
+    .btn-eval[disabled] { opacity: 0.55; cursor: not-allowed; }
+    .btn-eval.reopen { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 5px 10px; font-size: 11px; font-weight: 700; }
+    .btn-eval.reopen:hover { color: var(--clay); border-color: var(--gold); background: var(--sand); }
+    .eval-cell { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.45); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #fff; border-radius: 20px; box-shadow: 0 30px 80px rgba(15,23,42,0.35); width: min(520px, 100%); padding: 26px; }
+    .modal h3 { font-size: 20px; color: var(--clay); font-weight: 800; margin: 0 0 6px; }
+    .modal .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.6; }
+    .modal .modal-kv { display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; margin-bottom: 18px; font-size: 13px; padding: 12px 14px; background: var(--sand); border-radius: 14px; }
+    .modal .modal-kv span { color: var(--muted); font-weight: 700; }
+    .modal .modal-kv strong { color: var(--clay); font-weight: 800; }
+    .modal label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .modal select, .modal textarea { width: 100%; border: 1px solid var(--line); background: #f8fafc; color: var(--text); padding: 10px 12px; border-radius: 12px; font: inherit; font-size: 13px; outline: none; margin-bottom: 14px; resize: vertical; }
+    .modal select:focus, .modal textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.15); }
+    .modal textarea { min-height: 80px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    .modal-actions .btn-primary, .modal-actions .btn-secondary { padding: 9px 20px; font-size: 13px; }
+
     /* FOOTER */
     .footer { background: var(--brown); color: rgba(240,249,255,0.78); padding: 60px 48px 32px; }
     .footer-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
@@ -213,6 +238,7 @@
                 <th><span data-lang="zh">试课时间</span><span data-lang="en">Trial Time</span></th>
                 <th><span data-lang="zh">创建时间</span><span data-lang="en">Created</span></th>
                 <th><span data-lang="zh">试课状态</span><span data-lang="en">Trial Status</span></th>
+                <th><span data-lang="zh">试课评估</span><span data-lang="en">Evaluation</span></th>
                 <th><span data-lang="zh">开户邀请</span><span data-lang="en">Account Invite</span></th>
               </tr>
             </thead>
@@ -224,6 +250,28 @@
   </div>
 
   <div class="toast" id="toast"></div>
+
+  <div class="modal-overlay" id="evalModal" role="dialog" aria-modal="true" aria-labelledby="evalModalTitle">
+    <div class="modal">
+      <h3 id="evalModalTitle"><span data-lang="zh">评估试课并分配等级</span><span data-lang="en">Evaluate Trial & Assign Level</span></h3>
+      <p class="modal-sub"><span data-lang="zh">请确认试课已由老师评估，并根据结果选择试课后确认的等级。保存后家长端的课程时段会按该等级过滤。</span><span data-lang="en">Confirm the trial has been assessed by the teacher and pick the level to assign. The parent-side schedule filters by this level once saved.</span></p>
+      <div class="modal-kv">
+        <span data-lang="zh">学员</span><span data-lang="en">Student</span><strong id="evalStudent">—</strong>
+        <span data-lang="zh">邮箱</span><span data-lang="en">Email</span><strong id="evalEmail">—</strong>
+        <span data-lang="zh">试课时间</span><span data-lang="en">Trial Time</span><strong id="evalTrialTime">—</strong>
+      </div>
+      <label for="evalLevelSelect"><span data-lang="zh">分配等级</span><span data-lang="en">Assign Level</span></label>
+      <select id="evalLevelSelect"></select>
+      <label for="evalNotes"><span data-lang="zh">评估备注 (可选)</span><span data-lang="en">Notes (optional)</span></label>
+      <textarea id="evalNotes" placeholder=""></textarea>
+      <label for="evalEvaluator"><span data-lang="zh">评估人 (可选)</span><span data-lang="en">Evaluator (optional)</span></label>
+      <input id="evalEvaluator" type="text" style="width:100%;border:1px solid var(--line);background:#f8fafc;color:var(--text);padding:10px 12px;border-radius:12px;font:inherit;font-size:13px;outline:none;margin-bottom:14px;" />
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="evalCancel"><span data-lang="zh">取消</span><span data-lang="en">Cancel</span></button>
+        <button type="button" class="btn-primary" id="evalConfirm"><span data-lang="zh">确认评估</span><span data-lang="en">Confirm</span></button>
+      </div>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="footer-inner">
@@ -288,22 +336,56 @@
           statusPending: "待完成",
           invite: "发送开户邀请",
           inviteBlocked: "需先完成试课",
+          inviteNeedsEval: "需先完成评估",
           inviteSent: "已发送 ✓",
           inviteEmpty: "缺少邮箱",
+          evalButton: "评估并分配等级",
+          evalPending: "待评估",
+          evalDone: "已评估 · {level}",
+          evalReopen: "重新评估",
+          evalBlocked: "试课未完成",
+          evalByLabel: "评估人：{name}",
           toastSent: "开户邀请已发送到 {email}",
+          toastEvaluated: "已保存 {name} 的试课评估：{level}",
           sentAtLabel: "发送于 {time}",
-          emptyRow: "今天暂无新注册试课。"
+          emptyRow: "今天暂无新注册试课。",
+          notesPlaceholder: "例如：对 AI 创意应用表现突出，建议从中级课程起步。",
+          levelOptions: {
+            "": "— 请选择 —",
+            Beginner: "入门 · Beginner",
+            Intermediate: "中级 · Intermediate",
+            Advanced: "进阶 · Advanced",
+            Competition: "竞赛 · Competition",
+            "Project Camp": "项目营 · Project Camp"
+          }
         },
         en: {
           statusDone: "Done",
           statusPending: "Pending",
           invite: "Send Invite",
           inviteBlocked: "Trial not done yet",
+          inviteNeedsEval: "Evaluate first",
           inviteSent: "Sent ✓",
           inviteEmpty: "Missing email",
+          evalButton: "Evaluate & Assign",
+          evalPending: "Pending",
+          evalDone: "Evaluated · {level}",
+          evalReopen: "Re-evaluate",
+          evalBlocked: "Trial not done",
+          evalByLabel: "By: {name}",
           toastSent: "Account invite sent to {email}",
+          toastEvaluated: "Saved evaluation for {name}: {level}",
           sentAtLabel: "Sent at {time}",
-          emptyRow: "No new trial registrations today."
+          emptyRow: "No new trial registrations today.",
+          notesPlaceholder: "e.g. Strong at creative AI use — start at Intermediate.",
+          levelOptions: {
+            "": "— Select —",
+            Beginner: "Beginner",
+            Intermediate: "Intermediate",
+            Advanced: "Advanced",
+            Competition: "Competition",
+            "Project Camp": "Project Camp"
+          }
         }
       };
 
@@ -339,6 +421,11 @@
         setTimeout(function () { toast.classList.remove("show"); }, 2000);
       }
 
+      function evaluationFor(lead) {
+        if (!window.MindDoFlow || !window.MindDoFlow.getTrialEvaluationFor) return null;
+        return window.MindDoFlow.getTrialEvaluationFor(lead);
+      }
+
       function render() {
         var t = I18N[lang];
         var startToday = new Date(); startToday.setHours(0, 0, 0, 0);
@@ -347,7 +434,7 @@
         }).sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
 
         if (!rows.length) {
-          tbody.innerHTML = "<tr><td colspan='8' style='color:var(--muted);text-align:center;padding:24px;'>" + t.emptyRow + "</td></tr>";
+          tbody.innerHTML = "<tr><td colspan='9' style='color:var(--muted);text-align:center;padding:24px;'>" + t.emptyRow + "</td></tr>";
           return;
         }
 
@@ -355,10 +442,25 @@
           var trialTime = (item.trialDate || "-") + " " + (item.trialTime || "");
           var created = safeDate(item.createdAt);
           var done = feedbackFor(item);
+          var evalRec = evaluationFor(item);
           var invite = inviteFor(item);
           var statusCls = done ? "done" : "pending";
           var statusText = done ? t.statusDone : t.statusPending;
           var hasEmail = !!(item.email && String(item.email).indexOf("@") > 0);
+
+          var evalCell;
+          if (evalRec) {
+            var levelText = t.levelOptions[evalRec.level] || evalRec.level;
+            evalCell = "<div class='eval-cell'>" +
+              "<span class='eval-pill done'>" + t.evalDone.replace("{level}", levelText) + "</span>" +
+              (evalRec.evaluator ? "<span class='invite-hint'>" + t.evalByLabel.replace("{name}", evalRec.evaluator) + "</span>" : "") +
+              "<button type='button' class='btn-eval reopen' data-eval-idx='" + idx + "'>" + t.evalReopen + "</button>" +
+              "</div>";
+          } else if (!done) {
+            evalCell = "<button type='button' class='btn-eval' disabled>" + t.evalBlocked + "</button>";
+          } else {
+            evalCell = "<button type='button' class='btn-eval' data-eval-idx='" + idx + "'>" + t.evalButton + "</button>";
+          }
 
           var inviteCell;
           if (invite) {
@@ -369,6 +471,8 @@
             inviteCell = "<button type='button' class='btn-invite' disabled>" + t.inviteEmpty + "</button>";
           } else if (!done) {
             inviteCell = "<button type='button' class='btn-invite' disabled>" + t.inviteBlocked + "</button>";
+          } else if (!evalRec) {
+            inviteCell = "<button type='button' class='btn-invite' disabled>" + t.inviteNeedsEval + "</button>";
           } else {
             inviteCell = "<button type='button' class='btn-invite' data-invite-idx='" + idx + "'>" + t.invite + "</button>";
           }
@@ -381,6 +485,7 @@
             "<td>" + trialTime + "</td>" +
             "<td>" + (created ? created.toLocaleString() : "-") + "</td>" +
             "<td><span class='trial-status " + statusCls + "'>" + statusText + "</span></td>" +
+            "<td>" + evalCell + "</td>" +
             "<td>" + inviteCell + "</td>" +
             "</tr>";
         }).join("");
@@ -390,17 +495,93 @@
       }
 
       tbody.addEventListener("click", function (e) {
-        var btn = e.target.closest("[data-invite-idx]");
-        if (!btn) return;
-        var idx = Number(btn.getAttribute("data-invite-idx"));
+        var inviteBtn = e.target.closest("[data-invite-idx]");
+        if (inviteBtn) {
+          var iIdx = Number(inviteBtn.getAttribute("data-invite-idx"));
+          var lead = tbody._leads && tbody._leads[iIdx];
+          if (!lead || !window.MindDoFlow || !window.MindDoFlow.sendAccountInvite) return;
+          var record = window.MindDoFlow.sendAccountInvite(lead);
+          if (record) {
+            showToast(I18N[lang].toastSent.replace("{email}", record.email));
+            render();
+          }
+          return;
+        }
+        var evalBtn = e.target.closest("[data-eval-idx]");
+        if (evalBtn) {
+          openEvalModal(Number(evalBtn.getAttribute("data-eval-idx")));
+        }
+      });
+
+      // ---- Evaluation modal ----
+      var evalModal = document.getElementById("evalModal");
+      var evalLevelSelect = document.getElementById("evalLevelSelect");
+      var evalNotes = document.getElementById("evalNotes");
+      var evalEvaluator = document.getElementById("evalEvaluator");
+      var evalStudentEl = document.getElementById("evalStudent");
+      var evalEmailEl = document.getElementById("evalEmail");
+      var evalTrialTimeEl = document.getElementById("evalTrialTime");
+      var evalConfirmBtn = document.getElementById("evalConfirm");
+      var evalCancelBtn = document.getElementById("evalCancel");
+      var activeEvalLead = null;
+
+      function rebuildLevelOptions() {
+        var opts = I18N[lang].levelOptions;
+        evalLevelSelect.innerHTML = Object.keys(opts).map(function (val) {
+          return "<option value=\"" + val + "\">" + opts[val] + "</option>";
+        }).join("");
+      }
+
+      function openEvalModal(idx) {
         var lead = tbody._leads && tbody._leads[idx];
         if (!lead) return;
-        if (!window.MindDoFlow || !window.MindDoFlow.sendAccountInvite) return;
-        var record = window.MindDoFlow.sendAccountInvite(lead);
-        if (record) {
-          showToast(I18N[lang].toastSent.replace("{email}", record.email));
-          render();
+        activeEvalLead = lead;
+        rebuildLevelOptions();
+        var existing = evaluationFor(lead);
+        evalStudentEl.textContent = (lead.studentName || "-") + (lead.studentId ? " · " + lead.studentId : "");
+        evalEmailEl.textContent = lead.email || "-";
+        evalTrialTimeEl.textContent = (lead.trialDate || "-") + " " + (lead.trialTime || "");
+        evalLevelSelect.value = existing ? existing.level : "";
+        evalNotes.value = existing ? (existing.notes || "") : "";
+        evalEvaluator.value = existing ? (existing.evaluator || "") : "";
+        evalNotes.placeholder = I18N[lang].notesPlaceholder;
+        evalModal.classList.add("open");
+        setTimeout(function () { evalLevelSelect.focus(); }, 50);
+      }
+
+      function closeEvalModal() {
+        evalModal.classList.remove("open");
+        activeEvalLead = null;
+      }
+
+      evalCancelBtn.addEventListener("click", closeEvalModal);
+      evalModal.addEventListener("click", function (e) {
+        if (e.target === evalModal) closeEvalModal();
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && evalModal.classList.contains("open")) closeEvalModal();
+      });
+
+      evalConfirmBtn.addEventListener("click", function () {
+        if (!activeEvalLead) return;
+        var level = evalLevelSelect.value;
+        if (!level) {
+          evalLevelSelect.focus();
+          return;
         }
+        if (!window.MindDoFlow || !window.MindDoFlow.saveTrialEvaluation) { closeEvalModal(); return; }
+        var record = window.MindDoFlow.saveTrialEvaluation(activeEvalLead, {
+          level: level,
+          notes: evalNotes.value.trim(),
+          evaluator: evalEvaluator.value.trim()
+        });
+        if (record) {
+          var t = I18N[lang];
+          var levelLabel = t.levelOptions[record.level] || record.level;
+          showToast(t.toastEvaluated.replace("{name}", record.studentName || "—").replace("{level}", levelLabel));
+        }
+        closeEvalModal();
+        render();
       });
 
       function setLang(l) {
