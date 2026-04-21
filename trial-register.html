@@ -104,6 +104,7 @@
     .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(14,165,233,0.15); }
     .field textarea { min-height: 88px; resize: vertical; }
     .field-full { margin-bottom: 14px; }
+    .field-helper { margin-top: 6px; font-size: 12px; color: var(--muted); line-height: 1.55; }
 
     /* RESULT */
     .result { font-size: 14px; padding: 14px 16px; border-radius: 14px; margin-top: 18px; display: none; }
@@ -245,9 +246,13 @@
             </div>
           </div>
 
-          <div class="field field-full">
+          <div class="field field-full" id="cityField" hidden>
             <label for="city"><span class="required"><span data-lang="zh">所在城市</span><span data-lang="en">City</span></span></label>
-            <input id="city" name="city" type="text" autocomplete="address-level2" required />
+            <input id="city" name="city" type="text" autocomplete="address-level2" placeholder="e.g. Irvine / 尔湾" />
+            <p class="field-helper">
+              <span data-lang="zh">线上小班需要这一项，用来匹配你的时区并安排合适的上课时间。</span>
+              <span data-lang="en">Needed for online classes so we can match your timezone and schedule a suitable slot.</span>
+            </p>
           </div>
 
           <div class="field field-full">
@@ -503,6 +508,23 @@
       var submitResult = document.getElementById("submitResult");
       var emailInput = document.getElementById("email");
       var phoneInput = document.getElementById("phone");
+      var cityField = document.getElementById("cityField");
+      var cityInput = document.getElementById("city");
+
+      function isOnlineSelection() {
+        return !!(selection && selection.campus === "online");
+      }
+      function syncCityVisibility() {
+        var online = isOnlineSelection();
+        if (online) {
+          cityField.hidden = false;
+          cityInput.setAttribute("required", "required");
+        } else {
+          cityField.hidden = true;
+          cityInput.removeAttribute("required");
+          cityInput.value = "";
+        }
+      }
 
       function langOf() { return html.getAttribute("lang") === "en" ? "en" : "zh-CN"; }
       function formatSelectedDate(v) { if (!v) return ""; var p = v.split("-"); var d = new Date(Number(p[0]), Number(p[1])-1, Number(p[2])); return new Intl.DateTimeFormat(langOf()==="en"?"en-US":"zh-CN", { month: "short", day: "numeric", weekday: "short" }).format(d); }
@@ -564,10 +586,12 @@
       var savedLang = localStorage.getItem("minddo_lang");
       setLang(savedLang === "en" ? "en" : "zh-CN");
 
-      // Prefill from flow
+      // Prefill from flow before syncing city visibility, so a stale prefilled
+      // city is cleared when the current selection is not online.
       if (window.MindDoFlow && window.MindDoFlow.prefillTrialForm) {
         window.MindDoFlow.prefillTrialForm(form);
       }
+      syncCityVisibility();
 
       // Handlers
       langButtons.forEach(function (btn) {
@@ -582,14 +606,16 @@
 
         var studentName = document.getElementById("studentName").value.trim();
         var grade = document.getElementById("grade").value.trim();
-        var city = document.getElementById("city").value.trim();
+        var needCity = isOnlineSelection();
+        var city = needCity ? cityInput.value.trim() : "";
         var channel = document.getElementById("channel").value;
         var contactEmail = emailInput.value.trim();
         var contactPhone = phoneInput.value.trim();
 
-        if (!studentName || !grade || !city || !contactEmail) {
+        if (!studentName || !grade || (needCity && !city) || !contactEmail) {
           submitResult.className = "result error";
           submitResult.textContent = t.submitErrorRequired;
+          if (needCity && !city) cityInput.focus();
           return;
         }
 
@@ -778,11 +804,13 @@
         var details = [
           { k: t.confirmDetailKeys.student, v: lead.studentName || "—" },
           { k: t.confirmDetailKeys.trialCampus, v: subj || "—" },
-          { k: t.confirmDetailKeys.dateTime, v: when || "—" },
-          { k: t.confirmDetailKeys.city, v: lead.city || "—" },
+          { k: t.confirmDetailKeys.dateTime, v: when || "—" }
+        ];
+        if (lead.city) details.push({ k: t.confirmDetailKeys.city, v: lead.city });
+        details.push(
           { k: t.confirmDetailKeys.contact, v: [lead.email, lead.phone].filter(Boolean).join(" · ") || "—" },
           { k: t.confirmDetailKeys.reference, v: ref }
-        ];
+        );
         document.getElementById("confirmDetails").innerHTML = details.map(function (d) {
           return "<div class=\"row-kv\"><dt>" + esc(d.k) + "</dt><dd>" + esc(d.v) + "</dd></div>";
         }).join("");
