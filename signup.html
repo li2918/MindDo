@@ -229,17 +229,6 @@
               </div>
             </div>
 
-            <div class="row2">
-              <div class="field-group">
-                <label class="field-label" for="parentName"><span><span data-lang="zh">家长姓名</span><span data-lang="en">Parent Name</span></span><span class="optional"><span data-lang="zh">选填</span><span data-lang="en">Optional</span></span></label>
-                <input id="parentName" name="parentName" class="field-input" type="text" autocomplete="name" />
-              </div>
-              <div class="field-group">
-                <label class="field-label" for="phone"><span><span data-lang="zh">联系电话</span><span data-lang="en">Phone</span></span><span class="optional"><span data-lang="zh">选填</span><span data-lang="en">Optional</span></span></label>
-                <input id="phone" name="phone" class="field-input" type="tel" autocomplete="tel" placeholder="+1 (415) 555-0100" />
-              </div>
-            </div>
-
             <div class="field-group">
               <label class="field-label" for="password"><span><span data-lang="zh">设置密码</span><span data-lang="en">Password</span></span><span class="required">*</span></label>
               <input id="password" name="password" class="field-input" type="password" autocomplete="new-password" required />
@@ -592,8 +581,6 @@
 
         var studentName = document.getElementById("studentName").value.trim();
         var email = emailInput.value.trim();
-        var parentName = document.getElementById("parentName").value.trim();
-        var phone = document.getElementById("phone").value.trim();
         var password = pwInput.value;
         var confirmPw = pwConfirm.value;
 
@@ -615,8 +602,6 @@
           studentName: studentName,
           name: studentName,
           email: email,
-          parentName: parentName,
-          phone: phone,
           provider: "email",
           createdAt: new Date().toISOString()
         }, null);
@@ -636,8 +621,6 @@
             studentName: name,
             name: name,
             email: email,
-            parentName: document.getElementById("parentName").value.trim(),
-            phone: document.getElementById("phone").value.trim(),
             provider: provider,
             createdAt: new Date().toISOString()
           }, provider);
