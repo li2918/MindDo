@@ -382,6 +382,8 @@
     if (!form) return;
     if (form.studentName && !form.studentName.value) form.studentName.value = current.studentName || current.name || "";
     if (form.email && !form.email.value) form.email.value = current.email || "";
+    if (form.parentName && !form.parentName.value) form.parentName.value = current.parentName || "";
+    if (form.phone && !form.phone.value) form.phone.value = current.phone || "";
   }
 
   function populateCourseMeta() {
@@ -511,11 +513,27 @@
     return list.filter(function (r) { return norm(r.email) === target; })
       .sort(function (a, b) { return new Date(b.sentAt || 0) - new Date(a.sentAt || 0); })[0] || null;
   }
+  // Look up the latest trial lead for a given studentId — used by the
+  // invite briefing page (trial-invite.html) to render evaluation and
+  // course info without requiring a logged-in session.
+  function findLeadByStudentId(studentId) {
+    if (!studentId) return null;
+    var leads = readJson(KEYS.leads, []);
+    return leads.filter(function (l) {
+      return l && String(l.studentId || "") === String(studentId);
+    }).sort(function (a, b) {
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    })[0] || null;
+  }
+
   function sendAccountInvite(lead) {
     if (!lead || !lead.email) return null;
     var origin = "";
     try { origin = window.location.origin + window.location.pathname.replace(/[^\/]+$/, ""); } catch (_) {}
-    var signupUrl = (origin || "") + "signup.html?email=" + encodeURIComponent(lead.email) +
+    var sid = lead.studentId || "";
+    var inviteUrl = (origin || "") + "trial-invite.html?sid=" + encodeURIComponent(sid);
+    var signupUrl = (origin || "") + "signup.html?sid=" + encodeURIComponent(sid) +
+      "&email=" + encodeURIComponent(lead.email) +
       (lead.studentName ? "&name=" + encodeURIComponent(lead.studentName) : "");
     // If an evaluation already exists for this lead, weave the assigned level
     // and ops notes into the email body so the parent sees the path forward.
@@ -529,32 +547,40 @@
       ? "\n\nAssigned level: " + evalRec.level +
         (evalRec.notes ? "\nTeacher notes: " + evalRec.notes : "")
       : "";
-    var subjectZh = "MindDo · 为 " + (lead.studentName || "学员") + " 创建学员账户";
-    var subjectEn = "MindDo · Create your MindDo account";
+    var subjectZh = "MindDo · " + (lead.studentName || "学员") + " 的试课评估与开户邀请";
+    var subjectEn = "MindDo · Trial report & account invite for " + (lead.studentName || "your student");
     var bodyZh = "您好 " + (lead.parentName || lead.studentName || "家长") + "，\n\n" +
-      "感谢您完成 MindDo 的试课体验。请通过下方链接为 " + (lead.studentName || "学员") + " 创建正式学员账户：\n\n" +
-      signupUrl + evalBlockZh +
+      "感谢您完成 MindDo 的试课体验！我们已为 " + (lead.studentName || "学员") +
+      "（学员号：" + (sid || "—") + "）准备了一份试课评估与课程推荐报告，请查看：\n\n" +
+      inviteUrl + "\n\n" +
+      "在报告页内点击「创建学员账户」即可完成注册，报名信息会自动与本次试课记录打通。\n" +
+      "如需直接进入注册页，也可以使用下方链接：\n" + signupUrl + evalBlockZh +
       "\n\n开始正式的 AI 学习之旅。\nMindDo 团队";
     var bodyEn = "Hi " + (lead.parentName || lead.studentName || "there") + ",\n\n" +
-      "Thanks for joining the trial. Please use the link below to create your MindDo student account:\n\n" +
-      signupUrl + evalBlockEn +
+      "Thanks for joining the trial! We've prepared a trial report and class recommendation for " +
+      (lead.studentName || "your student") + " (ID: " + (sid || "—") + "). Please review it here:\n\n" +
+      inviteUrl + "\n\n" +
+      "Click \"Create Account\" inside the report to register — your new account will be linked to this trial automatically.\n" +
+      "If you prefer to go straight to signup, use:\n" + signupUrl + evalBlockEn +
       "\n\nSee you in class.\n— MindDo Team";
     var mail = sendMockEmail({
       to: lead.email,
       toName: lead.parentName || lead.studentName || "",
       studentName: lead.studentName || "",
-      studentId: lead.studentId || "",
+      studentId: sid,
       subject: subjectZh + " / " + subjectEn,
       bodyZh: bodyZh,
       bodyEn: bodyEn,
       template: "account_invite",
+      inviteUrl: inviteUrl,
       signupUrl: signupUrl
     });
     var record = {
       email: lead.email,
       studentName: lead.studentName || "",
-      studentId: lead.studentId || "",
+      studentId: sid,
       mailId: mail.id,
+      inviteUrl: inviteUrl,
       signupUrl: signupUrl,
       sentAt: mail.sentAt
     };
@@ -823,6 +849,7 @@
     getStage: getStage,
     saveLead: saveLead,
     updateLead: updateLead,
+    findLeadByStudentId: findLeadByStudentId,
     saveAssessment: saveAssessment,
     saveSignupUser: saveSignupUser,
     savePayment: savePayment,

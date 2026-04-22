@@ -412,16 +412,37 @@
       var SAFE_NEXT = /^[a-z0-9_-]+\.html(#[a-z0-9_-]+)?$/i;
       var nextUrl = (nextParam && SAFE_NEXT.test(nextParam)) ? nextParam : "student-account.html";
 
-      // Invite-link prefill: `?email=` and `?name=` come from the account
-      // invite / registration reminder sent by ops. When they arrive, seed the
-      // current-student object so the signup adopts the lead's original
-      // studentId — keeping ops evaluations, level overrides, and outbox logs
-      // correctly linked across browser sessions.
+      // Invite-link prefill. The account-invite email carries `?sid=`, `?email=`
+      // and optionally `?name=`. Seed the current-student object so the signup
+      // adopts the lead's original studentId — keeping ops evaluations, level
+      // overrides, and outbox logs correctly linked across browser sessions.
+      // ?sid= is authoritative; email is still used as a fallback for older
+      // invite links that predate the sid param.
+      var paramSid = (urlParams.get("sid") || "").trim();
       var paramEmail = (urlParams.get("email") || "").trim();
       var paramName = (urlParams.get("name") || "").trim();
-      if (paramEmail && window.MindDoFlow && window.MindDoFlow.setCurrentStudent) {
-        var seed = { email: paramEmail };
+      if ((paramSid || paramEmail) && window.MindDoFlow && window.MindDoFlow.setCurrentStudent) {
+        var seed = {};
+        if (paramSid) seed.studentId = paramSid;
+        if (paramEmail) seed.email = paramEmail;
         if (paramName) { seed.studentName = paramName; seed.name = paramName; }
+        // If ?sid matches an existing lead, pull the rest of the profile in so
+        // the account carries parentName / phone / grade / etc forward.
+        if (paramSid && window.MindDoFlow.findLeadByStudentId) {
+          var lead = window.MindDoFlow.findLeadByStudentId(paramSid);
+          if (lead) {
+            if (!seed.email && lead.email) seed.email = lead.email;
+            if (!seed.studentName && (lead.studentName || lead.name)) {
+              seed.studentName = lead.studentName || lead.name;
+              seed.name = seed.studentName;
+            }
+            if (lead.parentName) seed.parentName = lead.parentName;
+            if (lead.phone) seed.phone = lead.phone;
+            if (lead.grade) seed.grade = lead.grade;
+            if (lead.birthday) seed.birthday = lead.birthday;
+            if (lead.city) seed.city = lead.city;
+          }
+        }
         window.MindDoFlow.setCurrentStudent(seed);
       }
 

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MindDo 试课评估与开户邀请 · MindDo trial evaluation and account invite." />
+  <meta name="author" content="MindDo AI Learning Center" />
+  <meta name="theme-color" content="#1e3a5f" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="trial-invite.html" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <title>试课评估与开户邀请 | Trial Report & Invite</title>
+  <style>
+    .skip-link { position:absolute; left:-9999px; top:0; background:#1e3a5f; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #0ea5e9; outline-offset:2px; }
+
+    :root {
+      --bg:#f6f8fb; --sand:#e8eef5; --card:rgba(240,249,255,0.94);
+      --line:rgba(30,58,95,0.14); --text:#0f172a; --muted:#5a6b81;
+      --gold:#0ea5e9; --gold-deep:#0284c7; --clay:#1e3a5f; --brown:#14294a;
+      --shadow:0 24px 60px rgba(15,23,42,0.12);
+      --ok:#6f8f57; --warn:#d89c36; --danger:#c46a4d;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
+    a { color:inherit; text-decoration:none; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+
+    .navbar { position:sticky; top:0; z-index:100; background:rgba(240,249,255,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:44px; height:44px; object-fit:contain; }
+    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .btn-primary { background:linear-gradient(135deg,#bae6fd,var(--gold)); color:#0b2540; border:none; border-radius:999px; padding:11px 24px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(14,165,233,0.28); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-primary:hover { transform:translateY(-2px); }
+    .btn-secondary { background:rgba(240,249,255,0.98); color:var(--clay); border:1px solid var(--line); border-radius:999px; padding:10px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(14,165,233,0.38); }
+    .nav-login { background:none; border:1px solid var(--line); border-radius:999px; padding:8px 16px; font-size:13px; font-weight:700; color:var(--clay); text-decoration:none; transition:0.15s; }
+    .nav-login:hover { background:var(--sand); border-color:var(--gold); }
+
+    .page-hero { background:linear-gradient(145deg,#0b1a2e 0%,#14294a 50%,#1e3a5f 100%); padding:64px 0 52px; position:relative; overflow:hidden; }
+    .page-hero::before { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 18% 55%,rgba(14,165,233,0.18) 0%,transparent 48%),radial-gradient(circle at 82% 22%,rgba(14,165,233,0.1) 0%,transparent 38%); }
+    .page-hero-inner { max-width:1080px; margin:0 auto; padding:0 48px; position:relative; z-index:1; color:#f0f9ff; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(14,165,233,0.18); border:1px solid rgba(14,165,233,0.3); color:#bae6fd; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
+    .page-hero h1 { font-size:clamp(28px,3.6vw,44px); font-weight:900; color:#f0f9ff; letter-spacing:-0.02em; margin-bottom:12px; }
+    .page-hero .greeting { font-size:16px; color:rgba(224,242,254,0.88); line-height:1.7; margin-bottom:8px; font-weight:600; }
+    .page-hero .sub { font-size:14px; color:rgba(224,242,254,0.72); line-height:1.7; max-width:680px; }
+    .student-chip { display:inline-flex; gap:10px; align-items:center; margin-top:18px; padding:8px 14px; background:rgba(240,249,255,0.1); border:1px solid rgba(224,242,254,0.22); border-radius:999px; font-size:12.5px; font-weight:700; color:#f0f9ff; }
+    .student-chip strong { color:var(--gold); letter-spacing:0.03em; }
+
+    .page-content { padding:40px 0 80px; }
+    .content-inner { max-width:1080px; margin:0 auto; padding:0 48px; }
+
+    .panel { background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(30,58,95,0.08); padding:26px 28px; margin-bottom:20px; }
+    .panel-tag { display:inline-flex; padding:4px 10px; border-radius:999px; background:rgba(14,165,233,0.12); border:1px solid rgba(14,165,233,0.28); color:var(--gold-deep); font-size:11px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
+    .panel h2 { font-size:20px; font-weight:800; color:var(--clay); margin-bottom:4px; }
+    .panel .desc { font-size:13.5px; color:var(--muted); line-height:1.7; margin-bottom:16px; }
+
+    .kv-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px 16px; margin-top:4px; }
+    .kv-grid .kv { background:rgba(240,249,255,0.74); border:1px solid rgba(30,58,95,0.1); border-radius:14px; padding:12px 14px; font-size:13px; }
+    .kv-grid .kv span { display:block; color:var(--muted); font-size:11px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:4px; }
+    .kv-grid .kv strong { color:var(--clay); font-size:14px; font-weight:800; word-break:break-word; }
+
+    .level-pill { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:linear-gradient(135deg,#e0f2fe,#bae6fd); border:1px solid rgba(2,132,199,0.3); border-radius:999px; font-size:14px; font-weight:800; color:var(--clay); margin-bottom:10px; }
+    .level-pill::before { content:"🏅"; font-size:15px; }
+
+    .notes-block { background:rgba(224,242,254,0.45); border:1px dashed rgba(2,132,199,0.24); border-radius:14px; padding:14px 16px; font-size:13.5px; color:#243b5c; line-height:1.7; margin-top:10px; white-space:pre-wrap; }
+    .eval-meta { display:flex; gap:14px; flex-wrap:wrap; color:var(--muted); font-size:12px; margin-top:12px; }
+    .eval-meta span strong { color:var(--clay); font-weight:700; }
+
+    .course-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; margin-top:6px; }
+    .course-card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px 18px; display:grid; gap:6px; }
+    .course-card .cname { font-size:15px; font-weight:800; color:var(--clay); }
+    .course-card .clvl { display:inline-flex; font-size:10.5px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; color:#0b4d70; background:rgba(14,165,233,0.16); padding:3px 8px; border-radius:999px; margin-bottom:2px; width:max-content; }
+    .course-card .ctime { font-size:13px; color:var(--text); font-weight:700; }
+    .course-card .cteacher { font-size:12px; color:var(--muted); }
+    .course-card .cseats { font-size:11px; color:var(--ok); font-weight:800; }
+    .course-card .cseats.none { color:var(--danger); }
+
+    .cta-block { display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:18px; background:linear-gradient(135deg,rgba(224,242,254,0.7),rgba(186,230,253,0.5)); border:1px solid rgba(2,132,199,0.3); border-radius:18px; margin-top:18px; }
+    .cta-block .cta-copy { flex:1; min-width:0; }
+    .cta-block strong { display:block; color:var(--clay); font-size:16px; font-weight:800; margin-bottom:4px; }
+    .cta-block span { color:var(--muted); font-size:13px; line-height:1.6; }
+    .cta-block a.btn-primary { padding:12px 28px; font-size:15px; }
+
+    .empty-note { background:rgba(240,249,255,0.7); border:1px dashed var(--line); border-radius:14px; padding:18px; color:var(--muted); font-size:13.5px; line-height:1.7; }
+
+    .footer { background:var(--brown); color:rgba(240,249,255,0.78); padding:48px 48px 28px; }
+    .footer-inner { max-width:1080px; margin:0 auto; font-size:13px; }
+    .footer-bottom { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(240,249,255,0.45); margin-top:22px; padding-top:20px; border-top:1px solid rgba(224,242,254,0.1); }
+
+    @media (max-width:900px) { .navbar { padding:0 24px; } .page-hero-inner, .content-inner { padding:0 24px; } .kv-grid, .course-grid { grid-template-columns:1fr; } .cta-block { flex-direction:column; align-items:stretch; } }
+  </style>
+  <link rel="stylesheet" href="assets/minddo-theme.css" />
+  <link rel="stylesheet" href="assets/minddo-responsive.css" />
+</head>
+<body>
+  <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
+
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <div class="nav-right">
+      <div class="lang-switcher" data-lang-switcher>
+        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span class="lang-trigger-label">中文</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="lang-menu" role="listbox">
+          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
+          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+        </div>
+      </div>
+      <a class="nav-login" href="login.html"><span data-lang="zh">登录</span><span data-lang="en">Log In</span></a>
+      <a class="btn-primary" id="heroCtaBtn" href="#signupCta">
+        <span data-lang="zh">创建账户</span><span data-lang="en">Create Account</span>
+      </a>
+    </div>
+  </nav>
+
+  <main id="main" class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-tag"><span data-lang="zh">试课评估报告</span><span data-lang="en">Trial Evaluation Report</span></div>
+      <h1 id="heroTitle"></h1>
+      <p class="greeting" id="heroGreeting"></p>
+      <p class="sub" id="heroSub"></p>
+      <div class="student-chip" id="studentChip" style="display:none;">
+        <span data-lang="zh">学员号</span><span data-lang="en">Student ID</span>
+        <strong id="studentChipSid">—</strong>
+      </div>
+    </div>
+  </main>
+
+  <section class="page-content">
+    <div class="content-inner">
+
+      <div id="missingNotice" class="panel" style="display:none;">
+        <h2><span data-lang="zh">链接无法识别</span><span data-lang="en">Invite Link Unavailable</span></h2>
+        <p class="desc" id="missingDesc"></p>
+        <a class="btn-secondary" href="index.html"><span data-lang="zh">返回首页</span><span data-lang="en">Back To Home</span></a>
+      </div>
+
+      <article id="trialPanel" class="panel" style="display:none;">
+        <span class="panel-tag"><span data-lang="zh">试课信息</span><span data-lang="en">Trial Summary</span></span>
+        <h2 id="trialPanelTitle"></h2>
+        <p class="desc" id="trialPanelDesc"></p>
+        <div class="kv-grid" id="trialKvGrid"></div>
+      </article>
+
+      <article id="evalPanel" class="panel" style="display:none;">
+        <span class="panel-tag"><span data-lang="zh">试课评估</span><span data-lang="en">Evaluation</span></span>
+        <h2 id="evalTitle"></h2>
+        <p class="desc" id="evalDesc"></p>
+        <div id="evalLevelWrap"></div>
+        <div id="evalNotesWrap"></div>
+        <div class="eval-meta" id="evalMeta"></div>
+        <div id="evalPending" class="empty-note" style="display:none;"></div>
+      </article>
+
+      <article id="coursePanel" class="panel" style="display:none;">
+        <span class="panel-tag"><span data-lang="zh">推荐课程</span><span data-lang="en">Recommended Classes</span></span>
+        <h2 id="coursePanelTitle"></h2>
+        <p class="desc" id="coursePanelDesc"></p>
+        <div id="courseList"></div>
+      </article>
+
+      <article id="signupCta" class="panel" style="display:none;">
+        <span class="panel-tag"><span data-lang="zh">下一步</span><span data-lang="en">Next Step</span></span>
+        <h2 id="ctaTitle"></h2>
+        <p class="desc" id="ctaDesc"></p>
+        <div class="cta-block">
+          <div class="cta-copy">
+            <strong id="ctaBlockTitle"></strong>
+            <span id="ctaBlockCopy"></span>
+          </div>
+          <a class="btn-primary" id="createAccountBtn" href="#"><span data-lang="zh">创建学员账户 →</span><span data-lang="en">Create Student Account →</span></a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <span>© 2025 MindDo Learning Center · <span data-lang="zh">保留所有权利</span><span data-lang="en">All rights reserved</span></span>
+        <span><a href="privacy.html" style="color:inherit;"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy</span></a> · <a href="terms.html" style="color:inherit;"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/minddo-flow.js"></script>
+  <script>
+    (function () {
+      var I18N = {
+        "zh-CN": {
+          pageTitle: "试课评估与开户邀请",
+          heroTitle: "{name} 的试课评估报告",
+          heroTitleFallback: "学员试课评估报告",
+          heroGreeting: "您好 {parent}，感谢您陪 {name} 完成 MindDo 试课。",
+          heroGreetingFallback: "您好，感谢您完成 MindDo 的试课体验。",
+          heroSub: "以下是老师对本次试课的评估与下一步的课程推荐，请查看后点击「创建学员账户」完成注册。新账户会自动对接到此次试课记录。",
+          missingDesc: "该邀请链接缺少学员号，或者对应的试课信息在本地尚未同步。请联系 MindDo 顾问核对链接。",
+          trialPanelTitle: "本次试课",
+          trialPanelDesc: "你的报名信息以及已选择的试课时间。",
+          kv: {
+            student: "学员姓名",
+            studentId: "学员号",
+            campus: "试课校区",
+            trialTime: "试课时间",
+            channel: "获客渠道",
+            parent: "家长",
+            email: "邮箱",
+            phone: "手机"
+          },
+          evalTitle: "老师评估与分配等级",
+          evalDesc: "校区老师根据本次试课给出的等级与备注，正式课程会按此等级安排。",
+          evalLevel: "分配等级：{level}",
+          evalLevelZh: { Beginner: "入门", Intermediate: "中级", Advanced: "进阶", Competition: "竞赛", "Project Camp": "项目营" },
+          evalNotesLabel: "老师备注",
+          evalMetaEvaluator: "评估人：{name}",
+          evalMetaTime: "评估时间：{time}",
+          evalPending: "目前评估还未完成，顾问会在评估完成后再次与您联系并分配正式课程等级。",
+          coursePanelTitle: "按你的等级推荐的班次",
+          coursePanelDesc: "根据评估结果挑选的开放班次，注册后即可进入报名环节确认时间。",
+          noCourses: "当前暂无与该等级匹配的开放班次，顾问会在有新开放班次时联系你。",
+          noCoursesBeforeEval: "在评估完成前我们还没办法为你推荐具体班次。评估一旦完成会立刻在这里更新。",
+          seatsRemain: "剩余 {n} 席",
+          seatsFull: "已满员",
+          classModeSmall: "小组课 1v4",
+          classModeOnOne: "1v1",
+          ctaTitle: "创建账户，开启正式课程",
+          ctaDesc: "账户注册链接会根据学员号 ({sid}) 自动对接你本次的试课资料，无需重复填写。",
+          ctaBlockTitle: "一步完成注册与报名对接",
+          ctaBlockCopy: "点击创建账户后，我们会把你这次的试课记录、评估等级和推荐班次与新账户绑定。"
+        },
+        en: {
+          pageTitle: "Trial Report & Invite",
+          heroTitle: "Trial Evaluation for {name}",
+          heroTitleFallback: "Trial Evaluation Report",
+          heroGreeting: "Hi {parent}, thanks for joining the trial with {name}.",
+          heroGreetingFallback: "Thanks for joining the MindDo trial.",
+          heroSub: "Here's the teacher's evaluation and the class recommendations. Click \"Create Account\" at the bottom when ready — your new account will link back to this trial automatically.",
+          missingDesc: "This invite link is missing the student ID, or the corresponding trial record is not available locally. Please contact your MindDo advisor to verify the link.",
+          trialPanelTitle: "Your Trial",
+          trialPanelDesc: "Your registration details and the chosen trial time.",
+          kv: {
+            student: "Student",
+            studentId: "Student ID",
+            campus: "Campus",
+            trialTime: "Trial Time",
+            channel: "Channel",
+            parent: "Parent",
+            email: "Email",
+            phone: "Phone"
+          },
+          evalTitle: "Teacher's Evaluation",
+          evalDesc: "The level and notes from the campus teacher; official classes will follow this level.",
+          evalLevel: "Assigned Level: {level}",
+          evalLevelZh: { Beginner: "Beginner", Intermediate: "Intermediate", Advanced: "Advanced", Competition: "Competition", "Project Camp": "Project Camp" },
+          evalNotesLabel: "Teacher Notes",
+          evalMetaEvaluator: "Evaluator: {name}",
+          evalMetaTime: "Evaluated at: {time}",
+          evalPending: "The evaluation is not yet complete — your advisor will follow up with the final level once it's ready.",
+          coursePanelTitle: "Classes Matching Your Level",
+          coursePanelDesc: "Open classes that fit the evaluated level — pick a time after registration.",
+          noCourses: "No classes currently match this level — your advisor will reach out when new slots open.",
+          noCoursesBeforeEval: "We can't recommend specific classes until the evaluation is complete. This section updates automatically once it is.",
+          seatsRemain: "{n} seats left",
+          seatsFull: "Full",
+          classModeSmall: "Group 1v4",
+          classModeOnOne: "1v1",
+          ctaTitle: "Create Your Account",
+          ctaDesc: "The registration link is tagged with your student ID ({sid}), so it auto-links to your trial — no duplicate info needed.",
+          ctaBlockTitle: "One step — register and link up",
+          ctaBlockCopy: "When you click Create Account, your trial record, evaluated level, and recommended classes are tied to the new account."
+        }
+      };
+
+      var html = document.documentElement;
+      var langButtons = document.querySelectorAll("[data-set-lang]");
+      var lang = localStorage.getItem("minddo_lang") === "en" ? "en" : "zh-CN";
+      var flow = window.MindDoFlow;
+
+      var params = new URLSearchParams(window.location.search);
+      var sid = (params.get("sid") || "").trim();
+
+      function escapeHtml(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+      function safeDate(v) { var d = new Date(v); return Number.isNaN(d.getTime()) ? null : d; }
+      function tr(tpl, vars) {
+        return Object.keys(vars || {}).reduce(function (s, k) { return s.split("{" + k + "}").join(vars[k] == null ? "" : vars[k]); }, tpl || "");
+      }
+
+      function resolveLead() {
+        if (!sid || !flow) return null;
+        if (flow.findLeadByStudentId) return flow.findLeadByStudentId(sid);
+        // Fallback: scan leads directly
+        try {
+          var leads = JSON.parse(localStorage.getItem("minddo_trial_leads") || "[]");
+          return leads.filter(function (l) { return l && String(l.studentId) === sid; })
+            .sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); })[0] || null;
+        } catch (_) { return null; }
+      }
+
+      function classModeLabel(mode, t) {
+        if (mode === "1v1") return t.classModeOnOne;
+        return t.classModeSmall;
+      }
+
+      function localizedLevel(level, t) {
+        return (t.evalLevelZh && t.evalLevelZh[level]) || level || "";
+      }
+
+      function render() {
+        var t = I18N[lang];
+        html.setAttribute("lang", lang);
+        localStorage.setItem("minddo_lang", lang);
+        document.title = t.pageTitle + " | MindDo";
+        langButtons.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
+        });
+
+        var lead = resolveLead();
+        var missing = document.getElementById("missingNotice");
+        var trialPanel = document.getElementById("trialPanel");
+        var evalPanel = document.getElementById("evalPanel");
+        var coursePanel = document.getElementById("coursePanel");
+        var signupCta = document.getElementById("signupCta");
+        var heroTitle = document.getElementById("heroTitle");
+        var heroGreeting = document.getElementById("heroGreeting");
+        var heroSub = document.getElementById("heroSub");
+        var studentChip = document.getElementById("studentChip");
+
+        if (!lead) {
+          heroTitle.textContent = t.heroTitleFallback;
+          heroGreeting.textContent = t.heroGreetingFallback;
+          heroSub.textContent = t.heroSub;
+          studentChip.style.display = "none";
+          missing.style.display = "block";
+          document.getElementById("missingDesc").textContent = t.missingDesc;
+          trialPanel.style.display = "none";
+          evalPanel.style.display = "none";
+          coursePanel.style.display = "none";
+          signupCta.style.display = "none";
+          return;
+        }
+
+        missing.style.display = "none";
+
+        // Hero
+        heroTitle.textContent = tr(t.heroTitle, { name: lead.studentName || "—" });
+        heroGreeting.textContent = tr(t.heroGreeting, { parent: lead.parentName || (lang === "en" ? "there" : "家长"), name: lead.studentName || "" });
+        heroSub.textContent = t.heroSub;
+        studentChip.style.display = "inline-flex";
+        document.getElementById("studentChipSid").textContent = lead.studentId || sid;
+
+        // Trial summary
+        trialPanel.style.display = "block";
+        document.getElementById("trialPanelTitle").textContent = t.trialPanelTitle;
+        document.getElementById("trialPanelDesc").textContent = t.trialPanelDesc;
+        var trialTime = [lead.trialDate || "", lead.trialTime || ""].filter(Boolean).join(" · ") || "—";
+        var campusLabel = lead.campusLabel || lead.campus || "—";
+        var channelLabel = lead.channelLabel || lead.channel || "—";
+        var kvs = [
+          { label: t.kv.student, value: lead.studentName || "—" },
+          { label: t.kv.studentId, value: lead.studentId || sid },
+          { label: t.kv.campus, value: campusLabel },
+          { label: t.kv.trialTime, value: trialTime },
+          { label: t.kv.parent, value: lead.parentName || "—" },
+          { label: t.kv.email, value: lead.email || "—" },
+          { label: t.kv.phone, value: lead.phone || "—" },
+          { label: t.kv.channel, value: channelLabel }
+        ];
+        document.getElementById("trialKvGrid").innerHTML = kvs.map(function (kv) {
+          return "<div class='kv'><span>" + escapeHtml(kv.label) + "</span><strong>" + escapeHtml(kv.value) + "</strong></div>";
+        }).join("");
+
+        // Evaluation
+        evalPanel.style.display = "block";
+        document.getElementById("evalTitle").textContent = t.evalTitle;
+        document.getElementById("evalDesc").textContent = t.evalDesc;
+        var evalRec = flow && flow.getTrialEvaluationFor ? flow.getTrialEvaluationFor(lead) : null;
+        var evalLevelWrap = document.getElementById("evalLevelWrap");
+        var evalNotesWrap = document.getElementById("evalNotesWrap");
+        var evalMeta = document.getElementById("evalMeta");
+        var evalPending = document.getElementById("evalPending");
+        if (evalRec) {
+          evalPending.style.display = "none";
+          var levelText = localizedLevel(evalRec.level, t);
+          evalLevelWrap.innerHTML = "<div class='level-pill'>" + escapeHtml(tr(t.evalLevel, { level: levelText })) + "</div>";
+          evalNotesWrap.innerHTML = evalRec.notes
+            ? "<div style='font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-top:6px;'>" + escapeHtml(t.evalNotesLabel) + "</div><div class='notes-block'>" + escapeHtml(evalRec.notes) + "</div>"
+            : "";
+          var metaParts = [];
+          if (evalRec.evaluator) metaParts.push("<span>" + escapeHtml(tr(t.evalMetaEvaluator, { name: evalRec.evaluator })) + "</span>");
+          var ts = safeDate(evalRec.evaluatedAt);
+          if (ts) metaParts.push("<span>" + escapeHtml(tr(t.evalMetaTime, { time: ts.toLocaleString() })) + "</span>");
+          evalMeta.innerHTML = metaParts.join("");
+        } else {
+          evalLevelWrap.innerHTML = "";
+          evalNotesWrap.innerHTML = "";
+          evalMeta.innerHTML = "";
+          evalPending.style.display = "block";
+          evalPending.textContent = t.evalPending;
+        }
+
+        // Recommended courses
+        coursePanel.style.display = "block";
+        document.getElementById("coursePanelTitle").textContent = t.coursePanelTitle;
+        document.getElementById("coursePanelDesc").textContent = t.coursePanelDesc;
+        var courseList = document.getElementById("courseList");
+        var offerings = flow && flow.getClassOfferings ? flow.getClassOfferings() : [];
+        if (!evalRec) {
+          courseList.innerHTML = "<div class='empty-note'>" + escapeHtml(t.noCoursesBeforeEval) + "</div>";
+        } else {
+          var filtered = offerings.filter(function (o) {
+            return o && o.level && o.level.en === evalRec.level;
+          });
+          if (!filtered.length) {
+            courseList.innerHTML = "<div class='empty-note'>" + escapeHtml(t.noCourses) + "</div>";
+          } else {
+            courseList.innerHTML = "<div class='course-grid'>" + filtered.map(function (o) {
+              var seatsLeft = Math.max(0, (o.seatsTotal || 0) - (o.seatsTaken || 0));
+              var seatsCls = seatsLeft === 0 ? "cseats none" : "cseats";
+              var seatsText = seatsLeft > 0 ? tr(t.seatsRemain, { n: seatsLeft }) : t.seatsFull;
+              var courseName = o.courseName ? (lang === "en" ? o.courseName.en : o.courseName.zh) : "";
+              var levelText = o.level ? (lang === "en" ? o.level.en : o.level.zh) : "";
+              var weekday = o.weekday ? (lang === "en" ? o.weekday.en : o.weekday.zh) : "";
+              return "<div class='course-card'>" +
+                (levelText ? "<span class='clvl'>" + escapeHtml(levelText) + "</span>" : "") +
+                "<span class='cname'>" + escapeHtml(courseName) + "</span>" +
+                "<span class='ctime'>" + escapeHtml(weekday) + " · " + escapeHtml(o.timeSlot || "") + "</span>" +
+                "<span class='cteacher'>" + escapeHtml(o.teacher || "") + " · " + escapeHtml(classModeLabel(o.classMode, t)) + "</span>" +
+                "<span class='" + seatsCls + "'>" + escapeHtml(seatsText) + "</span>" +
+                "</div>";
+            }).join("") + "</div>";
+          }
+        }
+
+        // CTA
+        signupCta.style.display = "block";
+        document.getElementById("ctaTitle").textContent = t.ctaTitle;
+        document.getElementById("ctaDesc").textContent = tr(t.ctaDesc, { sid: lead.studentId || sid });
+        document.getElementById("ctaBlockTitle").textContent = t.ctaBlockTitle;
+        document.getElementById("ctaBlockCopy").textContent = t.ctaBlockCopy;
+        var qs = "sid=" + encodeURIComponent(lead.studentId || sid);
+        if (lead.email) qs += "&email=" + encodeURIComponent(lead.email);
+        if (lead.studentName) qs += "&name=" + encodeURIComponent(lead.studentName);
+        var signupHref = "signup.html?" + qs;
+        document.getElementById("createAccountBtn").setAttribute("href", signupHref);
+        document.getElementById("heroCtaBtn").setAttribute("href", signupHref);
+      }
+
+      langButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          lang = btn.getAttribute("data-set-lang");
+          render();
+        });
+      });
+
+      render();
+    })();
+  </script>
+  <script src="assets/lang-switcher.js" defer></script>
+  <script src="assets/minddo-nav.js" defer></script>
+  <script src="assets/consent.js" defer></script>
+</body>
+</html>
