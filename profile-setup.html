@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="完善学员与家长信息 · Complete student and parent profile." />
+  <meta name="author" content="MindDo AI Learning Center" />
+  <meta name="theme-color" content="#1e3a5f" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="profile-setup.html" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <title>完善学员与家长信息 | Complete Profile</title>
+  <style>
+    .skip-link { position:absolute; left:-9999px; top:0; background:#1e3a5f; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #0ea5e9; outline-offset:2px; }
+
+    :root {
+      --bg:#f6f8fb; --sand:#e8eef5; --card:rgba(240,249,255,0.94);
+      --line:rgba(30,58,95,0.14); --text:#0f172a; --muted:#5a6b81;
+      --gold:#0ea5e9; --gold-deep:#0284c7; --clay:#1e3a5f; --brown:#14294a;
+      --shadow:0 24px 60px rgba(15,23,42,0.12);
+      --ok:#6f8f57; --warn:#d89c36; --danger:#c46a4d;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
+    a { color:inherit; text-decoration:none; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+
+    .navbar { position:sticky; top:0; z-index:100; background:rgba(240,249,255,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:44px; height:44px; object-fit:contain; }
+    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .btn-primary { background:linear-gradient(135deg,#bae6fd,var(--gold)); color:#0b2540; border:none; border-radius:999px; padding:11px 24px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(14,165,233,0.28); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-primary:hover { transform:translateY(-2px); }
+    .btn-primary:disabled { opacity:0.55; cursor:not-allowed; transform:none; box-shadow:none; }
+    .btn-secondary { background:rgba(240,249,255,0.98); color:var(--clay); border:1px solid var(--line); border-radius:999px; padding:10px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(14,165,233,0.38); }
+
+    .page-hero { background:linear-gradient(145deg,#0b1a2e 0%,#14294a 50%,#1e3a5f 100%); padding:56px 0 44px; position:relative; overflow:hidden; }
+    .page-hero::before { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 18% 55%,rgba(14,165,233,0.18) 0%,transparent 48%),radial-gradient(circle at 82% 22%,rgba(14,165,233,0.1) 0%,transparent 38%); }
+    .page-hero-inner { max-width:880px; margin:0 auto; padding:0 48px; position:relative; z-index:1; color:#f0f9ff; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(14,165,233,0.18); border:1px solid rgba(14,165,233,0.3); color:#bae6fd; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
+    .page-hero h1 { font-size:clamp(26px,3.2vw,40px); font-weight:900; color:#f0f9ff; letter-spacing:-0.02em; margin-bottom:10px; }
+    .page-hero .sub { font-size:15px; color:rgba(224,242,254,0.78); line-height:1.7; max-width:660px; }
+
+    .page-content { padding:40px 0 80px; }
+    .content-inner { max-width:880px; margin:0 auto; padding:0 48px; }
+
+    .panel { background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(30,58,95,0.08); padding:26px 28px; margin-bottom:20px; }
+    .panel-tag { display:inline-flex; padding:4px 10px; border-radius:999px; background:rgba(14,165,233,0.12); border:1px solid rgba(14,165,233,0.28); color:var(--gold-deep); font-size:11px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
+    .panel h2 { font-size:19px; font-weight:800; color:var(--clay); margin-bottom:4px; }
+    .panel .desc { font-size:13.5px; color:var(--muted); line-height:1.7; margin-bottom:16px; }
+
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; }
+    .field { display:flex; flex-direction:column; margin-bottom:14px; }
+    .field.full { grid-column:1 / -1; }
+    .field label { font-size:12px; font-weight:800; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; }
+    .field label .req { color:var(--danger); margin-left:4px; }
+    .field input, .field select, .field textarea {
+      width:100%; border:1px solid var(--line); background:#f8fafc; color:var(--text);
+      padding:10px 12px; border-radius:12px; font:inherit; font-size:14px; outline:none;
+      transition:0.15s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color:var(--gold); box-shadow:0 0 0 2px rgba(14,165,233,0.15); }
+    .field input[readonly] { background:rgba(30,58,95,0.04); color:var(--muted); cursor:not-allowed; }
+    .field-hint { font-size:11.5px; color:var(--muted); margin-top:4px; line-height:1.5; }
+
+    .sid-chip { display:inline-flex; gap:10px; align-items:center; margin-top:16px; padding:7px 14px; background:rgba(240,249,255,0.12); border:1px solid rgba(224,242,254,0.22); border-radius:999px; font-size:12.5px; font-weight:700; color:#f0f9ff; }
+    .sid-chip strong { color:var(--gold); letter-spacing:0.03em; }
+
+    .actions { display:flex; gap:12px; justify-content:flex-end; align-items:center; flex-wrap:wrap; }
+    .result { font-size:13.5px; padding:10px 14px; border-radius:12px; display:none; margin-right:auto; }
+    .result.show { display:inline-flex; }
+    .result.error { background:rgba(196,106,77,0.1); border:1px solid rgba(196,106,77,0.28); color:var(--danger); }
+    .result.success { background:rgba(111,143,87,0.1); border:1px solid rgba(111,143,87,0.28); color:var(--ok); }
+
+    .footer { background:var(--brown); color:rgba(240,249,255,0.78); padding:48px 48px 28px; }
+    .footer-inner { max-width:880px; margin:0 auto; font-size:13px; }
+    .footer-bottom { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(240,249,255,0.45); margin-top:22px; padding-top:20px; border-top:1px solid rgba(224,242,254,0.1); }
+
+    @media (max-width:900px) { .navbar { padding:0 24px; } .page-hero-inner, .content-inner { padding:0 24px; } }
+    @media (max-width:640px) { .form-grid { grid-template-columns:1fr; } .actions { flex-direction:column-reverse; align-items:stretch; } .actions .btn-primary, .actions .btn-secondary { width:100%; justify-content:center; } .result { margin-right:0; } }
+  </style>
+  <link rel="stylesheet" href="assets/minddo-theme.css" />
+  <link rel="stylesheet" href="assets/minddo-responsive.css" />
+</head>
+<body>
+  <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
+
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <div class="nav-right">
+      <div class="lang-switcher" data-lang-switcher>
+        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span class="lang-trigger-label">中文</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="lang-menu" role="listbox">
+          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
+          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main" class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-tag"><span data-lang="zh">完善资料</span><span data-lang="en">Complete Profile</span></div>
+      <h1><span data-lang="zh">最后一步：完善学员和家长信息</span><span data-lang="en">Last Step: Complete Your Profile</span></h1>
+      <p class="sub"><span data-lang="zh">这些信息用于匹配合适的课程、安排排课提醒，并在紧急情况下联系家长。</span><span data-lang="en">These details help us match the right class, send reminders, and reach a parent when needed.</span></p>
+      <div class="sid-chip" id="sidChip" style="display:none;">
+        <span data-lang="zh">学员号</span><span data-lang="en">Student ID</span>
+        <strong id="sidChipText">—</strong>
+      </div>
+    </div>
+  </main>
+
+  <section class="page-content">
+    <div class="content-inner">
+      <form id="profileForm" novalidate>
+
+        <article class="panel">
+          <span class="panel-tag"><span data-lang="zh">学员信息</span><span data-lang="en">Student</span></span>
+          <h2><span data-lang="zh">学员基本资料</span><span data-lang="en">Student Details</span></h2>
+          <p class="desc"><span data-lang="zh">用于匹配合适的课程等级与课堂安排。</span><span data-lang="en">Used to match the right level and class cadence.</span></p>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="studentName"><span data-lang="zh">学员姓名</span><span data-lang="en">Student Name</span><span class="req">*</span></label>
+              <input id="studentName" name="studentName" type="text" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <label for="grade"><span data-lang="zh">年级</span><span data-lang="en">Grade</span><span class="req">*</span></label>
+              <select id="grade" name="grade" required>
+                <option value="" disabled data-zh="请选择年级" data-en="Select grade"></option>
+                <option value="K">K</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="birthday"><span data-lang="zh">出生日期</span><span data-lang="en">Birthday</span></label>
+              <input id="birthday" name="birthday" type="date" />
+            </div>
+            <div class="field">
+              <label for="gender"><span data-lang="zh">性别</span><span data-lang="en">Gender</span></label>
+              <select id="gender" name="gender">
+                <option value="" data-zh="不填" data-en="Prefer not to say"></option>
+                <option value="female" data-zh="女" data-en="Female"></option>
+                <option value="male" data-zh="男" data-en="Male"></option>
+                <option value="other" data-zh="其他" data-en="Other"></option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="city"><span data-lang="zh">城市 / 校区</span><span data-lang="en">City / Campus</span></label>
+              <input id="city" name="city" type="text" autocomplete="address-level2" />
+              <div class="field-hint"><span data-lang="zh">线下就读请填写所在校区城市。</span><span data-lang="en">If attending in person, enter the campus city.</span></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <span class="panel-tag"><span data-lang="zh">家长 / 监护人</span><span data-lang="en">Parent / Guardian</span></span>
+          <h2><span data-lang="zh">联系信息</span><span data-lang="en">Contact Details</span></h2>
+          <p class="desc"><span data-lang="zh">用于课程确认、紧急联系和试课跟进。</span><span data-lang="en">Used for class confirmations, emergency contact, and follow-ups.</span></p>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="parentName"><span data-lang="zh">家长姓名</span><span data-lang="en">Parent Name</span><span class="req">*</span></label>
+              <input id="parentName" name="parentName" type="text" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <label for="parentRelation"><span data-lang="zh">与学员关系</span><span data-lang="en">Relationship</span></label>
+              <select id="parentRelation" name="parentRelation">
+                <option value="" data-zh="请选择" data-en="Select"></option>
+                <option value="mother" data-zh="母亲" data-en="Mother"></option>
+                <option value="father" data-zh="父亲" data-en="Father"></option>
+                <option value="guardian" data-zh="监护人" data-en="Guardian"></option>
+                <option value="other" data-zh="其他" data-en="Other"></option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="phone"><span data-lang="zh">联系电话</span><span data-lang="en">Phone</span><span class="req">*</span></label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="+1 (415) 555-0100" />
+            </div>
+            <div class="field">
+              <label for="parentEmail"><span data-lang="zh">备用邮箱</span><span data-lang="en">Secondary Email</span></label>
+              <input id="parentEmail" name="parentEmail" type="email" autocomplete="email" placeholder="parent@example.com" />
+              <div class="field-hint"><span data-lang="zh">选填，如希望课程通知同步到其他邮箱。</span><span data-lang="en">Optional — for class updates sent to another inbox.</span></div>
+            </div>
+            <div class="field full">
+              <label for="accountEmail"><span data-lang="zh">账户邮箱（不可修改）</span><span data-lang="en">Account Email (read-only)</span></label>
+              <input id="accountEmail" type="email" readonly />
+            </div>
+          </div>
+        </article>
+
+        <div class="panel">
+          <div class="actions">
+            <div id="result" class="result"></div>
+            <a id="skipBtn" class="btn-secondary" href="student-account.html"><span data-lang="zh">稍后再填</span><span data-lang="en">Finish Later</span></a>
+            <button type="submit" class="btn-primary" id="saveBtn"><span data-lang="zh">保存并继续 →</span><span data-lang="en">Save & Continue →</span></button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <span>© 2025 MindDo Learning Center · <span data-lang="zh">保留所有权利</span><span data-lang="en">All rights reserved</span></span>
+        <span><a href="privacy.html" style="color:inherit;"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy</span></a> · <a href="terms.html" style="color:inherit;"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/minddo-flow.js"></script>
+  <script>
+    (function () {
+      var I18N = {
+        "zh-CN": {
+          pageTitle: "完善学员与家长信息",
+          successMsg: "资料已保存。",
+          missingMsg: "请填写必填项：学员姓名、年级、家长姓名、联系电话。",
+          phoneInvalid: "请输入有效的联系电话（6–20 位）。",
+          secondaryInvalid: "备用邮箱格式不正确。"
+        },
+        en: {
+          pageTitle: "Complete Profile",
+          successMsg: "Profile saved.",
+          missingMsg: "Please fill required fields: student name, grade, parent name, phone.",
+          phoneInvalid: "Please enter a valid phone (6–20 digits).",
+          secondaryInvalid: "Secondary email looks invalid."
+        }
+      };
+
+      var html = document.documentElement;
+      var langButtons = document.querySelectorAll("[data-set-lang]");
+      var lang = localStorage.getItem("minddo_lang") === "en" ? "en" : "zh-CN";
+      var flow = window.MindDoFlow;
+
+      // Guard: route requires a signed-in (or invite-seeded) current student.
+      if (flow && flow.requireLogin) {
+        if (!flow.requireLogin("profile-setup.html", "complete_profile")) return;
+      }
+
+      var urlParams = new URLSearchParams(window.location.search);
+      var SAFE_NEXT = /^[a-z0-9_-]+\.html(\?[^#]*)?(#[a-z0-9_-]+)?$/i;
+      var rawNext = urlParams.get("next") || "student-account.html";
+      var nextUrl = SAFE_NEXT.test(rawNext) ? rawNext : "student-account.html";
+
+      var form = document.getElementById("profileForm");
+      var fields = {
+        studentName: document.getElementById("studentName"),
+        grade: document.getElementById("grade"),
+        birthday: document.getElementById("birthday"),
+        gender: document.getElementById("gender"),
+        city: document.getElementById("city"),
+        parentName: document.getElementById("parentName"),
+        parentRelation: document.getElementById("parentRelation"),
+        phone: document.getElementById("phone"),
+        parentEmail: document.getElementById("parentEmail"),
+        accountEmail: document.getElementById("accountEmail")
+      };
+      var saveBtn = document.getElementById("saveBtn");
+      var skipBtn = document.getElementById("skipBtn");
+      var resultEl = document.getElementById("result");
+      var sidChip = document.getElementById("sidChip");
+      var sidChipText = document.getElementById("sidChipText");
+
+      // Keep skip button honoring the same next redirect so finishing later
+      // still lands you where the signup intended.
+      skipBtn.setAttribute("href", nextUrl);
+
+      function prefillLangOptions() {
+        document.querySelectorAll("option[data-zh][data-en]").forEach(function (opt) {
+          opt.textContent = opt.getAttribute(lang === "en" ? "data-en" : "data-zh");
+        });
+      }
+
+      function prefillFromState() {
+        var current = flow && flow.getCurrentStudent ? flow.getCurrentStudent() : null;
+        if (!current) return;
+        sidChip.style.display = current.studentId ? "inline-flex" : "none";
+        sidChipText.textContent = current.studentId || "—";
+        fields.accountEmail.value = current.email || "";
+
+        if (!fields.studentName.value) fields.studentName.value = current.studentName || current.name || "";
+        if (!fields.grade.value && current.grade) {
+          // Tolerate lead.grade stored as "6" or "六年级" — only auto-select if it matches a known K-12 value.
+          var v = String(current.grade).trim();
+          var opt = Array.prototype.find.call(fields.grade.options, function (o) { return o.value === v; });
+          if (opt) fields.grade.value = v;
+        }
+        if (!fields.birthday.value && current.birthday) fields.birthday.value = current.birthday;
+        if (!fields.gender.value && current.gender) fields.gender.value = current.gender;
+        if (!fields.city.value && current.city) fields.city.value = current.city;
+        if (!fields.parentName.value && current.parentName) fields.parentName.value = current.parentName;
+        if (!fields.parentRelation.value && current.parentRelation) fields.parentRelation.value = current.parentRelation;
+        if (!fields.phone.value && current.phone) fields.phone.value = current.phone;
+        if (!fields.parentEmail.value && current.parentEmail) fields.parentEmail.value = current.parentEmail;
+      }
+
+      function setLang(l) {
+        lang = l;
+        html.setAttribute("lang", l);
+        localStorage.setItem("minddo_lang", l);
+        document.title = I18N[l].pageTitle + " | MindDo";
+        langButtons.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-set-lang") === l);
+        });
+        prefillLangOptions();
+      }
+
+      function showResult(type, msg) {
+        resultEl.textContent = msg;
+        resultEl.className = "result show " + type;
+      }
+
+      function clearResult() {
+        resultEl.textContent = "";
+        resultEl.className = "result";
+      }
+
+      function isValidPhone(v) { return /^[0-9+\-\s()]{6,20}$/.test(v); }
+      function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+      langButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); });
+      });
+
+      setLang(lang);
+      prefillFromState();
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        clearResult();
+
+        var t = I18N[lang];
+        var studentName = fields.studentName.value.trim();
+        var grade = fields.grade.value;
+        var parentName = fields.parentName.value.trim();
+        var phone = fields.phone.value.trim();
+        var parentEmail = fields.parentEmail.value.trim();
+
+        if (!studentName || !grade || !parentName || !phone) {
+          showResult("error", t.missingMsg);
+          return;
+        }
+        if (!isValidPhone(phone)) {
+          showResult("error", t.phoneInvalid);
+          fields.phone.focus();
+          return;
+        }
+        if (parentEmail && !isValidEmail(parentEmail)) {
+          showResult("error", t.secondaryInvalid);
+          fields.parentEmail.focus();
+          return;
+        }
+
+        var patch = {
+          studentName: studentName,
+          name: studentName,
+          grade: grade,
+          birthday: fields.birthday.value || "",
+          gender: fields.gender.value || "",
+          city: fields.city.value.trim(),
+          parentName: parentName,
+          parentRelation: fields.parentRelation.value || "",
+          phone: phone,
+          parentEmail: parentEmail
+        };
+        if (flow && flow.setCurrentStudent) flow.setCurrentStudent(patch);
+
+        saveBtn.disabled = true;
+        showResult("success", t.successMsg);
+        setTimeout(function () { window.location.href = nextUrl; }, 700);
+      });
+    })();
+  </script>
+  <script src="assets/lang-switcher.js" defer></script>
+  <script src="assets/minddo-nav.js" defer></script>
+  <script src="assets/consent.js" defer></script>
+</body>
+</html>

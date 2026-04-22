@@ -531,7 +531,11 @@
         try { localStorage.setItem("minddo_last_email", payload.email); } catch (_) {}
         var t = I18N[langOf()];
         showResult("success", provider ? t.oauthSuccess.replace("{provider}", provider) : t.signupSuccess);
-        setTimeout(function () { window.location.href = nextUrl; }, 900);
+        // Always route through profile-setup so the parent can complete the
+        // student / parent details removed from the signup form. The original
+        // next-target is carried through as ?next=.
+        var profileUrl = "profile-setup.html?next=" + encodeURIComponent(nextUrl);
+        setTimeout(function () { window.location.href = profileUrl; }, 900);
       }
 
       function setLang(lang) {
