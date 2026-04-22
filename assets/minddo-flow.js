@@ -526,6 +526,39 @@
     })[0] || null;
   }
 
+  // Used by trial-register to block a duplicate trial booking before it's
+  // written. Matches on either email or phone (phone digits-only so
+  // "+1 (415) 555-0100" and "4155550100" compare equal). A specific
+  // lead can be excluded via its createdAt to support re-submissions that
+  // the user has chosen to bypass.
+  function digitsOnly(v) { return String(v || "").replace(/\D/g, ""); }
+  function findLeadByEmailOrPhone(email, phone, opts) {
+    var emailNorm = norm(email);
+    var phoneDigits = digitsOnly(phone);
+    if (!emailNorm && !phoneDigits) return null;
+    var leads = readJson(KEYS.leads, []);
+    var excludeCreatedAt = opts && opts.excludeCreatedAt;
+    return leads.filter(function (l) {
+      if (!l) return false;
+      if (excludeCreatedAt && l.createdAt === excludeCreatedAt) return false;
+      var matchEmail = emailNorm && norm(l.email) === emailNorm;
+      var matchPhone = phoneDigits && phoneDigits.length >= 6 && digitsOnly(l.phone) === phoneDigits;
+      return matchEmail || matchPhone;
+    }).sort(function (a, b) {
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    })[0] || null;
+  }
+
+  // Same idea, scoped to signup records — ops surfaces may want a unified
+  // "is this person already registered" lookup.
+  function findSignupByEmail(email) {
+    var target = norm(email);
+    if (!target) return null;
+    var list = readJson(KEYS.signups, []);
+    return list.filter(function (r) { return norm(r && r.email) === target; })
+      .sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); })[0] || null;
+  }
+
   function sendAccountInvite(lead) {
     if (!lead || !lead.email) return null;
     var origin = "";
@@ -850,6 +883,8 @@
     saveLead: saveLead,
     updateLead: updateLead,
     findLeadByStudentId: findLeadByStudentId,
+    findLeadByEmailOrPhone: findLeadByEmailOrPhone,
+    findSignupByEmail: findSignupByEmail,
     saveAssessment: saveAssessment,
     saveSignupUser: saveSignupUser,
     savePayment: savePayment,

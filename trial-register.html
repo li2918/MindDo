@@ -405,6 +405,11 @@
           selectedPrefix: "{date} · {time} · {campus}",
           emailInvalid: "请输入有效的邮箱地址。",
           phoneInvalid: "请输入有效的手机号（6–20 位）。",
+          dupTrialEmail: "该邮箱已有试课预约。",
+          dupTrialPhone: "该手机号已有试课预约。",
+          dupTrialHint: "如需重新预约请先联系顾问，或点击下方「仍要继续」。",
+          dupTrialSignupHint: "该邮箱已注册 MindDo 学员账户，若需新增试课请联系顾问。",
+          dupProceed: "仍要继续预约",
           noSelection: "尚未选择试课时间。",
           submitOk: "报名提交成功！",
           submitErrorRequired: "请完整填写必填信息。",
@@ -459,6 +464,11 @@
           selectedPrefix: "{date} · {time} · {campus}",
           emailInvalid: "Please enter a valid email.",
           phoneInvalid: "Please enter a valid phone (6–20 digits).",
+          dupTrialEmail: "This email already has a trial booking.",
+          dupTrialPhone: "This phone number already has a trial booking.",
+          dupTrialHint: "Please contact an advisor to rebook, or click \"Book anyway\" below.",
+          dupTrialSignupHint: "This email already has a MindDo student account — contact an advisor to add another trial.",
+          dupProceed: "Book anyway",
           noSelection: "No trial time selected.",
           submitOk: "Registration submitted!",
           submitErrorRequired: "Please complete all required fields.",
@@ -568,6 +578,8 @@
 
       function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
       function isValidPhone(v) { return /^[0-9+\-\s()]{6,20}$/.test(v); }
+      function norm(v) { return String(v || "").trim().toLowerCase(); }
+      function escapeHtml(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
 
       function setLang(lang) {
         var t = I18N[lang] || I18N["zh-CN"];
@@ -615,11 +627,13 @@
         btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); });
       });
 
+      var dupBypass = false;
+
       form.addEventListener("submit", function (e) {
         e.preventDefault();
         var t = I18N[langOf()];
         submitResult.className = "result";
-        submitResult.textContent = "";
+        submitResult.innerHTML = "";
 
         var studentName = document.getElementById("studentName").value.trim();
         var grade = document.getElementById("grade").value.trim();
@@ -645,6 +659,39 @@
           submitResult.textContent = t.phoneInvalid;
           phoneInput.focus();
           return;
+        }
+
+        // Duplicate check — blocks the first submit, bypassed after the
+        // user clicks "Book anyway" inside the inline banner.
+        if (!dupBypass && window.MindDoFlow) {
+          var dupLead = window.MindDoFlow.findLeadByEmailOrPhone
+            ? window.MindDoFlow.findLeadByEmailOrPhone(contactEmail, contactPhone)
+            : null;
+          var dupSignup = window.MindDoFlow.findSignupByEmail
+            ? window.MindDoFlow.findSignupByEmail(contactEmail)
+            : null;
+          if (dupLead || dupSignup) {
+            var lines = [];
+            var matchedEmail = dupLead && norm(dupLead.email) === norm(contactEmail);
+            if (matchedEmail) lines.push(t.dupTrialEmail);
+            else if (dupLead) lines.push(t.dupTrialPhone);
+            if (dupSignup) lines.push(t.dupTrialSignupHint);
+            else lines.push(t.dupTrialHint);
+            submitResult.className = "result error";
+            var bannerId = "dupProceedBtn_" + Date.now();
+            submitResult.innerHTML = "<div>" + lines.map(escapeHtml).join("<br/>") + "</div>" +
+              (dupSignup ? "" : "<button type='button' id='" + bannerId + "' style='margin-top:10px;background:#fff;border:1px solid rgba(196,106,77,0.4);color:var(--error);padding:7px 14px;border-radius:999px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;'>" + escapeHtml(t.dupProceed) + "</button>");
+            var proceedBtn = document.getElementById(bannerId);
+            if (proceedBtn) {
+              proceedBtn.addEventListener("click", function () {
+                dupBypass = true;
+                submitResult.className = "result";
+                submitResult.innerHTML = "";
+                form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event("submit", { cancelable: true }));
+              });
+            }
+            return;
+          }
         }
 
         // Build lead
