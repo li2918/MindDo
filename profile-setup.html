@@ -265,8 +265,10 @@
 
       var urlParams = new URLSearchParams(window.location.search);
       var SAFE_NEXT = /^[a-z0-9_-]+\.html(\?[^#]*)?(#[a-z0-9_-]+)?$/i;
-      var rawNext = urlParams.get("next") || "student-account.html";
-      var nextUrl = SAFE_NEXT.test(rawNext) ? rawNext : "student-account.html";
+      // After registration the parent should land in the course-selection
+      // flow by default; callers can still override via ?next=.
+      var rawNext = urlParams.get("next") || "course-selection.html";
+      var nextUrl = SAFE_NEXT.test(rawNext) ? rawNext : "course-selection.html";
 
       var form = document.getElementById("profileForm");
       var fields = {

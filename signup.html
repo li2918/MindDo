@@ -348,7 +348,10 @@
       var nextParam = urlParams.get("next");
       var reasonParam = urlParams.get("reason");
       var SAFE_NEXT = /^[a-z0-9_-]+\.html(#[a-z0-9_-]+)?$/i;
-      var nextUrl = (nextParam && SAFE_NEXT.test(nextParam)) ? nextParam : "student-account.html";
+      // Default post-signup flow: complete profile, then jump straight into
+      // course selection. Callers that bring their own ?next= (e.g. the
+      // enroll gate) still win.
+      var nextUrl = (nextParam && SAFE_NEXT.test(nextParam)) ? nextParam : "course-selection.html";
 
       // Invite-link prefill. The account-invite email carries `?sid=`, `?email=`
       // and optionally `?name=`. Seed the current-student object so the signup
