@@ -426,6 +426,13 @@
           sentAtLabel: "发送于 {time}",
           viewMail: "查看模拟邮件 →",
           toastSentWithView: "开户邀请已发送，点「查看模拟邮件」测试完整链路。",
+          copyLink: "复制邀请链接",
+          copyLinkShort: "复制链接",
+          copied: "邀请链接已复制",
+          copyFallback: "无法自动复制，请手动复制：",
+          resendBtn: "重新发送",
+          resendConfirm: "确定要再次发送开户邀请邮件到 {email}？",
+          toastResent: "邀请已重新发送到 {email}",
           emptyRow: "今天暂无新注册试课。",
           notesPlaceholder: "例如：对 AI 创意应用表现突出，建议从中级课程起步。",
           levelOptions: {
@@ -464,6 +471,13 @@
           sentAtLabel: "Sent at {time}",
           viewMail: "View simulated email →",
           toastSentWithView: "Invite sent — click \"View simulated email\" to follow the full flow.",
+          copyLink: "Copy invite link",
+          copyLinkShort: "Copy link",
+          copied: "Invite link copied",
+          copyFallback: "Couldn't auto-copy — please copy manually: ",
+          resendBtn: "Resend email",
+          resendConfirm: "Send the invite email to {email} again?",
+          toastResent: "Invite re-sent to {email}",
           emptyRow: "No new trial registrations today.",
           notesPlaceholder: "e.g. Strong at creative AI use — start at Intermediate.",
           levelOptions: {
@@ -527,6 +541,30 @@
         toast.textContent = msg;
         toast.classList.add("show");
         setTimeout(function () { toast.classList.remove("show"); }, 2000);
+      }
+
+      // Prefers the modern async clipboard API; falls back to a transient
+      // textarea + execCommand for non-secure contexts (file://, http). Resolves
+      // true/false so the caller can toast an appropriate message.
+      function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return fallbackCopy(text); });
+        }
+        return Promise.resolve(fallbackCopy(text));
+      }
+      function fallbackCopy(text) {
+        try {
+          var ta = document.createElement("textarea");
+          ta.value = text;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "fixed";
+          ta.style.left = "-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          var ok = document.execCommand && document.execCommand("copy");
+          document.body.removeChild(ta);
+          return !!ok;
+        } catch (_) { return false; }
       }
 
       function evaluationFor(lead) {
@@ -596,9 +634,20 @@
           if (invite) {
             var sentAt = safeDate(invite.sentAt);
             var mailId = invite.mailId ? ("?highlight=" + encodeURIComponent(invite.mailId)) : "";
+            // Ops controls for onsite registration and follow-up:
+            //   - copy link (for parents who didn't receive the email, or
+            //     want to scan/register on the spot)
+            //   - resend (re-queue the same template with the current data)
+            var copyUrl = invite.inviteUrl || invite.signupUrl || "";
+            var copyBtn = copyUrl
+              ? "<button type='button' class='btn-eval reopen' data-copy-idx='" + idx + "' title='" + escapeAttr(copyUrl) + "'>" + t.copyLink + "</button>"
+              : "";
+            var resendBtnHtml = "<button type='button' class='btn-eval reopen' data-resend-idx='" + idx + "'>" + t.resendBtn + "</button>";
             inviteCell = "<button type='button' class='btn-invite sent' disabled>" + t.inviteSent + "</button>" +
               (sentAt ? "<span class='invite-hint'>" + t.sentAtLabel.replace("{time}", sentAt.toLocaleString()) + "</span>" : "") +
-              "<a class='btn-eval reopen' style='text-decoration:none;' href='email-outbox.html" + mailId + "'>" + t.viewMail + "</a>";
+              "<a class='btn-eval reopen' style='text-decoration:none;' href='email-outbox.html" + mailId + "'>" + t.viewMail + "</a>" +
+              copyBtn +
+              resendBtnHtml;
           } else if (!hasEmail) {
             inviteCell = "<button type='button' class='btn-invite' disabled>" + t.inviteEmpty + "</button>";
           } else if (!done) {
@@ -646,6 +695,38 @@
           window.MindDoFlow.unmarkTrialComplete(uLead);
           showToast(I18N[lang].toastUncompleted.replace("{name}", uLead.studentName || "—"));
           render();
+          return;
+        }
+        var copyBtnEl = e.target.closest("[data-copy-idx]");
+        if (copyBtnEl) {
+          var cIdx = Number(copyBtnEl.getAttribute("data-copy-idx"));
+          var cLead = tbody._leads && tbody._leads[cIdx];
+          if (!cLead || !window.MindDoFlow || !window.MindDoFlow.getAccountInviteFor) return;
+          var cInvite = window.MindDoFlow.getAccountInviteFor(cLead.email);
+          var url = (cInvite && (cInvite.inviteUrl || cInvite.signupUrl)) || "";
+          if (!url) return;
+          copyToClipboard(url).then(function (ok) {
+            if (ok) {
+              showToast(I18N[lang].copied);
+              copyBtnEl.textContent = I18N[lang].copied;
+              setTimeout(function () { copyBtnEl.textContent = I18N[lang].copyLink; }, 1500);
+            } else {
+              showToast(I18N[lang].copyFallback + url);
+            }
+          });
+          return;
+        }
+        var resendBtnEl = e.target.closest("[data-resend-idx]");
+        if (resendBtnEl) {
+          var rIdx = Number(resendBtnEl.getAttribute("data-resend-idx"));
+          var rLead = tbody._leads && tbody._leads[rIdx];
+          if (!rLead || !window.MindDoFlow || !window.MindDoFlow.sendAccountInvite) return;
+          if (!confirm(I18N[lang].resendConfirm.replace("{email}", rLead.email || "—"))) return;
+          var resendRec = window.MindDoFlow.sendAccountInvite(rLead);
+          if (resendRec) {
+            showToast(I18N[lang].toastResent.replace("{email}", resendRec.email));
+            render();
+          }
           return;
         }
         var inviteBtnEl = e.target.closest("[data-invite-idx]");
