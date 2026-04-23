@@ -12,7 +12,21 @@
     studentLevels: "minddo_student_levels",
     invites: "minddo_account_invites",
     evaluations: "minddo_trial_evaluations",
-    completions: "minddo_trial_completions"
+    completions: "minddo_trial_completions",
+    families: "minddo_families",
+    students: "minddo_students",
+    guardians: "minddo_guardians",
+    accounts: "minddo_accounts",
+    inviteTokens: "minddo_invite_tokens"
+  };
+
+  // Role constants for the new multi-account model. A single family has one
+  // primary guardian (the one that registered), optionally a second guardian,
+  // and 1..N students each with their own learning-system login.
+  var ROLES = {
+    guardianPrimary: "guardian_primary",
+    guardianSecondary: "guardian_secondary",
+    student: "student"
   };
 
   function readJson(key, fallback) {
@@ -296,9 +310,22 @@
       provider: user.provider
     });
 
-    return upsertByEmail(KEYS.signups, Object.assign({}, user, {
+    var record = upsertByEmail(KEYS.signups, Object.assign({}, user, {
       studentId: current.studentId
     }));
+
+    // Provision the new family + guardian_primary account in one shot. The
+    // helper is idempotent so re-signups (e.g. completing profile setup) are
+    // safe. We keep writing to signups for legacy ops surfaces.
+    var account = provisionGuardianPrimary(Object.assign({}, record, {
+      password: user.password,
+      studentName: record.studentName || record.name
+    }));
+    if (account) {
+      // Stash the accountId back onto the signup record for ops visibility.
+      upsertByEmail(KEYS.signups, { email: record.email, accountId: account.accountId });
+    }
+    return record;
   }
 
   function savePayment(payment) {
@@ -866,9 +893,403 @@
     }]);
   }
 
+  // =================================================================
+  // Family + Multi-Account Model
+  // -----------------------------------------------------------------
+  // Designed to support three account types sharing one family:
+  //   - guardian_primary: the registered parent (billing + admin)
+  //   - guardian_secondary: invited co-parent (read + limited writes)
+  //   - student: the learner's own login for the learning system
+  //
+  // For this frontend-only prototype all secrets are stored plainly in
+  // localStorage. A real deployment swaps `hashPassword` for a salted
+  // KDF and moves persistence behind an API.
+  // =================================================================
+
+  function genId(prefix) {
+    var r = Math.random().toString(36).slice(2, 8).toUpperCase();
+    var t = Date.now().toString(36).toUpperCase();
+    return (prefix || "ID") + "-" + t + "-" + r;
+  }
+  function genToken() {
+    var a = Math.random().toString(36).slice(2, 10);
+    var b = Math.random().toString(36).slice(2, 10);
+    var c = Date.now().toString(36);
+    return (a + b + c).toUpperCase();
+  }
+  // Demo-grade password storage. Real apps: replace with server-side bcrypt/argon2.
+  function hashPassword(plain) { return "plain:" + String(plain || ""); }
+  function checkPassword(plain, stored) { return hashPassword(plain) === stored; }
+
+  function getFamilies() { return readJson(KEYS.families, []); }
+  function getGuardians() { return readJson(KEYS.guardians, []); }
+  function getStudents() { return readJson(KEYS.students, []); }
+  function getAccounts() { return readJson(KEYS.accounts, []); }
+  function getInviteTokens() { return readJson(KEYS.inviteTokens, []); }
+
+  function findFamilyById(familyId) {
+    if (!familyId) return null;
+    return getFamilies().filter(function (f) { return f.familyId === familyId; })[0] || null;
+  }
+  function findFamilyByStudentId(studentId) {
+    if (!studentId) return null;
+    return getFamilies().filter(function (f) {
+      return (f.studentIds || []).indexOf(studentId) !== -1;
+    })[0] || null;
+  }
+  function findAccountByEmail(email) {
+    var target = norm(email);
+    if (!target) return null;
+    return getAccounts().filter(function (a) { return norm(a.email) === target; })[0] || null;
+  }
+  function findAccountById(accountId) {
+    if (!accountId) return null;
+    return getAccounts().filter(function (a) { return a.accountId === accountId; })[0] || null;
+  }
+  function findStudentById(studentId) {
+    if (!studentId) return null;
+    return getStudents().filter(function (s) { return s.studentId === studentId; })[0] || null;
+  }
+  function findGuardianById(guardianId) {
+    if (!guardianId) return null;
+    return getGuardians().filter(function (g) { return g.guardianId === guardianId; })[0] || null;
+  }
+  function listFamilyGuardians(familyId) {
+    return getGuardians().filter(function (g) { return g.familyId === familyId; });
+  }
+  function listFamilyStudents(familyId) {
+    return getStudents().filter(function (s) { return s.familyId === familyId; });
+  }
+  function listFamilyAccounts(familyId) {
+    return getAccounts().filter(function (a) { return a.familyId === familyId; });
+  }
+
+  function upsertFamily(family) {
+    var list = getFamilies();
+    var idx = list.findIndex(function (f) { return f.familyId === family.familyId; });
+    if (idx >= 0) list[idx] = Object.assign({}, list[idx], family);
+    else list.push(family);
+    writeJson(KEYS.families, list);
+    return list[idx >= 0 ? idx : list.length - 1];
+  }
+  function upsertGuardian(guardian) {
+    var list = getGuardians();
+    var idx = list.findIndex(function (g) { return g.guardianId === guardian.guardianId; });
+    if (idx >= 0) list[idx] = Object.assign({}, list[idx], guardian);
+    else list.push(guardian);
+    writeJson(KEYS.guardians, list);
+    return list[idx >= 0 ? idx : list.length - 1];
+  }
+  function upsertStudent(student) {
+    var list = getStudents();
+    var idx = list.findIndex(function (s) { return s.studentId === student.studentId; });
+    if (idx >= 0) list[idx] = Object.assign({}, list[idx], student);
+    else list.push(student);
+    writeJson(KEYS.students, list);
+    return list[idx >= 0 ? idx : list.length - 1];
+  }
+  function upsertAccount(account) {
+    var list = getAccounts();
+    var idx = list.findIndex(function (a) { return a.accountId === account.accountId; });
+    if (idx >= 0) list[idx] = Object.assign({}, list[idx], account);
+    else list.push(account);
+    writeJson(KEYS.accounts, list);
+    return list[idx >= 0 ? idx : list.length - 1];
+  }
+
+  // Create a family rooted on a student. Idempotent per studentId so repeated
+  // calls (migration, re-signup) reuse the same family.
+  function ensureFamilyForStudent(studentId) {
+    if (!studentId) return null;
+    var existing = findFamilyByStudentId(studentId);
+    if (existing) return existing;
+    var family = {
+      familyId: genId("FAM"),
+      primaryGuardianId: "",
+      studentIds: [studentId],
+      guardianIds: [],
+      createdAt: new Date().toISOString()
+    };
+    return upsertFamily(family);
+  }
+  function addStudentToFamily(familyId, studentId) {
+    var family = findFamilyById(familyId);
+    if (!family || !studentId) return null;
+    if ((family.studentIds || []).indexOf(studentId) === -1) {
+      family.studentIds = (family.studentIds || []).concat([studentId]);
+      upsertFamily(family);
+    }
+    return family;
+  }
+  function attachAccountToFamily(familyId, accountId, role, linkedEntityId) {
+    var family = findFamilyById(familyId);
+    if (!family) return null;
+    family.guardianIds = family.guardianIds || [];
+    if (role === ROLES.guardianPrimary || role === ROLES.guardianSecondary) {
+      if (family.guardianIds.indexOf(linkedEntityId) === -1) family.guardianIds.push(linkedEntityId);
+      if (role === ROLES.guardianPrimary && !family.primaryGuardianId) {
+        family.primaryGuardianId = linkedEntityId;
+      }
+      upsertFamily(family);
+    }
+    return family;
+  }
+
+  // Promote an existing signup into the new model: create family + student +
+  // guardian + account. Idempotent — if an account already matches by email,
+  // reuse it; if the family already exists for the studentId, reuse that too.
+  function provisionGuardianPrimary(payload) {
+    if (!payload || !payload.email) return null;
+    var email = payload.email;
+    var existing = findAccountByEmail(email);
+    if (existing) return existing; // Already provisioned
+
+    var studentId = payload.studentId || (getCurrentStudent() || {}).studentId;
+    if (!studentId) studentId = createStudentId();
+
+    // Ensure student entity (even if placeholder — profile-setup fills the rest)
+    var student = findStudentById(studentId);
+    if (!student) {
+      student = upsertStudent({
+        studentId: studentId,
+        familyId: "",
+        name: payload.studentName || payload.name || "",
+        grade: payload.grade || "",
+        birthday: payload.birthday || "",
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    var family = ensureFamilyForStudent(studentId);
+    if (student.familyId !== family.familyId) upsertStudent({ studentId: studentId, familyId: family.familyId });
+
+    var guardian = upsertGuardian({
+      guardianId: genId("GDN"),
+      familyId: family.familyId,
+      name: payload.parentName || payload.studentName || payload.name || "",
+      phone: payload.phone || "",
+      email: payload.email,
+      relation: payload.parentRelation || "",
+      isPrimary: true,
+      accountId: "",
+      createdAt: new Date().toISOString()
+    });
+
+    var account = upsertAccount({
+      accountId: genId("ACC"),
+      email: payload.email,
+      passwordHash: payload.password ? hashPassword(payload.password) : "",
+      familyId: family.familyId,
+      role: ROLES.guardianPrimary,
+      linkedEntityId: guardian.guardianId,
+      provider: payload.provider || "email",
+      status: "active",
+      createdAt: new Date().toISOString(),
+      lastLoginAt: new Date().toISOString()
+    });
+    upsertGuardian({ guardianId: guardian.guardianId, accountId: account.accountId });
+    attachAccountToFamily(family.familyId, account.accountId, account.role, guardian.guardianId);
+    return account;
+  }
+
+  // Create a pending student account and return a single-use claim token the
+  // primary guardian can share. The student activates it by setting a
+  // password at claim-account.html.
+  function createStudentLogin(familyId, studentId, opts) {
+    var family = findFamilyById(familyId);
+    var student = findStudentById(studentId);
+    if (!family || !student) return null;
+    opts = opts || {};
+    var loginEmail = opts.email || student.loginEmail || ("stu-" + studentId.toLowerCase() + "@minddo.local");
+
+    // Reuse an existing student account for this studentId if one exists.
+    var existing = getAccounts().filter(function (a) {
+      return a.role === ROLES.student && a.linkedEntityId === studentId;
+    })[0];
+    var account;
+    if (existing) {
+      account = existing;
+    } else {
+      account = upsertAccount({
+        accountId: genId("ACC"),
+        email: loginEmail,
+        passwordHash: "",
+        familyId: familyId,
+        role: ROLES.student,
+        linkedEntityId: studentId,
+        status: "pending",
+        createdAt: new Date().toISOString()
+      });
+      upsertStudent({ studentId: studentId, loginEmail: loginEmail, accountId: account.accountId });
+    }
+
+    var token = issueInviteToken({
+      type: "claim_student",
+      familyId: familyId,
+      linkedEntityId: studentId,
+      pendingAccountId: account.accountId,
+      issuedBy: opts.issuedBy || ""
+    });
+    return { account: account, token: token, claimUrl: buildClaimUrl(token.token) };
+  }
+
+  // Start a co-parent (guardian_secondary) invite. Creates a pending guardian
+  // record + pending account, issues a token, and queues an invite email via
+  // the existing email outbox.
+  function inviteCoParent(familyId, invite) {
+    var family = findFamilyById(familyId);
+    if (!family || !invite || !invite.email) return null;
+
+    var existing = findAccountByEmail(invite.email);
+    if (existing) return { account: existing, existed: true };
+
+    var guardian = upsertGuardian({
+      guardianId: genId("GDN"),
+      familyId: familyId,
+      name: invite.name || "",
+      phone: invite.phone || "",
+      email: invite.email,
+      relation: invite.relation || "",
+      isPrimary: false,
+      accountId: "",
+      createdAt: new Date().toISOString()
+    });
+    var account = upsertAccount({
+      accountId: genId("ACC"),
+      email: invite.email,
+      passwordHash: "",
+      familyId: familyId,
+      role: ROLES.guardianSecondary,
+      linkedEntityId: guardian.guardianId,
+      status: "pending",
+      createdAt: new Date().toISOString()
+    });
+    upsertGuardian({ guardianId: guardian.guardianId, accountId: account.accountId });
+    attachAccountToFamily(familyId, account.accountId, account.role, guardian.guardianId);
+
+    var token = issueInviteToken({
+      type: "claim_coparent",
+      familyId: familyId,
+      linkedEntityId: guardian.guardianId,
+      pendingAccountId: account.accountId,
+      issuedBy: invite.issuedBy || ""
+    });
+
+    // Mock email for the outbox
+    var claimUrl = buildClaimUrl(token.token);
+    var primaryGuardianName = (function () {
+      var pg = findGuardianById(family.primaryGuardianId);
+      return pg ? pg.name : "";
+    })();
+    sendMockEmail({
+      to: invite.email,
+      toName: invite.name || "",
+      studentName: "",
+      studentId: "",
+      subject: "MindDo · " + (primaryGuardianName ? primaryGuardianName + " 邀请你加入家长账户" : "邀请你加入 MindDo 家长账户"),
+      bodyZh: (primaryGuardianName ? primaryGuardianName + " 邀请你作为副家长加入" : "您被邀请作为副家长加入") +
+        " MindDo 学员家庭账户。\n\n请点击下方链接设置密码并激活账号：\n\n" + claimUrl + "\n\n激活后可以查看课表、反馈等信息。",
+      bodyEn: (primaryGuardianName ? primaryGuardianName + " has invited you" : "You have been invited") +
+        " to join a MindDo family account as a co-parent.\n\nClick the link below to set a password and activate:\n\n" + claimUrl + "\n\nAfter activation you can view schedules, feedback and more.",
+      template: "coparent_invite",
+      signupUrl: claimUrl,
+      claimToken: token.token
+    });
+    return { account: account, token: token, claimUrl: claimUrl, existed: false };
+  }
+
+  function issueInviteToken(record) {
+    var tokens = getInviteTokens();
+    var token = Object.assign({
+      token: genToken(),
+      createdAt: new Date().toISOString(),
+      consumedAt: null,
+      // 14-day TTL by default
+      expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+    }, record);
+    tokens.push(token);
+    writeJson(KEYS.inviteTokens, tokens);
+    return token;
+  }
+  function findInviteToken(token) {
+    if (!token) return null;
+    return getInviteTokens().filter(function (t) { return t.token === token; })[0] || null;
+  }
+  function consumeInviteToken(token, password) {
+    var tokens = getInviteTokens();
+    var idx = tokens.findIndex(function (t) { return t.token === token; });
+    if (idx < 0) return null;
+    var rec = tokens[idx];
+    if (rec.consumedAt) return { ok: false, reason: "consumed", token: rec };
+    if (rec.expiresAt && new Date(rec.expiresAt).getTime() < Date.now()) return { ok: false, reason: "expired", token: rec };
+
+    var account = findAccountById(rec.pendingAccountId);
+    if (!account) return { ok: false, reason: "missing_account", token: rec };
+    upsertAccount({
+      accountId: account.accountId,
+      passwordHash: hashPassword(password),
+      status: "active",
+      activatedAt: new Date().toISOString()
+    });
+    rec.consumedAt = new Date().toISOString();
+    tokens[idx] = rec;
+    writeJson(KEYS.inviteTokens, tokens);
+    return { ok: true, account: findAccountById(rec.pendingAccountId), token: rec };
+  }
+
+  function buildClaimUrl(token) {
+    var origin = "";
+    try { origin = window.location.origin + window.location.pathname.replace(/[^\/]+$/, ""); } catch (_) {}
+    return (origin || "") + "claim-account.html?token=" + encodeURIComponent(token);
+  }
+
+  // Authenticate an email + password combo against the accounts table. Falls
+  // back to the legacy signup_users list so anyone registered before this
+  // model was introduced can still log in.
+  function verifyAccountLogin(email, password) {
+    var account = findAccountByEmail(email);
+    if (account) {
+      if (account.status !== "active") return { ok: false, reason: "inactive", account: account };
+      // Accounts without a stored hash (OAuth provisioned, demo-seeded from
+      // legacy signups) accept any non-empty password — this is a demo
+      // affordance only; a real deployment must enforce a proper hash.
+      var hasStoredHash = !!account.passwordHash;
+      var passwordOk = hasStoredHash ? checkPassword(password, account.passwordHash) : true;
+      if (!passwordOk) return { ok: false, reason: "bad_password", account: account };
+      upsertAccount({ accountId: account.accountId, lastLoginAt: new Date().toISOString() });
+      return { ok: true, account: account };
+    }
+    // Legacy fallback
+    var legacy = readJson(KEYS.signups, []).filter(function (u) { return norm(u.email) === norm(email); })[0];
+    if (legacy && (!legacy.password || legacy.password === password)) {
+      // Provision a guardian_primary lazily so subsequent logins use the new path.
+      var provisioned = provisionGuardianPrimary(Object.assign({}, legacy, { password: password }));
+      return { ok: true, account: provisioned, provisioned: true };
+    }
+    return { ok: false, reason: "not_found" };
+  }
+
+  // One-time migration helper: walk legacy signup_users and provision family
+  // records for anything not already represented. Safe to call on every load.
+  function migrateLegacySignups() {
+    var users = readJson(KEYS.signups, []);
+    users.forEach(function (u) {
+      if (u && u.email && !findAccountByEmail(u.email)) provisionGuardianPrimary(u);
+    });
+  }
+
+  // Resolve the currently active account from the current-student snapshot.
+  // Returns null if no current student, or no account matches the student's
+  // email (e.g. anonymous visitor).
+  function getCurrentAccount() {
+    var current = getCurrentStudent();
+    if (!current || !current.email) return null;
+    return findAccountByEmail(current.email);
+  }
 
   document.addEventListener("DOMContentLoaded", function () {
     populateCourseMeta();
+    migrateLegacySignups();
   });
 
   window.MindDoFlow = {
@@ -920,6 +1341,28 @@
     markTrialComplete: markTrialComplete,
     unmarkTrialComplete: unmarkTrialComplete,
     getTrialCompletionFor: getTrialCompletionFor,
-    getTrialCompletions: getTrialCompletions
+    getTrialCompletions: getTrialCompletions,
+    // Family + multi-account model
+    ROLES: ROLES,
+    provisionGuardianPrimary: provisionGuardianPrimary,
+    createStudentLogin: createStudentLogin,
+    inviteCoParent: inviteCoParent,
+    consumeInviteToken: consumeInviteToken,
+    findInviteToken: findInviteToken,
+    verifyAccountLogin: verifyAccountLogin,
+    findAccountByEmail: findAccountByEmail,
+    findAccountById: findAccountById,
+    findStudentById: findStudentById,
+    findGuardianById: findGuardianById,
+    findFamilyById: findFamilyById,
+    findFamilyByStudentId: findFamilyByStudentId,
+    listFamilyGuardians: listFamilyGuardians,
+    listFamilyStudents: listFamilyStudents,
+    listFamilyAccounts: listFamilyAccounts,
+    addStudentToFamily: addStudentToFamily,
+    upsertStudent: upsertStudent,
+    upsertGuardian: upsertGuardian,
+    getCurrentAccount: getCurrentAccount,
+    buildClaimUrl: buildClaimUrl
   };
 })();

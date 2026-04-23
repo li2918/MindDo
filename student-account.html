@@ -711,11 +711,13 @@
       <div class="hero-action-links">
         <a class="btn-ghost" href="feedback.html"><span data-lang="zh">查看课堂反馈</span><span data-lang="en">View Class Feedback</span></a>
         <a class="btn-ghost" href="semester-report.html"><span data-lang="zh">查看学期报告</span><span data-lang="en">Semester Report</span></a>
+        <a class="btn-ghost" href="account-settings.html"><span data-lang="zh">家庭账户</span><span data-lang="en">Family Account</span></a>
       </div>
       <div class="student-meta">
         <div class="meta"><span class="k" data-i18n="heroStudentId"></span><strong class="v" id="heroStudentIdValue"></strong></div>
         <div class="meta"><span class="k" data-i18n="heroGoal"></span><strong class="v" id="heroGoalValue"></strong></div>
         <div class="meta"><span class="k" data-i18n="heroStage"></span><strong class="v" id="heroStageValue"></strong></div>
+        <div class="meta" id="heroRoleMeta" style="display:none;"><span class="k" data-i18n="heroRole"></span><strong class="v" id="heroRoleValue"></strong></div>
       </div>
     </div>
   </div>
@@ -995,6 +997,8 @@
           heroStudentId: "学生 ID",
           heroGoal: "当前目标",
           heroStage: "当前阶段",
+          heroRole: "账户身份",
+          roleLabels: { guardian_primary: "主家长", guardian_secondary: "副家长", student: "学员" },
           statusBannerTitle: "账户状态",
           nextLessonTitle: "下一节课",
           profileTitle: "个人资料",
@@ -1139,6 +1143,8 @@
           heroStudentId: "Student ID",
           heroGoal: "Current Goal",
           heroStage: "Current Stage",
+          heroRole: "Account Role",
+          roleLabels: { guardian_primary: "Primary Guardian", guardian_secondary: "Co-parent", student: "Student" },
           statusBannerTitle: "Account Status",
           nextLessonTitle: "Next Class",
           profileTitle: "Profile",
@@ -1524,6 +1530,16 @@
         heroStudentIdValue.textContent = current.studentId || t.profileItems[2].fallback;
         heroGoalValue.textContent = (latestAssessment && latestAssessment.goal) || current.goal || t.defaultGoal;
         heroStageValue.textContent = (t.stageMap && t.stageMap[stage]) || stage;
+
+        var acct = (window.MindDoFlow && window.MindDoFlow.getCurrentAccount) ? window.MindDoFlow.getCurrentAccount() : null;
+        var roleMeta = document.getElementById("heroRoleMeta");
+        var roleValue = document.getElementById("heroRoleValue");
+        if (acct && roleMeta && roleValue && t.roleLabels) {
+          roleValue.textContent = t.roleLabels[acct.role] || acct.role;
+          roleMeta.style.display = "";
+        } else if (roleMeta) {
+          roleMeta.style.display = "none";
+        }
 
         var latestCompletion = snapshot && snapshot.completion ? snapshot.completion : null;
         var latestEvaluation = snapshot && snapshot.evaluation ? snapshot.evaluation : null;

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="激活 MindDo 学员或家长账号 · Activate a MindDo student or guardian account." />
+  <meta name="theme-color" content="#1e3a5f" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="claim-account.html" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <title>激活账号 | Activate Account</title>
+  <style>
+    .skip-link { position:absolute; left:-9999px; top:0; background:#1e3a5f; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #0ea5e9; outline-offset:2px; }
+    :root {
+      --bg:#f6f8fb; --sand:#e8eef5; --card:rgba(240,249,255,0.94);
+      --line:rgba(30,58,95,0.14); --text:#0f172a; --muted:#5a6b81;
+      --gold:#0ea5e9; --gold-deep:#0284c7; --clay:#1e3a5f; --brown:#14294a;
+      --ok:#6f8f57; --warn:#d89c36; --danger:#c46a4d;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
+    a { color:inherit; text-decoration:none; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+
+    .navbar { position:sticky; top:0; z-index:100; background:rgba(240,249,255,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:44px; height:44px; object-fit:contain; }
+    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
+    .btn-primary { background:linear-gradient(135deg,#bae6fd,var(--gold)); color:#0b2540; border:none; border-radius:999px; padding:11px 24px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(14,165,233,0.28); }
+    .btn-primary:hover { transform:translateY(-2px); }
+    .btn-primary:disabled { opacity:0.55; cursor:not-allowed; transform:none; box-shadow:none; }
+
+    .page-hero { background:linear-gradient(145deg,#0b1a2e 0%,#14294a 50%,#1e3a5f 100%); padding:56px 0 44px; }
+    .page-hero-inner { max-width:640px; margin:0 auto; padding:0 48px; color:#f0f9ff; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(14,165,233,0.18); border:1px solid rgba(14,165,233,0.3); color:#bae6fd; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
+    .page-hero h1 { font-size:clamp(26px,3.2vw,38px); font-weight:900; letter-spacing:-0.02em; margin-bottom:10px; }
+    .page-hero p { font-size:14.5px; color:rgba(224,242,254,0.78); line-height:1.7; }
+
+    .page-content { padding:40px 0 80px; }
+    .content-inner { max-width:640px; margin:0 auto; padding:0 48px; }
+
+    .panel { background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(30,58,95,0.08); padding:28px; }
+    .meta { display:grid; grid-template-columns:auto 1fr; gap:6px 16px; padding:14px 16px; background:var(--sand); border-radius:14px; font-size:13px; margin-bottom:18px; }
+    .meta span { color:var(--muted); font-weight:700; }
+    .meta strong { color:var(--clay); font-weight:800; }
+
+    .role-pill { display:inline-flex; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; }
+    .role-pill.student { background:rgba(111,143,87,0.16); color:#3f5d26; border:1px solid rgba(111,143,87,0.34); }
+    .role-pill.secondary { background:rgba(216,156,54,0.16); color:#8a5d11; border:1px solid rgba(216,156,54,0.34); }
+
+    .field { display:flex; flex-direction:column; margin-bottom:14px; }
+    .field label { font-size:12px; font-weight:800; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; }
+    .field input {
+      width:100%; border:1px solid var(--line); background:#f8fafc; color:var(--text);
+      padding:10px 12px; border-radius:12px; font:inherit; font-size:14px; outline:none; transition:0.15s;
+    }
+    .field input:focus { border-color:var(--gold); box-shadow:0 0 0 2px rgba(14,165,233,0.15); }
+    .field input[readonly] { background:rgba(30,58,95,0.04); color:var(--muted); cursor:not-allowed; }
+    .actions { display:flex; justify-content:flex-end; gap:10px; margin-top:6px; }
+
+    .result { font-size:13px; padding:10px 14px; border-radius:12px; margin-top:14px; display:none; }
+    .result.show { display:block; }
+    .result.error { background:rgba(196,106,77,0.1); border:1px solid rgba(196,106,77,0.28); color:var(--danger); }
+    .result.success { background:rgba(111,143,87,0.1); border:1px solid rgba(111,143,87,0.28); color:var(--ok); }
+
+    .footer { background:var(--brown); color:rgba(240,249,255,0.78); padding:48px 48px 28px; }
+    .footer-inner { max-width:640px; margin:0 auto; font-size:13px; }
+    .footer-bottom { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(240,249,255,0.45); margin-top:22px; padding-top:20px; border-top:1px solid rgba(224,242,254,0.1); }
+
+    @media (max-width:900px) { .navbar { padding:0 24px; } .page-hero-inner, .content-inner { padding:0 24px; } }
+  </style>
+  <link rel="stylesheet" href="assets/minddo-theme.css" />
+  <link rel="stylesheet" href="assets/minddo-responsive.css" />
+</head>
+<body>
+  <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
+
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <div>
+      <div class="lang-switcher" data-lang-switcher>
+        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span class="lang-trigger-label">中文</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="lang-menu" role="listbox">
+          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
+          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main" class="page-hero">
+    <div class="page-hero-inner">
+      <div class="page-tag"><span data-lang="zh">账号激活</span><span data-lang="en">Activate Account</span></div>
+      <h1 id="heroTitle"></h1>
+      <p id="heroDesc"></p>
+    </div>
+  </main>
+
+  <section class="page-content">
+    <div class="content-inner">
+      <article class="panel">
+
+        <div id="invalidPanel" style="display:none;">
+          <h2 style="font-size:18px;font-weight:800;color:var(--clay);margin-bottom:6px;"><span data-lang="zh">链接无效</span><span data-lang="en">Link Not Valid</span></h2>
+          <p style="font-size:13.5px;color:var(--muted);line-height:1.7;" id="invalidReason"></p>
+          <div class="actions" style="margin-top:14px;">
+            <a class="btn-primary" href="index.html"><span data-lang="zh">返回首页</span><span data-lang="en">Back To Home</span></a>
+          </div>
+        </div>
+
+        <form id="claimForm" style="display:none;">
+          <div class="meta" id="inviteMeta"></div>
+          <div class="field">
+            <label for="claimEmail"><span data-lang="zh">登录邮箱</span><span data-lang="en">Login Email</span></label>
+            <input id="claimEmail" type="email" readonly />
+          </div>
+          <div class="field">
+            <label for="claimPassword"><span data-lang="zh">设置密码</span><span data-lang="en">Set Password</span></label>
+            <input id="claimPassword" type="password" autocomplete="new-password" required />
+          </div>
+          <div class="field">
+            <label for="claimConfirm"><span data-lang="zh">确认密码</span><span data-lang="en">Confirm Password</span></label>
+            <input id="claimConfirm" type="password" autocomplete="new-password" required />
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn-primary" id="claimSubmit"><span data-lang="zh">激活并登录 →</span><span data-lang="en">Activate & Sign In →</span></button>
+          </div>
+          <div id="claimResult" class="result"></div>
+        </form>
+
+      </article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <span>© 2025 MindDo Learning Center · <span data-lang="zh">保留所有权利</span><span data-lang="en">All rights reserved</span></span>
+        <span><a href="privacy.html" style="color:inherit;"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy</span></a> · <a href="terms.html" style="color:inherit;"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/minddo-flow.js"></script>
+  <script>
+    (function () {
+      var I18N = {
+        "zh-CN": {
+          pageTitle: "激活账号",
+          heroTitleStudent: "激活学员账号",
+          heroTitleCoparent: "激活副家长账号",
+          heroTitleDefault: "激活 MindDo 账号",
+          heroDescStudent: "设置密码后，你就可以用这个账号进入学习系统。",
+          heroDescCoparent: "设置密码后，你将作为副家长加入家庭账户，可以查看课表与反馈。",
+          heroDescDefault: "根据你邮件中的链接，设置密码完成激活。",
+          roleStudent: "学员账号",
+          roleCoparent: "副家长账号",
+          metaFamily: "家庭编号",
+          metaLinkedName: "关联学员",
+          metaLinkedGuardian: "家长姓名",
+          invalidMissing: "链接缺少 token 参数。",
+          invalidNotFound: "未找到对应的激活请求，链接可能已失效。",
+          invalidConsumed: "该链接已使用过，如需再次登录请访问登录页。",
+          invalidExpired: "链接已过期。请联系家长或运营重新发送。",
+          missingAccount: "账号记录缺失，请联系 MindDo 顾问处理。",
+          mismatch: "两次输入的密码不一致。",
+          tooShort: "密码至少 8 位。",
+          success: "账号已激活，正在跳转登录…",
+          genericError: "激活失败，请稍后再试。"
+        },
+        en: {
+          pageTitle: "Activate Account",
+          heroTitleStudent: "Activate Student Login",
+          heroTitleCoparent: "Activate Co-parent Login",
+          heroTitleDefault: "Activate MindDo Account",
+          heroDescStudent: "Set a password — you'll use this account to sign in to the learning system.",
+          heroDescCoparent: "Set a password to join the family account as a co-parent. You can view schedules and feedback.",
+          heroDescDefault: "Set a password to finish activating your account from the emailed link.",
+          roleStudent: "Student Login",
+          roleCoparent: "Co-parent Login",
+          metaFamily: "Family ID",
+          metaLinkedName: "Linked Student",
+          metaLinkedGuardian: "Guardian Name",
+          invalidMissing: "The link is missing a token parameter.",
+          invalidNotFound: "No matching activation request — the link may no longer be valid.",
+          invalidConsumed: "This link has already been used. Please go to the login page.",
+          invalidExpired: "The link has expired — please ask your guardian or operations to resend.",
+          missingAccount: "Account record is missing — please contact MindDo.",
+          mismatch: "The two passwords don't match.",
+          tooShort: "Password must be at least 8 characters.",
+          success: "Account activated — redirecting to sign in…",
+          genericError: "Activation failed, please try again."
+        }
+      };
+
+      var html = document.documentElement;
+      var langButtons = document.querySelectorAll("[data-set-lang]");
+      var lang = localStorage.getItem("minddo_lang") === "en" ? "en" : "zh-CN";
+      var flow = window.MindDoFlow;
+
+      var params = new URLSearchParams(window.location.search);
+      var tokenStr = (params.get("token") || "").trim();
+
+      var heroTitle = document.getElementById("heroTitle");
+      var heroDesc = document.getElementById("heroDesc");
+      var invalidPanel = document.getElementById("invalidPanel");
+      var invalidReason = document.getElementById("invalidReason");
+      var claimForm = document.getElementById("claimForm");
+      var claimEmail = document.getElementById("claimEmail");
+      var claimPassword = document.getElementById("claimPassword");
+      var claimConfirm = document.getElementById("claimConfirm");
+      var claimResult = document.getElementById("claimResult");
+      var claimSubmit = document.getElementById("claimSubmit");
+      var inviteMeta = document.getElementById("inviteMeta");
+
+      function escapeHtml(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+      function showResult(kind, msg) {
+        claimResult.className = "result show " + kind;
+        claimResult.textContent = msg;
+      }
+      function clearResult() { claimResult.className = "result"; claimResult.textContent = ""; }
+
+      function showInvalid(reason) {
+        invalidReason.textContent = reason;
+        invalidPanel.style.display = "block";
+        claimForm.style.display = "none";
+      }
+
+      function renderToken() {
+        var t = I18N[lang];
+        if (!tokenStr) return showInvalid(t.invalidMissing);
+        if (!flow || !flow.findInviteToken) return showInvalid(t.genericError);
+        var rec = flow.findInviteToken(tokenStr);
+        if (!rec) return showInvalid(t.invalidNotFound);
+        if (rec.consumedAt) return showInvalid(t.invalidConsumed);
+        if (rec.expiresAt && new Date(rec.expiresAt).getTime() < Date.now()) return showInvalid(t.invalidExpired);
+
+        var account = flow.findAccountById(rec.pendingAccountId);
+        if (!account) return showInvalid(t.missingAccount);
+
+        var isStudent = rec.type === "claim_student";
+        heroTitle.textContent = isStudent ? t.heroTitleStudent : (rec.type === "claim_coparent" ? t.heroTitleCoparent : t.heroTitleDefault);
+        heroDesc.textContent = isStudent ? t.heroDescStudent : (rec.type === "claim_coparent" ? t.heroDescCoparent : t.heroDescDefault);
+
+        claimEmail.value = account.email || "";
+        // Build the meta rows
+        var rows = [];
+        rows.push("<span>" + escapeHtml(t.metaFamily) + "</span><strong>" + escapeHtml(rec.familyId) + "</strong>");
+        if (isStudent) {
+          var stu = flow.findStudentById(rec.linkedEntityId);
+          rows.push("<span>" + escapeHtml(t.metaLinkedName) + "</span><strong>" + escapeHtml((stu && stu.name) || rec.linkedEntityId) + " <span class='role-pill student'>" + escapeHtml(t.roleStudent) + "</span></strong>");
+        } else if (rec.type === "claim_coparent") {
+          var gdn = flow.findGuardianById(rec.linkedEntityId);
+          rows.push("<span>" + escapeHtml(t.metaLinkedGuardian) + "</span><strong>" + escapeHtml((gdn && (gdn.name || gdn.email)) || "—") + " <span class='role-pill secondary'>" + escapeHtml(t.roleCoparent) + "</span></strong>");
+        }
+        inviteMeta.innerHTML = rows.join("");
+        claimForm.style.display = "block";
+        setTimeout(function () { claimPassword.focus(); }, 50);
+      }
+
+      claimForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        clearResult();
+        var t = I18N[lang];
+        var pw = claimPassword.value;
+        var confirm = claimConfirm.value;
+        if (!pw || pw.length < 8) { showResult("error", t.tooShort); return; }
+        if (pw !== confirm) { showResult("error", t.mismatch); return; }
+        if (!flow || !flow.consumeInviteToken) { showResult("error", t.genericError); return; }
+
+        var outcome = flow.consumeInviteToken(tokenStr, pw);
+        if (!outcome || !outcome.ok) {
+          var reason = (outcome && outcome.reason) || "";
+          if (reason === "expired") showResult("error", t.invalidExpired);
+          else if (reason === "consumed") showResult("error", t.invalidConsumed);
+          else if (reason === "missing_account") showResult("error", t.missingAccount);
+          else showResult("error", t.genericError);
+          return;
+        }
+        showResult("success", t.success);
+        claimSubmit.disabled = true;
+        // Prefill login email for convenience
+        try { localStorage.setItem("minddo_last_email", outcome.account.email); } catch (_) {}
+        setTimeout(function () { window.location.href = "login.html?email=" + encodeURIComponent(outcome.account.email || ""); }, 900);
+      });
+
+      function setLang(l) {
+        lang = l;
+        html.setAttribute("lang", l);
+        localStorage.setItem("minddo_lang", l);
+        document.title = I18N[l].pageTitle + " | MindDo";
+        langButtons.forEach(function (btn) { btn.classList.toggle("active", btn.getAttribute("data-set-lang") === l); });
+        renderToken();
+      }
+      langButtons.forEach(function (btn) { btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); }); });
+      setLang(lang);
+    })();
+  </script>
+  <script src="assets/lang-switcher.js" defer></script>
+  <script src="assets/minddo-nav.js" defer></script>
+  <script src="assets/consent.js" defer></script>
+</body>
+</html>

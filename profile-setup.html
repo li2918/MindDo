@@ -393,6 +393,35 @@
         };
         if (flow && flow.setCurrentStudent) flow.setCurrentStudent(patch);
 
+        // Mirror the collected details into the student + guardian entities
+        // in the new family model. Student is keyed on the current studentId,
+        // guardian on the current-user's account linkedEntityId.
+        var cur = flow && flow.getCurrentStudent ? flow.getCurrentStudent() : null;
+        var acct = flow && flow.getCurrentAccount ? flow.getCurrentAccount() : null;
+        if (cur && cur.studentId && flow && flow.upsertStudent) {
+          flow.upsertStudent({
+            studentId: cur.studentId,
+            familyId: acct ? acct.familyId : "",
+            name: studentName,
+            grade: grade,
+            birthday: patch.birthday,
+            gender: patch.gender,
+            city: patch.city
+          });
+          if (acct && acct.familyId && flow.addStudentToFamily) {
+            flow.addStudentToFamily(acct.familyId, cur.studentId);
+          }
+        }
+        if (acct && flow && flow.upsertGuardian && acct.role === flow.ROLES.guardianPrimary) {
+          flow.upsertGuardian({
+            guardianId: acct.linkedEntityId,
+            name: parentName,
+            phone: phone,
+            relation: patch.parentRelation,
+            isPrimary: true
+          });
+        }
+
         saveBtn.disabled = true;
         showResult("success", t.successMsg);
         setTimeout(function () { window.location.href = nextUrl; }, 700);

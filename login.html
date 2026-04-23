@@ -311,8 +311,50 @@
         result.textContent = text;
       }
 
-      function loginByEmail(email, provider) {
+      function loginByEmail(email, provider, password) {
         var t = I18N[langOf()];
+
+        // Prefer the new accounts model when available — it knows about
+        // guardian / student / co-parent roles and auto-provisions legacy
+        // signup records on first use.
+        if (window.MindDoFlow && window.MindDoFlow.verifyAccountLogin) {
+          var outcome = window.MindDoFlow.verifyAccountLogin(email, password);
+          if (outcome && outcome.ok) {
+            var account = outcome.account;
+            var studentId = "";
+            var studentName = "";
+            if (account.role === window.MindDoFlow.ROLES.student) {
+              studentId = account.linkedEntityId;
+              var stu = window.MindDoFlow.findStudentById(studentId);
+              if (stu) studentName = stu.name || "";
+            } else if (account.familyId && window.MindDoFlow.listFamilyStudents) {
+              var students = window.MindDoFlow.listFamilyStudents(account.familyId) || [];
+              if (students.length) { studentId = students[0].studentId; studentName = students[0].name || ""; }
+            }
+            if (window.MindDoFlow.setCurrentStudent) {
+              window.MindDoFlow.setCurrentStudent({
+                studentName: studentName,
+                name: studentName,
+                email: account.email,
+                studentId: studentId,
+                provider: provider || account.provider || "email"
+              });
+            }
+            try { localStorage.setItem("minddo_login_at", new Date().toISOString()); } catch (_) {}
+            try { localStorage.setItem("minddo_account_id", account.accountId); } catch (_) {}
+            showResult("success", provider ? t.oauthSuccess.replace("{provider}", provider) : t.loginSuccess);
+            setTimeout(function () { window.location.href = nextUrl; }, 800);
+            return true;
+          }
+          if (outcome && outcome.reason === "bad_password") {
+            showResult("error", t.loginNotFound);
+            return false;
+          }
+          // fall through to legacy lookup if not found
+        }
+
+        // Legacy lookup — covers OAuth (no password) and any straggler
+        // signups that the migration hasn't touched yet.
         var all = readSignups();
         var user = all.find(function (u) { return (u.email || "").trim().toLowerCase() === email.trim().toLowerCase(); });
         if (!user) {
@@ -397,7 +439,7 @@
         if (!email || !pw) { showResult("error", t.loginInvalid); return; }
         if (!isEmail(email)) { showResult("error", t.loginEmailInvalid); return; }
         try { localStorage.setItem("minddo_last_email", email); } catch (_) {}
-        loginByEmail(email, null);
+        loginByEmail(email, null, pw);
       });
 
       document.querySelectorAll("[data-oauth]").forEach(function (btn) {
@@ -406,7 +448,7 @@
           var users = readSignups();
           var mostRecent = users.length ? users[users.length - 1] : null;
           if (mostRecent && mostRecent.email) {
-            loginByEmail(mostRecent.email, provider);
+            loginByEmail(mostRecent.email, provider, "");
           } else {
             var t = I18N[langOf()];
             showResult("error", t.loginNotFound);
@@ -425,7 +467,7 @@
         var email = btn.getAttribute("data-email");
         emailInput.value = email;
         pwInput.value = "demo-pass";
-        loginByEmail(email, null);
+        loginByEmail(email, null, "");
       });
     })();
   </script>
