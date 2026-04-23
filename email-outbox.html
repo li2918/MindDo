@@ -87,6 +87,17 @@
     .toast { position:fixed; bottom:24px; right:24px; background:var(--clay); color:#f0f9ff; padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:0 12px 28px rgba(30,58,95,0.3); opacity:0; transform:translateY(10px); transition:0.25s; pointer-events:none; z-index:2000; }
     .toast.show { opacity:1; transform:translateY(0); }
 
+    .mail-card.highlight { border-color:rgba(14,165,233,0.6); box-shadow:0 0 0 3px rgba(14,165,233,0.2), 0 10px 24px rgba(14,165,233,0.22); animation: flashPulse 1.4s ease 0s 2; scroll-margin-top:92px; }
+    @keyframes flashPulse {
+      0%   { box-shadow:0 0 0 3px rgba(14,165,233,0.2), 0 10px 24px rgba(14,165,233,0.22); }
+      50%  { box-shadow:0 0 0 8px rgba(14,165,233,0.25), 0 14px 30px rgba(14,165,233,0.35); }
+      100% { box-shadow:0 0 0 3px rgba(14,165,233,0.2), 0 10px 24px rgba(14,165,233,0.22); }
+    }
+    .mail-body a { color:var(--gold-deep); font-weight:700; text-decoration:underline; word-break:break-all; }
+    .mail-body a:hover { color:var(--clay); }
+    .mail-btn.primary { background:linear-gradient(135deg,#bae6fd,var(--gold)); color:#0b2540; border-color:transparent; box-shadow:0 4px 10px rgba(14,165,233,0.28); }
+    .mail-btn.primary:hover { transform:translateY(-1px); background:linear-gradient(135deg,#bae6fd,var(--gold)); border-color:transparent; }
+
     .footer { background:var(--brown); color:rgba(240,249,255,0.78); padding:48px 48px 28px; }
     .footer-inner { max-width:1280px; margin:0 auto; font-size:13px; }
     .footer-bottom { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(240,249,255,0.45); margin-top:24px; padding-top:20px; border-top:1px solid rgba(224,242,254,0.1); }
@@ -181,6 +192,8 @@
           body: "正文",
           empty: "暂无发件记录。",
           resend: "重发",
+          openInvite: "打开邀请页 →",
+          openSignup: "直达注册页 →",
           toastResent: "已重新入队至 {email}",
           queued: "已入队",
           statusLabel: "状态"
@@ -203,6 +216,8 @@
           body: "Body",
           empty: "No emails sent yet.",
           resend: "Resend",
+          openInvite: "Open Invite Page →",
+          openSignup: "Go To Signup →",
           toastResent: "Re-queued to {email}",
           queued: "Queued",
           statusLabel: "Status"
@@ -217,6 +232,9 @@
       var toast = document.getElementById("toast");
       var lang = localStorage.getItem("minddo_lang") === "en" ? "en" : "zh-CN";
       var filter = "all";
+      var urlParams = new URLSearchParams(window.location.search);
+      var highlightId = (urlParams.get("highlight") || "").trim();
+      var highlightScrolled = false;
 
       function showToast(msg) {
         toast.textContent = msg;
@@ -227,6 +245,14 @@
       function safeDate(v) { var d = new Date(v); return Number.isNaN(d.getTime()) ? null : d; }
       function escapeHtml(s) {
         return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+      // Wrap http(s) URLs in the body with anchor tags. Safe because we first
+      // escape everything, then replace the escaped URL chunks with anchors.
+      function linkifyBody(rawBody) {
+        var escaped = escapeHtml(rawBody);
+        return escaped.replace(/(https?:\/\/[^\s<]+)/g, function (url) {
+          return "<a href=\"" + url + "\">" + url + "</a>";
+        });
       }
 
       function templateKey(tpl) {
@@ -284,7 +310,15 @@
           var sent = safeDate(m.sentAt);
           var body = lang === "en" ? (m.bodyEn || m.bodyZh || m.body || "") : (m.bodyZh || m.bodyEn || m.body || "");
           var toName = m.toName ? " <span style='color:var(--muted);font-weight:600;'>(" + escapeHtml(m.toName) + ")</span>" : "";
-          return "<article class='mail-card'>" +
+          var isHighlighted = highlightId && m.id === highlightId;
+          var actions = [];
+          if (m.inviteUrl) {
+            actions.push("<a class='mail-btn primary' href='" + escapeHtml(m.inviteUrl) + "'>" + escapeHtml(t.openInvite) + "</a>");
+          } else if (m.signupUrl) {
+            actions.push("<a class='mail-btn primary' href='" + escapeHtml(m.signupUrl) + "'>" + escapeHtml(t.openSignup) + "</a>");
+          }
+          actions.push("<button type='button' class='mail-btn' data-resend-id='" + escapeHtml(m.id || "") + "'>" + t.resend + "</button>");
+          return "<article class='mail-card" + (isHighlighted ? " highlight" : "") + "' data-mail-id='" + escapeHtml(m.id || "") + "'>" +
             "<div class='mail-row'>" +
               "<span class='mail-subject'>" + escapeHtml(m.subject || "(no subject)") + "</span>" +
               "<span class='mail-template " + tk + "'>" + tplLabel + "</span>" +
@@ -294,10 +328,20 @@
               "<span>" + t.sentAt + "</span><strong>" + (sent ? sent.toLocaleString() : "-") + "</strong>" +
               "<span>" + t.statusLabel + "</span><strong>" + (m.status || t.queued) + "</strong>" +
             "</div>" +
-            (body ? "<div class='mail-body'>" + escapeHtml(body) + "</div>" : "") +
-            "<div class='mail-actions'><button type='button' class='mail-btn' data-resend-id='" + escapeHtml(m.id || "") + "'>" + t.resend + "</button></div>" +
+            (body ? "<div class='mail-body'>" + linkifyBody(body) + "</div>" : "") +
+            "<div class='mail-actions'>" + actions.join("") + "</div>" +
             "</article>";
         }).join("");
+
+        if (highlightId && !highlightScrolled) {
+          // Defer scroll so layout settles; one-shot so filter changes don't
+          // keep tugging the viewport back.
+          var target = mailList.querySelector("[data-mail-id='" + highlightId.replace(/'/g, "\\'") + "']");
+          if (target) {
+            highlightScrolled = true;
+            setTimeout(function () { target.scrollIntoView({ behavior: "smooth", block: "center" }); }, 50);
+          }
+        }
       }
 
       filterBar.addEventListener("click", function (e) {

@@ -424,6 +424,8 @@
           toastSent: "开户邀请已发送到 {email}",
           toastEvaluated: "已保存 {name} 的试课评估：{level}",
           sentAtLabel: "发送于 {time}",
+          viewMail: "查看模拟邮件 →",
+          toastSentWithView: "开户邀请已发送，点「查看模拟邮件」测试完整链路。",
           emptyRow: "今天暂无新注册试课。",
           notesPlaceholder: "例如：对 AI 创意应用表现突出，建议从中级课程起步。",
           levelOptions: {
@@ -460,6 +462,8 @@
           toastSent: "Account invite sent to {email}",
           toastEvaluated: "Saved evaluation for {name}: {level}",
           sentAtLabel: "Sent at {time}",
+          viewMail: "View simulated email →",
+          toastSentWithView: "Invite sent — click \"View simulated email\" to follow the full flow.",
           emptyRow: "No new trial registrations today.",
           notesPlaceholder: "e.g. Strong at creative AI use — start at Intermediate.",
           levelOptions: {
@@ -591,8 +595,10 @@
           var inviteCell;
           if (invite) {
             var sentAt = safeDate(invite.sentAt);
+            var mailId = invite.mailId ? ("?highlight=" + encodeURIComponent(invite.mailId)) : "";
             inviteCell = "<button type='button' class='btn-invite sent' disabled>" + t.inviteSent + "</button>" +
-              (sentAt ? "<span class='invite-hint'>" + t.sentAtLabel.replace("{time}", sentAt.toLocaleString()) + "</span>" : "");
+              (sentAt ? "<span class='invite-hint'>" + t.sentAtLabel.replace("{time}", sentAt.toLocaleString()) + "</span>" : "") +
+              "<a class='btn-eval reopen' style='text-decoration:none;' href='email-outbox.html" + mailId + "'>" + t.viewMail + "</a>";
           } else if (!hasEmail) {
             inviteCell = "<button type='button' class='btn-invite' disabled>" + t.inviteEmpty + "</button>";
           } else if (!done) {
@@ -649,7 +655,7 @@
           if (!iLead || !window.MindDoFlow || !window.MindDoFlow.sendAccountInvite) return;
           var record = window.MindDoFlow.sendAccountInvite(iLead);
           if (record) {
-            showToast(I18N[lang].toastSent.replace("{email}", record.email));
+            showToast(I18N[lang].toastSent.replace("{email}", record.email) + " · " + I18N[lang].viewMail);
             render();
           }
           return;
