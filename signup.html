@@ -217,16 +217,10 @@
           <div class="divider"><span data-lang="zh">或使用邮箱注册</span><span data-lang="en">or sign up with email</span></div>
 
           <form id="signupForm" novalidate>
-            <div class="row2">
-              <div class="field-group">
-                <label class="field-label" for="studentName"><span><span data-lang="zh">学员姓名</span><span data-lang="en">Student Name</span></span><span class="required">*</span></label>
-                <input id="studentName" name="studentName" class="field-input" type="text" autocomplete="name" required />
-              </div>
-              <div class="field-group">
-                <label class="field-label" for="email"><span><span data-lang="zh">邮箱地址</span><span data-lang="en">Email Address</span></span><span class="required">*</span></label>
-                <input id="email" name="email" class="field-input" type="email" autocomplete="email" placeholder="parent@example.com" required />
-                <div class="field-hint" id="emailHint"></div>
-              </div>
+            <div class="field-group">
+              <label class="field-label" for="email"><span><span data-lang="zh">邮箱地址</span><span data-lang="en">Email Address</span></span><span class="required">*</span></label>
+              <input id="email" name="email" class="field-input" type="email" autocomplete="email" required />
+              <div class="field-hint" id="emailHint"></div>
             </div>
 
             <div class="field-group">
@@ -570,8 +564,18 @@
         window.MindDoFlow.prefillSignupForm(form);
       }
       if (paramEmail && !emailInput.value) emailInput.value = paramEmail;
-      var studentNameInput = document.getElementById("studentName");
-      if (paramName && studentNameInput && !studentNameInput.value) studentNameInput.value = paramName;
+
+      // Student name is collected on profile-setup.html right after signup.
+      // If we already know it (via ?sid= or ?name= prefill), reuse it here;
+      // otherwise pass empty and let profile-setup require it.
+      function seededStudentName() {
+        if (paramName) return paramName;
+        if (window.MindDoFlow && window.MindDoFlow.getCurrentStudent) {
+          var cs = window.MindDoFlow.getCurrentStudent() || {};
+          return cs.studentName || cs.name || "";
+        }
+        return "";
+      }
 
       emailInput.addEventListener("blur", validateEmailLive);
       pwInput.addEventListener("input", function () { renderPwMeter(); validateConfirmLive(); });
@@ -583,12 +587,11 @@
         submitResult.className = "result";
         submitResult.textContent = "";
 
-        var studentName = document.getElementById("studentName").value.trim();
         var email = emailInput.value.trim();
         var password = pwInput.value;
         var confirmPw = pwConfirm.value;
 
-        if (!studentName || !email || !password || !confirmPw) { showResult("error", t.missingFields); return; }
+        if (!email || !password || !confirmPw) { showResult("error", t.missingFields); return; }
         if (!isEmail(email)) { showResult("error", t.emailInvalid); return; }
         if (password.length < 8) { showResult("error", t.passwordShort); return; }
         if (password !== confirmPw) { showResult("error", t.passwordMismatch); return; }
@@ -602,6 +605,7 @@
           }
         } catch (_) {}
 
+        var studentName = seededStudentName();
         saveAndLogin({
           studentName: studentName,
           name: studentName,
@@ -614,13 +618,13 @@
       document.querySelectorAll("[data-oauth]").forEach(function (btn) {
         btn.addEventListener("click", function () {
           var provider = btn.getAttribute("data-oauth");
-          var name = document.getElementById("studentName").value.trim() || "Student";
           var email = emailInput.value.trim();
           if (!email || !isEmail(email)) {
             emailInput.focus();
             showResult("error", I18N[langOf()].emailInvalid);
             return;
           }
+          var name = seededStudentName();
           saveAndLogin({
             studentName: name,
             name: name,
