@@ -1157,6 +1157,65 @@
   // Create a brand-new student under an existing family — used when the
   // primary guardian adds a sibling through account-settings.html. Returns
   // the freshly minted student record.
+  // Student accounts are auto-provisioned the moment a child is added to a
+  // family — no invite email or token claim required. A readable random
+  // password is generated; the plain text is persisted on the student record
+  // (demo-only) so the guardian can view and share it from account-settings.
+  function generateStudentPassword() {
+    var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    var out = "";
+    for (var i = 0; i < 8; i += 1) out += chars[Math.floor(Math.random() * chars.length)];
+    return out;
+  }
+  function autoProvisionStudentAccount(familyId, studentId, opts) {
+    opts = opts || {};
+    var student = findStudentById(studentId);
+    if (!student || !familyId) return null;
+    var existing = getAccounts().filter(function (a) {
+      return a.role === ROLES.student && a.linkedEntityId === studentId;
+    })[0];
+    // If active and the caller didn't request a reset, return as-is
+    if (existing && existing.status === "active" && !opts.resetPassword) {
+      return {
+        account: existing,
+        email: existing.email,
+        password: student.loginPassword || "",
+        existed: true
+      };
+    }
+    var loginEmail = opts.email || student.loginEmail || ("stu-" + String(studentId).toLowerCase() + "@minddo.local");
+    var password = opts.password || generateStudentPassword();
+
+    var account;
+    if (existing) {
+      account = upsertAccount({
+        accountId: existing.accountId,
+        email: loginEmail,
+        passwordHash: hashPassword(password),
+        status: "active",
+        activatedAt: new Date().toISOString()
+      });
+    } else {
+      account = upsertAccount({
+        accountId: genId("ACC"),
+        email: loginEmail,
+        passwordHash: hashPassword(password),
+        familyId: familyId,
+        role: ROLES.student,
+        linkedEntityId: studentId,
+        status: "active",
+        createdAt: new Date().toISOString()
+      });
+    }
+    upsertStudent({
+      studentId: studentId,
+      accountId: account.accountId,
+      loginEmail: loginEmail,
+      loginPassword: password
+    });
+    return { account: account, email: loginEmail, password: password, existed: false };
+  }
+
   function addChildToFamily(familyId, profile) {
     var family = findFamilyById(familyId);
     if (!family) return null;
@@ -1173,6 +1232,8 @@
       createdAt: new Date().toISOString()
     });
     addStudentToFamily(familyId, studentId);
+    // Auto-provision the student's learning-system login right away.
+    autoProvisionStudentAccount(familyId, studentId);
     return student;
   }
 
@@ -1542,6 +1603,7 @@
     addStudentToFamily: addStudentToFamily,
     addChildToFamily: addChildToFamily,
     removeStudentFromFamily: removeStudentFromFamily,
+    autoProvisionStudentAccount: autoProvisionStudentAccount,
     switchActiveStudent: switchActiveStudent,
     upsertStudent: upsertStudent,
     upsertGuardian: upsertGuardian,

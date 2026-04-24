@@ -265,10 +265,11 @@
 
       var urlParams = new URLSearchParams(window.location.search);
       var SAFE_NEXT = /^[a-z0-9_-]+\.html(\?[^#]*)?(#[a-z0-9_-]+)?$/i;
-      // After registration the parent should land in the course-selection
-      // flow by default; callers can still override via ?next=.
-      var rawNext = urlParams.get("next") || "course-selection.html";
-      var nextUrl = SAFE_NEXT.test(rawNext) ? rawNext : "course-selection.html";
+      // After registration the primary guardian lands on their own account
+      // hub by default — course selection requires a completed trial first.
+      // Callers can still override via ?next=.
+      var rawNext = urlParams.get("next") || "student-account.html";
+      var nextUrl = SAFE_NEXT.test(rawNext) ? rawNext : "student-account.html";
 
       var form = document.getElementById("profileForm");
       var fields = {
@@ -410,6 +411,12 @@
           });
           if (acct && acct.familyId && flow.addStudentToFamily) {
             flow.addStudentToFamily(acct.familyId, cur.studentId);
+          }
+          // Auto-provision the student's learning-system login the moment
+          // their profile is complete enough. Idempotent — no-op on return
+          // visits.
+          if (acct && acct.familyId && flow.autoProvisionStudentAccount) {
+            flow.autoProvisionStudentAccount(acct.familyId, cur.studentId);
           }
         }
         if (acct && flow && flow.upsertGuardian && acct.role === flow.ROLES.guardianPrimary) {

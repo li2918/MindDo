@@ -66,6 +66,14 @@
     .member .mname { font-size:14.5px; font-weight:800; color:var(--clay); }
     .member .mmeta { font-size:12px; color:var(--muted); margin-top:2px; }
     .member .mactions { display:flex; gap:8px; flex-wrap:wrap; }
+    .creds { margin-top:10px; padding:10px 12px; background:rgba(240,249,255,0.78); border:1px solid rgba(30,58,95,0.12); border-radius:12px; display:grid; gap:6px; }
+    .creds-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12.5px; }
+    .creds-k { color:var(--muted); font-weight:700; letter-spacing:0.04em; text-transform:uppercase; font-size:10.5px; min-width:80px; }
+    .creds-v { background:#fff; border:1px solid var(--line); border-radius:8px; padding:4px 8px; font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace; font-size:12px; color:var(--clay); word-break:break-all; }
+    .creds-mini { background:var(--sand); border:1px solid var(--line); color:var(--clay); padding:3px 10px; border-radius:999px; font:inherit; font-size:11px; font-weight:700; cursor:pointer; transition:0.15s; }
+    .creds-mini:hover { background:#fff; border-color:var(--gold); }
+    .creds-mini.creds-reset { background:rgba(216,156,54,0.12); border-color:rgba(216,156,54,0.38); color:#8a5d11; }
+    .creds-mini.creds-reset:hover { background:rgba(216,156,54,0.22); }
 
     .field { display:flex; flex-direction:column; margin-bottom:12px; }
     .field label { font-size:12px; font-weight:800; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; }
@@ -341,6 +349,17 @@
           studentsDesc: "为学员生成独立登录账号，他们可以进入学习系统查看课程、作业与反馈。",
           generateLogin: "生成学员登录",
           regenerateLogin: "重新生成登录链接",
+          credsEmail: "登录邮箱",
+          credsPassword: "密码",
+          credsReveal: "显示",
+          credsHide: "隐藏",
+          credsCopyEmail: "复制邮箱",
+          credsCopyPassword: "复制密码",
+          credsReset: "重置密码",
+          credsNoPassword: "——",
+          credsResetConfirm: "重置 {name} 的登录密码？新密码会覆盖当前密码。",
+          credsResetDone: "{name} 的密码已重置",
+          navigatingToTrial: "已添加 {name}，跳转到试课预约……",
           studentLoginActive: "已激活，邮箱：{email}",
           studentLoginPending: "待激活 · 链接已发送",
           studentShareTitle: "学员激活链接（请分享给学员）",
@@ -392,6 +411,17 @@
           studentsDesc: "Create a learning-system login for the student. They can sign in to see classes, homework, and feedback.",
           generateLogin: "Generate Student Login",
           regenerateLogin: "Regenerate link",
+          credsEmail: "Login email",
+          credsPassword: "Password",
+          credsReveal: "Show",
+          credsHide: "Hide",
+          credsCopyEmail: "Copy email",
+          credsCopyPassword: "Copy password",
+          credsReset: "Reset password",
+          credsNoPassword: "—",
+          credsResetConfirm: "Reset {name}'s password? The new one will replace the current one.",
+          credsResetDone: "{name}'s password was reset",
+          navigatingToTrial: "Added {name} — taking you to trial booking…",
           studentLoginActive: "Active · {email}",
           studentLoginPending: "Pending activation · link issued",
           studentShareTitle: "Share this activation link with the student",
@@ -479,6 +509,7 @@
         } catch (_) { return false; }
       }
       function escapeHtml(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+      function maskPw(v) { var s = String(v || ""); if (!s) return ""; return s.length <= 2 ? "••" : s.charAt(0) + new Array(s.length - 1).join("•") + s.charAt(s.length - 1); }
 
       function localizedSelect() {
         document.querySelectorAll("option[data-zh][data-en]").forEach(function (opt) {
@@ -567,31 +598,45 @@
           var accounts = flow.listFamilyAccounts(family.familyId);
           studentList.innerHTML = students.map(function (s) {
             var studentAcct = accounts.filter(function (a) { return a.role === flow.ROLES.student && a.linkedEntityId === s.studentId; })[0];
-            var statusPill = "";
-            var stateLine = "";
-            if (studentAcct) {
-              if (studentAcct.status === "active") {
-                statusPill = "<span class='role-pill student'>" + escapeHtml(t.activeStatus) + "</span>";
-                stateLine = t.studentLoginActive.replace("{email}", studentAcct.email || "");
-              } else {
-                statusPill = "<span class='role-pill pending'>" + escapeHtml(t.pendingStatus) + "</span>";
-                stateLine = t.studentLoginPending;
-              }
-            } else {
-              statusPill = "<span class='role-pill student'>" + escapeHtml(t.studentRole) + "</span>";
-              stateLine = "";
+            var statusPill = studentAcct && studentAcct.status === "active"
+              ? "<span class='role-pill student'>" + escapeHtml(t.activeStatus) + "</span>"
+              : "<span class='role-pill student'>" + escapeHtml(t.studentRole) + "</span>";
+
+            // Credentials row — the student login is auto-provisioned as soon
+            // as the child is added, so we always have an email/password
+            // pair to show. Password starts hidden; reveal + copy +
+            // regenerate are per-row actions for the primary guardian.
+            var credsBlock = "";
+            if (studentAcct && studentAcct.email) {
+              var plainPw = s.loginPassword || "";
+              credsBlock =
+                "<div class='creds'>" +
+                  "<div class='creds-row'><span class='creds-k'>" + escapeHtml(t.credsEmail) + "</span>" +
+                    "<code class='creds-v'>" + escapeHtml(studentAcct.email) + "</code>" +
+                    "<button type='button' class='creds-mini' data-copy-text='" + escapeHtml(studentAcct.email) + "' aria-label='" + escapeHtml(t.credsCopyEmail) + "'>" + escapeHtml(t.credsCopyEmail) + "</button>" +
+                  "</div>" +
+                  "<div class='creds-row'><span class='creds-k'>" + escapeHtml(t.credsPassword) + "</span>" +
+                    "<code class='creds-v' data-pw-slot='" + escapeHtml(s.studentId) + "'>" + (plainPw ? escapeHtml(maskPw(plainPw)) : escapeHtml(t.credsNoPassword)) + "</code>" +
+                    (plainPw
+                      ? ("<button type='button' class='creds-mini' data-pw-reveal='" + escapeHtml(s.studentId) + "' data-pw-text='" + escapeHtml(plainPw) + "' aria-label='" + escapeHtml(t.credsReveal) + "'>" + escapeHtml(t.credsReveal) + "</button>" +
+                         "<button type='button' class='creds-mini' data-copy-text='" + escapeHtml(plainPw) + "' aria-label='" + escapeHtml(t.credsCopyPassword) + "'>" + escapeHtml(t.credsCopyPassword) + "</button>")
+                      : "") +
+                    (isPrimary ? "<button type='button' class='creds-mini creds-reset' data-reset-password='" + escapeHtml(s.studentId) + "'>" + escapeHtml(t.credsReset) + "</button>" : "") +
+                  "</div>" +
+                "</div>";
             }
+
             var cta = "";
             if (isPrimary) {
               cta += "<a class='btn-secondary' href='trial.html?sid=" + encodeURIComponent(s.studentId) + "'>" + escapeHtml(t.bookTrial) + "</a>";
               cta += "<a class='btn-secondary' href='course-selection.html?sid=" + encodeURIComponent(s.studentId) + "'>" + escapeHtml(t.startEnroll) + "</a>";
-              cta += "<button type='button' class='btn-secondary' data-gen-student='" + escapeHtml(s.studentId) + "'>" + escapeHtml(studentAcct ? t.regenerateLogin : t.generateLogin) + "</button>";
               cta += "<button type='button' class='btn-danger-ghost' data-remove-student='" + escapeHtml(s.studentId) + "' aria-label='" + escapeHtml(t.removeStudentAria.replace("{name}", s.name || s.studentId)) + "'>" + escapeHtml(t.removeStudent) + "</button>";
             }
             return "<div class='member'>" +
               "<div>" +
                 "<div class='mname'>" + escapeHtml(s.name || s.studentId) + "</div>" +
-                "<div class='mmeta'>" + escapeHtml(s.studentId) + (s.grade ? " · Grade " + escapeHtml(s.grade) : "") + (stateLine ? " · " + escapeHtml(stateLine) : "") + "</div>" +
+                "<div class='mmeta'>" + escapeHtml(s.studentId) + (s.grade ? " · Grade " + escapeHtml(s.grade) : "") + "</div>" +
+                credsBlock +
               "</div>" +
               "<div class='mactions'>" + statusPill + cta + "</div>" +
             "</div>";
@@ -620,17 +665,43 @@
       }
 
       studentList.addEventListener("click", function (e) {
-        var genBtn = e.target.closest("[data-gen-student]");
-        if (genBtn) {
-          var sid = genBtn.getAttribute("data-gen-student");
-          var account = flow && flow.getCurrentAccount ? flow.getCurrentAccount() : null;
-          if (!account || !flow.createStudentLogin) return;
-          var result = flow.createStudentLogin(account.familyId, sid, { issuedBy: account.accountId });
-          if (result && result.claimUrl) {
-            studentShare.style.display = "block";
-            studentShareUrl.value = result.claimUrl;
-            render();
-          }
+        // Copy any text into the clipboard — used for email + password chips.
+        var copyBtn = e.target.closest("[data-copy-text]");
+        if (copyBtn) {
+          var text = copyBtn.getAttribute("data-copy-text");
+          copyToClipboard(text).then(function (ok) {
+            showToast(ok ? I18N[lang].copyHint : I18N[lang].copyFail);
+          });
+          return;
+        }
+
+        // Reveal / hide the masked password in-place.
+        var revealBtn = e.target.closest("[data-pw-reveal]");
+        if (revealBtn) {
+          var sidR = revealBtn.getAttribute("data-pw-reveal");
+          var pwText = revealBtn.getAttribute("data-pw-text") || "";
+          var slot = studentList.querySelector("[data-pw-slot='" + sidR.replace(/'/g, "\\'") + "']");
+          if (!slot) return;
+          var t2 = I18N[lang];
+          var isHidden = slot.textContent !== pwText;
+          slot.textContent = isHidden ? pwText : maskPw(pwText);
+          revealBtn.textContent = isHidden ? t2.credsHide : t2.credsReveal;
+          return;
+        }
+
+        // Reset the auto-generated password. Confirmed, then regenerated,
+        // then the row re-renders with the new value masked.
+        var resetBtn = e.target.closest("[data-reset-password]");
+        if (resetBtn) {
+          var sidP = resetBtn.getAttribute("data-reset-password");
+          var student = flow.findStudentById(sidP);
+          var name = (student && (student.name || student.studentId)) || sidP;
+          if (!confirm(I18N[lang].credsResetConfirm.replace("{name}", name))) return;
+          var account = flow.getCurrentAccount && flow.getCurrentAccount();
+          if (!account || account.role !== flow.ROLES.guardianPrimary || !flow.autoProvisionStudentAccount) return;
+          flow.autoProvisionStudentAccount(account.familyId, sidP, { resetPassword: true });
+          showToast(I18N[lang].credsResetDone.replace("{name}", name));
+          render();
           return;
         }
 
@@ -744,14 +815,23 @@
           birthday: document.getElementById("childBirthday").value,
           gender: document.getElementById("childGender").value
         });
-        if (student) {
-          showToast(t.addChildSuccess.replace("{name}", student.name || ""));
-          document.getElementById("childName").value = "";
-          document.getElementById("childGrade").value = "";
-          document.getElementById("childBirthday").value = "";
-          document.getElementById("childGender").value = "";
-          render();
-        }
+        if (!student) return;
+
+        // Clear the form immediately so if the user navigates back it's fresh.
+        document.getElementById("childName").value = "";
+        document.getElementById("childGrade").value = "";
+        document.getElementById("childBirthday").value = "";
+        document.getElementById("childGender").value = "";
+
+        // Every new child must go through a trial before enrolling — route
+        // the primary guardian into the booking flow directly, scoped to
+        // the freshly minted studentId. The student's learning login was
+        // already auto-provisioned inside addChildToFamily and is visible
+        // on this page on return.
+        showToast(t.navigatingToTrial.replace("{name}", student.name || ""));
+        setTimeout(function () {
+          window.location.href = "trial.html?sid=" + encodeURIComponent(student.studentId);
+        }, 700);
       });
 
       document.getElementById("studentShareCopy").addEventListener("click", function () {
