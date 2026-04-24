@@ -708,6 +708,10 @@
     <div class="page-hero-inner">
       <div class="page-tag"><span data-lang="zh">学员中心</span><span data-lang="en">Student Hub</span></div>
       <h1 id="heroTitle"></h1>
+      <div id="studentSwitcherRow" style="display:none;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+        <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(224,242,254,0.72);font-weight:800;"><span data-lang="zh">切换学员</span><span data-lang="en">View Student</span></span>
+        <select id="studentSwitcher" style="background:rgba(240,249,255,0.12);border:1px solid rgba(224,242,254,0.28);color:#f0f9ff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;outline:none;cursor:pointer;"></select>
+      </div>
       <div class="hero-action-links">
         <a class="btn-ghost" href="feedback.html"><span data-lang="zh">查看课堂反馈</span><span data-lang="en">View Class Feedback</span></a>
         <a class="btn-ghost" href="semester-report.html"><span data-lang="zh">查看学期报告</span><span data-lang="en">Semester Report</span></a>
@@ -1541,6 +1545,29 @@
           roleMeta.style.display = "none";
         }
 
+        // Student switcher: only surfaces for guardian accounts whose family
+        // has more than one student. Students only see their own data so no
+        // switcher for them.
+        var switcherRow = document.getElementById("studentSwitcherRow");
+        var switcher = document.getElementById("studentSwitcher");
+        if (switcherRow && switcher && acct && acct.familyId &&
+            acct.role !== window.MindDoFlow.ROLES.student &&
+            window.MindDoFlow.listFamilyStudents) {
+          var kids = window.MindDoFlow.listFamilyStudents(acct.familyId) || [];
+          if (kids.length > 1) {
+            switcher.innerHTML = kids.map(function (k) {
+              var label = (k.name || k.studentId) + (k.grade ? " · " + k.grade : "");
+              var selected = k.studentId === (current && current.studentId) ? " selected" : "";
+              return "<option value=\"" + k.studentId + "\"" + selected + ">" + label + "</option>";
+            }).join("");
+            switcherRow.style.display = "flex";
+          } else {
+            switcherRow.style.display = "none";
+          }
+        } else if (switcherRow) {
+          switcherRow.style.display = "none";
+        }
+
         var latestCompletion = snapshot && snapshot.completion ? snapshot.completion : null;
         var latestEvaluation = snapshot && snapshot.evaluation ? snapshot.evaluation : null;
         // Definitive post-trial level: ops override wins over self-assessment.
@@ -1760,6 +1787,21 @@
           render(btn.getAttribute("data-set-lang"));
         });
       });
+
+      // Multi-child families: let the guardian swap the active student
+      // without leaving the page. The switcher re-renders into that child's
+      // profile/schedule/feedback context.
+      (function () {
+        var switcher = document.getElementById("studentSwitcher");
+        if (!switcher) return;
+        switcher.addEventListener("change", function () {
+          var sid = switcher.value;
+          if (!sid || !window.MindDoFlow || !window.MindDoFlow.switchActiveStudent) return;
+          window.MindDoFlow.switchActiveStudent(sid);
+          var lang = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+          render(lang);
+        });
+      })();
 
       requestForm.addEventListener("submit", function (e) {
         e.preventDefault();

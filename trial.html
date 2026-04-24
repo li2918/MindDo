@@ -188,6 +188,8 @@
         <h2 data-i18n="formTitle"></h2>
         <p class="desc" data-i18n="formDesc"></p>
 
+        <div id="childBanner" style="display:none;padding:10px 14px;margin-bottom:14px;background:rgba(186,230,253,0.35);border:1px solid rgba(2,132,199,0.32);border-radius:12px;color:#0b4d70;font-size:13.5px;font-weight:600;"></div>
+
         <div id="prevSelection" class="summary">
           <span class="icon">✓</span>
           <span id="prevSelectionText"></span>
@@ -283,11 +285,23 @@
     (function () {
       var SELECTION_KEY = "minddo_trial_selection";
 
+      // If the parent is booking a trial for a specific child (deep-linked
+      // from account-settings.html as ?sid=<studentId>), swap the active
+      // student up-front so downstream prefill + lead saving attach to the
+      // right child.
+      try {
+        var sidParam = new URLSearchParams(window.location.search).get("sid");
+        if (sidParam && window.MindDoFlow && window.MindDoFlow.switchActiveStudent) {
+          window.MindDoFlow.switchActiveStudent(sidParam.trim());
+        }
+      } catch (_) {}
+
       var I18N = {
         "zh-CN": {
           pageTitle: "试课预约 · 选择校区与时间",
           formTitle: "第 1 步：选择校区与试课时间",
           formDesc: "先选一个校区，再选一个合适的日期和时段。下一步你将填写联系方式并完成预约。",
+          bookingFor: "正在为「{name}」预约试课（学员号 {sid}）。如需换人请回到家庭账户页面。",
           campus: "选择校区",
           trialDate: "试课日期",
           trialTime: "试课时段",
@@ -348,6 +362,7 @@
           pageTitle: "Book Trial · Select Campus & Time",
           formTitle: "Step 1: Pick Your Campus & Trial Time",
           formDesc: "Choose a campus, then a date and time that works for you. You'll fill in contact info on the next step.",
+          bookingFor: "Booking a trial for {name} (Student ID {sid}). Switch kids from the family account page.",
           campus: "Select Campus",
           trialDate: "Trial Date",
           trialTime: "Trial Time",
@@ -613,10 +628,33 @@
         renderTimeGrid(t);
         updateButtonState();
         updatePrevSelection(t);
+        renderChildBanner(t);
 
         langButtons.forEach(function (btn) {
           btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
         });
+      }
+
+      // Show a small banner when the booking is scoped to a specific child,
+      // so the parent doesn't accidentally book the trial under the wrong kid.
+      function renderChildBanner(t) {
+        var banner = document.getElementById("childBanner");
+        if (!banner) return;
+        try {
+          var sid = new URLSearchParams(window.location.search).get("sid");
+          if (!sid) { banner.style.display = "none"; return; }
+          var name = "";
+          if (window.MindDoFlow && window.MindDoFlow.findStudentById) {
+            var stu = window.MindDoFlow.findStudentById(sid.trim());
+            if (stu) name = stu.name || "";
+          }
+          if (!name) {
+            var current = window.MindDoFlow && window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent();
+            name = (current && (current.studentName || current.name)) || "";
+          }
+          banner.textContent = (t.bookingFor || "").replace("{name}", name || "—").replace("{sid}", sid.trim());
+          banner.style.display = "block";
+        } catch (_) { banner.style.display = "none"; }
       }
 
       function updatePrevSelection(t) {

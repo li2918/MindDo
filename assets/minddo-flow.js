@@ -204,7 +204,11 @@
   }
 
   function saveLead(data) {
-    var current = setCurrentStudent({
+    // If the caller passes an explicit studentId (e.g. primary guardian
+    // booking a trial for a specific child via ?sid=), honor it — don't
+    // inherit the current-student's sid, otherwise sibling leads collide.
+    var explicitSid = data && data.studentId;
+    var seed = {
       studentName: data.studentName,
       name: data.studentName,
       grade: data.grade,
@@ -213,7 +217,9 @@
       phone: data.phone,
       city: data.city,
       email: data.email || demoEmailFromPhone(data.phone)
-    });
+    };
+    if (explicitSid) seed.studentId = explicitSid;
+    var current = setCurrentStudent(seed);
 
     return appendRecord(KEYS.leads, Object.assign({}, data, {
       email: current.email,
@@ -1021,6 +1027,52 @@
     }
     return family;
   }
+
+  // Create a brand-new student under an existing family — used when the
+  // primary guardian adds a sibling through account-settings.html. Returns
+  // the freshly minted student record.
+  function addChildToFamily(familyId, profile) {
+    var family = findFamilyById(familyId);
+    if (!family) return null;
+    profile = profile || {};
+    var studentId = profile.studentId || createStudentId();
+    var student = upsertStudent({
+      studentId: studentId,
+      familyId: familyId,
+      name: profile.name || profile.studentName || "",
+      grade: profile.grade || "",
+      birthday: profile.birthday || "",
+      gender: profile.gender || "",
+      city: profile.city || "",
+      createdAt: new Date().toISOString()
+    });
+    addStudentToFamily(familyId, studentId);
+    return student;
+  }
+
+  // Swap the "active" student carried on window-local current-student state.
+  // Used by the student switcher on the family home and by per-child trial
+  // booking so the rest of the flow (trial-register prefill, schedule filter,
+  // reminders) pivots to the chosen child.
+  function switchActiveStudent(studentId) {
+    var student = findStudentById(studentId);
+    if (!student) return null;
+    var current = getCurrentStudent() || {};
+    // Preserve the caller's email/account context; only replace the
+    // student-identifying fields.
+    var merged = Object.assign({}, current, {
+      studentId: student.studentId,
+      studentName: student.name || "",
+      name: student.name || "",
+      grade: student.grade || "",
+      birthday: student.birthday || "",
+      gender: student.gender || "",
+      city: student.city || "",
+      goal: student.goal || current.goal || ""
+    });
+    writeJson(KEYS.currentStudent, merged);
+    return merged;
+  }
   function attachAccountToFamily(familyId, accountId, role, linkedEntityId) {
     var family = findFamilyById(familyId);
     if (!family) return null;
@@ -1360,6 +1412,8 @@
     listFamilyStudents: listFamilyStudents,
     listFamilyAccounts: listFamilyAccounts,
     addStudentToFamily: addStudentToFamily,
+    addChildToFamily: addChildToFamily,
+    switchActiveStudent: switchActiveStudent,
     upsertStudent: upsertStudent,
     upsertGuardian: upsertGuardian,
     getCurrentAccount: getCurrentAccount,

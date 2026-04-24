@@ -153,6 +153,52 @@
           </div>
           <div class="share-hint" id="studentShareHint"></div>
         </div>
+
+        <div id="addChildForm" style="margin-top:18px;padding:16px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;">
+          <strong style="display:block;color:var(--clay);font-size:14px;margin-bottom:4px;"><span data-lang="zh">添加另一位孩子</span><span data-lang="en">Add Another Child</span></strong>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.6;"><span data-lang="zh">填写孩子基本信息后，可以单独为 TA 预约试课、生成学员登录。</span><span data-lang="en">Once added, you can book a trial or generate a login just for this child.</span></p>
+          <div class="form-grid">
+            <div class="field">
+              <label for="childName"><span data-lang="zh">学员姓名</span><span data-lang="en">Student Name</span></label>
+              <input id="childName" type="text" autocomplete="name" />
+            </div>
+            <div class="field">
+              <label for="childGrade"><span data-lang="zh">年级</span><span data-lang="en">Grade</span></label>
+              <select id="childGrade">
+                <option value="" data-zh="请选择" data-en="Select"></option>
+                <option value="K">K</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="childBirthday"><span data-lang="zh">出生日期</span><span data-lang="en">Birthday</span></label>
+              <input id="childBirthday" type="date" />
+            </div>
+            <div class="field">
+              <label for="childGender"><span data-lang="zh">性别</span><span data-lang="en">Gender</span></label>
+              <select id="childGender">
+                <option value="" data-zh="不填" data-en="Prefer not to say"></option>
+                <option value="female" data-zh="女" data-en="Female"></option>
+                <option value="male" data-zh="男" data-en="Male"></option>
+                <option value="other" data-zh="其他" data-en="Other"></option>
+              </select>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="button" class="btn-primary" id="addChildBtn"><span data-lang="zh">添加孩子</span><span data-lang="en">Add Child</span></button>
+          </div>
+        </div>
       </article>
 
       <article class="panel" id="guardiansPanel">
@@ -162,7 +208,8 @@
         <div id="guardianList" class="member-list"></div>
 
         <div id="coparentForm" style="margin-top:16px;padding:16px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;">
-          <strong style="display:block;color:var(--clay);font-size:14px;margin-bottom:10px;"><span data-lang="zh">邀请副家长</span><span data-lang="en">Invite Co-parent</span></strong>
+          <strong style="display:block;color:var(--clay);font-size:14px;margin-bottom:4px;"><span data-lang="zh">邀请副家长</span><span data-lang="en">Invite Co-parent</span></strong>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.6;"><span data-lang="zh">可以在注册后任何时候邀请。副家长激活后可以查看课表、反馈，但无法修改学员档案或账单。</span><span data-lang="en">You can send this invite any time — now or later. A co-parent can view schedules and feedback but can't change student profiles or billing.</span></p>
           <div class="form-grid">
             <div class="field">
               <label for="cpEmail"><span data-lang="zh">邮箱</span><span data-lang="en">Email</span></label>
@@ -249,7 +296,10 @@
           noStudentsYet: "家庭下暂无学员。完成试课报名后会自动建立。",
           noFamilyYet: "当前还未加入任何家庭账户，请先完成注册。",
           copyHint: "复制成功",
-          copyFail: "复制失败，请手动复制。"
+          copyFail: "复制失败，请手动复制。",
+          bookTrial: "为此学员预约试课",
+          addChildMissingName: "请填写学员姓名再添加。",
+          addChildSuccess: "已添加 {name}，可为 TA 预约试课或生成学员登录。"
         },
         en: {
           pageTitle: "Family Account Settings",
@@ -281,7 +331,10 @@
           noStudentsYet: "No students yet — they'll appear here once trial registration completes.",
           noFamilyYet: "You're not part of a family account yet — please register first.",
           copyHint: "Copied to clipboard",
-          copyFail: "Copy failed — please copy manually."
+          copyFail: "Copy failed — please copy manually.",
+          bookTrial: "Book a trial",
+          addChildMissingName: "Please enter a student name first.",
+          addChildSuccess: "Added {name} — you can book a trial or generate a login now."
         }
       };
 
@@ -385,6 +438,7 @@
         var isPrimary = account && account.role === flow.ROLES.guardianPrimary;
         permissionNotice.style.display = isPrimary ? "none" : "block";
         document.getElementById("coparentForm").style.display = isPrimary ? "block" : "none";
+        document.getElementById("addChildForm").style.display = isPrimary ? "block" : "none";
 
         // Students
         var students = flow.listFamilyStudents(family.familyId);
@@ -408,9 +462,11 @@
               statusPill = "<span class='role-pill student'>" + escapeHtml(t.studentRole) + "</span>";
               stateLine = "";
             }
-            var cta = isPrimary
-              ? ("<button type='button' class='btn-secondary' data-gen-student='" + escapeHtml(s.studentId) + "'>" + escapeHtml(studentAcct ? t.regenerateLogin : t.generateLogin) + "</button>")
-              : "";
+            var cta = "";
+            if (isPrimary) {
+              cta += "<a class='btn-secondary' href='trial.html?sid=" + encodeURIComponent(s.studentId) + "'>" + escapeHtml(t.bookTrial) + "</a>";
+              cta += "<button type='button' class='btn-secondary' data-gen-student='" + escapeHtml(s.studentId) + "'>" + escapeHtml(studentAcct ? t.regenerateLogin : t.generateLogin) + "</button>";
+            }
             return "<div class='member'>" +
               "<div>" +
                 "<div class='mname'>" + escapeHtml(s.name || s.studentId) + "</div>" +
@@ -452,6 +508,28 @@
         if (result && result.claimUrl) {
           studentShare.style.display = "block";
           studentShareUrl.value = result.claimUrl;
+          render();
+        }
+      });
+
+      document.getElementById("addChildBtn").addEventListener("click", function () {
+        var t = I18N[lang];
+        var name = document.getElementById("childName").value.trim();
+        if (!name) { showToast(t.addChildMissingName); return; }
+        var account = flow && flow.getCurrentAccount ? flow.getCurrentAccount() : null;
+        if (!account || !flow.addChildToFamily) return;
+        var student = flow.addChildToFamily(account.familyId, {
+          name: name,
+          grade: document.getElementById("childGrade").value,
+          birthday: document.getElementById("childBirthday").value,
+          gender: document.getElementById("childGender").value
+        });
+        if (student) {
+          showToast(t.addChildSuccess.replace("{name}", student.name || ""));
+          document.getElementById("childName").value = "";
+          document.getElementById("childGrade").value = "";
+          document.getElementById("childBirthday").value = "";
+          document.getElementById("childGender").value = "";
           render();
         }
       });
