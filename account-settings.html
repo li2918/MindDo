@@ -85,6 +85,44 @@
     .toast { position:fixed; bottom:24px; right:24px; background:var(--clay); color:#f0f9ff; padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:0 12px 28px rgba(30,58,95,0.3); opacity:0; transform:translateY(10px); transition:0.25s; pointer-events:none; z-index:2000; }
     .toast.show { opacity:1; transform:translateY(0); }
 
+    .btn-danger {
+      background:#b2502d; color:#fff; border:1px solid #8e3d21;
+      border-radius:999px; padding:8px 16px; font-size:13px; font-weight:700;
+      font-family:inherit; cursor:pointer; transition:0.15s; display:inline-flex;
+      align-items:center; gap:6px; text-decoration:none;
+    }
+    .btn-danger:hover:not(:disabled) { background:#953e21; box-shadow:0 6px 18px rgba(178,80,45,0.3); }
+    .btn-danger:disabled { opacity:0.45; cursor:not-allowed; }
+    .btn-danger-ghost {
+      background:transparent; color:#b2502d; border:1px solid rgba(178,80,45,0.42);
+      border-radius:999px; padding:7px 14px; font-size:12.5px; font-weight:700;
+      font-family:inherit; cursor:pointer; transition:0.15s;
+    }
+    .btn-danger-ghost:hover { background:rgba(178,80,45,0.08); border-color:#b2502d; }
+
+    .modal-backdrop[hidden] { display:none; }
+    .modal-backdrop {
+      position:fixed; inset:0; background:rgba(11,26,46,0.55);
+      display:flex; align-items:center; justify-content:center;
+      z-index:3000; padding:20px; animation:fadeIn 0.15s ease-out;
+    }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    .modal-card {
+      background:#fff; border:1px solid var(--line); border-radius:18px;
+      max-width:460px; width:100%; padding:26px 24px;
+      box-shadow:0 40px 90px rgba(15,23,42,0.25);
+    }
+    .modal-card h2 { font-size:18px; font-weight:800; color:var(--clay); margin-bottom:8px; }
+    .modal-card p.modal-intro { font-size:13.5px; color:var(--muted); line-height:1.65; margin-bottom:12px; }
+    .modal-card .impact-list { list-style:none; padding:12px 14px; background:rgba(178,80,45,0.06); border:1px solid rgba(178,80,45,0.22); border-radius:12px; margin-bottom:14px; }
+    .modal-card .impact-list li { font-size:12.5px; color:var(--text); line-height:1.55; padding:3px 0; padding-left:18px; position:relative; }
+    .modal-card .impact-list li::before { content:"·"; position:absolute; left:6px; top:3px; color:#b2502d; font-weight:800; }
+    .modal-card .modal-note { font-size:12px; color:var(--muted); line-height:1.55; margin-bottom:14px; }
+    .modal-card .confirm-row { display:flex; gap:10px; align-items:flex-start; padding:12px 14px; background:#fff6ed; border:1px solid #f0d2bc; border-radius:12px; margin-bottom:16px; cursor:pointer; }
+    .modal-card .confirm-row input { width:18px; height:18px; margin-top:2px; accent-color:#b2502d; flex-shrink:0; cursor:pointer; }
+    .modal-card .confirm-row span { font-size:13px; color:var(--text); line-height:1.55; }
+    .modal-card .modal-actions { display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
+
     .footer { background:var(--brown); color:rgba(240,249,255,0.78); padding:48px 48px 28px; }
     .footer-inner { max-width:980px; margin:0 auto; font-size:13px; }
     .footer-bottom { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(240,249,255,0.45); margin-top:22px; padding-top:20px; border-top:1px solid rgba(224,242,254,0.1); }
@@ -251,6 +289,23 @@
     </div>
   </section>
 
+  <div class="modal-backdrop" id="deleteStudentModal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+      <h2 id="deleteModalTitle"></h2>
+      <p class="modal-intro" id="deleteModalIntro"></p>
+      <ul class="impact-list" id="deleteModalImpact"></ul>
+      <p class="modal-note" id="deleteModalNote"></p>
+      <label class="confirm-row">
+        <input type="checkbox" id="deleteConfirmBox" />
+        <span id="deleteConfirmLabel"></span>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="deleteCancelBtn"></button>
+        <button type="button" class="btn-danger" id="deleteConfirmBtn" disabled></button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <footer class="footer">
@@ -300,7 +355,21 @@
           bookTrial: "为此学员预约试课",
           startEnroll: "为此学员选课",
           addChildMissingName: "请填写学员姓名再添加。",
-          addChildSuccess: "已添加 {name}，可为 TA 预约试课或生成学员登录。"
+          addChildSuccess: "已添加 {name}，可为 TA 预约试课或生成学员登录。",
+          removeStudent: "删除学员",
+          removeStudentAria: "删除学员 {name}",
+          deleteModalTitle: "删除学员账号？",
+          deleteModalIntro: "以下关于「{name}」的家庭信息会被移除：",
+          deleteImpactProfile: "学员档案（姓名、年级、生日、性别）",
+          deleteImpactLogin: "学员独立登录账号（如已生成）",
+          deleteImpactInvite: "未激活的学员登录链接",
+          deleteImpactLevel: "等级评估与选课索引",
+          deleteModalNote: "已提交的试课、评估、反馈记录会被保留在后台作为历史档案，但不再关联到当前家庭。",
+          deleteConfirmLabel: "我确认删除「{name}」，此操作无法撤销。",
+          deleteCancel: "取消",
+          deleteConfirm: "确认删除",
+          deleteSuccess: "已删除学员「{name}」。",
+          deleteFailed: "删除失败，请稍后再试。"
         },
         en: {
           pageTitle: "Family Account Settings",
@@ -336,7 +405,21 @@
           bookTrial: "Book a trial",
           startEnroll: "Enroll in a course",
           addChildMissingName: "Please enter a student name first.",
-          addChildSuccess: "Added {name} — you can book a trial or generate a login now."
+          addChildSuccess: "Added {name} — you can book a trial or generate a login now.",
+          removeStudent: "Remove",
+          removeStudentAria: "Remove student {name}",
+          deleteModalTitle: "Delete this student?",
+          deleteModalIntro: "The following family-account data for \"{name}\" will be removed:",
+          deleteImpactProfile: "Student profile (name, grade, birthday, gender)",
+          deleteImpactLogin: "Student learning-system login (if one was issued)",
+          deleteImpactInvite: "Any pending activation links",
+          deleteImpactLevel: "Placement level & course-selection index",
+          deleteModalNote: "Submitted trials, assessments, and feedback stay on file as historical records but are no longer linked to this family.",
+          deleteConfirmLabel: "I confirm deleting \"{name}\" — this cannot be undone.",
+          deleteCancel: "Cancel",
+          deleteConfirm: "Delete permanently",
+          deleteSuccess: "Removed student \"{name}\".",
+          deleteFailed: "Delete failed — please try again."
         }
       };
 
@@ -469,6 +552,7 @@
               cta += "<a class='btn-secondary' href='trial.html?sid=" + encodeURIComponent(s.studentId) + "'>" + escapeHtml(t.bookTrial) + "</a>";
               cta += "<a class='btn-secondary' href='course-selection.html?sid=" + encodeURIComponent(s.studentId) + "'>" + escapeHtml(t.startEnroll) + "</a>";
               cta += "<button type='button' class='btn-secondary' data-gen-student='" + escapeHtml(s.studentId) + "'>" + escapeHtml(studentAcct ? t.regenerateLogin : t.generateLogin) + "</button>";
+              cta += "<button type='button' class='btn-danger-ghost' data-remove-student='" + escapeHtml(s.studentId) + "' aria-label='" + escapeHtml(t.removeStudentAria.replace("{name}", s.name || s.studentId)) + "'>" + escapeHtml(t.removeStudent) + "</button>";
             }
             return "<div class='member'>" +
               "<div>" +
@@ -502,17 +586,101 @@
       }
 
       studentList.addEventListener("click", function (e) {
-        var btn = e.target.closest("[data-gen-student]");
-        if (!btn) return;
-        var sid = btn.getAttribute("data-gen-student");
-        var account = flow && flow.getCurrentAccount ? flow.getCurrentAccount() : null;
-        if (!account || !flow.createStudentLogin) return;
-        var result = flow.createStudentLogin(account.familyId, sid, { issuedBy: account.accountId });
-        if (result && result.claimUrl) {
-          studentShare.style.display = "block";
-          studentShareUrl.value = result.claimUrl;
-          render();
+        var genBtn = e.target.closest("[data-gen-student]");
+        if (genBtn) {
+          var sid = genBtn.getAttribute("data-gen-student");
+          var account = flow && flow.getCurrentAccount ? flow.getCurrentAccount() : null;
+          if (!account || !flow.createStudentLogin) return;
+          var result = flow.createStudentLogin(account.familyId, sid, { issuedBy: account.accountId });
+          if (result && result.claimUrl) {
+            studentShare.style.display = "block";
+            studentShareUrl.value = result.claimUrl;
+            render();
+          }
+          return;
         }
+
+        var removeBtn = e.target.closest("[data-remove-student]");
+        if (removeBtn) {
+          openDeleteModal(removeBtn.getAttribute("data-remove-student"));
+        }
+      });
+
+      // --- Delete-student modal ---
+      var deleteModal = document.getElementById("deleteStudentModal");
+      var deleteConfirmBox = document.getElementById("deleteConfirmBox");
+      var deleteConfirmBtn = document.getElementById("deleteConfirmBtn");
+      var deleteCancelBtn = document.getElementById("deleteCancelBtn");
+      var pendingDeleteId = null;
+
+      function openDeleteModal(studentId) {
+        var account = flow && flow.getCurrentAccount ? flow.getCurrentAccount() : null;
+        if (!account || account.role !== flow.ROLES.guardianPrimary) return;
+        var student = flow.findStudentById(studentId);
+        if (!student) return;
+        pendingDeleteId = studentId;
+        var t = I18N[lang];
+        var name = student.name || student.studentId;
+        document.getElementById("deleteModalTitle").textContent = t.deleteModalTitle;
+        document.getElementById("deleteModalIntro").textContent = t.deleteModalIntro.replace("{name}", name);
+        document.getElementById("deleteModalImpact").innerHTML = [
+          t.deleteImpactProfile,
+          t.deleteImpactLogin,
+          t.deleteImpactInvite,
+          t.deleteImpactLevel
+        ].map(function (item) { return "<li>" + escapeHtml(item) + "</li>"; }).join("");
+        document.getElementById("deleteModalNote").textContent = t.deleteModalNote;
+        document.getElementById("deleteConfirmLabel").textContent = t.deleteConfirmLabel.replace("{name}", name);
+        deleteConfirmBox.checked = false;
+        deleteConfirmBtn.disabled = true;
+        deleteConfirmBtn.textContent = t.deleteConfirm;
+        deleteCancelBtn.textContent = t.deleteCancel;
+        deleteModal.hidden = false;
+        // Let the checkbox take focus so keyboard users can proceed immediately
+        setTimeout(function () { deleteConfirmBox.focus(); }, 10);
+      }
+
+      function closeDeleteModal() {
+        deleteModal.hidden = true;
+        pendingDeleteId = null;
+        deleteConfirmBox.checked = false;
+        deleteConfirmBtn.disabled = true;
+      }
+
+      deleteConfirmBox.addEventListener("change", function () {
+        deleteConfirmBtn.disabled = !deleteConfirmBox.checked;
+      });
+
+      deleteCancelBtn.addEventListener("click", closeDeleteModal);
+
+      // Click on backdrop (outside the card) closes the modal
+      deleteModal.addEventListener("click", function (e) {
+        if (e.target === deleteModal) closeDeleteModal();
+      });
+
+      // ESC closes the modal
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !deleteModal.hidden) closeDeleteModal();
+      });
+
+      deleteConfirmBtn.addEventListener("click", function () {
+        if (!pendingDeleteId || deleteConfirmBtn.disabled) return;
+        var t = I18N[lang];
+        var account = flow && flow.getCurrentAccount ? flow.getCurrentAccount() : null;
+        if (!account || account.role !== flow.ROLES.guardianPrimary || !flow.removeStudentFromFamily) {
+          showToast(t.deleteFailed);
+          return;
+        }
+        var student = flow.findStudentById(pendingDeleteId);
+        var name = student ? (student.name || student.studentId) : "";
+        var result = flow.removeStudentFromFamily(account.familyId, pendingDeleteId, { issuedBy: account.accountId });
+        if (!result) {
+          showToast(t.deleteFailed);
+          return;
+        }
+        closeDeleteModal();
+        showToast(t.deleteSuccess.replace("{name}", name));
+        render();
       });
 
       document.getElementById("addChildBtn").addEventListener("click", function () {

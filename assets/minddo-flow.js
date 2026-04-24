@@ -1028,6 +1028,89 @@
     return family;
   }
 
+  // Remove a student from a family. Deletes the student profile, any
+  // student login accounts, pending activation tokens, and the family's
+  // studentIds entry. Historical records (leads, assessments, feedback)
+  // are kept so operations still has an audit trail — they'll be dormant
+  // without an active student to link against. Only the primary guardian
+  // should call this; the UI enforces that gate.
+  function removeStudentFromFamily(familyId, studentId, meta) {
+    if (!familyId || !studentId) return null;
+    var family = findFamilyById(familyId);
+    if (!family) return null;
+
+    var students = readJson(KEYS.students, []);
+    var removed = students.filter(function (s) {
+      return s.studentId === studentId && s.familyId === familyId;
+    })[0];
+    if (!removed) return null;
+
+    // 1) Students store
+    writeJson(KEYS.students, students.filter(function (s) {
+      return !(s.studentId === studentId && s.familyId === familyId);
+    }));
+
+    // 2) Student accounts linked to this student
+    var accounts = readJson(KEYS.accounts, []);
+    var studentAccountIds = accounts
+      .filter(function (a) { return a.role === ROLES.student && a.familyId === familyId && a.linkedEntityId === studentId; })
+      .map(function (a) { return a.accountId; });
+    if (studentAccountIds.length) {
+      writeJson(KEYS.accounts, accounts.filter(function (a) {
+        return studentAccountIds.indexOf(a.accountId) === -1;
+      }));
+    }
+
+    // 3) Pending invite tokens pointing at a removed account
+    if (studentAccountIds.length) {
+      var tokens = readJson(KEYS.inviteTokens, []);
+      writeJson(KEYS.inviteTokens, tokens.filter(function (tok) {
+        return studentAccountIds.indexOf(tok.pendingAccountId) === -1;
+      }));
+    }
+
+    // 4) Outgoing-invite log entries tied to this student
+    var invites = readJson(KEYS.invites, []);
+    var cleanedInvites = invites.filter(function (inv) {
+      return !(inv && inv.familyId === familyId && inv.studentId === studentId);
+    });
+    if (cleanedInvites.length !== invites.length) writeJson(KEYS.invites, cleanedInvites);
+
+    // 5) family.studentIds
+    if (Array.isArray(family.studentIds)) {
+      family.studentIds = family.studentIds.filter(function (id) { return id !== studentId; });
+      family.updatedAt = new Date().toISOString();
+      upsertFamily(family);
+    }
+
+    // 6) studentLevels map (scoped to studentId)
+    var levels = readJson(KEYS.studentLevels, {});
+    if (levels && typeof levels === "object" && Object.prototype.hasOwnProperty.call(levels, studentId)) {
+      delete levels[studentId];
+      writeJson(KEYS.studentLevels, levels);
+    }
+
+    // 7) If the active student pointer is the one being deleted, slide it
+    //    to another family student or clear the pointer.
+    var current = getCurrentStudent();
+    if (current && current.studentId === studentId) {
+      var remaining = listFamilyStudents(familyId);
+      if (remaining.length) {
+        switchActiveStudent(remaining[0].studentId);
+      } else {
+        writeJson(KEYS.currentStudent, Object.assign({}, current, {
+          studentId: "", studentName: "", name: "", grade: "", birthday: "", gender: ""
+        }));
+      }
+    }
+
+    return {
+      removed: removed,
+      at: new Date().toISOString(),
+      by: meta && meta.issuedBy ? meta.issuedBy : ""
+    };
+  }
+
   // Create a brand-new student under an existing family — used when the
   // primary guardian adds a sibling through account-settings.html. Returns
   // the freshly minted student record.
@@ -1413,6 +1496,7 @@
     listFamilyAccounts: listFamilyAccounts,
     addStudentToFamily: addStudentToFamily,
     addChildToFamily: addChildToFamily,
+    removeStudentFromFamily: removeStudentFromFamily,
     switchActiveStudent: switchActiveStudent,
     upsertStudent: upsertStudent,
     upsertGuardian: upsertGuardian,
