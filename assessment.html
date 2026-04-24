@@ -7,13 +7,21 @@
     // never see a flash of the assessment page. The in-body gate below is
     // the secondary defense in case this block is skipped.
     (function () {
+      function redirect() {
+        var sid = "";
+        try {
+          var qs = new URLSearchParams(window.location.search);
+          sid = qs.get("sid") || "";
+        } catch (_) {}
+        var target = "login.html?next=assessment.html&reason=assessment" +
+          (sid ? "&sid=" + encodeURIComponent(sid) : "");
+        window.location.replace(target);
+      }
       try {
         var cur = JSON.parse(localStorage.getItem("minddo_current_student") || "null");
-        if (!cur || !cur.email) {
-          window.location.replace("login.html?next=assessment.html&reason=assessment");
-        }
+        if (!cur || !cur.email) redirect();
       } catch (_) {
-        window.location.replace("login.html?next=assessment.html&reason=assessment");
+        redirect();
       }
     })();
   </script>

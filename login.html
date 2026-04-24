@@ -287,8 +287,16 @@
       var urlParams = new URLSearchParams(window.location.search);
       var nextParam = urlParams.get("next");
       var reasonParam = urlParams.get("reason");
+      var sidParam = urlParams.get("sid") || "";
       var SAFE_NEXT = /^[a-z0-9_-]+\.html(#[a-z0-9_-]+)?$/i;
+      var SAFE_SID = /^[A-Za-z0-9_-]{1,48}$/;
+      if (sidParam && !SAFE_SID.test(sidParam)) sidParam = "";
       var nextUrl = (nextParam && SAFE_NEXT.test(nextParam)) ? nextParam : "student-account.html";
+      // Append sid back onto the target page so the next destination still
+      // knows which student was mid-flow (e.g. assessment.html?sid=XYZ).
+      if (sidParam && SAFE_NEXT.test(nextUrl)) {
+        nextUrl += (nextUrl.indexOf("?") === -1 ? "?" : "&") + "sid=" + encodeURIComponent(sidParam);
+      }
 
       var html = document.documentElement;
       var langButtons = document.querySelectorAll("[data-set-lang]");
@@ -329,7 +337,17 @@
               if (stu) studentName = stu.name || "";
             } else if (account.familyId && window.MindDoFlow.listFamilyStudents) {
               var students = window.MindDoFlow.listFamilyStudents(account.familyId) || [];
-              if (students.length) { studentId = students[0].studentId; studentName = students[0].name || ""; }
+              // If the auth bounce came from a page that was working with a
+              // specific student (sid in URL), prefer that one; otherwise
+              // fall back to the family's first student.
+              if (sidParam) {
+                var preferred = students.filter(function (s) { return s.studentId === sidParam; })[0];
+                if (preferred) { studentId = preferred.studentId; studentName = preferred.name || ""; }
+              }
+              if (!studentId && students.length) {
+                studentId = students[0].studentId;
+                studentName = students[0].name || "";
+              }
             }
             if (window.MindDoFlow.setCurrentStudent) {
               window.MindDoFlow.setCurrentStudent({
@@ -376,12 +394,58 @@
         return true;
       }
 
+      // Returns a deduped, newest-first list of sign-in-capable accounts,
+      // merging the new multi-account store with the legacy signup_users
+      // store. Legacy users that have no matching new-model account still
+      // appear so OAuth-only signups aren't hidden.
+      function collectQuickUsers() {
+        var seen = {};
+        var merged = [];
+
+        function add(entry) {
+          var key = String(entry.email || "").trim().toLowerCase();
+          if (!key || seen[key]) return;
+          seen[key] = true;
+          merged.push(entry);
+        }
+
+        // Source 1: new accounts model (guardians + students, active or pending)
+        if (window.MindDoFlow && window.MindDoFlow.getAccounts) {
+          var accounts = window.MindDoFlow.getAccounts() || [];
+          // Sort newest first by activatedAt, fallback createdAt
+          accounts.slice().sort(function (a, b) {
+            var at = Date.parse(a.activatedAt || a.createdAt || 0) || 0;
+            var bt = Date.parse(b.activatedAt || b.createdAt || 0) || 0;
+            return bt - at;
+          }).forEach(function (a) {
+            if (!a || !a.email) return;
+            var name = "";
+            if (a.role === window.MindDoFlow.ROLES.student && window.MindDoFlow.findStudentById) {
+              var stu = window.MindDoFlow.findStudentById(a.linkedEntityId);
+              name = stu ? (stu.name || "") : "";
+            } else if (window.MindDoFlow.findGuardianById) {
+              var g = window.MindDoFlow.findGuardianById(a.linkedEntityId);
+              name = g ? (g.name || "") : "";
+            }
+            add({ email: a.email, name: name || a.email });
+          });
+        }
+
+        // Source 2: legacy signup_users (covers OAuth + pre-migration records)
+        var legacy = readSignups();
+        legacy.slice().reverse().forEach(function (u) {
+          add({ email: u.email, name: u.studentName || u.name || "Student" });
+        });
+
+        return merged;
+      }
+
       function renderQuickUsers() {
-        var users = readSignups();
+        var users = collectQuickUsers();
         if (!users.length) { quickUsers.style.display = "none"; return; }
         quickUsers.style.display = "block";
-        quickUsersList.innerHTML = users.slice(-4).reverse().map(function (u) {
-          var name = u.studentName || u.name || "Student";
+        quickUsersList.innerHTML = users.slice(0, 4).map(function (u) {
+          var name = u.name || "Student";
           var email = u.email || "—";
           return "<button type=\"button\" class=\"quick-user\" data-email=\"" + email + "\"><span class=\"qu-name\">" + name + "</span><span class=\"qu-email\">" + email + "</span></button>";
         }).join("");
@@ -399,12 +463,13 @@
         }
       }
 
-      // Forward next+reason to the sign-up link so new users land back at the same page.
+      // Forward next+reason+sid to the sign-up link so new users land back at the same page.
       var signupLink = document.getElementById("signupLink");
-      if (signupLink && (nextParam || reasonParam)) {
+      if (signupLink && (nextParam || reasonParam || sidParam)) {
         var qs = [];
         if (nextParam) qs.push("next=" + encodeURIComponent(nextParam));
         if (reasonParam) qs.push("reason=" + encodeURIComponent(reasonParam));
+        if (sidParam) qs.push("sid=" + encodeURIComponent(sidParam));
         signupLink.setAttribute("href", "signup.html?" + qs.join("&"));
       }
 

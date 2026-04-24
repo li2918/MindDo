@@ -369,6 +369,7 @@
           deleteCancel: "取消",
           deleteConfirm: "确认删除",
           deleteSuccess: "已删除学员「{name}」。",
+          deleteSuccessEmpty: "已删除学员「{name}」。家庭下暂无学员——请先添加一位，再继续后续操作。",
           deleteFailed: "删除失败，请稍后再试。"
         },
         en: {
@@ -419,6 +420,7 @@
           deleteCancel: "Cancel",
           deleteConfirm: "Delete permanently",
           deleteSuccess: "Removed student \"{name}\".",
+          deleteSuccessEmpty: "Removed \"{name}\". No students remain — add one before booking a trial or viewing the schedule.",
           deleteFailed: "Delete failed — please try again."
         }
       };
@@ -679,8 +681,23 @@
           return;
         }
         closeDeleteModal();
-        showToast(t.deleteSuccess.replace("{name}", name));
         render();
+
+        // If this was the last student in the family, give the parent an
+        // explicit nudge toward the Add Child form so they don't get stuck
+        // with an empty family.
+        var remaining = flow.listFamilyStudents ? (flow.listFamilyStudents(account.familyId) || []) : [];
+        if (remaining.length === 0) {
+          showToast(t.deleteSuccessEmpty.replace("{name}", name));
+          var addForm = document.getElementById("addChildForm");
+          var nameInput = document.getElementById("childName");
+          if (addForm) {
+            try { addForm.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
+            setTimeout(function () { if (nameInput) nameInput.focus(); }, 280);
+          }
+        } else {
+          showToast(t.deleteSuccess.replace("{name}", name));
+        }
       });
 
       document.getElementById("addChildBtn").addEventListener("click", function () {

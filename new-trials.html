@@ -321,16 +321,12 @@
           <input id="editPhone" type="tel" />
         </div>
         <div>
-          <label for="editCity"><span data-lang="zh">城市</span><span data-lang="en">City</span></label>
-          <input id="editCity" type="text" />
-        </div>
-        <div>
           <label for="editChannel"><span data-lang="zh">获客渠道</span><span data-lang="en">Channel</span></label>
           <input id="editChannel" type="text" />
         </div>
         <div class="field-full">
-          <label for="editGoal"><span data-lang="zh">学习目标 / 备注</span><span data-lang="en">Goal / Notes</span></label>
-          <textarea id="editGoal"></textarea>
+          <label for="editNotes"><span data-lang="zh">运营备注</span><span data-lang="en">Ops Notes</span></label>
+          <textarea id="editNotes" placeholder="沟通要点、特殊需求、学习目标等 · Talking points, special requests, learning goals…"></textarea>
         </div>
       </div>
       <p class="form-hint"><span data-lang="zh">学员 ID 和创建时间不可修改。</span><span data-lang="en">Student ID and creation time cannot be edited.</span></p>
@@ -832,9 +828,8 @@
         birthday: document.getElementById("editBirthday"),
         email: document.getElementById("editEmail"),
         phone: document.getElementById("editPhone"),
-        city: document.getElementById("editCity"),
         channel: document.getElementById("editChannel"),
-        goal: document.getElementById("editGoal")
+        notes: document.getElementById("editNotes")
       };
       var editLeadCancelBtn = document.getElementById("editLeadCancel");
       var editLeadSaveBtn = document.getElementById("editLeadSave");
@@ -850,9 +845,8 @@
         editFields.birthday.value = lead.birthday || "";
         editFields.email.value = lead.email || "";
         editFields.phone.value = lead.phone || "";
-        editFields.city.value = lead.city || "";
         editFields.channel.value = lead.channelLabel || lead.channel || "";
-        editFields.goal.value = lead.goal || "";
+        editFields.notes.value = lead.opsNotes || lead.goal || "";
         editLeadModal.classList.add("open");
         setTimeout(function () { editFields.studentName.focus(); }, 50);
       }
@@ -895,9 +889,8 @@
           birthday: editFields.birthday.value,
           email: newEmail,
           phone: editFields.phone.value.trim(),
-          city: editFields.city.value.trim(),
           channelLabel: editFields.channel.value.trim(),
-          goal: editFields.goal.value.trim()
+          opsNotes: editFields.notes.value.trim()
         };
         var updated = window.MindDoFlow.updateLead(activeEditLead.createdAt, patch);
         if (updated) {

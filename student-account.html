@@ -708,6 +708,11 @@
     <div class="page-hero-inner">
       <div class="page-tag"><span data-lang="zh">学员中心</span><span data-lang="en">Student Hub</span></div>
       <h1 id="heroTitle"></h1>
+      <div id="emptyFamilyBanner" role="status" style="display:none;margin-bottom:18px;padding:14px 16px;border-radius:14px;background:rgba(178,80,45,0.18);border:1px solid rgba(178,80,45,0.4);color:#f0f9ff;">
+        <strong id="emptyFamilyTitle" style="display:block;font-size:14px;font-weight:800;margin-bottom:4px;"></strong>
+        <span id="emptyFamilyDesc" style="display:block;font-size:13px;line-height:1.55;color:rgba(240,249,255,0.85);margin-bottom:10px;"></span>
+        <a id="emptyFamilyCta" class="btn-primary" href="account-settings.html" style="font-size:13px;padding:8px 16px;"></a>
+      </div>
       <div id="studentSwitcherRow" style="display:none;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
         <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(224,242,254,0.72);font-weight:800;"><span data-lang="zh">切换学员</span><span data-lang="en">View Student</span></span>
         <select id="studentSwitcher" style="background:rgba(240,249,255,0.12);border:1px solid rgba(224,242,254,0.28);color:#f0f9ff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;outline:none;cursor:pointer;"></select>
@@ -1003,6 +1008,9 @@
           heroStage: "当前阶段",
           heroRole: "账户身份",
           roleLabels: { guardian_primary: "主家长", guardian_secondary: "副家长", student: "学员" },
+          emptyFamilyTitle: "家庭下暂无学员",
+          emptyFamilyDesc: "你需要先添加一位学员才能预约试课、查看课表和反馈。",
+          emptyFamilyCta: "去添加学员 →",
           statusBannerTitle: "账户状态",
           nextLessonTitle: "下一节课",
           profileTitle: "个人资料",
@@ -1149,6 +1157,9 @@
           heroStage: "Current Stage",
           heroRole: "Account Role",
           roleLabels: { guardian_primary: "Primary Guardian", guardian_secondary: "Co-parent", student: "Student" },
+          emptyFamilyTitle: "No students yet",
+          emptyFamilyDesc: "Add a student before booking a trial, viewing the schedule, or checking feedback.",
+          emptyFamilyCta: "Add a student →",
           statusBannerTitle: "Account Status",
           nextLessonTitle: "Next Class",
           profileTitle: "Profile",
@@ -1550,10 +1561,11 @@
         // switcher for them.
         var switcherRow = document.getElementById("studentSwitcherRow");
         var switcher = document.getElementById("studentSwitcher");
+        var kids = (acct && acct.familyId && window.MindDoFlow.listFamilyStudents)
+          ? (window.MindDoFlow.listFamilyStudents(acct.familyId) || [])
+          : [];
         if (switcherRow && switcher && acct && acct.familyId &&
-            acct.role !== window.MindDoFlow.ROLES.student &&
-            window.MindDoFlow.listFamilyStudents) {
-          var kids = window.MindDoFlow.listFamilyStudents(acct.familyId) || [];
+            acct.role !== window.MindDoFlow.ROLES.student) {
           if (kids.length > 1) {
             switcher.innerHTML = kids.map(function (k) {
               var label = (k.name || k.studentId) + (k.grade ? " · " + k.grade : "");
@@ -1566,6 +1578,24 @@
           }
         } else if (switcherRow) {
           switcherRow.style.display = "none";
+        }
+
+        // Empty-family banner: guardian-role accounts whose family has no
+        // remaining students (e.g. after the primary guardian deleted the
+        // last child) get a prominent prompt to re-add one.
+        var emptyBanner = document.getElementById("emptyFamilyBanner");
+        if (emptyBanner) {
+          var showEmpty = !!(acct && acct.familyId &&
+            acct.role !== window.MindDoFlow.ROLES.student &&
+            kids.length === 0);
+          if (showEmpty) {
+            document.getElementById("emptyFamilyTitle").textContent = t.emptyFamilyTitle;
+            document.getElementById("emptyFamilyDesc").textContent = t.emptyFamilyDesc;
+            document.getElementById("emptyFamilyCta").textContent = t.emptyFamilyCta;
+            emptyBanner.style.display = "block";
+          } else {
+            emptyBanner.style.display = "none";
+          }
         }
 
         var latestCompletion = snapshot && snapshot.completion ? snapshot.completion : null;

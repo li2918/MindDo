@@ -778,6 +778,14 @@
     var query = [];
     if (nextPage) query.push("next=" + encodeURIComponent(nextPage));
     if (reason) query.push("reason=" + encodeURIComponent(reason));
+    // Carry forward the sid param if the caller is mid-flow for a specific
+    // student (e.g. guardian clicked "assess this child"). login.html
+    // will switch the active student after a successful login so context
+    // survives the auth bounce.
+    try {
+      var sid = new URLSearchParams(window.location.search).get("sid");
+      if (sid) query.push("sid=" + encodeURIComponent(sid));
+    } catch (_) {}
     var qs = query.length ? "?" + query.join("&") : "";
     window.location.replace("login.html" + qs);
     return false;
@@ -1487,6 +1495,7 @@
     verifyAccountLogin: verifyAccountLogin,
     findAccountByEmail: findAccountByEmail,
     findAccountById: findAccountById,
+    getAccounts: getAccounts,
     findStudentById: findStudentById,
     findGuardianById: findGuardianById,
     findFamilyById: findFamilyById,
