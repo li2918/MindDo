@@ -173,6 +173,41 @@
     };
   }
 
+  // Snapshot scoped to a specific studentId — used by the family overview
+  // on student-account so each child card can show its own stage without
+  // switching the active-student pointer. Matches records on studentId and
+  // (if provided) a fallback email for legacy rows that predate studentId.
+  function getSnapshotForStudent(studentId, fallbackEmail) {
+    var id = String(studentId || "");
+    var email = norm(fallbackEmail);
+    var match = function (item) {
+      if (!item) return false;
+      var itemId = String(item.studentId || "");
+      var itemEmail = norm(item.email);
+      return (id && itemId === id) || (email && itemEmail === email);
+    };
+    var matchOps = match;
+    var student = findStudentById(id) || {};
+    return {
+      currentStudent: {
+        studentId: id,
+        studentName: student.name || "",
+        name: student.name || "",
+        grade: student.grade || "",
+        email: fallbackEmail || ""
+      },
+      lead: latestByDate(readJson(KEYS.leads, []), match),
+      assessment: latestByDate(readJson(KEYS.assessments, []), match),
+      signup: latestByDate(readJson(KEYS.signups, []), match),
+      payment: latestByDate(readJson(KEYS.payments, []), match),
+      membership: latestByDate(readJson(KEYS.memberships, []), match),
+      feedback: latestByDate(readJson(KEYS.feedback, []), match),
+      completion: latestByDate(readJson(KEYS.completions, []), matchOps, "completedAt"),
+      evaluation: latestByDate(readJson(KEYS.evaluations, []), matchOps, "evaluatedAt"),
+      invite: latestByDate(readJson(KEYS.invites, []), matchOps, "sentAt")
+    };
+  }
+
   function getStage(snapshot) {
     var s = snapshot || getSnapshot();
     if (s.feedback) return "feedback";
@@ -1443,6 +1478,7 @@
     setCurrentStudent: setCurrentStudent,
     findStudentIdByEmail: findStudentIdByEmail,
     getSnapshot: getSnapshot,
+    getSnapshotForStudent: getSnapshotForStudent,
     getStage: getStage,
     saveLead: saveLead,
     updateLead: updateLead,

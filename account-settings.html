@@ -38,6 +38,11 @@
     .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(14,165,233,0.38); }
 
     .page-hero { background:linear-gradient(145deg,#0b1a2e 0%,#14294a 50%,#1e3a5f 100%); padding:52px 0 42px; }
+    .identity-chip { display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:999px; background:rgba(240,249,255,0.14); border:1px solid rgba(224,242,254,0.3); color:#f0f9ff; font-size:12px; font-weight:700; margin-bottom:14px; }
+    .identity-chip .dot { width:6px; height:6px; border-radius:999px; background:#0ea5e9; box-shadow:0 0 0 3px rgba(14,165,233,0.25); }
+    .identity-chip .role { text-transform:uppercase; letter-spacing:0.08em; font-size:11px; color:rgba(224,242,254,0.75); font-weight:800; }
+    .identity-chip .sep { color:rgba(224,242,254,0.35); }
+    .identity-chip .name { color:#f0f9ff; }
     .page-hero-inner { max-width:980px; margin:0 auto; padding:0 48px; color:#f0f9ff; }
     .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(14,165,233,0.18); border:1px solid rgba(14,165,233,0.3); color:#bae6fd; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
     .page-hero h1 { font-size:clamp(26px,3.2vw,40px); font-weight:900; letter-spacing:-0.02em; margin-bottom:10px; }
@@ -157,6 +162,12 @@
 
   <main id="main" class="page-hero">
     <div class="page-hero-inner">
+      <span class="identity-chip" id="identityChip" style="display:none;">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="role" id="identityChipRole"></span>
+        <span class="sep" aria-hidden="true">·</span>
+        <span class="name" id="identityChipName"></span>
+      </span>
       <div class="page-tag"><span data-lang="zh">账户设置</span><span data-lang="en">Account Settings</span></div>
       <h1><span data-lang="zh">家庭账户设置</span><span data-lang="en">Family Account Settings</span></h1>
       <p><span data-lang="zh">在这里管理家庭下的所有账号 —— 学员独立登录学习系统，邀请另一位家长共同管理。只有主家长可以执行这些操作。</span><span data-lang="en">Manage every login under this family — give the student their own learning-system account and invite a co-parent. Only the primary guardian can make these changes.</span></p>
@@ -501,6 +512,27 @@
 
         var account = flow && flow.getCurrentAccount ? flow.getCurrentAccount() : null;
         var family = account && flow.findFamilyById ? flow.findFamilyById(account.familyId) : null;
+
+        // Identity chip — always reflect who's signed in
+        var identityChip = document.getElementById("identityChip");
+        if (identityChip && account) {
+          var roleLabel = account.role === flow.ROLES.guardianPrimary ? t.primaryRole
+                        : account.role === flow.ROLES.guardianSecondary ? t.secondaryRole
+                        : t.studentRole;
+          var chipName = "";
+          if (account.role === flow.ROLES.student && flow.findStudentById) {
+            var stu = flow.findStudentById(account.linkedEntityId);
+            chipName = stu ? (stu.name || "") : "";
+          } else if (flow.findGuardianById) {
+            var g = flow.findGuardianById(account.linkedEntityId);
+            chipName = g ? (g.name || "") : "";
+          }
+          document.getElementById("identityChipRole").textContent = roleLabel;
+          document.getElementById("identityChipName").textContent = chipName || account.email || "—";
+          identityChip.style.display = "inline-flex";
+        } else if (identityChip) {
+          identityChip.style.display = "none";
+        }
 
         if (!family) {
           overviewMeta.innerHTML = "<div class='empty'>" + escapeHtml(t.noFamilyYet) + "</div>";

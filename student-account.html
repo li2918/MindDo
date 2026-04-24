@@ -63,7 +63,37 @@
     .page-tag { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: rgba(14,165,233,0.18); border: 1px solid rgba(14,165,233,0.3); color: #bae6fd; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
     .page-hero h1 { font-size: clamp(28px,3.5vw,44px); font-weight: 900; color: #f0f9ff; letter-spacing: -0.02em; margin-bottom: 14px; }
     .hero-action-links { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+    .identity-chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; background: rgba(240,249,255,0.14); border: 1px solid rgba(224,242,254,0.3); color: #f0f9ff; font-size: 12px; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 14px; }
+    .identity-chip .dot { width: 6px; height: 6px; border-radius: 999px; background: #0ea5e9; box-shadow: 0 0 0 3px rgba(14,165,233,0.25); }
+    .identity-chip .role { text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; color: rgba(224,242,254,0.75); font-weight: 800; }
+    .identity-chip .sep { color: rgba(224,242,254,0.35); }
+    .identity-chip .name { color: #f0f9ff; }
+    .hero-viewing { font-size: 14px; color: rgba(224,242,254,0.82); line-height: 1.5; margin-bottom: 18px; }
+    .hero-viewing .muted { color: rgba(224,242,254,0.55); font-size: 12px; margin-right: 6px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .hero-viewing strong { color: #f0f9ff; font-weight: 800; }
     .student-meta { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+
+    /* Family overview card grid (guardian view only) */
+    .family-panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 22px 24px; margin-bottom: 24px; box-shadow: var(--shadow-md); }
+    .family-panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .family-panel-head h2 { font-size: 18px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .family-panel-head .sub { font-size: 13px; color: var(--muted); line-height: 1.55; }
+    .kid-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .kid-card { text-align: left; background: rgba(240,249,255,0.6); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; cursor: pointer; font: inherit; color: var(--text); transition: 0.15s; display: flex; flex-direction: column; gap: 6px; }
+    .kid-card:hover { border-color: var(--gold); box-shadow: 0 6px 18px rgba(14,165,233,0.15); transform: translateY(-1px); }
+    .kid-card.active { background: linear-gradient(135deg,#e0f2fe,#bae6fd); border-color: var(--gold-deep); box-shadow: 0 6px 18px rgba(14,165,233,0.22); }
+    .kid-card .kid-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .kid-card .kid-name { font-size: 15px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .kid-card .kid-grade { font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 0.04em; }
+    .kid-card .kid-stage { font-size: 12px; color: var(--gold-deep); font-weight: 700; }
+    .kid-card .kid-last { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .kid-card.active .kid-name,
+    .kid-card.active .kid-grade,
+    .kid-card.active .kid-stage,
+    .kid-card.active .kid-last { color: #0b2540; }
+    .kid-card-add { display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px dashed var(--line-strong, rgba(30,58,95,0.22)); background: transparent; color: var(--muted); font-weight: 700; font-size: 13px; border-radius: 16px; cursor: pointer; font-family: inherit; transition: 0.15s; min-height: 92px; }
+    .kid-card-add:hover { color: var(--clay); border-color: var(--gold); background: rgba(240,249,255,0.6); }
+    .kid-card-add::before { content: "+"; font-size: 18px; font-weight: 800; }
     .meta { background: rgba(240,249,255,0.1); border: 1px solid rgba(224,242,254,0.15); border-radius: 14px; padding: 12px 14px; }
     .meta .k { display: block; font-size: 11px; color: rgba(224,242,254,0.6); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
     .meta .v { font-size: 15px; font-weight: 700; color: #f0f9ff; }
@@ -706,16 +736,19 @@
 
   <div class="page-hero">
     <div class="page-hero-inner">
-      <div class="page-tag"><span data-lang="zh">学员中心</span><span data-lang="en">Student Hub</span></div>
+      <span class="identity-chip" id="identityChip" style="display:none;">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="role" id="identityChipRole"></span>
+        <span class="sep" aria-hidden="true">·</span>
+        <span class="name" id="identityChipName"></span>
+      </span>
+      <div class="page-tag"><span id="pageTagText"></span></div>
       <h1 id="heroTitle"></h1>
+      <p class="hero-viewing" id="heroViewing" style="display:none;"></p>
       <div id="emptyFamilyBanner" role="status" style="display:none;margin-bottom:18px;padding:14px 16px;border-radius:14px;background:rgba(178,80,45,0.18);border:1px solid rgba(178,80,45,0.4);color:#f0f9ff;">
         <strong id="emptyFamilyTitle" style="display:block;font-size:14px;font-weight:800;margin-bottom:4px;"></strong>
         <span id="emptyFamilyDesc" style="display:block;font-size:13px;line-height:1.55;color:rgba(240,249,255,0.85);margin-bottom:10px;"></span>
         <a id="emptyFamilyCta" class="btn-primary" href="account-settings.html" style="font-size:13px;padding:8px 16px;"></a>
-      </div>
-      <div id="studentSwitcherRow" style="display:none;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
-        <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(224,242,254,0.72);font-weight:800;"><span data-lang="zh">切换学员</span><span data-lang="en">View Student</span></span>
-        <select id="studentSwitcher" style="background:rgba(240,249,255,0.12);border:1px solid rgba(224,242,254,0.28);color:#f0f9ff;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;outline:none;cursor:pointer;"></select>
       </div>
       <div class="hero-action-links">
         <a class="btn-ghost" href="feedback.html"><span data-lang="zh">查看课堂反馈</span><span data-lang="en">View Class Feedback</span></a>
@@ -726,13 +759,22 @@
         <div class="meta"><span class="k" data-i18n="heroStudentId"></span><strong class="v" id="heroStudentIdValue"></strong></div>
         <div class="meta"><span class="k" data-i18n="heroGoal"></span><strong class="v" id="heroGoalValue"></strong></div>
         <div class="meta"><span class="k" data-i18n="heroStage"></span><strong class="v" id="heroStageValue"></strong></div>
-        <div class="meta" id="heroRoleMeta" style="display:none;"><span class="k" data-i18n="heroRole"></span><strong class="v" id="heroRoleValue"></strong></div>
       </div>
     </div>
   </div>
 
   <main id="main" class="page-content">
     <div class="content-inner">
+      <section class="family-panel" id="familyPanel" style="display:none;" aria-labelledby="familyPanelTitle">
+        <div class="family-panel-head">
+          <div>
+            <h2 id="familyPanelTitle"></h2>
+            <p class="sub" id="familyPanelSub"></p>
+          </div>
+        </div>
+        <div class="kid-grid" id="kidGrid"></div>
+      </section>
+
       <div class="dash-stack">
 
         <!-- 1. AT-A-GLANCE -->
@@ -1008,6 +1050,21 @@
           heroStage: "当前阶段",
           heroRole: "账户身份",
           roleLabels: { guardian_primary: "主家长", guardian_secondary: "副家长", student: "学员" },
+          guardianPageTag: "家长中心",
+          studentPageTag: "学员中心",
+          guardianTitleSingular: "你好，{parent}",
+          guardianTitlePlural: "你好，{parent}",
+          studentTitle: "{student} · 学生主页",
+          guardianViewingSingle: "<span class=\"muted\">当前查看</span><strong>{child}</strong>{grade}",
+          guardianViewingMulti: "<span class=\"muted\">当前查看</span><strong>{child}</strong>{grade}<span class=\"muted\" style=\"margin-left:10px\">{count} 个孩子</span>",
+          guardianViewingAdd: "点击下方孩子卡片可切换查看。",
+          familyPanelTitle: "家庭成员",
+          familyPanelSub: "点击任一孩子查看 TA 的课表、反馈与评估。主家长可直接管理 ·{family}",
+          familyGradeLabel: "{grade} 年级",
+          familyStageFmt: "当前阶段：{stage}",
+          familyLastLeadFmt: "最近试课：{date}",
+          familyNoActivity: "暂无活动",
+          familyAddChild: "添加另一位孩子",
           emptyFamilyTitle: "家庭下暂无学员",
           emptyFamilyDesc: "你需要先添加一位学员才能预约试课、查看课表和反馈。",
           emptyFamilyCta: "去添加学员 →",
@@ -1157,6 +1214,21 @@
           heroStage: "Current Stage",
           heroRole: "Account Role",
           roleLabels: { guardian_primary: "Primary Guardian", guardian_secondary: "Co-parent", student: "Student" },
+          guardianPageTag: "Family Hub",
+          studentPageTag: "Student Hub",
+          guardianTitleSingular: "Hi {parent},",
+          guardianTitlePlural: "Hi {parent},",
+          studentTitle: "{student} · Student Home",
+          guardianViewingSingle: "<span class=\"muted\">Viewing</span><strong>{child}</strong>{grade}",
+          guardianViewingMulti: "<span class=\"muted\">Viewing</span><strong>{child}</strong>{grade}<span class=\"muted\" style=\"margin-left:10px\">{count} kids total</span>",
+          guardianViewingAdd: "Tap a child card below to switch.",
+          familyPanelTitle: "Family members",
+          familyPanelSub: "Tap any child to see their schedule, feedback, and assessment. Primary guardian manages the account · {family}",
+          familyGradeLabel: "Grade {grade}",
+          familyStageFmt: "Stage: {stage}",
+          familyLastLeadFmt: "Last trial: {date}",
+          familyNoActivity: "No activity yet",
+          familyAddChild: "Add another child",
           emptyFamilyTitle: "No students yet",
           emptyFamilyDesc: "Add a student before booking a trial, viewing the schedule, or checking feedback.",
           emptyFamilyCta: "Add a student →",
@@ -1541,43 +1613,100 @@
           if (t[key]) el.textContent = t[key];
         });
 
-        heroTitle.textContent = (current.studentName || current.name || t.profileItems[0].fallback) + " · " + t.title;
+        // ---------- Identity + role-adaptive hero ----------
+        var acct = (window.MindDoFlow && window.MindDoFlow.getCurrentAccount) ? window.MindDoFlow.getCurrentAccount() : null;
+        var flow = window.MindDoFlow;
+        var isGuardian = !!(acct && flow && acct.role !== flow.ROLES.student);
+        var kids = (acct && acct.familyId && flow && flow.listFamilyStudents)
+          ? (flow.listFamilyStudents(acct.familyId) || [])
+          : [];
+
+        var identityChip = document.getElementById("identityChip");
+        var pageTagText = document.getElementById("pageTagText");
+        var heroViewing = document.getElementById("heroViewing");
+        var parentDisplayName = "";
+        if (acct && flow && flow.findGuardianById) {
+          var guardian = acct.linkedEntityId ? flow.findGuardianById(acct.linkedEntityId) : null;
+          parentDisplayName = (guardian && guardian.name) || "";
+        }
+        // Identity chip — always visible when an account is loaded
+        if (identityChip && acct && t.roleLabels) {
+          document.getElementById("identityChipRole").textContent = t.roleLabels[acct.role] || acct.role;
+          var chipName = isGuardian ? (parentDisplayName || acct.email || "—")
+                                    : ((current.studentName || current.name) || acct.email || "—");
+          document.getElementById("identityChipName").textContent = chipName;
+          identityChip.style.display = "inline-flex";
+        } else if (identityChip) {
+          identityChip.style.display = "none";
+        }
+
+        // Page tag + title + viewing line shift based on role
+        if (isGuardian) {
+          if (pageTagText) pageTagText.textContent = t.guardianPageTag;
+          var greet = (kids.length > 1 ? t.guardianTitlePlural : t.guardianTitleSingular)
+            .replace("{parent}", parentDisplayName || (acct.email || "").split("@")[0]);
+          heroTitle.textContent = greet;
+          document.title = (t.guardianPageTag || t.title) + " | MindDo";
+          if (heroViewing) {
+            if (current.studentId && (current.studentName || current.name)) {
+              var gradeBit = current.grade ? " · " + t.familyGradeLabel.replace("{grade}", current.grade) : "";
+              var tmpl = kids.length > 1 ? t.guardianViewingMulti : t.guardianViewingSingle;
+              heroViewing.innerHTML = tmpl
+                .replace("{child}", escHTML(current.studentName || current.name))
+                .replace("{grade}", escHTML(gradeBit))
+                .replace("{count}", kids.length);
+              heroViewing.style.display = "block";
+            } else {
+              heroViewing.style.display = "none";
+            }
+          }
+        } else {
+          if (pageTagText) pageTagText.textContent = t.studentPageTag;
+          heroTitle.textContent = (t.studentTitle || "{student} · 学生主页")
+            .replace("{student}", current.studentName || current.name || t.profileItems[0].fallback);
+          document.title = t.title + " | MindDo";
+          if (heroViewing) heroViewing.style.display = "none";
+        }
+
         heroStudentIdValue.textContent = current.studentId || t.profileItems[2].fallback;
         heroGoalValue.textContent = (latestAssessment && latestAssessment.goal) || current.goal || t.defaultGoal;
         heroStageValue.textContent = (t.stageMap && t.stageMap[stage]) || stage;
 
-        var acct = (window.MindDoFlow && window.MindDoFlow.getCurrentAccount) ? window.MindDoFlow.getCurrentAccount() : null;
-        var roleMeta = document.getElementById("heroRoleMeta");
-        var roleValue = document.getElementById("heroRoleValue");
-        if (acct && roleMeta && roleValue && t.roleLabels) {
-          roleValue.textContent = t.roleLabels[acct.role] || acct.role;
-          roleMeta.style.display = "";
-        } else if (roleMeta) {
-          roleMeta.style.display = "none";
-        }
-
-        // Student switcher: only surfaces for guardian accounts whose family
-        // has more than one student. Students only see their own data so no
-        // switcher for them.
-        var switcherRow = document.getElementById("studentSwitcherRow");
-        var switcher = document.getElementById("studentSwitcher");
-        var kids = (acct && acct.familyId && window.MindDoFlow.listFamilyStudents)
-          ? (window.MindDoFlow.listFamilyStudents(acct.familyId) || [])
-          : [];
-        if (switcherRow && switcher && acct && acct.familyId &&
-            acct.role !== window.MindDoFlow.ROLES.student) {
-          if (kids.length > 1) {
-            switcher.innerHTML = kids.map(function (k) {
-              var label = (k.name || k.studentId) + (k.grade ? " · " + k.grade : "");
-              var selected = k.studentId === (current && current.studentId) ? " selected" : "";
-              return "<option value=\"" + k.studentId + "\"" + selected + ">" + label + "</option>";
-            }).join("");
-            switcherRow.style.display = "flex";
+        // ---------- Family overview panel (guardian only) ----------
+        var familyPanel = document.getElementById("familyPanel");
+        var kidGrid = document.getElementById("kidGrid");
+        if (familyPanel && kidGrid) {
+          if (isGuardian && kids.length > 0) {
+            document.getElementById("familyPanelTitle").textContent = t.familyPanelTitle;
+            document.getElementById("familyPanelSub").textContent = (t.familyPanelSub || "")
+              .replace("{family}", acct.familyId || "—");
+            kidGrid.innerHTML = kids.map(function (k) {
+              var isActive = k.studentId === (current && current.studentId);
+              var sSnap = flow.getSnapshotForStudent ? flow.getSnapshotForStudent(k.studentId, acct.email) : null;
+              var sStage = sSnap ? (flow.getStage ? flow.getStage(sSnap) : "start") : "start";
+              var stageLabel = (t.stageMap && t.stageMap[sStage]) || sStage;
+              var lastLead = sSnap && sSnap.lead;
+              var lastLine = "";
+              if (lastLead && lastLead.trialDate) {
+                lastLine = (t.familyLastLeadFmt || "").replace("{date}", lastLead.trialDate + (lastLead.trialTime ? " " + lastLead.trialTime : ""));
+              } else {
+                lastLine = t.familyNoActivity;
+              }
+              var gradeTxt = k.grade ? (t.familyGradeLabel || "Grade {grade}").replace("{grade}", k.grade) : "";
+              return "<button type=\"button\" class=\"kid-card" + (isActive ? " active" : "") + "\" data-switch-sid=\"" + escHTML(k.studentId) + "\">"
+                + "<div class=\"kid-top\">"
+                +   "<span class=\"kid-name\">" + escHTML(k.name || k.studentId) + "</span>"
+                +   (gradeTxt ? "<span class=\"kid-grade\">" + escHTML(gradeTxt) + "</span>" : "")
+                + "</div>"
+                + "<span class=\"kid-stage\">" + escHTML((t.familyStageFmt || "Stage: {stage}").replace("{stage}", stageLabel)) + "</span>"
+                + "<span class=\"kid-last\">" + escHTML(lastLine) + "</span>"
+                + "</button>";
+            }).join("") +
+            "<a class=\"kid-card-add\" href=\"account-settings.html\">" + escHTML(t.familyAddChild) + "</a>";
+            familyPanel.style.display = "block";
           } else {
-            switcherRow.style.display = "none";
+            familyPanel.style.display = "none";
           }
-        } else if (switcherRow) {
-          switcherRow.style.display = "none";
         }
 
         // Empty-family banner: guardian-role accounts whose family has no
@@ -1585,9 +1714,7 @@
         // last child) get a prominent prompt to re-add one.
         var emptyBanner = document.getElementById("emptyFamilyBanner");
         if (emptyBanner) {
-          var showEmpty = !!(acct && acct.familyId &&
-            acct.role !== window.MindDoFlow.ROLES.student &&
-            kids.length === 0);
+          var showEmpty = !!(isGuardian && kids.length === 0);
           if (showEmpty) {
             document.getElementById("emptyFamilyTitle").textContent = t.emptyFamilyTitle;
             document.getElementById("emptyFamilyDesc").textContent = t.emptyFamilyDesc;
@@ -1818,20 +1945,34 @@
         });
       });
 
-      // Multi-child families: let the guardian swap the active student
-      // without leaving the page. The switcher re-renders into that child's
-      // profile/schedule/feedback context.
+      // Multi-child families: let the guardian swap the active student by
+      // tapping a card in the family panel. switchActiveStudent updates the
+      // currentStudent pointer, then render() swaps the whole dash to that
+      // child's profile / schedule / feedback / assessment context.
       (function () {
-        var switcher = document.getElementById("studentSwitcher");
-        if (!switcher) return;
-        switcher.addEventListener("change", function () {
-          var sid = switcher.value;
+        var grid = document.getElementById("kidGrid");
+        if (!grid) return;
+        grid.addEventListener("click", function (e) {
+          var card = e.target.closest("[data-switch-sid]");
+          if (!card) return;
+          var sid = card.getAttribute("data-switch-sid");
           if (!sid || !window.MindDoFlow || !window.MindDoFlow.switchActiveStudent) return;
           window.MindDoFlow.switchActiveStudent(sid);
           var lang = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
           render(lang);
+          try {
+            document.getElementById("familyPanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
+          } catch (_) {}
         });
       })();
+
+      function escHTML(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
 
       requestForm.addEventListener("submit", function (e) {
         e.preventDefault();
