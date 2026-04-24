@@ -622,6 +622,69 @@
         window.MindDoFlow.prefillTrialForm(form);
       }
 
+      // Quick-submit path: when a logged-in primary guardian is booking a
+      // trial for a student that's already in their family (new child they
+      // just added, or an existing sibling), the student's profile + the
+      // guardian's contact info are both already on file. Skip the form
+      // entirely and jump straight to the confirmation screen.
+      (function tryQuickSubmit() {
+        if (!selection || !window.MindDoFlow) return;
+        var account = window.MindDoFlow.getCurrentAccount && window.MindDoFlow.getCurrentAccount();
+        if (!account || account.role !== window.MindDoFlow.ROLES.guardianPrimary) return;
+        var cur = window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent();
+        if (!cur || !cur.studentId) return;
+        var student = window.MindDoFlow.findStudentById && window.MindDoFlow.findStudentById(cur.studentId);
+        if (!student || !student.name) return;
+        // Student must actually belong to this guardian's family
+        if (account.familyId && student.familyId && account.familyId !== student.familyId) return;
+        var guardian = (window.MindDoFlow.findGuardianById && account.linkedEntityId)
+          ? window.MindDoFlow.findGuardianById(account.linkedEntityId) : null;
+        var parentName = (guardian && guardian.name) || "";
+        var contactPhone = (guardian && guardian.phone) || "";
+        var contactEmail = (guardian && guardian.email) || account.email || "";
+        if (!parentName || !contactPhone || !contactEmail) return; // fall through to form if profile-setup wasn't completed yet
+
+        var tLang = I18N[langOf()];
+        var campusLabel = (tLang.campusMap && tLang.campusMap[selection.campus]) || selection.campusLabel || "";
+        var payload = {
+          studentName: student.name,
+          grade: student.grade || "",
+          birthday: student.birthday || "",
+          parentName: parentName,
+          phone: contactPhone,
+          email: contactEmail,
+          studentId: student.studentId,
+          campus: selection.campus,
+          campusLabel: campusLabel,
+          timezone: selection.timezone || "",
+          timezoneLabel: selection.timezoneLabel || "",
+          trialDate: selection.trialDate,
+          trialTime: selection.trialTime,
+          trialTimeLabel: selection.trialTime,
+          preferredTrialDateTime: selection.preferredTrialDateTime || "",
+          channel: "family_add",
+          channelLabel: langOf() === "en" ? "Family account" : "家庭账户添加",
+          consent: true,
+          createdAt: new Date().toISOString()
+        };
+        var saved = null;
+        try {
+          saved = window.MindDoFlow.saveLead(payload);
+        } catch (_) { saved = payload; }
+        var bookingRef = "TRL-" + Date.now().toString(36).toUpperCase();
+        var emailRecord = dispatchConfirmationEmail(saved || payload, bookingRef);
+        try { sessionStorage.removeItem(SELECTION_KEY); } catch (_) {}
+
+        selectedSummary.style.display = "none";
+        form.style.display = "none";
+        renderConfirmation(saved || payload, bookingRef, emailRecord);
+        var confirmEl = document.getElementById("trialConfirmation");
+        if (confirmEl) {
+          confirmEl.classList.remove("hidden");
+          try { confirmEl.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) {}
+        }
+      })();
+
       // Handlers
       langButtons.forEach(function (btn) {
         btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); });

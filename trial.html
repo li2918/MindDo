@@ -220,7 +220,10 @@
 
         <div class="action-row">
           <a class="btn-secondary" href="index.html"><span data-lang="zh">← 返回首页</span><span data-lang="en">← Back to Home</span></a>
-          <button id="nextBtn" class="btn-primary" type="button" disabled><span data-lang="zh">下一步：填写信息 →</span><span data-lang="en">Next: Fill Info →</span></button>
+          <button id="nextBtn" class="btn-primary" type="button" disabled>
+            <span id="nextLabelForm"><span data-lang="zh">下一步：填写信息 →</span><span data-lang="en">Next: Fill Info →</span></span>
+            <span id="nextLabelConfirm" style="display:none;"><span data-lang="zh">下一步：确认预约 →</span><span data-lang="en">Next: Confirm Booking →</span></span>
+          </button>
         </div>
       </div>
     </div>
@@ -722,6 +725,28 @@
         saveToSession();
         window.location.href = "trial-register.html";
       });
+
+      // When a logged-in primary guardian is booking a trial for a family
+      // student, trial-register auto-submits — swap the button label so the
+      // parent knows the next click confirms the booking.
+      (function adjustNextLabel() {
+        try {
+          var flow = window.MindDoFlow;
+          if (!flow || !flow.getCurrentAccount) return;
+          var account = flow.getCurrentAccount();
+          if (!account || account.role !== flow.ROLES.guardianPrimary) return;
+          var cur = flow.getCurrentStudent && flow.getCurrentStudent();
+          if (!cur || !cur.studentId) return;
+          var student = flow.findStudentById && flow.findStudentById(cur.studentId);
+          if (!student || !student.name) return;
+          var guardian = flow.findGuardianById && flow.findGuardianById(account.linkedEntityId);
+          if (!guardian || !guardian.phone || !guardian.email) return;
+          var formLabel = document.getElementById("nextLabelForm");
+          var confirmLabel = document.getElementById("nextLabelConfirm");
+          if (formLabel) formLabel.style.display = "none";
+          if (confirmLabel) confirmLabel.style.display = "";
+        } catch (_) {}
+      })();
     })();
   </script>
   <script src="assets/lang-switcher.js" defer></script>
