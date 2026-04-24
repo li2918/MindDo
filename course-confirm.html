@@ -178,6 +178,7 @@
           <div class="confirm-card">
             <h3><span class="dot"></span><span data-lang="zh">课程信息</span><span data-lang="en">Course Details</span></h3>
             <div class="confirm-row"><span><span data-lang="zh">学员</span><span data-lang="en">Student</span></span><span id="cfStudent">—</span></div>
+            <div class="confirm-row"><span><span data-lang="zh">学员号</span><span data-lang="en">Student ID</span></span><span id="cfStudentId">—</span></div>
             <div class="confirm-row"><span><span data-lang="zh">会员方案</span><span data-lang="en">Membership</span></span><span id="cfMembership">—</span></div>
             <div class="confirm-row"><span><span data-lang="zh">每周课时</span><span data-lang="en">Sessions / Week</span></span><span id="cfSessionCount">—</span></div>
             <div class="confirm-row"><span><span data-lang="zh">上课安排</span><span data-lang="en">Weekly Schedule</span></span><span id="cfSessions">—</span></div>
@@ -334,6 +335,8 @@
 
         document.getElementById("orderIdBadge").textContent = "#" + state.orderId;
         document.getElementById("cfStudent").textContent = (current && (current.studentName || current.name)) || "—";
+        var cfSid = document.getElementById("cfStudentId");
+        if (cfSid) cfSid.textContent = (current && current.studentId) || "—";
         document.getElementById("cfMembership").textContent = k() === "zh" ? plan.labelZh : plan.labelEn;
         document.getElementById("cfSessionCount").textContent = state.sessions.length + (k() === "zh" ? " 节 / 周" : (state.sessions.length > 1 ? " classes / week" : " class / week"));
         document.getElementById("cfSessions").innerHTML = sessionLabels;

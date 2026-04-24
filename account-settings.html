@@ -298,6 +298,7 @@
           copyHint: "复制成功",
           copyFail: "复制失败，请手动复制。",
           bookTrial: "为此学员预约试课",
+          startEnroll: "为此学员选课",
           addChildMissingName: "请填写学员姓名再添加。",
           addChildSuccess: "已添加 {name}，可为 TA 预约试课或生成学员登录。"
         },
@@ -333,6 +334,7 @@
           copyHint: "Copied to clipboard",
           copyFail: "Copy failed — please copy manually.",
           bookTrial: "Book a trial",
+          startEnroll: "Enroll in a course",
           addChildMissingName: "Please enter a student name first.",
           addChildSuccess: "Added {name} — you can book a trial or generate a login now."
         }
@@ -465,6 +467,7 @@
             var cta = "";
             if (isPrimary) {
               cta += "<a class='btn-secondary' href='trial.html?sid=" + encodeURIComponent(s.studentId) + "'>" + escapeHtml(t.bookTrial) + "</a>";
+              cta += "<a class='btn-secondary' href='course-selection.html?sid=" + encodeURIComponent(s.studentId) + "'>" + escapeHtml(t.startEnroll) + "</a>";
               cta += "<button type='button' class='btn-secondary' data-gen-student='" + escapeHtml(s.studentId) + "'>" + escapeHtml(studentAcct ? t.regenerateLogin : t.generateLogin) + "</button>";
             }
             return "<div class='member'>" +

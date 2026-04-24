@@ -179,8 +179,10 @@
 
   <div class="page-content">
     <div class="content-inner">
+      <div id="enrollBanner" style="display:none;padding:12px 16px;margin-bottom:16px;background:linear-gradient(135deg,rgba(186,230,253,0.4),rgba(125,211,252,0.3));border:1px solid rgba(2,132,199,0.3);border-radius:14px;color:#0b4d70;font-size:14px;font-weight:600;line-height:1.6;"></div>
       <div class="meta">
         <div class="meta-item"><span class="k" data-lang="zh">学员姓名</span><span class="k" data-lang="en">Student</span><span class="v" id="metaName">—</span></div>
+        <div class="meta-item"><span class="k" data-lang="zh">学员 ID</span><span class="k" data-lang="en">Student ID</span><span class="v" id="metaStudentId">—</span></div>
         <div class="meta-item"><span class="k" data-lang="zh">方案</span><span class="k" data-lang="en">Plan</span><span class="v" id="metaPlan">—</span></div>
         <div class="meta-item"><span class="k" data-lang="zh">每周课时</span><span class="k" data-lang="en">Sessions / Week</span><span class="v" id="metaSessionCount">—</span></div>
         <div class="meta-item"><span class="k" data-lang="zh">上课安排</span><span class="k" data-lang="en">Schedule</span><span class="v" id="metaSessions">—</span></div>
@@ -364,10 +366,23 @@
       function renderMeta() {
         var current = window.MindDoFlow && window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent();
         document.getElementById("metaName").textContent = (current && (current.studentName || current.name)) || "—";
+        var sidEl = document.getElementById("metaStudentId");
+        if (sidEl) sidEl.textContent = (current && current.studentId) || "—";
         var plan = PLANS[state.plan];
         document.getElementById("metaPlan").textContent = k() === "zh" ? plan.labelZh : plan.labelEn;
         document.getElementById("metaSessionCount").textContent = state.sessions.length + (k() === "zh" ? " 节" : (state.sessions.length > 1 ? " classes" : " class"));
         document.getElementById("metaSessions").textContent = sessionLabelsText();
+
+        var banner = document.getElementById("enrollBanner");
+        if (banner && current && current.studentId) {
+          var tpl = k() === "zh"
+            ? "本次付款用于学员「{name}」（学员号 {sid}）的课程订阅。"
+            : "This payment is for {name}'s enrollment (Student ID {sid}).";
+          banner.textContent = tpl
+            .replace("{name}", current.studentName || current.name || "—")
+            .replace("{sid}", current.studentId);
+          banner.style.display = "block";
+        }
       }
 
       function renderSummary() {

@@ -173,6 +173,7 @@
 
   <div class="page-content">
     <div class="content-inner">
+      <div id="enrollBanner" style="display:none;padding:12px 16px;margin-bottom:16px;background:linear-gradient(135deg,rgba(186,230,253,0.4),rgba(125,211,252,0.3));border:1px solid rgba(2,132,199,0.3);border-radius:14px;color:#0b4d70;font-size:14px;font-weight:600;line-height:1.6;"></div>
       <div class="meta">
         <div class="meta-item"><span class="k" data-lang="zh">学员姓名</span><span class="k" data-lang="en">Student</span><span class="v" id="metaName">—</span></div>
         <div class="meta-item"><span class="k" data-lang="zh">学员 ID</span><span class="k" data-lang="en">Student ID</span><span class="v" id="metaId">—</span></div>
@@ -287,6 +288,16 @@
       if (window.MindDoFlow && window.MindDoFlow.requireLogin) {
         if (!window.MindDoFlow.requireLogin("course-selection.html", "enroll")) return;
       }
+      // Enrollment is a per-student action. A guardian with multiple kids
+      // must pick whom they're enrolling before entering this flow; the
+      // switcher on student-account or the per-student button on
+      // account-settings deep-link here with ?sid=<studentId>.
+      try {
+        var sidParam = new URLSearchParams(window.location.search).get("sid");
+        if (sidParam && window.MindDoFlow && window.MindDoFlow.switchActiveStudent) {
+          window.MindDoFlow.switchActiveStudent(sidParam.trim());
+        }
+      } catch (_) {}
       var KEY = "minddo_course_enrollment";
       var PLANS = {
         weekly1: { price: 199, labelZh: "每周一节课", labelEn: "1 Class / Week" },
@@ -336,6 +347,7 @@
         document.title = (lang === "en" ? "Enrollment · Step 1: Plan" : "选课 · 第 1 步：选择方案") + " | MindDo";
         langButtons.forEach(function (btn) { btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang); });
         renderSummary();
+        populateMeta();
       }
 
       function populateMeta() {
@@ -348,6 +360,18 @@
         }
         var goal = (snap && snap.assessment && (snap.assessment.goal || snap.assessment.goalCategory)) || (current && current.goal) || "—";
         document.getElementById("metaGoal").textContent = goal;
+
+        // Per-student enrollment banner — makes it explicit which child the
+        // upcoming plan + schedule + payment order will belong to.
+        var banner = document.getElementById("enrollBanner");
+        if (!banner || !current || !current.studentId) return;
+        var tpl = k() === "zh"
+          ? "本次选课归属于学员「{name}」（学员号 {sid}）。如需为其他孩子选课，请回到家庭账户页。"
+          : "This enrollment is for {name} (Student ID {sid}). Use the family account page to enroll a different child.";
+        banner.textContent = tpl
+          .replace("{name}", current.studentName || current.name || "—")
+          .replace("{sid}", current.studentId);
+        banner.style.display = "block";
       }
 
       populateMeta();

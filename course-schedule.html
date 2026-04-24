@@ -199,6 +199,7 @@
 
   <div class="page-content">
     <div class="content-inner">
+      <div id="enrollBanner" style="display:none;padding:12px 16px;margin-bottom:16px;background:linear-gradient(135deg,rgba(186,230,253,0.4),rgba(125,211,252,0.3));border:1px solid rgba(2,132,199,0.3);border-radius:14px;color:#0b4d70;font-size:14px;font-weight:600;line-height:1.6;"></div>
       <div class="meta">
         <div class="meta-item"><span class="k" data-lang="zh">学员姓名</span><span class="k" data-lang="en">Student</span><span class="v" id="metaName">—</span></div>
         <div class="meta-item"><span class="k" data-lang="zh">学员 ID</span><span class="k" data-lang="en">Student ID</span><span class="v" id="metaId">—</span></div>
@@ -498,6 +499,7 @@
         renderSessionList();
         renderSummary();
         document.getElementById("metaPlan").textContent = k() === "zh" ? PLANS[state.plan].labelZh : PLANS[state.plan].labelEn;
+        populateMeta();
       }
 
       function populateMeta() {
@@ -507,6 +509,15 @@
           document.getElementById("metaId").textContent = current.studentId || "—";
           document.getElementById("metaGrade").textContent = current.grade || "—";
         }
+        var banner = document.getElementById("enrollBanner");
+        if (!banner || !current || !current.studentId) return;
+        var tpl = k() === "zh"
+          ? "本次课程排课归属于学员「{name}」（学员号 {sid}）。"
+          : "This schedule will be booked for {name} (Student ID {sid}).";
+        banner.textContent = tpl
+          .replace("{name}", current.studentName || current.name || "—")
+          .replace("{sid}", current.studentId);
+        banner.style.display = "block";
       }
 
       populateMeta();
