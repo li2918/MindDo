@@ -217,17 +217,42 @@
     .muted { margin: 0; color: var(--muted); line-height: 1.6; }
 
     .filters {
-      grid-template-columns: 1fr auto auto;
+      grid-template-columns: 1fr auto;
       align-items: center;
       gap: 10px;
       margin-bottom: 14px;
     }
 
     .range-group { display: flex; gap: 8px; flex-wrap: wrap; }
-    .campus-group { display: flex; align-items: center; gap: 8px; }
-    .campus-group label { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
-    .campus-group select { border: 1px solid var(--line); background: rgba(240,249,255,0.96); color: var(--clay); padding: 8px 12px; border-radius: 999px; font: inherit; font-size: 13px; font-weight: 700; outline: none; cursor: pointer; transition: 0.15s; }
-    .campus-group select:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.18); }
+
+    /* Active-campus chip — sits at the top of the hero so it reads as the
+       dashboard context (which campus you're managing) rather than as a
+       filter buried in the toolbar. */
+    .campus-chip {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 8px 12px 8px 16px;
+      background: rgba(240,249,255,0.12);
+      border: 1px solid rgba(224,242,254,0.28);
+      border-radius: 999px;
+      margin-bottom: 14px;
+      max-width: 100%;
+    }
+    .campus-chip .cc-label {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(224,242,254,0.78);
+      white-space: nowrap;
+    }
+    .campus-chip .cc-select {
+      background: rgba(11,37,64,0.55);
+      border: 1px solid rgba(224,242,254,0.22);
+      color: #f0f9ff;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font: inherit; font-size: 13px; font-weight: 800;
+      outline: none; cursor: pointer; transition: 0.15s;
+    }
+    .campus-chip .cc-select:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.28); }
+    .campus-chip .cc-select option { color: var(--clay); background: #fff; }
 
     .grid {
       grid-template-columns: repeat(4,minmax(0,1fr));
@@ -395,6 +420,10 @@
     <div class="page-hero-inner">
       <div class="hero-split">
         <div class="hero-split-copy">
+          <div class="campus-chip">
+            <span class="cc-label" data-i18n="activeCampusLabel"></span>
+            <select id="campusFilter" class="cc-select"></select>
+          </div>
           <div class="page-tag"><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></div>
           <h1 data-i18n="title"></h1>
           <p class="hero-sub"><span data-lang="zh">实时查看学员注册、付费、评估和申请数据，快速识别需要跟进的关键事项。</span><span data-lang="en">Monitor registrations, payments, assessments, and requests in real time to act on what matters.</span></p>
@@ -439,10 +468,6 @@
 
       <div class="filters">
         <div class="range-group" id="rangeGroup"></div>
-        <div class="campus-group">
-          <label for="campusFilter" data-i18n="campusFilterLabel"></label>
-          <select id="campusFilter"></select>
-        </div>
         <button class="btn" id="refreshBtn" data-i18n="refresh"></button>
       </div>
 
@@ -588,8 +613,8 @@
           goAssessment: "前往 Assessment",
           title: "运营数据看板",
           refresh: "刷新数据",
-          campusFilterLabel: "校区",
-          campusAll: "全部校区",
+          activeCampusLabel: "当前校区看板",
+          campusAll: "全部校区（汇总）",
           campusUnknown: "未指定校区",
           alertTrialTitle: "新注册试课提醒",
           alertTrialCopy: "新试课线索需要尽快确认时间、来源和跟进优先级，避免试课资源被延误。",
@@ -669,8 +694,8 @@
           goAssessment: "Go To Assessment",
           title: "Operations Dashboard",
           refresh: "Refresh",
-          campusFilterLabel: "Campus",
-          campusAll: "All campuses",
+          activeCampusLabel: "Active campus dashboard",
+          campusAll: "All campuses (combined)",
           campusUnknown: "Unspecified",
           alertTrialTitle: "New Trial Registration Alert",
           alertTrialCopy: "Fresh trial leads should be reviewed quickly for time confirmation, source quality, and follow-up priority.",
@@ -762,10 +787,15 @@
       var paymentStatus = document.getElementById("paymentStatus");
       var campusFilter = document.getElementById("campusFilter");
 
+      // The active campus is the dashboard's primary context — each campus
+      // has its own dashboard view. Persist the choice so reloads + nav
+      // round-trips keep ops on the same campus they were managing.
+      var savedCampus = "all";
+      try { savedCampus = localStorage.getItem("minddo_dashboard_campus") || "all"; } catch (_) {}
       var state = {
         lang: "zh-CN",
         range: "30",
-        campus: "all"
+        campus: savedCampus
       };
 
       function readJson(key) {
@@ -915,13 +945,17 @@
 
       function renderWorkspace(data, t) {
         if (!workspaceGrid) return;
+        // Carry the active campus through to every ops sub-page so the
+        // per-campus context survives navigation. Sub-pages that don't yet
+        // honor ?campus= simply ignore the param.
+        var qs = (state.campus && state.campus !== "all") ? "?campus=" + encodeURIComponent(state.campus) : "";
         var cards = [
-          { href: "student-management.html", icon: "👥", title: t.ws.students.title, desc: t.ws.students.desc, badge: null },
-          { href: "new-trials.html", icon: "📝", title: t.ws.newTrials.title, desc: t.ws.newTrials.desc, badge: data.newTrials > 0 ? data.newTrials : null },
-          { href: "new-students.html", icon: "🆕", title: t.ws.newStudents.title, desc: t.ws.newStudents.desc, badge: data.newStudents > 0 ? data.newStudents : null },
-          { href: "request-center.html", icon: "📥", title: t.ws.requests.title, desc: t.ws.requests.desc, badge: data.pending > 0 ? data.pending : null },
-          { href: "course-offerings.html", icon: "📅", title: t.ws.offerings.title, desc: t.ws.offerings.desc, badge: null },
-          { href: "email-outbox.html", icon: "📨", title: t.ws.outbox.title, desc: t.ws.outbox.desc, badge: null }
+          { href: "student-management.html" + qs, icon: "👥", title: t.ws.students.title, desc: t.ws.students.desc, badge: null },
+          { href: "new-trials.html" + qs, icon: "📝", title: t.ws.newTrials.title, desc: t.ws.newTrials.desc, badge: data.newTrials > 0 ? data.newTrials : null },
+          { href: "new-students.html" + qs, icon: "🆕", title: t.ws.newStudents.title, desc: t.ws.newStudents.desc, badge: data.newStudents > 0 ? data.newStudents : null },
+          { href: "request-center.html" + qs, icon: "📥", title: t.ws.requests.title, desc: t.ws.requests.desc, badge: data.pending > 0 ? data.pending : null },
+          { href: "course-offerings.html" + qs, icon: "📅", title: t.ws.offerings.title, desc: t.ws.offerings.desc, badge: null },
+          { href: "email-outbox.html" + qs, icon: "📨", title: t.ws.outbox.title, desc: t.ws.outbox.desc, badge: null }
         ];
         workspaceGrid.innerHTML = cards.map(function (c) {
           var badge = c.badge ? "<span class='ws-badge'>" + c.badge + "</span>" : "";
@@ -1184,6 +1218,7 @@
       if (campusFilter) {
         campusFilter.addEventListener("change", function () {
           state.campus = campusFilter.value || "all";
+          try { localStorage.setItem("minddo_dashboard_campus", state.campus); } catch (_) {}
           render();
         });
       }
