@@ -547,9 +547,25 @@
         return d === 0 || d === 6;
       }
       function currentTimeOptions(t) {
+        // Prefer the campus-configured slots from the ops dashboard. Each
+        // campus can override; otherwise fall back to a "_default" override
+        // (a baseline applied to every campus) which itself falls back to
+        // the hardcoded weekday/weekend slots from i18n.
+        var override = null;
+        if (state.campus && window.MindDoFlow && window.MindDoFlow.getTrialSlots && window.MindDoFlow.buildTrialSlotOptions) {
+          var slots = window.MindDoFlow.getTrialSlots(state.campus);
+          if (slots) {
+            override = {
+              weekday: window.MindDoFlow.buildTrialSlotOptions(slots.weekday),
+              weekend: window.MindDoFlow.buildTrialSlotOptions(slots.weekend)
+            };
+          }
+        }
+        var weekdayOpts = (override && override.weekday.length) ? override.weekday : t.trialTimeWeekday;
+        var weekendOpts = (override && override.weekend.length) ? override.weekend : t.trialTimeWeekend;
         // Before a date is picked, show the wider weekend grid so users can see the full range.
-        if (!state.trialDate) return t.trialTimeWeekend;
-        return isWeekendDate(state.trialDate) ? t.trialTimeWeekend : t.trialTimeWeekday;
+        if (!state.trialDate) return weekendOpts;
+        return isWeekendDate(state.trialDate) ? weekendOpts : weekdayOpts;
       }
 
       function renderTimeGrid(t) {
@@ -691,6 +707,9 @@
         var opt = t.campusOptions.find(function (o) { return o.value === state.campus; });
         state.campusLabel = opt ? opt.label : "";
         renderTimezoneBadge(t);
+        // Time slots vary by campus — re-render the grid against the
+        // newly chosen campus's configured slots.
+        renderTimeGrid(t);
         updateButtonState();
       });
 

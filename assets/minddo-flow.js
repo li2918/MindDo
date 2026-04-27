@@ -17,7 +17,8 @@
     students: "minddo_students",
     guardians: "minddo_guardians",
     accounts: "minddo_accounts",
-    inviteTokens: "minddo_invite_tokens"
+    inviteTokens: "minddo_invite_tokens",
+    trialSlots: "minddo_trial_slots"
   };
 
   // Role constants for the new multi-account model. A single family has one
@@ -543,6 +544,73 @@
       if (all[i].id === id) return all[i];
     }
     return null;
+  }
+
+  // ---------- Trial time slots (campus-aware) ----------
+  // Each campus can define its own list of weekday + weekend trial start
+  // times. Trial.html falls back to these defaults if a campus has no
+  // override. A "_default" key applies to any campus without its own row.
+  var DEFAULT_TRIAL_SLOTS = {
+    weekday: ["15:00", "16:00", "17:00", "18:00"],
+    weekend: ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"]
+  };
+  function defaultTrialSlots() {
+    return {
+      weekday: DEFAULT_TRIAL_SLOTS.weekday.slice(),
+      weekend: DEFAULT_TRIAL_SLOTS.weekend.slice()
+    };
+  }
+  function getAllTrialSlots() {
+    var stored = readJson(KEYS.trialSlots, null);
+    return (stored && typeof stored === "object") ? stored : {};
+  }
+  // Returns the resolved slots for a campus: campus-specific override, then
+  // "_default" override, then the hard-coded baseline.
+  function getTrialSlots(campusKey) {
+    var stored = getAllTrialSlots();
+    var key = campusKey || "";
+    if (key && stored[key]) return cloneSlots(stored[key]);
+    if (stored._default) return cloneSlots(stored._default);
+    return defaultTrialSlots();
+  }
+  function cloneSlots(slots) {
+    return {
+      weekday: Array.isArray(slots && slots.weekday) ? slots.weekday.slice() : [],
+      weekend: Array.isArray(slots && slots.weekend) ? slots.weekend.slice() : []
+    };
+  }
+  function saveTrialSlots(campusKey, slots) {
+    if (!campusKey) return null;
+    var stored = getAllTrialSlots();
+    var clean = cloneSlots(slots);
+    // Drop empty/invalid times silently
+    clean.weekday = clean.weekday.map(function (s) { return String(s || "").trim(); }).filter(isHHMM);
+    clean.weekend = clean.weekend.map(function (s) { return String(s || "").trim(); }).filter(isHHMM);
+    stored[campusKey] = clean;
+    writeJson(KEYS.trialSlots, stored);
+    return clean;
+  }
+  function resetTrialSlots(campusKey) {
+    var stored = getAllTrialSlots();
+    if (campusKey && stored[campusKey]) {
+      delete stored[campusKey];
+      writeJson(KEYS.trialSlots, stored);
+    }
+    return getTrialSlots(campusKey);
+  }
+  function isHHMM(v) { return /^([0-1]\d|2[0-3]):[0-5]\d$/.test(String(v || "")); }
+  // Build the { value, label } pairs trial.html expects, with a label that
+  // shows a 1-hour window — "16:00 – 17:00".
+  function buildTrialSlotOptions(slotValues) {
+    return (slotValues || []).filter(isHHMM).map(function (v) {
+      return { value: v, label: v + " – " + addOneHour(v) };
+    });
+  }
+  function addOneHour(hhmm) {
+    var parts = String(hhmm || "").split(":");
+    var h = (Number(parts[0]) + 1) % 24;
+    var m = parts[1] || "00";
+    return (h < 10 ? "0" + h : String(h)) + ":" + m;
   }
 
   // Level override map: { studentId: "Beginner" | "Intermediate" | ... }.
@@ -1582,6 +1650,12 @@
     resetClassOfferings: resetClassOfferings,
     getDefaultClassOfferings: getDefaultClassOfferings,
     getOfferingById: getOfferingById,
+    getTrialSlots: getTrialSlots,
+    getAllTrialSlots: getAllTrialSlots,
+    saveTrialSlots: saveTrialSlots,
+    resetTrialSlots: resetTrialSlots,
+    buildTrialSlotOptions: buildTrialSlotOptions,
+    defaultTrialSlots: defaultTrialSlots,
     getLevelCanon: getLevelCanon,
     getStudentLevel: getStudentLevel,
     setStudentLevel: setStudentLevel,
