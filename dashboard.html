@@ -264,34 +264,6 @@
 
     .range-group { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    /* Active-campus chip — sits at the top of the hero so it reads as the
-       dashboard context (which campus you're managing) rather than as a
-       filter buried in the toolbar. */
-    .campus-chip {
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 8px 12px 8px 16px;
-      background: rgba(240,249,255,0.12);
-      border: 1px solid rgba(224,242,254,0.28);
-      border-radius: 999px;
-      margin-bottom: 14px;
-      max-width: 100%;
-    }
-    .campus-chip .cc-label {
-      font-size: 11px; font-weight: 800; letter-spacing: 0.08em;
-      text-transform: uppercase; color: rgba(224,242,254,0.78);
-      white-space: nowrap;
-    }
-    .campus-chip .cc-select {
-      background: rgba(11,37,64,0.55);
-      border: 1px solid rgba(224,242,254,0.22);
-      color: #f0f9ff;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font: inherit; font-size: 13px; font-weight: 800;
-      outline: none; cursor: pointer; transition: 0.15s;
-    }
-    .campus-chip .cc-select:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.28); }
-    .campus-chip .cc-select option { color: var(--clay); background: #fff; }
 
     .grid {
       grid-template-columns: repeat(4,minmax(0,1fr));
@@ -459,10 +431,6 @@
     <div class="page-hero-inner">
       <div class="hero-split">
         <div class="hero-split-copy">
-          <div class="campus-chip">
-            <span class="cc-label" data-i18n="activeCampusLabel"></span>
-            <select id="campusFilter" class="cc-select"></select>
-          </div>
           <div class="page-tag"><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></div>
           <h1 data-i18n="title"></h1>
           <p class="hero-sub"><span data-lang="zh">实时查看学员注册、付费、评估和申请数据，快速识别需要跟进的关键事项。</span><span data-lang="en">Monitor registrations, payments, assessments, and requests in real time to act on what matters.</span></p>
@@ -765,22 +733,6 @@
           goAssessment: "前往 Assessment",
           title: "运营数据看板",
           refresh: "刷新数据",
-          activeCampusLabel: "当前校区看板",
-          campusAll: "全部校区（汇总）",
-          campusUnknown: "未指定校区",
-          campusOptions: [
-            { value: "irvine", label: "加州 · 尔湾校区" },
-            { value: "arcadia", label: "加州 · 阿凯迪亚校区" },
-            { value: "diamond-bar", label: "加州 · 钻石吧校区" },
-            { value: "san-diego", label: "加州 · 圣地亚哥校区" },
-            { value: "hollywood", label: "加州 · 好莱坞校区" },
-            { value: "redmond", label: "华州 · 雷德蒙德校区" },
-            { value: "bothell", label: "华州 · 博塞尔校区" },
-            { value: "factoria", label: "华州 · 法克托里亚（贝尔维尤）" },
-            { value: "west-lafayette", label: "印第安纳 · 西拉斐特校区" },
-            { value: "ottawa", label: "加拿大 · 渥太华校区" },
-            { value: "online", label: "线上小班直播" }
-          ],
           alertTrialTitle: "新注册试课提醒",
           alertTrialCopy: "新试课线索需要尽快确认时间、来源和跟进优先级，避免试课资源被延误。",
           alertSignupTitle: "新注册学员提醒",
@@ -886,22 +838,6 @@
           goAssessment: "Go To Assessment",
           title: "Operations Dashboard",
           refresh: "Refresh",
-          activeCampusLabel: "Active campus dashboard",
-          campusAll: "All campuses (combined)",
-          campusUnknown: "Unspecified",
-          campusOptions: [
-            { value: "irvine", label: "California · Irvine" },
-            { value: "arcadia", label: "California · Arcadia" },
-            { value: "diamond-bar", label: "California · Diamond Bar" },
-            { value: "san-diego", label: "California · San Diego" },
-            { value: "hollywood", label: "California · Hollywood" },
-            { value: "redmond", label: "Washington · Redmond" },
-            { value: "bothell", label: "Washington · Bothell" },
-            { value: "factoria", label: "Washington · Factoria (Bellevue)" },
-            { value: "west-lafayette", label: "Indiana · West Lafayette" },
-            { value: "ottawa", label: "Canada · Ottawa" },
-            { value: "online", label: "Online Live Small-Group" }
-          ],
           alertTrialTitle: "New Trial Registration Alert",
           alertTrialCopy: "Fresh trial leads should be reviewed quickly for time confirmation, source quality, and follow-up priority.",
           alertSignupTitle: "New Student Registration Alert",
@@ -1020,17 +956,10 @@
       var refreshBtn = document.getElementById("refreshBtn");
       var paymentForm = document.getElementById("paymentForm");
       var paymentStatus = document.getElementById("paymentStatus");
-      var campusFilter = document.getElementById("campusFilter");
 
-      // The active campus is the dashboard's primary context — each campus
-      // has its own dashboard view. Persist the choice so reloads + nav
-      // round-trips keep ops on the same campus they were managing.
-      var savedCampus = "all";
-      try { savedCampus = localStorage.getItem("minddo_dashboard_campus") || "all"; } catch (_) {}
       var state = {
         lang: "zh-CN",
-        range: "30",
-        campus: savedCampus
+        range: "30"
       };
 
       function readJson(key) {
@@ -1095,90 +1024,6 @@
         });
       }
 
-      // Build the campus dropdown. Always show every campus from the
-      // canonical list (so the picker is meaningful even before any leads
-      // exist), then append any extra campus codes that show up in leads
-      // but aren't on the canonical list, plus an "unspecified" bucket
-      // when relevant.
-      function renderCampusFilter(leadsAll) {
-        if (!campusFilter) return;
-        var t = I18N[state.lang];
-        var canonical = (t.campusOptions || []).slice();
-        var canonicalKeys = canonical.reduce(function (acc, o) { acc[o.value] = true; return acc; }, {});
-
-        var extras = {};
-        var unspecified = false;
-        (leadsAll || []).forEach(function (l) {
-          if (!l) return;
-          var key = l.campus || "";
-          if (!key) { unspecified = true; return; }
-          if (canonicalKeys[key]) return;
-          extras[key] = l.campusLabel || key;
-        });
-
-        var options = ["<option value='all'>" + t.campusAll + "</option>"];
-        canonical.forEach(function (o) {
-          var sel = state.campus === o.value ? " selected" : "";
-          options.push("<option value=\"" + o.value + "\"" + sel + ">" + o.label + "</option>");
-        });
-        Object.keys(extras).sort().forEach(function (k) {
-          var sel = state.campus === k ? " selected" : "";
-          options.push("<option value=\"" + k + "\"" + sel + ">" + extras[k] + "</option>");
-        });
-        if (unspecified) {
-          var sel2 = state.campus === "__none__" ? " selected" : "";
-          options.push("<option value='__none__'" + sel2 + ">" + t.campusUnknown + "</option>");
-        }
-
-        // Selected value should always exist in the rendered list
-        var validValues = ["all"]
-          .concat(canonical.map(function (o) { return o.value; }))
-          .concat(Object.keys(extras))
-          .concat(unspecified ? ["__none__"] : []);
-        if (validValues.indexOf(state.campus) === -1) state.campus = "all";
-        campusFilter.innerHTML = options.join("");
-        campusFilter.value = state.campus;
-      }
-
-      // Build a campus map keyed by normalized email — every email is mapped
-      // to the set of campus codes their leads reference. Used to filter
-      // signup/assessment/payment/request records that don't carry campus
-      // directly.
-      function buildCampusByEmail(leadsList) {
-        var map = {};
-        leadsList.forEach(function (l) {
-          if (!l) return;
-          var e = normEmail(l.email);
-          if (!e) return;
-          var key = l.campus || "__none__";
-          if (!map[e]) map[e] = {};
-          map[e][key] = true;
-        });
-        return map;
-      }
-      function recordMatchesCampus(record, campusByEmail) {
-        if (state.campus === "all") return true;
-        if (!record) return false;
-        // If the record has a campus field of its own (e.g. leads), match directly
-        if (record.campus) return record.campus === state.campus;
-        if (state.campus === "__none__" && !record.campus) {
-          // For non-lead records, "unspecified" means the email has at least
-          // one lead without a campus (or no lead at all).
-          var e0 = normEmail(record.email);
-          var bag0 = e0 ? campusByEmail[e0] : null;
-          if (!bag0) return true;
-          return !!bag0["__none__"];
-        }
-        var e = normEmail(record.email);
-        if (!e) return false;
-        var bag = campusByEmail[e];
-        return !!(bag && bag[state.campus]);
-      }
-      function leadMatchesCampus(lead) {
-        if (state.campus === "all") return true;
-        if (state.campus === "__none__") return !lead.campus;
-        return lead.campus === state.campus;
-      }
 
       function renderKvList(el, items, noDataText) {
         if (!items.length) {
@@ -1193,17 +1038,13 @@
 
       function renderWorkspace(data, t) {
         if (!workspaceGrid) return;
-        // Carry the active campus through to every ops sub-page so the
-        // per-campus context survives navigation. Sub-pages that don't yet
-        // honor ?campus= simply ignore the param.
-        var qs = (state.campus && state.campus !== "all") ? "?campus=" + encodeURIComponent(state.campus) : "";
         var cards = [
-          { href: "student-management.html" + qs, icon: "👥", title: t.ws.students.title, desc: t.ws.students.desc, badge: null },
-          { href: "new-trials.html" + qs, icon: "📝", title: t.ws.newTrials.title, desc: t.ws.newTrials.desc, badge: data.newTrials > 0 ? data.newTrials : null },
-          { href: "new-students.html" + qs, icon: "🆕", title: t.ws.newStudents.title, desc: t.ws.newStudents.desc, badge: data.newStudents > 0 ? data.newStudents : null },
-          { href: "request-center.html" + qs, icon: "📥", title: t.ws.requests.title, desc: t.ws.requests.desc, badge: data.pending > 0 ? data.pending : null },
-          { href: "course-offerings.html" + qs, icon: "📅", title: t.ws.offerings.title, desc: t.ws.offerings.desc, badge: null },
-          { href: "email-outbox.html" + qs, icon: "📨", title: t.ws.outbox.title, desc: t.ws.outbox.desc, badge: null }
+          { href: "student-management.html", icon: "👥", title: t.ws.students.title, desc: t.ws.students.desc, badge: null },
+          { href: "new-trials.html", icon: "📝", title: t.ws.newTrials.title, desc: t.ws.newTrials.desc, badge: data.newTrials > 0 ? data.newTrials : null },
+          { href: "new-students.html", icon: "🆕", title: t.ws.newStudents.title, desc: t.ws.newStudents.desc, badge: data.newStudents > 0 ? data.newStudents : null },
+          { href: "request-center.html", icon: "📥", title: t.ws.requests.title, desc: t.ws.requests.desc, badge: data.pending > 0 ? data.pending : null },
+          { href: "course-offerings.html", icon: "📅", title: t.ws.offerings.title, desc: t.ws.offerings.desc, badge: null },
+          { href: "email-outbox.html", icon: "📨", title: t.ws.outbox.title, desc: t.ws.outbox.desc, badge: null }
         ];
         workspaceGrid.innerHTML = cards.map(function (c) {
           var badge = c.badge ? "<span class='ws-badge'>" + c.badge + "</span>" : "";
@@ -1353,23 +1194,11 @@
 
         renderRangeButtons();
 
-        var signupsAllRaw = readJson(STORAGE.signups);
-        var assessmentsAllRaw = readJson(STORAGE.assessments);
-        var leadsAllRaw = readJson(STORAGE.leads);
-        var paymentsAllRaw = readJson(STORAGE.payments);
-        var requestsAllRaw = readJson(STORAGE.requests);
-
-        // Refresh the campus dropdown options against the current leads list
-        renderCampusFilter(leadsAllRaw);
-
-        // Apply campus filter once at the source so every downstream count
-        // (KPIs, alerts, charts, today/week aggregates) honors it.
-        var campusByEmail = buildCampusByEmail(leadsAllRaw);
-        var leadsAll = leadsAllRaw.filter(leadMatchesCampus);
-        var signupsAll = signupsAllRaw.filter(function (x) { return recordMatchesCampus(x, campusByEmail); });
-        var assessmentsAll = assessmentsAllRaw.filter(function (x) { return recordMatchesCampus(x, campusByEmail); });
-        var paymentsAll = paymentsAllRaw.filter(function (x) { return recordMatchesCampus(x, campusByEmail); });
-        var requestsAll = requestsAllRaw.filter(function (x) { return recordMatchesCampus(x, campusByEmail); });
+        var signupsAll = readJson(STORAGE.signups);
+        var assessmentsAll = readJson(STORAGE.assessments);
+        var leadsAll = readJson(STORAGE.leads);
+        var paymentsAll = readJson(STORAGE.payments);
+        var requestsAll = readJson(STORAGE.requests);
 
         var signups = signupsAll.filter(function (x) { return inRange(x, state.range); });
         var assessments = assessmentsAll.filter(function (x) { return inRange(x, state.range); });
@@ -1489,14 +1318,6 @@
       });
 
       refreshBtn.addEventListener("click", render);
-
-      if (campusFilter) {
-        campusFilter.addEventListener("change", function () {
-          state.campus = campusFilter.value || "all";
-          try { localStorage.setItem("minddo_dashboard_campus", state.campus); } catch (_) {}
-          render();
-        });
-      }
 
       // ---------- Tab switching ----------
       // Show one panel at a time. Active tab persists in localStorage so a
