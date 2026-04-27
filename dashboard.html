@@ -188,19 +188,51 @@
     @media (max-width: 900px) { .insights-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 560px) { .insights-grid { grid-template-columns: 1fr; } }
 
-    /* Tab navigation — five business-domain tabs sit between the always-on
-       workspace and the per-tab content. Sticky-ish chrome so it stays
-       visible while scrolling within a tab. */
-    .dash-tabs { display: flex; gap: 6px; flex-wrap: wrap; padding: 6px; background: rgba(240,249,255,0.7); border: 1px solid var(--line); border-radius: 999px; margin: 0 0 22px; box-shadow: 0 8px 22px rgba(30,58,95,0.06); }
-    .dash-tab { background: transparent; border: 1px solid transparent; color: var(--muted); padding: 8px 16px; font: inherit; font-size: 13px; font-weight: 800; letter-spacing: 0.02em; cursor: pointer; border-radius: 999px; transition: 0.15s; display: inline-flex; align-items: center; gap: 8px; }
-    .dash-tab:hover { color: var(--clay); background: rgba(255,255,255,0.6); }
-    .dash-tab.active { background: var(--clay); color: #f0f9ff; border-color: var(--clay); box-shadow: 0 6px 14px rgba(30,58,95,0.18); }
-    .dash-tab .tab-pill { display: inline-flex; min-width: 22px; padding: 1px 8px; border-radius: 999px; font-size: 10px; font-weight: 800; background: rgba(196,106,77,0.16); color: var(--danger); border: 1px solid rgba(196,106,77,0.3); }
-    .dash-tab.active .tab-pill { background: rgba(255,255,255,0.18); color: #fff; border-color: rgba(255,255,255,0.3); }
+    /* Slim hero: trades vertical real estate for clarity. Title + chip
+       in one row on desktop, stacks on mobile. */
+    .page-hero--slim { padding: 28px 0 22px; }
+    .page-hero--slim::before { display: none; }
+    .hero-slim-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .hero-slim-text { min-width: 0; }
+    .hero-slim-text .page-tag { margin-bottom: 8px; }
+    .hero-slim-text h1 { font-size: clamp(22px, 2.4vw, 30px); margin-bottom: 6px; }
+    .hero-slim-text .hero-sub { font-size: 13.5px; color: rgba(224,242,254,0.78); margin: 0; line-height: 1.55; max-width: 520px; }
+
+    /* Sticky tab bar — primary navigation now. Sits just under the slim
+       hero and keeps tabs + filters visible while scrolling within a tab. */
+    .tab-bar-wrap {
+      position: sticky; top: 68px; z-index: 90;
+      background: rgba(240,249,255,0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 6px 18px rgba(30,58,95,0.06);
+    }
+    .tab-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 12px 48px; }
+    .tab-bar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .tab-bar-actions .range-group .btn { padding: 7px 14px; font-size: 12px; }
+    .tab-bar-actions .btn-refresh { padding: 7px 14px; font-size: 12px; }
+    @media (max-width: 900px) { .tab-bar { padding: 10px 24px; } .tab-bar-wrap { top: 0; } }
+
+    /* Tab pills — visually distinct active state, no rounded pill container */
+    .dash-tabs { display: flex; gap: 4px; flex-wrap: wrap; padding: 0; background: transparent; border: none; border-radius: 0; margin: 0; box-shadow: none; }
+    .dash-tab {
+      background: transparent; border: none; border-bottom: 2px solid transparent;
+      color: var(--muted); padding: 10px 14px;
+      font: inherit; font-size: 13.5px; font-weight: 700; letter-spacing: 0.01em;
+      cursor: pointer; border-radius: 0;
+      transition: 0.15s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .dash-tab:hover { color: var(--clay); }
+    .dash-tab.active { color: var(--clay); border-bottom-color: var(--gold); font-weight: 800; }
+    .dash-tab .tab-pill { display: inline-flex; min-width: 20px; padding: 1px 7px; border-radius: 999px; font-size: 10px; font-weight: 800; background: rgba(196,106,77,0.16); color: var(--danger); border: 1px solid rgba(196,106,77,0.3); }
+    .dash-tab.active .tab-pill { background: var(--danger); color: #fff; border-color: var(--danger); }
 
     .dash-panel { display: none; }
     .dash-panel.active { display: block; }
-    @media (max-width: 640px) { .dash-tabs { border-radius: 18px; } }
+    @media (max-width: 640px) {
+      .tab-bar { gap: 10px; }
+      .dash-tab { padding: 8px 10px; font-size: 13px; }
+    }
 
     .alert-card {
       padding: 16px;
@@ -454,62 +486,24 @@
     </div>
   </nav>
 
-  <div class="page-hero">
-    <div class="page-hero-inner">
-      <div class="hero-split">
-        <div class="hero-split-copy">
-          <div class="campus-chip">
-            <span class="cc-label" data-i18n="activeCampusLabel"></span>
-            <select id="campusFilter" class="cc-select"></select>
-          </div>
-          <div class="page-tag"><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></div>
-          <h1 data-i18n="title"></h1>
-          <p class="hero-sub"><span data-lang="zh">实时查看学员注册、付费、评估和申请数据，快速识别需要跟进的关键事项。</span><span data-lang="en">Monitor registrations, payments, assessments, and requests in real time to act on what matters.</span></p>
-          <div class="hero-quick-links">
-            <a class="hero-quick-link" href="#opsWorkspace"><span data-lang="zh">↓ 运营工作台</span><span data-lang="en">↓ Ops Workspace</span></a>
-          </div>
-        </div>
-        <div class="hero-ops-card">
-          <div class="ops-stat">
-            <strong>–</strong>
-            <span><span data-lang="zh">在读学员</span><span data-lang="en">Active</span></span>
-          </div>
-          <div class="ops-stat">
-            <strong>–</strong>
-            <span><span data-lang="zh">今日新课</span><span data-lang="en">Trials Today</span></span>
-          </div>
-          <div class="ops-stat">
-            <strong>–</strong>
-            <span><span data-lang="zh">待处理申请</span><span data-lang="en">Pending</span></span>
-          </div>
-          <div class="ops-stat">
-            <strong>–</strong>
-            <span><span data-lang="zh">本月收入</span><span data-lang="en">Revenue</span></span>
-          </div>
-        </div>
+  <!-- Slim hero: title + campus chip + one-line subtitle -->
+  <header class="page-hero page-hero--slim">
+    <div class="page-hero-inner hero-slim-inner">
+      <div class="hero-slim-text">
+        <div class="page-tag"><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></div>
+        <h1 data-i18n="title"></h1>
+        <p class="hero-sub"><span data-lang="zh">实时查看学员注册、付费、评估和申请数据。</span><span data-lang="en">Monitor registrations, payments, assessments, and requests in real time.</span></p>
+      </div>
+      <div class="campus-chip">
+        <span class="cc-label" data-i18n="activeCampusLabel"></span>
+        <select id="campusFilter" class="cc-select"></select>
       </div>
     </div>
-  </div>
+  </header>
 
-  <div class="page-content">
-    <div class="content-inner">
-
-      <!-- Zone 1: workspace (entry points) -->
-      <section id="opsWorkspace" class="workspace">
-        <div class="workspace-head">
-          <h2><span data-lang="zh">运营工作台</span><span data-lang="en">Ops Workspace</span></h2>
-          <span class="workspace-sub" style="margin:0;"><span data-lang="zh">所有运营操作入口都在这里 — 学员、课程、邮件、申请。</span><span data-lang="en">Every ops entry in one place — students, classes, mail, requests.</span></span>
-        </div>
-        <div class="workspace-grid" id="workspaceGrid"></div>
-      </section>
-
-      <!-- Global filter: applies across all tabs -->
-      <div class="filters">
-        <div class="range-group" id="rangeGroup"></div>
-        <button class="btn" id="refreshBtn" data-i18n="refresh"></button>
-      </div>
-
-      <!-- Tab navigation -->
+  <!-- Sticky tab bar: tabs on the left, date-range + refresh on the right -->
+  <div class="tab-bar-wrap">
+    <div class="content-inner tab-bar">
       <nav class="dash-tabs" id="dashTabs" role="tablist">
         <button type="button" class="dash-tab active" data-tab="overview" role="tab"><span data-i18n="tabOverview"></span></button>
         <button type="button" class="dash-tab" data-tab="enrollment" role="tab"><span data-i18n="tabEnrollment"></span><span class="tab-pill" id="enrollmentBadge" hidden>0</span></button>
@@ -517,6 +511,15 @@
         <button type="button" class="dash-tab" data-tab="finance" role="tab"><span data-i18n="tabFinance"></span></button>
         <button type="button" class="dash-tab" data-tab="requests" role="tab"><span data-i18n="tabRequests"></span><span class="tab-pill" id="requestsBadge" hidden>0</span></button>
       </nav>
+      <div class="tab-bar-actions">
+        <div class="range-group" id="rangeGroup"></div>
+        <button class="btn btn-refresh" id="refreshBtn" data-i18n="refresh" aria-label="Refresh"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="content-inner">
 
       <!-- ========== Overview ========== -->
       <section class="dash-panel active" data-tab-panel="overview" role="tabpanel">
@@ -538,6 +541,15 @@
             </div>
           </div>
           <section class="grid" id="overviewMetrics"></section>
+        </section>
+
+        <!-- Workspace (entry points) — moved into Overview as a quick-access section -->
+        <section id="opsWorkspace" class="workspace">
+          <div class="workspace-head">
+            <h2><span data-lang="zh">快捷入口</span><span data-lang="en">Quick Access</span></h2>
+            <span class="workspace-sub" style="margin:0;"><span data-lang="zh">直达学员、试课、申请、邮件等子页面。</span><span data-lang="en">Jump straight to students, trials, requests, mail, and more.</span></span>
+          </div>
+          <div class="workspace-grid" id="workspaceGrid"></div>
         </section>
       </section>
 
