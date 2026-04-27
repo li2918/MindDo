@@ -188,6 +188,20 @@
     @media (max-width: 900px) { .insights-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 560px) { .insights-grid { grid-template-columns: 1fr; } }
 
+    /* Tab navigation — five business-domain tabs sit between the always-on
+       workspace and the per-tab content. Sticky-ish chrome so it stays
+       visible while scrolling within a tab. */
+    .dash-tabs { display: flex; gap: 6px; flex-wrap: wrap; padding: 6px; background: rgba(240,249,255,0.7); border: 1px solid var(--line); border-radius: 999px; margin: 0 0 22px; box-shadow: 0 8px 22px rgba(30,58,95,0.06); }
+    .dash-tab { background: transparent; border: 1px solid transparent; color: var(--muted); padding: 8px 16px; font: inherit; font-size: 13px; font-weight: 800; letter-spacing: 0.02em; cursor: pointer; border-radius: 999px; transition: 0.15s; display: inline-flex; align-items: center; gap: 8px; }
+    .dash-tab:hover { color: var(--clay); background: rgba(255,255,255,0.6); }
+    .dash-tab.active { background: var(--clay); color: #f0f9ff; border-color: var(--clay); box-shadow: 0 6px 14px rgba(30,58,95,0.18); }
+    .dash-tab .tab-pill { display: inline-flex; min-width: 22px; padding: 1px 8px; border-radius: 999px; font-size: 10px; font-weight: 800; background: rgba(196,106,77,0.16); color: var(--danger); border: 1px solid rgba(196,106,77,0.3); }
+    .dash-tab.active .tab-pill { background: rgba(255,255,255,0.18); color: #fff; border-color: rgba(255,255,255,0.3); }
+
+    .dash-panel { display: none; }
+    .dash-panel.active { display: block; }
+    @media (max-width: 640px) { .dash-tabs { border-radius: 18px; } }
+
     .alert-card {
       padding: 16px;
       border-radius: 18px;
@@ -490,118 +504,191 @@
         <div class="workspace-grid" id="workspaceGrid"></div>
       </section>
 
-      <!-- Zone 2: today's focus (alerts) -->
-      <section class="dash-zone">
-        <div class="dash-zone-head">
-          <div class="dash-zone-text">
-            <h3 data-i18n="zoneTodayTitle"></h3>
-            <p data-i18n="zoneTodaySub"></p>
+      <!-- Global filter: applies across all tabs -->
+      <div class="filters">
+        <div class="range-group" id="rangeGroup"></div>
+        <button class="btn" id="refreshBtn" data-i18n="refresh"></button>
+      </div>
+
+      <!-- Tab navigation -->
+      <nav class="dash-tabs" id="dashTabs" role="tablist">
+        <button type="button" class="dash-tab active" data-tab="overview" role="tab"><span data-i18n="tabOverview"></span></button>
+        <button type="button" class="dash-tab" data-tab="enrollment" role="tab"><span data-i18n="tabEnrollment"></span><span class="tab-pill" id="enrollmentBadge" hidden>0</span></button>
+        <button type="button" class="dash-tab" data-tab="teaching" role="tab"><span data-i18n="tabTeaching"></span></button>
+        <button type="button" class="dash-tab" data-tab="finance" role="tab"><span data-i18n="tabFinance"></span></button>
+        <button type="button" class="dash-tab" data-tab="requests" role="tab"><span data-i18n="tabRequests"></span><span class="tab-pill" id="requestsBadge" hidden>0</span></button>
+      </nav>
+
+      <!-- ========== Overview ========== -->
+      <section class="dash-panel active" data-tab-panel="overview" role="tabpanel">
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneTodayTitle"></h3>
+              <p data-i18n="zoneTodaySub"></p>
+            </div>
           </div>
-        </div>
-        <section class="alert-strip" id="alertStrip"></section>
+          <section class="alert-strip" id="alertStrip"></section>
+        </section>
+
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneOverviewKpiTitle"></h3>
+              <p data-i18n="zoneOverviewKpiSub"></p>
+            </div>
+          </div>
+          <section class="grid" id="overviewMetrics"></section>
+        </section>
       </section>
 
-      <!-- Zone 3: KPIs (date-range filter sits in the section header) -->
-      <section class="dash-zone">
-        <div class="dash-zone-head">
-          <div class="dash-zone-text">
-            <h3 data-i18n="zoneKpiTitle"></h3>
-            <p data-i18n="zoneKpiSub"></p>
+      <!-- ========== Enrollment ========== -->
+      <section class="dash-panel" data-tab-panel="enrollment" role="tabpanel" hidden>
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneEnrollKpiTitle"></h3>
+              <p data-i18n="zoneEnrollKpiSub"></p>
+            </div>
           </div>
-          <div class="dash-zone-actions">
-            <div class="range-group" id="rangeGroup"></div>
-            <button class="btn" id="refreshBtn" data-i18n="refresh"></button>
-          </div>
-        </div>
-        <section class="grid" id="metricGrid"></section>
-      </section>
+          <section class="grid" id="enrollmentMetrics"></section>
+        </section>
 
-      <!-- Zone 4: data insights (distributions) -->
-      <section class="dash-zone">
-        <div class="dash-zone-head">
-          <div class="dash-zone-text">
-            <h3 data-i18n="zoneInsightsTitle"></h3>
-            <p data-i18n="zoneInsightsSub"></p>
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneEnrollChannelTitle"></h3>
+              <p data-i18n="zoneEnrollChannelSub"></p>
+            </div>
           </div>
-        </div>
-        <section class="insights-grid">
-          <article class="panel">
-            <h2 data-i18n="levelDist"></h2>
-            <ul class="kv-list" id="levelList"></ul>
-          </article>
           <article class="panel">
             <h2 data-i18n="channelDist"></h2>
             <ul class="kv-list" id="channelList"></ul>
           </article>
+        </section>
+      </section>
+
+      <!-- ========== Teaching ========== -->
+      <section class="dash-panel" data-tab-panel="teaching" role="tabpanel" hidden>
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneTeachKpiTitle"></h3>
+              <p data-i18n="zoneTeachKpiSub"></p>
+            </div>
+          </div>
+          <section class="grid" id="teachingMetrics"></section>
+        </section>
+
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneTeachLevelTitle"></h3>
+              <p data-i18n="zoneTeachLevelSub"></p>
+            </div>
+          </div>
           <article class="panel">
-            <h2 data-i18n="extraMonitors"></h2>
-            <ul class="kv-list" id="extraList"></ul>
+            <h2 data-i18n="levelDist"></h2>
+            <ul class="kv-list" id="levelList"></ul>
           </article>
         </section>
       </section>
 
-      <!-- Zone 5: activity logs -->
-      <section class="dash-zone">
-        <div class="dash-zone-head">
-          <div class="dash-zone-text">
-            <h3 data-i18n="zoneLogsTitle"></h3>
-            <p data-i18n="zoneLogsSub"></p>
+      <!-- ========== Finance ========== -->
+      <section class="dash-panel" data-tab-panel="finance" role="tabpanel" hidden>
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneFinanceKpiTitle"></h3>
+              <p data-i18n="zoneFinanceKpiSub"></p>
+            </div>
           </div>
-        </div>
-        <section class="panel" style="margin-bottom:14px;">
-          <h2 data-i18n="recentPayments"></h2>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th data-i18n="colEmail"></th>
-                  <th data-i18n="colAmount"></th>
-                  <th data-i18n="colSource"></th>
-                  <th data-i18n="colTime"></th>
-                </tr>
-              </thead>
-              <tbody id="paymentTable"></tbody>
-            </table>
-          </div>
+          <section class="grid" id="financeMetrics"></section>
         </section>
-        <section class="panel">
-          <h2 data-i18n="recentRequests"></h2>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th data-i18n="colRequestType"></th>
-                  <th data-i18n="colStudent"></th>
-                  <th data-i18n="colTarget"></th>
-                  <th data-i18n="colReason"></th>
-                  <th data-i18n="colRequestStatus"></th>
-                  <th data-i18n="colTime"></th>
-                </tr>
-              </thead>
-              <tbody id="requestTable"></tbody>
-            </table>
+
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneFinancePaymentsTitle"></h3>
+              <p data-i18n="zoneFinancePaymentsSub"></p>
+            </div>
           </div>
+          <article class="panel">
+            <h2 data-i18n="recentPayments"></h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th data-i18n="colEmail"></th>
+                    <th data-i18n="colAmount"></th>
+                    <th data-i18n="colSource"></th>
+                    <th data-i18n="colTime"></th>
+                  </tr>
+                </thead>
+                <tbody id="paymentTable"></tbody>
+              </table>
+            </div>
+          </article>
         </section>
+
+        <details class="admin-ops">
+          <summary>
+            <span data-i18n="zoneAdminOpsTitle"></span>
+            <span class="admin-ops-sub" data-i18n="zoneAdminOpsSub"></span>
+          </summary>
+          <div class="admin-ops-body">
+            <article class="panel" style="box-shadow:none;border-color:rgba(30,58,95,0.08);">
+              <h2 data-i18n="paymentOps"></h2>
+              <form id="paymentForm" class="pay-form">
+                <input id="payEmail" type="email" placeholder="student@email.com" required />
+                <input id="payAmount" type="number" min="0" step="0.01" placeholder="199" required />
+                <button class="btn" type="submit" data-i18n="markPaid"></button>
+              </form>
+              <div id="paymentStatus" class="status"></div>
+            </article>
+          </div>
+        </details>
       </section>
 
-      <!-- Zone 6: admin operations (collapsed by default) -->
-      <details class="admin-ops">
-        <summary>
-          <span data-i18n="zoneAdminOpsTitle"></span>
-          <span class="admin-ops-sub" data-i18n="zoneAdminOpsSub"></span>
-        </summary>
-        <div class="admin-ops-body">
-          <article class="panel" style="box-shadow:none;border-color:rgba(30,58,95,0.08);">
-            <h2 data-i18n="paymentOps"></h2>
-            <form id="paymentForm" class="pay-form">
-              <input id="payEmail" type="email" placeholder="student@email.com" required />
-              <input id="payAmount" type="number" min="0" step="0.01" placeholder="199" required />
-              <button class="btn" type="submit" data-i18n="markPaid"></button>
-            </form>
-            <div id="paymentStatus" class="status"></div>
+      <!-- ========== Requests ========== -->
+      <section class="dash-panel" data-tab-panel="requests" role="tabpanel" hidden>
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneRequestsTitle"></h3>
+              <p data-i18n="zoneRequestsSub"></p>
+            </div>
+          </div>
+          <section class="grid" id="requestsMetrics"></section>
+        </section>
+
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneRequestsTableTitle"></h3>
+              <p data-i18n="zoneRequestsTableSub"></p>
+            </div>
+          </div>
+          <article class="panel">
+            <h2 data-i18n="recentRequests"></h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th data-i18n="colRequestType"></th>
+                    <th data-i18n="colStudent"></th>
+                    <th data-i18n="colTarget"></th>
+                    <th data-i18n="colReason"></th>
+                    <th data-i18n="colRequestStatus"></th>
+                    <th data-i18n="colTime"></th>
+                  </tr>
+                </thead>
+                <tbody id="requestTable"></tbody>
+              </table>
+            </div>
           </article>
-        </div>
-      </details>
+        </section>
+      </section>
 
     </div>
   </div>
@@ -733,14 +820,31 @@
           recentRequests: "最近请假 / 改期申请",
           zoneTodayTitle: "今日重点",
           zoneTodaySub: "需要立即处理的提醒。",
-          zoneKpiTitle: "关键指标",
-          zoneKpiSub: "按所选时间范围统计的核心数据。",
-          zoneInsightsTitle: "数据洞察",
-          zoneInsightsSub: "学员等级、获客来源、关键监控指标。",
-          zoneLogsTitle: "详细记录",
-          zoneLogsSub: "近期付款与请假 / 改期申请明细。",
           zoneAdminOpsTitle: "管理员手动操作",
           zoneAdminOpsSub: "应急 / 离线场景使用，平时折叠隐藏",
+          tabOverview: "概览",
+          tabEnrollment: "招生",
+          tabTeaching: "教学",
+          tabFinance: "财务",
+          tabRequests: "申请处理",
+          zoneOverviewKpiTitle: "整体概况",
+          zoneOverviewKpiSub: "学员、付费、收入、待跟进的全局快照。",
+          zoneEnrollKpiTitle: "招生指标",
+          zoneEnrollKpiSub: "试课线索、注册量、转化率与近期趋势。",
+          zoneEnrollChannelTitle: "获客渠道",
+          zoneEnrollChannelSub: "试课报名来源构成。",
+          zoneTeachKpiTitle: "教学指标",
+          zoneTeachKpiSub: "评估完成率与学员等级分布。",
+          zoneTeachLevelTitle: "等级分布",
+          zoneTeachLevelSub: "按评估等级分组的学员数量。",
+          zoneFinanceKpiTitle: "财务指标",
+          zoneFinanceKpiSub: "收入、付费转化与人均付费。",
+          zoneFinancePaymentsTitle: "付款明细",
+          zoneFinancePaymentsSub: "最近的付款记录。",
+          zoneRequestsTitle: "申请概况",
+          zoneRequestsSub: "待处理的请假与改期申请。",
+          zoneRequestsTableTitle: "申请明细",
+          zoneRequestsTableSub: "完整的申请记录列表。",
           colEmail: "邮箱",
           colAmount: "金额",
           colSource: "来源",
@@ -837,14 +941,31 @@
           recentRequests: "Recent Leave / Reschedule Requests",
           zoneTodayTitle: "Today's Focus",
           zoneTodaySub: "Items that need attention right now.",
-          zoneKpiTitle: "Key Metrics",
-          zoneKpiSub: "Core numbers across the selected time range.",
-          zoneInsightsTitle: "Data Insights",
-          zoneInsightsSub: "Levels, lead sources, and key monitors.",
-          zoneLogsTitle: "Activity Logs",
-          zoneLogsSub: "Recent payments and leave / reschedule requests.",
           zoneAdminOpsTitle: "Admin Operations",
           zoneAdminOpsSub: "Manual recovery tools, collapsed by default",
+          tabOverview: "Overview",
+          tabEnrollment: "Enrollment",
+          tabTeaching: "Teaching",
+          tabFinance: "Finance",
+          tabRequests: "Requests",
+          zoneOverviewKpiTitle: "At A Glance",
+          zoneOverviewKpiSub: "Students, paid, revenue, and follow-up snapshot.",
+          zoneEnrollKpiTitle: "Enrollment Metrics",
+          zoneEnrollKpiSub: "Trial leads, registrations, and conversion trends.",
+          zoneEnrollChannelTitle: "Lead Channels",
+          zoneEnrollChannelSub: "Where trial registrations come from.",
+          zoneTeachKpiTitle: "Teaching Metrics",
+          zoneTeachKpiSub: "Assessment completion and student level mix.",
+          zoneTeachLevelTitle: "Level Distribution",
+          zoneTeachLevelSub: "Students grouped by assessed level.",
+          zoneFinanceKpiTitle: "Finance Metrics",
+          zoneFinanceKpiSub: "Revenue, paid conversion, and ARPU.",
+          zoneFinancePaymentsTitle: "Payment Records",
+          zoneFinancePaymentsSub: "Recent payment activity.",
+          zoneRequestsTitle: "Requests Overview",
+          zoneRequestsSub: "Pending leave and reschedule requests.",
+          zoneRequestsTableTitle: "Request Records",
+          zoneRequestsTableSub: "Full list of recent requests.",
           colEmail: "Email",
           colAmount: "Amount",
           colSource: "Source",
@@ -884,11 +1005,14 @@
 
       var html = document.documentElement;
       var buttons = document.querySelectorAll("[data-set-lang]");
-      var metricGrid = document.getElementById("metricGrid");
+      var overviewMetrics = document.getElementById("overviewMetrics");
+      var enrollmentMetrics = document.getElementById("enrollmentMetrics");
+      var teachingMetrics = document.getElementById("teachingMetrics");
+      var financeMetrics = document.getElementById("financeMetrics");
+      var requestsMetrics = document.getElementById("requestsMetrics");
       var alertStrip = document.getElementById("alertStrip");
       var workspaceGrid = document.getElementById("workspaceGrid");
       var levelList = document.getElementById("levelList");
-      var extraList = document.getElementById("extraList");
       var channelList = document.getElementById("channelList");
       var paymentTable = document.getElementById("paymentTable");
       var requestTable = document.getElementById("requestTable");
@@ -1129,22 +1253,58 @@
         }).join("");
       }
 
-      function renderMetrics(data, t) {
-        var items = [
-          { label: t.metrics.registered, value: data.registered, sub: "" },
-          { label: t.metrics.paid, value: data.paid, sub: t.metrics.conversion + ": " + data.conversion },
-          { label: t.metrics.revenue, value: money(data.revenue), sub: t.metrics.arpu + ": " + money(data.arpu) },
-          { label: t.metrics.assessed, value: data.assessed, sub: t.metrics.assessRate + ": " + data.assessRate },
-          { label: t.metrics.pending, value: data.pending, sub: "" },
-          { label: t.extra.signupToday, value: data.signupToday, sub: "" },
-          { label: t.extra.signupWeek, value: data.signupWeek, sub: "" },
-          { label: t.extra.avgLeadToAssess, value: data.leadToAssessRate, sub: "" },
-          { label: t.extra.pendingRequests, value: data.pendingRequests, sub: "" }
-        ];
-
-        metricGrid.innerHTML = items.map(function (m) {
+      function renderMetricCards(targetEl, items) {
+        if (!targetEl) return;
+        targetEl.innerHTML = items.map(function (m) {
           return "<article class='metric'><span class='label'>" + m.label + "</span><div class='value'>" + m.value + "</div><div class='sub'>" + (m.sub || "&nbsp;") + "</div></article>";
         }).join("");
+      }
+
+      function renderMetrics(data, t) {
+        // Each business tab gets a focused subset of KPIs. Overview keeps
+        // the headline numbers; the rest dive deeper into their domain.
+        renderMetricCards(overviewMetrics, [
+          { label: t.metrics.registered, value: data.registered, sub: "" },
+          { label: t.metrics.paid, value: data.paid, sub: t.metrics.conversion + ": " + data.conversion },
+          { label: t.metrics.revenue, value: money(data.revenue), sub: "" },
+          { label: t.metrics.pending, value: data.pending, sub: "" }
+        ]);
+
+        renderMetricCards(enrollmentMetrics, [
+          { label: t.extra.signupToday, value: data.signupToday, sub: "" },
+          { label: t.extra.signupWeek, value: data.signupWeek, sub: "" },
+          { label: t.metrics.registered, value: data.registered, sub: "" },
+          { label: t.extra.avgLeadToAssess, value: data.leadToAssessRate, sub: "" }
+        ]);
+
+        renderMetricCards(teachingMetrics, [
+          { label: t.metrics.assessed, value: data.assessed, sub: t.metrics.assessRate + ": " + data.assessRate },
+          { label: t.metrics.pending, value: data.pending, sub: "" },
+          { label: t.metrics.registered, value: data.registered, sub: "" }
+        ]);
+
+        renderMetricCards(financeMetrics, [
+          { label: t.metrics.revenue, value: money(data.revenue), sub: "" },
+          { label: t.metrics.paid, value: data.paid, sub: t.metrics.conversion + ": " + data.conversion },
+          { label: t.metrics.arpu, value: money(data.arpu), sub: "" }
+        ]);
+
+        renderMetricCards(requestsMetrics, [
+          { label: t.extra.pendingRequests, value: data.pendingRequests, sub: "" }
+        ]);
+
+        // Tab badges — surface counts that need attention.
+        var enrollBadge = document.getElementById("enrollmentBadge");
+        if (enrollBadge) {
+          var newToday = (data.signupToday || 0) + (data.newTrials || 0);
+          if (newToday > 0) { enrollBadge.textContent = newToday; enrollBadge.hidden = false; }
+          else enrollBadge.hidden = true;
+        }
+        var requestsBadge = document.getElementById("requestsBadge");
+        if (requestsBadge) {
+          if (data.pendingRequests > 0) { requestsBadge.textContent = data.pendingRequests; requestsBadge.hidden = false; }
+          else requestsBadge.hidden = true;
+        }
       }
 
       function renderPaymentsTable(payments, t) {
@@ -1290,7 +1450,9 @@
           signupToday: signupToday,
           signupWeek: signupWeek,
           leadToAssessRate: leadToAssessRate,
-          pendingRequests: pendingRequests
+          pendingRequests: pendingRequests,
+          newTrials: newTrials,
+          newStudents: newStudents
         }, t);
 
         renderAlerts({
@@ -1314,17 +1476,6 @@
         });
         renderKvList(channelList, channelItems, t.noData);
 
-        var googleShare = pct(providers.google || 0, registered);
-        var msShare = pct(providers.microsoft || 0, registered);
-
-        var extraItems = [
-          { label: t.extra.googleShare, value: googleShare },
-          { label: t.extra.microsoftShare, value: msShare },
-          { label: t.provider.email, value: providers.email || 0 },
-          { label: t.extra.pendingRequests, value: pendingRequests }
-        ];
-        renderKvList(extraList, extraItems, t.noData);
-
         renderPaymentsTable(payments, t);
         renderRequestTable(requests, t);
         document.title = t.title + " | Dashboard";
@@ -1345,6 +1496,45 @@
           try { localStorage.setItem("minddo_dashboard_campus", state.campus); } catch (_) {}
           render();
         });
+      }
+
+      // ---------- Tab switching ----------
+      // Show one panel at a time. Active tab persists in localStorage so a
+      // refresh keeps ops on the same domain (e.g. they were last looking
+      // at Finance, refresh, still on Finance).
+      var dashTabs = document.getElementById("dashTabs");
+      var savedTab = "overview";
+      try { savedTab = localStorage.getItem("minddo_dashboard_tab") || "overview"; } catch (_) {}
+      function setActiveTab(key) {
+        if (!dashTabs) return;
+        var tabs = dashTabs.querySelectorAll("[data-tab]");
+        var anyMatched = false;
+        tabs.forEach(function (btn) {
+          var match = btn.getAttribute("data-tab") === key;
+          btn.classList.toggle("active", match);
+          if (match) anyMatched = true;
+        });
+        if (!anyMatched) {
+          // Bad/stale key — fall back to overview
+          var first = dashTabs.querySelector("[data-tab]");
+          key = first ? first.getAttribute("data-tab") : "overview";
+          tabs.forEach(function (btn) {
+            btn.classList.toggle("active", btn.getAttribute("data-tab") === key);
+          });
+        }
+        document.querySelectorAll("[data-tab-panel]").forEach(function (panel) {
+          var match = panel.getAttribute("data-tab-panel") === key;
+          panel.classList.toggle("active", match);
+          panel.hidden = !match;
+        });
+        try { localStorage.setItem("minddo_dashboard_tab", key); } catch (_) {}
+      }
+      if (dashTabs) {
+        dashTabs.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-tab]");
+          if (btn) setActiveTab(btn.getAttribute("data-tab"));
+        });
+        setActiveTab(savedTab);
       }
 
       paymentForm.addEventListener("submit", function (e) {
