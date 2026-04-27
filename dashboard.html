@@ -616,6 +616,19 @@
           activeCampusLabel: "当前校区看板",
           campusAll: "全部校区（汇总）",
           campusUnknown: "未指定校区",
+          campusOptions: [
+            { value: "irvine", label: "加州 · 尔湾校区" },
+            { value: "arcadia", label: "加州 · 阿凯迪亚校区" },
+            { value: "diamond-bar", label: "加州 · 钻石吧校区" },
+            { value: "san-diego", label: "加州 · 圣地亚哥校区" },
+            { value: "hollywood", label: "加州 · 好莱坞校区" },
+            { value: "redmond", label: "华州 · 雷德蒙德校区" },
+            { value: "bothell", label: "华州 · 博塞尔校区" },
+            { value: "factoria", label: "华州 · 法克托里亚（贝尔维尤）" },
+            { value: "west-lafayette", label: "印第安纳 · 西拉斐特校区" },
+            { value: "ottawa", label: "加拿大 · 渥太华校区" },
+            { value: "online", label: "线上小班直播" }
+          ],
           alertTrialTitle: "新注册试课提醒",
           alertTrialCopy: "新试课线索需要尽快确认时间、来源和跟进优先级，避免试课资源被延误。",
           alertSignupTitle: "新注册学员提醒",
@@ -697,6 +710,19 @@
           activeCampusLabel: "Active campus dashboard",
           campusAll: "All campuses (combined)",
           campusUnknown: "Unspecified",
+          campusOptions: [
+            { value: "irvine", label: "California · Irvine" },
+            { value: "arcadia", label: "California · Arcadia" },
+            { value: "diamond-bar", label: "California · Diamond Bar" },
+            { value: "san-diego", label: "California · San Diego" },
+            { value: "hollywood", label: "California · Hollywood" },
+            { value: "redmond", label: "Washington · Redmond" },
+            { value: "bothell", label: "Washington · Bothell" },
+            { value: "factoria", label: "Washington · Factoria (Bellevue)" },
+            { value: "west-lafayette", label: "Indiana · West Lafayette" },
+            { value: "ottawa", label: "Canada · Ottawa" },
+            { value: "online", label: "Online Live Small-Group" }
+          ],
           alertTrialTitle: "New Trial Registration Alert",
           alertTrialCopy: "Fresh trial leads should be reviewed quickly for time confirmation, source quality, and follow-up priority.",
           alertSignupTitle: "New Student Registration Alert",
@@ -860,34 +886,47 @@
         });
       }
 
-      // Build the campus dropdown from whatever campuses appear on existing
-      // leads. Includes an "all campuses" sentinel + an "unspecified" bucket
-      // for leads with no campus set.
+      // Build the campus dropdown. Always show every campus from the
+      // canonical list (so the picker is meaningful even before any leads
+      // exist), then append any extra campus codes that show up in leads
+      // but aren't on the canonical list, plus an "unspecified" bucket
+      // when relevant.
       function renderCampusFilter(leadsAll) {
         if (!campusFilter) return;
         var t = I18N[state.lang];
-        var byKey = {};
+        var canonical = (t.campusOptions || []).slice();
+        var canonicalKeys = canonical.reduce(function (acc, o) { acc[o.value] = true; return acc; }, {});
+
+        var extras = {};
         var unspecified = false;
-        leadsAll.forEach(function (l) {
+        (leadsAll || []).forEach(function (l) {
           if (!l) return;
           var key = l.campus || "";
           if (!key) { unspecified = true; return; }
-          if (!byKey[key]) byKey[key] = l.campusLabel || key;
-          // Prefer a non-empty label if a later lead has it
-          else if (!byKey[key] && l.campusLabel) byKey[key] = l.campusLabel;
+          if (canonicalKeys[key]) return;
+          extras[key] = l.campusLabel || key;
         });
+
         var options = ["<option value='all'>" + t.campusAll + "</option>"];
-        Object.keys(byKey).sort().forEach(function (k) {
+        canonical.forEach(function (o) {
+          var sel = state.campus === o.value ? " selected" : "";
+          options.push("<option value=\"" + o.value + "\"" + sel + ">" + o.label + "</option>");
+        });
+        Object.keys(extras).sort().forEach(function (k) {
           var sel = state.campus === k ? " selected" : "";
-          options.push("<option value=\"" + k + "\"" + sel + ">" + byKey[k] + "</option>");
+          options.push("<option value=\"" + k + "\"" + sel + ">" + extras[k] + "</option>");
         });
         if (unspecified) {
           var sel2 = state.campus === "__none__" ? " selected" : "";
           options.push("<option value='__none__'" + sel2 + ">" + t.campusUnknown + "</option>");
         }
-        // Keep current selection valid; reset to "all" if it disappeared
-        var existingValues = ["all"].concat(Object.keys(byKey)).concat(unspecified ? ["__none__"] : []);
-        if (existingValues.indexOf(state.campus) === -1) state.campus = "all";
+
+        // Selected value should always exist in the rendered list
+        var validValues = ["all"]
+          .concat(canonical.map(function (o) { return o.value; }))
+          .concat(Object.keys(extras))
+          .concat(unspecified ? ["__none__"] : []);
+        if (validValues.indexOf(state.campus) === -1) state.campus = "all";
         campusFilter.innerHTML = options.join("");
         campusFilter.value = state.campus;
       }
