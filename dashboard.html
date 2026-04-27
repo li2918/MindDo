@@ -217,12 +217,17 @@
     .muted { margin: 0; color: var(--muted); line-height: 1.6; }
 
     .filters {
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr auto auto;
       align-items: center;
+      gap: 10px;
       margin-bottom: 14px;
     }
 
     .range-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .campus-group { display: flex; align-items: center; gap: 8px; }
+    .campus-group label { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .campus-group select { border: 1px solid var(--line); background: rgba(240,249,255,0.96); color: var(--clay); padding: 8px 12px; border-radius: 999px; font: inherit; font-size: 13px; font-weight: 700; outline: none; cursor: pointer; transition: 0.15s; }
+    .campus-group select:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.18); }
 
     .grid {
       grid-template-columns: repeat(4,minmax(0,1fr));
@@ -434,6 +439,10 @@
 
       <div class="filters">
         <div class="range-group" id="rangeGroup"></div>
+        <div class="campus-group">
+          <label for="campusFilter" data-i18n="campusFilterLabel"></label>
+          <select id="campusFilter"></select>
+        </div>
         <button class="btn" id="refreshBtn" data-i18n="refresh"></button>
       </div>
 
@@ -579,6 +588,9 @@
           goAssessment: "前往 Assessment",
           title: "运营数据看板",
           refresh: "刷新数据",
+          campusFilterLabel: "校区",
+          campusAll: "全部校区",
+          campusUnknown: "未指定校区",
           alertTrialTitle: "新注册试课提醒",
           alertTrialCopy: "新试课线索需要尽快确认时间、来源和跟进优先级，避免试课资源被延误。",
           alertSignupTitle: "新注册学员提醒",
@@ -657,6 +669,9 @@
           goAssessment: "Go To Assessment",
           title: "Operations Dashboard",
           refresh: "Refresh",
+          campusFilterLabel: "Campus",
+          campusAll: "All campuses",
+          campusUnknown: "Unspecified",
           alertTrialTitle: "New Trial Registration Alert",
           alertTrialCopy: "Fresh trial leads should be reviewed quickly for time confirmation, source quality, and follow-up priority.",
           alertSignupTitle: "New Student Registration Alert",
@@ -745,10 +760,12 @@
       var refreshBtn = document.getElementById("refreshBtn");
       var paymentForm = document.getElementById("paymentForm");
       var paymentStatus = document.getElementById("paymentStatus");
+      var campusFilter = document.getElementById("campusFilter");
 
       var state = {
         lang: "zh-CN",
-        range: "30"
+        range: "30",
+        campus: "all"
       };
 
       function readJson(key) {
@@ -811,6 +828,78 @@
             render();
           });
         });
+      }
+
+      // Build the campus dropdown from whatever campuses appear on existing
+      // leads. Includes an "all campuses" sentinel + an "unspecified" bucket
+      // for leads with no campus set.
+      function renderCampusFilter(leadsAll) {
+        if (!campusFilter) return;
+        var t = I18N[state.lang];
+        var byKey = {};
+        var unspecified = false;
+        leadsAll.forEach(function (l) {
+          if (!l) return;
+          var key = l.campus || "";
+          if (!key) { unspecified = true; return; }
+          if (!byKey[key]) byKey[key] = l.campusLabel || key;
+          // Prefer a non-empty label if a later lead has it
+          else if (!byKey[key] && l.campusLabel) byKey[key] = l.campusLabel;
+        });
+        var options = ["<option value='all'>" + t.campusAll + "</option>"];
+        Object.keys(byKey).sort().forEach(function (k) {
+          var sel = state.campus === k ? " selected" : "";
+          options.push("<option value=\"" + k + "\"" + sel + ">" + byKey[k] + "</option>");
+        });
+        if (unspecified) {
+          var sel2 = state.campus === "__none__" ? " selected" : "";
+          options.push("<option value='__none__'" + sel2 + ">" + t.campusUnknown + "</option>");
+        }
+        // Keep current selection valid; reset to "all" if it disappeared
+        var existingValues = ["all"].concat(Object.keys(byKey)).concat(unspecified ? ["__none__"] : []);
+        if (existingValues.indexOf(state.campus) === -1) state.campus = "all";
+        campusFilter.innerHTML = options.join("");
+        campusFilter.value = state.campus;
+      }
+
+      // Build a campus map keyed by normalized email — every email is mapped
+      // to the set of campus codes their leads reference. Used to filter
+      // signup/assessment/payment/request records that don't carry campus
+      // directly.
+      function buildCampusByEmail(leadsList) {
+        var map = {};
+        leadsList.forEach(function (l) {
+          if (!l) return;
+          var e = normEmail(l.email);
+          if (!e) return;
+          var key = l.campus || "__none__";
+          if (!map[e]) map[e] = {};
+          map[e][key] = true;
+        });
+        return map;
+      }
+      function recordMatchesCampus(record, campusByEmail) {
+        if (state.campus === "all") return true;
+        if (!record) return false;
+        // If the record has a campus field of its own (e.g. leads), match directly
+        if (record.campus) return record.campus === state.campus;
+        if (state.campus === "__none__" && !record.campus) {
+          // For non-lead records, "unspecified" means the email has at least
+          // one lead without a campus (or no lead at all).
+          var e0 = normEmail(record.email);
+          var bag0 = e0 ? campusByEmail[e0] : null;
+          if (!bag0) return true;
+          return !!bag0["__none__"];
+        }
+        var e = normEmail(record.email);
+        if (!e) return false;
+        var bag = campusByEmail[e];
+        return !!(bag && bag[state.campus]);
+      }
+      function leadMatchesCampus(lead) {
+        if (state.campus === "all") return true;
+        if (state.campus === "__none__") return !lead.campus;
+        return lead.campus === state.campus;
       }
 
       function renderKvList(el, items, noDataText) {
@@ -946,11 +1035,23 @@
 
         renderRangeButtons();
 
-        var signupsAll = readJson(STORAGE.signups);
-        var assessmentsAll = readJson(STORAGE.assessments);
-        var leadsAll = readJson(STORAGE.leads);
-        var paymentsAll = readJson(STORAGE.payments);
-        var requestsAll = readJson(STORAGE.requests);
+        var signupsAllRaw = readJson(STORAGE.signups);
+        var assessmentsAllRaw = readJson(STORAGE.assessments);
+        var leadsAllRaw = readJson(STORAGE.leads);
+        var paymentsAllRaw = readJson(STORAGE.payments);
+        var requestsAllRaw = readJson(STORAGE.requests);
+
+        // Refresh the campus dropdown options against the current leads list
+        renderCampusFilter(leadsAllRaw);
+
+        // Apply campus filter once at the source so every downstream count
+        // (KPIs, alerts, charts, today/week aggregates) honors it.
+        var campusByEmail = buildCampusByEmail(leadsAllRaw);
+        var leadsAll = leadsAllRaw.filter(leadMatchesCampus);
+        var signupsAll = signupsAllRaw.filter(function (x) { return recordMatchesCampus(x, campusByEmail); });
+        var assessmentsAll = assessmentsAllRaw.filter(function (x) { return recordMatchesCampus(x, campusByEmail); });
+        var paymentsAll = paymentsAllRaw.filter(function (x) { return recordMatchesCampus(x, campusByEmail); });
+        var requestsAll = requestsAllRaw.filter(function (x) { return recordMatchesCampus(x, campusByEmail); });
 
         var signups = signupsAll.filter(function (x) { return inRange(x, state.range); });
         var assessments = assessmentsAll.filter(function (x) { return inRange(x, state.range); });
@@ -1079,6 +1180,13 @@
       });
 
       refreshBtn.addEventListener("click", render);
+
+      if (campusFilter) {
+        campusFilter.addEventListener("change", function () {
+          state.campus = campusFilter.value || "all";
+          render();
+        });
+      }
 
       paymentForm.addEventListener("submit", function (e) {
         e.preventDefault();
