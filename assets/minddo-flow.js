@@ -144,32 +144,39 @@
     var email = norm(current.email);
     var name = norm(current.studentName || current.name);
     var id = String(current.studentId || "");
-    // Matcher: email/name-based for records without a studentId; email or
-    // studentId for records written post-trial (completions/evaluations/invites).
-    var match = function (item) {
+
+    // Per-student matcher: when both the active student and the record have
+    // a studentId, that match is authoritative — different children in the
+    // same family share an email but their studentId differs. Falling back
+    // to email/name only when the record has no studentId (legacy rows).
+    var matchByStudent = function (item) {
+      if (!item) return false;
+      var itemId = String(item.studentId || "");
+      if (id && itemId) return itemId === id;
+      var itemEmail = norm(item.email);
+      var itemName = norm(item.studentName || item.name);
+      return (email && itemEmail === email) || (name && itemName === name);
+    };
+    // Per-parent matcher: signup records are one-per-parent, so match the
+    // family by email (or name as legacy fallback).
+    var matchByParent = function (item) {
       if (!item) return false;
       var itemEmail = norm(item.email);
       var itemName = norm(item.studentName || item.name);
       return (email && itemEmail === email) || (name && itemName === name);
     };
-    var matchOps = function (item) {
-      if (!item) return false;
-      var itemEmail = norm(item.email);
-      var itemId = String(item.studentId || "");
-      return (email && itemEmail === email) || (id && itemId === id);
-    };
 
     return {
       currentStudent: current,
-      lead: latestByDate(readJson(KEYS.leads, []), match),
-      assessment: latestByDate(readJson(KEYS.assessments, []), match),
-      signup: latestByDate(readJson(KEYS.signups, []), match),
-      payment: latestByDate(readJson(KEYS.payments, []), match),
-      membership: latestByDate(readJson(KEYS.memberships, []), match),
-      feedback: latestByDate(readJson(KEYS.feedback, []), match),
-      completion: latestByDate(readJson(KEYS.completions, []), matchOps, "completedAt"),
-      evaluation: latestByDate(readJson(KEYS.evaluations, []), matchOps, "evaluatedAt"),
-      invite: latestByDate(readJson(KEYS.invites, []), matchOps, "sentAt")
+      lead: latestByDate(readJson(KEYS.leads, []), matchByStudent),
+      assessment: latestByDate(readJson(KEYS.assessments, []), matchByStudent),
+      signup: latestByDate(readJson(KEYS.signups, []), matchByParent),
+      payment: latestByDate(readJson(KEYS.payments, []), matchByStudent),
+      membership: latestByDate(readJson(KEYS.memberships, []), matchByStudent),
+      feedback: latestByDate(readJson(KEYS.feedback, []), matchByStudent),
+      completion: latestByDate(readJson(KEYS.completions, []), matchByStudent, "completedAt"),
+      evaluation: latestByDate(readJson(KEYS.evaluations, []), matchByStudent, "evaluatedAt"),
+      invite: latestByDate(readJson(KEYS.invites, []), matchByStudent, "sentAt")
     };
   }
 
@@ -180,13 +187,23 @@
   function getSnapshotForStudent(studentId, fallbackEmail) {
     var id = String(studentId || "");
     var email = norm(fallbackEmail);
-    var match = function (item) {
+    // Per-student records: studentId match is authoritative when both sides
+    // carry one. Email is only used as a fallback for legacy rows that
+    // don't have a studentId. (Without this rule, sibling children sharing
+    // a parent email all match each other's records.)
+    var matchByStudent = function (item) {
       if (!item) return false;
       var itemId = String(item.studentId || "");
+      if (id && itemId) return itemId === id;
       var itemEmail = norm(item.email);
-      return (id && itemId === id) || (email && itemEmail === email);
+      return email && itemEmail === email;
     };
-    var matchOps = match;
+    // Signup is parent-keyed — one signup per family — so match by email.
+    var matchByParent = function (item) {
+      if (!item) return false;
+      var itemEmail = norm(item.email);
+      return email && itemEmail === email;
+    };
     var student = findStudentById(id) || {};
     return {
       currentStudent: {
@@ -196,15 +213,15 @@
         grade: student.grade || "",
         email: fallbackEmail || ""
       },
-      lead: latestByDate(readJson(KEYS.leads, []), match),
-      assessment: latestByDate(readJson(KEYS.assessments, []), match),
-      signup: latestByDate(readJson(KEYS.signups, []), match),
-      payment: latestByDate(readJson(KEYS.payments, []), match),
-      membership: latestByDate(readJson(KEYS.memberships, []), match),
-      feedback: latestByDate(readJson(KEYS.feedback, []), match),
-      completion: latestByDate(readJson(KEYS.completions, []), matchOps, "completedAt"),
-      evaluation: latestByDate(readJson(KEYS.evaluations, []), matchOps, "evaluatedAt"),
-      invite: latestByDate(readJson(KEYS.invites, []), matchOps, "sentAt")
+      lead: latestByDate(readJson(KEYS.leads, []), matchByStudent),
+      assessment: latestByDate(readJson(KEYS.assessments, []), matchByStudent),
+      signup: latestByDate(readJson(KEYS.signups, []), matchByParent),
+      payment: latestByDate(readJson(KEYS.payments, []), matchByStudent),
+      membership: latestByDate(readJson(KEYS.memberships, []), matchByStudent),
+      feedback: latestByDate(readJson(KEYS.feedback, []), matchByStudent),
+      completion: latestByDate(readJson(KEYS.completions, []), matchByStudent, "completedAt"),
+      evaluation: latestByDate(readJson(KEYS.evaluations, []), matchByStudent, "evaluatedAt"),
+      invite: latestByDate(readJson(KEYS.invites, []), matchByStudent, "sentAt")
     };
   }
 
