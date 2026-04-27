@@ -163,6 +163,31 @@
     @media (max-width: 900px) { .workspace-grid { grid-template-columns: repeat(2,1fr); } }
     @media (max-width: 560px) { .workspace-grid { grid-template-columns: 1fr; } }
 
+    /* Reusable section header pattern — small uppercase eyebrow + light
+       subtitle so each block of the dashboard reads as its own zone
+       without piling on more borders. */
+    .dash-zone { margin: 0 0 28px; }
+    .dash-zone-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap; margin: 0 4px 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(30,58,95,0.08); }
+    .dash-zone-head .dash-zone-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .dash-zone-head h3 { font-size: 12px; font-weight: 800; color: var(--clay); letter-spacing: 0.1em; text-transform: uppercase; margin: 0; }
+    .dash-zone-head p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+    .dash-zone-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+    /* Slim, summary-style admin operations — collapsible since it's a
+       manual recovery tool, not part of the daily monitoring loop. */
+    .admin-ops { background: var(--card); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 12px 28px rgba(30,58,95,0.06); padding: 4px 18px; }
+    .admin-ops summary { font-size: 13px; font-weight: 800; color: var(--clay); letter-spacing: 0.04em; padding: 12px 0; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .admin-ops summary::-webkit-details-marker { display: none; }
+    .admin-ops summary::after { content: "▾"; color: var(--muted); font-size: 12px; transition: 0.15s; }
+    .admin-ops[open] summary::after { transform: rotate(180deg); }
+    .admin-ops summary .admin-ops-sub { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .admin-ops .admin-ops-body { padding: 6px 0 16px; border-top: 1px solid var(--line); margin-top: 4px; display: grid; gap: 14px; }
+
+    /* Insights grid: 3 across on desktop, 2 on tablet, 1 on phone. */
+    .insights-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+    @media (max-width: 900px) { .insights-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 560px) { .insights-grid { grid-template-columns: 1fr; } }
+
     .alert-card {
       padding: 16px;
       border-radius: 18px;
@@ -456,6 +481,7 @@
   <div class="page-content">
     <div class="content-inner">
 
+      <!-- Zone 1: workspace (entry points) -->
       <section id="opsWorkspace" class="workspace">
         <div class="workspace-head">
           <h2><span data-lang="zh">运营工作台</span><span data-lang="en">Ops Workspace</span></h2>
@@ -464,79 +490,118 @@
         <div class="workspace-grid" id="workspaceGrid"></div>
       </section>
 
-      <section class="alert-strip" id="alertStrip"></section>
-
-      <div class="filters">
-        <div class="range-group" id="rangeGroup"></div>
-        <button class="btn" id="refreshBtn" data-i18n="refresh"></button>
-      </div>
-
-      <section class="grid" id="metricGrid"></section>
-
-      <section class="bottom-grid">
-        <article class="panel">
-          <h2 data-i18n="levelDist"></h2>
-          <ul class="kv-list" id="levelList"></ul>
-        </article>
-
-        <article class="panel">
-          <h2 data-i18n="extraMonitors"></h2>
-          <ul class="kv-list" id="extraList"></ul>
-        </article>
-      </section>
-
-      <section class="bottom-grid">
-        <article class="panel">
-          <h2 data-i18n="channelDist"></h2>
-          <ul class="kv-list" id="channelList"></ul>
-        </article>
-
-        <article class="panel">
-          <h2 data-i18n="paymentOps"></h2>
-          <form id="paymentForm" class="pay-form">
-            <input id="payEmail" type="email" placeholder="student@email.com" required />
-            <input id="payAmount" type="number" min="0" step="0.01" placeholder="199" required />
-            <button class="btn" type="submit" data-i18n="markPaid"></button>
-          </form>
-          <div id="paymentStatus" class="status"></div>
-        </article>
-      </section>
-
-      <section class="panel">
-        <h2 data-i18n="recentPayments"></h2>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th data-i18n="colEmail"></th>
-                <th data-i18n="colAmount"></th>
-                <th data-i18n="colSource"></th>
-                <th data-i18n="colTime"></th>
-              </tr>
-            </thead>
-            <tbody id="paymentTable"></tbody>
-          </table>
+      <!-- Zone 2: today's focus (alerts) -->
+      <section class="dash-zone">
+        <div class="dash-zone-head">
+          <div class="dash-zone-text">
+            <h3 data-i18n="zoneTodayTitle"></h3>
+            <p data-i18n="zoneTodaySub"></p>
+          </div>
         </div>
+        <section class="alert-strip" id="alertStrip"></section>
       </section>
 
-      <section class="panel" style="margin-top: 14px;">
-        <h2 data-i18n="recentRequests"></h2>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th data-i18n="colRequestType"></th>
-                <th data-i18n="colStudent"></th>
-                <th data-i18n="colTarget"></th>
-                <th data-i18n="colReason"></th>
-                <th data-i18n="colRequestStatus"></th>
-                <th data-i18n="colTime"></th>
-              </tr>
-            </thead>
-            <tbody id="requestTable"></tbody>
-          </table>
+      <!-- Zone 3: KPIs (date-range filter sits in the section header) -->
+      <section class="dash-zone">
+        <div class="dash-zone-head">
+          <div class="dash-zone-text">
+            <h3 data-i18n="zoneKpiTitle"></h3>
+            <p data-i18n="zoneKpiSub"></p>
+          </div>
+          <div class="dash-zone-actions">
+            <div class="range-group" id="rangeGroup"></div>
+            <button class="btn" id="refreshBtn" data-i18n="refresh"></button>
+          </div>
         </div>
+        <section class="grid" id="metricGrid"></section>
       </section>
+
+      <!-- Zone 4: data insights (distributions) -->
+      <section class="dash-zone">
+        <div class="dash-zone-head">
+          <div class="dash-zone-text">
+            <h3 data-i18n="zoneInsightsTitle"></h3>
+            <p data-i18n="zoneInsightsSub"></p>
+          </div>
+        </div>
+        <section class="insights-grid">
+          <article class="panel">
+            <h2 data-i18n="levelDist"></h2>
+            <ul class="kv-list" id="levelList"></ul>
+          </article>
+          <article class="panel">
+            <h2 data-i18n="channelDist"></h2>
+            <ul class="kv-list" id="channelList"></ul>
+          </article>
+          <article class="panel">
+            <h2 data-i18n="extraMonitors"></h2>
+            <ul class="kv-list" id="extraList"></ul>
+          </article>
+        </section>
+      </section>
+
+      <!-- Zone 5: activity logs -->
+      <section class="dash-zone">
+        <div class="dash-zone-head">
+          <div class="dash-zone-text">
+            <h3 data-i18n="zoneLogsTitle"></h3>
+            <p data-i18n="zoneLogsSub"></p>
+          </div>
+        </div>
+        <section class="panel" style="margin-bottom:14px;">
+          <h2 data-i18n="recentPayments"></h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i18n="colEmail"></th>
+                  <th data-i18n="colAmount"></th>
+                  <th data-i18n="colSource"></th>
+                  <th data-i18n="colTime"></th>
+                </tr>
+              </thead>
+              <tbody id="paymentTable"></tbody>
+            </table>
+          </div>
+        </section>
+        <section class="panel">
+          <h2 data-i18n="recentRequests"></h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i18n="colRequestType"></th>
+                  <th data-i18n="colStudent"></th>
+                  <th data-i18n="colTarget"></th>
+                  <th data-i18n="colReason"></th>
+                  <th data-i18n="colRequestStatus"></th>
+                  <th data-i18n="colTime"></th>
+                </tr>
+              </thead>
+              <tbody id="requestTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- Zone 6: admin operations (collapsed by default) -->
+      <details class="admin-ops">
+        <summary>
+          <span data-i18n="zoneAdminOpsTitle"></span>
+          <span class="admin-ops-sub" data-i18n="zoneAdminOpsSub"></span>
+        </summary>
+        <div class="admin-ops-body">
+          <article class="panel" style="box-shadow:none;border-color:rgba(30,58,95,0.08);">
+            <h2 data-i18n="paymentOps"></h2>
+            <form id="paymentForm" class="pay-form">
+              <input id="payEmail" type="email" placeholder="student@email.com" required />
+              <input id="payAmount" type="number" min="0" step="0.01" placeholder="199" required />
+              <button class="btn" type="submit" data-i18n="markPaid"></button>
+            </form>
+            <div id="paymentStatus" class="status"></div>
+          </article>
+        </div>
+      </details>
 
     </div>
   </div>
@@ -666,6 +731,16 @@
           markPaid: "登记付费",
           recentPayments: "最近付费记录",
           recentRequests: "最近请假 / 改期申请",
+          zoneTodayTitle: "今日重点",
+          zoneTodaySub: "需要立即处理的提醒。",
+          zoneKpiTitle: "关键指标",
+          zoneKpiSub: "按所选时间范围统计的核心数据。",
+          zoneInsightsTitle: "数据洞察",
+          zoneInsightsSub: "学员等级、获客来源、关键监控指标。",
+          zoneLogsTitle: "详细记录",
+          zoneLogsSub: "近期付款与请假 / 改期申请明细。",
+          zoneAdminOpsTitle: "管理员手动操作",
+          zoneAdminOpsSub: "应急 / 离线场景使用，平时折叠隐藏",
           colEmail: "邮箱",
           colAmount: "金额",
           colSource: "来源",
@@ -760,6 +835,16 @@
           markPaid: "Mark Paid",
           recentPayments: "Recent Payment Records",
           recentRequests: "Recent Leave / Reschedule Requests",
+          zoneTodayTitle: "Today's Focus",
+          zoneTodaySub: "Items that need attention right now.",
+          zoneKpiTitle: "Key Metrics",
+          zoneKpiSub: "Core numbers across the selected time range.",
+          zoneInsightsTitle: "Data Insights",
+          zoneInsightsSub: "Levels, lead sources, and key monitors.",
+          zoneLogsTitle: "Activity Logs",
+          zoneLogsSub: "Recent payments and leave / reschedule requests.",
+          zoneAdminOpsTitle: "Admin Operations",
+          zoneAdminOpsSub: "Manual recovery tools, collapsed by default",
           colEmail: "Email",
           colAmount: "Amount",
           colSource: "Source",
