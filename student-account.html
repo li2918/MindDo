@@ -590,26 +590,109 @@
       }
     }
 
-    /* NAV TABS — primary navigation lives in the top navbar so there's only
-       one tab strip on the page. Replaces the old marketing nav-menu. */
-    .nav-tabs { display: flex; gap: 2px; flex-wrap: wrap; align-items: center; flex: 1; justify-content: center; }
-    .nav-tab {
-      background: transparent; border: none; border-bottom: 2px solid transparent;
-      color: var(--muted); padding: 22px 14px;
-      font: inherit; font-size: 13.5px; font-weight: 700; letter-spacing: 0.01em;
-      cursor: pointer; border-radius: 0;
-      transition: 0.15s; display: inline-flex; align-items: center; gap: 6px;
+    /* TOPBAR + SIDEBAR SHELL — minimal Portal-style layout, no tabs at top.
+       Modeled after the AoPS Online parent dashboard the user shared. */
+    body { background: #f8fafc; }
+    .topbar { position: sticky; top: 0; z-index: 100; height: 64px;
+      background: #fff; border-bottom: 1px solid var(--line);
+      display: grid; grid-template-columns: 240px 1fr auto; align-items: center;
+      padding: 0 28px 0 0; }
+    .topbar-brand { display: flex; align-items: center; gap: 10px; padding: 0 24px;
+      height: 100%; border-right: 1px solid var(--line); }
+    .topbar-brand img { width: 32px; height: 32px; object-fit: contain; }
+    .topbar-brand .b-name { font-size: 17px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .topbar-page-title { font-size: 14px; color: #475569; font-weight: 600; padding-left: 28px; }
+    .topbar-right { display: flex; align-items: center; gap: 14px; position: relative; }
+
+    .user-trigger { display: inline-flex; align-items: center; gap: 10px;
+      background: transparent; border: 1px solid transparent;
+      padding: 6px 14px 6px 6px; border-radius: 999px; cursor: pointer;
+      font-family: inherit; font-size: 14px; color: var(--clay); font-weight: 700;
+      transition: 0.15s; }
+    .user-trigger:hover { background: #f1f5f9; border-color: var(--line); }
+    .user-trigger.open { background: #f1f5f9; border-color: var(--line); }
+    .user-avatar { width: 32px; height: 32px; border-radius: 999px;
+      background: linear-gradient(135deg, #14294a, #0ea5e9);
+      color: #fff; font-size: 12px; font-weight: 800;
+      display: inline-flex; align-items: center; justify-content: center; letter-spacing: 0.04em; }
+    .user-trigger .caret { font-size: 12px; color: #64748b; transition: transform 0.15s; }
+    .user-trigger.open .caret { transform: rotate(180deg); }
+
+    .user-menu { position: absolute; top: calc(100% + 6px); right: 0;
+      width: 280px; background: #fff; border: 1px solid var(--line);
+      border-radius: 14px; box-shadow: 0 18px 44px rgba(15,23,42,0.12);
+      padding: 8px; display: none; z-index: 200; }
+    .user-menu.open { display: block; }
+    .user-menu-head { display: flex; gap: 12px; align-items: center; padding: 12px;
+      border-bottom: 1px solid var(--line); margin-bottom: 6px; }
+    .user-menu-head .user-avatar { width: 36px; height: 36px; font-size: 13px; }
+    .user-menu-head .um-text { display: grid; gap: 2px; min-width: 0; }
+    .user-menu-head .um-name { font-size: 14px; font-weight: 800; color: var(--clay); }
+    .user-menu-head .um-email { font-size: 12px; color: #64748b; word-break: break-all; }
+    .user-menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border-radius: 10px; background: transparent; border: none;
+      color: var(--clay); font: inherit; font-size: 13.5px; font-weight: 600;
+      cursor: pointer; width: 100%; text-align: left; text-decoration: none;
+      transition: 0.12s; font-family: inherit; }
+    .user-menu-item:hover { background: #f1f5f9; }
+    .user-menu-item .um-icon { width: 18px; height: 18px; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center; color: #64748b; }
+    .user-menu-item.danger { color: #b2502d; }
+    .user-menu-item.danger .um-icon { color: #b2502d; }
+    .user-menu hr { border: none; border-top: 1px solid var(--line); margin: 6px 4px; }
+    .user-menu-lang { display: flex; gap: 4px; padding: 4px; background: #f1f5f9;
+      border-radius: 999px; margin: 6px 4px 4px; }
+    .user-menu-lang button { all: unset; flex: 1; text-align: center; padding: 6px 12px;
+      border-radius: 999px; font-size: 12px; font-weight: 700; color: #64748b;
+      cursor: pointer; transition: 0.12s; font-family: inherit; }
+    .user-menu-lang button.active { background: #fff; color: var(--clay); box-shadow: 0 1px 3px rgba(15,23,42,0.08); }
+
+    /* Layout: fixed sidebar + scrolling main content */
+    .portal-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); }
+    .sidebar { background: #fff; border-right: 1px solid var(--line);
+      padding: 24px 14px; display: flex; flex-direction: column; gap: 18px; }
+    .sidebar-section { display: flex; flex-direction: column; gap: 2px; }
+    .sidebar-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+      color: #94a3b8; text-transform: none; padding: 0 12px 4px; }
+    .sidebar-item { display: flex; align-items: center; gap: 12px;
+      padding: 9px 12px; border-radius: 8px;
+      background: transparent; border: none; color: #334155;
+      font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+      width: 100%; text-align: left; text-decoration: none; transition: 0.12s;
+      font-family: inherit; }
+    .sidebar-item:hover { background: #f1f5f9; color: var(--clay); }
+    .sidebar-item.active { background: #e2e8f0; color: var(--clay); font-weight: 700; }
+    .sidebar-item .si-icon { width: 18px; height: 18px; color: #64748b; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center; }
+    .sidebar-item.active .si-icon { color: var(--clay); }
+    .sidebar-item .si-arrow { margin-left: auto; color: #94a3b8; font-size: 11px; }
+
+    .portal-main { padding: 36px 40px 80px; min-width: 0; overflow-x: hidden; }
+    .portal-main-inner { max-width: 980px; margin: 0 auto; }
+    .greeting { font-size: clamp(24px, 3vw, 30px); font-weight: 800; color: var(--clay);
+      letter-spacing: -0.01em; margin-bottom: 6px; }
+    .greeting-sub { font-size: 14px; color: #64748b; margin-bottom: 28px; line-height: 1.6; }
+    /* The "viewing {child}" line reuses guardian template HTML that was
+       authored for the dark hero — re-color the inner muted/strong on the
+       light portal layout so the line is readable. */
+    .greeting-sub .muted { color: #94a3b8; font-size: 11.5px; margin-right: 6px;
+      text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+    .greeting-sub strong { color: var(--clay); font-weight: 800; }
+
+    @media (max-width: 880px) {
+      .topbar { grid-template-columns: auto 1fr auto; padding: 0 16px 0 0; }
+      .topbar-brand { padding: 0 16px; }
+      .topbar-page-title { display: none; }
+      .user-trigger .user-name { display: none; }
+      .portal-layout { grid-template-columns: 1fr; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--line);
+        flex-direction: row; overflow-x: auto; padding: 10px 12px; gap: 8px; }
+      .sidebar-section { flex-direction: row; gap: 4px; flex-wrap: nowrap; }
+      .sidebar-label { display: none; }
+      .sidebar-item { white-space: nowrap; padding: 8px 12px; font-size: 13px; }
+      .sidebar-item .si-arrow { display: none; }
+      .portal-main { padding: 24px 18px 60px; }
     }
-    .nav-tab:hover { color: var(--clay); background: rgba(30,58,95,0.04); }
-    .nav-tab.active { color: var(--clay); border-bottom-color: var(--gold); font-weight: 800; }
-    .nav-tab:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
-    @media (max-width: 900px) {
-      .navbar { padding: 0 18px; height: auto; flex-wrap: wrap; gap: 6px; }
-      .nav-tabs { order: 3; flex: 1 1 100%; justify-content: flex-start; overflow-x: auto;
-        flex-wrap: nowrap; border-top: 1px solid var(--line); padding: 0 4px; }
-      .nav-tab { padding: 12px 12px; flex-shrink: 0; }
-    }
-    @media (max-width: 640px) { .nav-tab { padding: 12px 10px; font-size: 13px; } }
 
     /* SETTINGS TAB */
     .settings-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 18px; }
@@ -780,66 +863,110 @@
 <body>
   <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
 
-  <nav class="navbar">
-    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+  <header class="topbar" role="banner">
+    <a class="topbar-brand" href="index.html" aria-label="MindDo home">
       <img src="assets/logo.png" alt="MindDo logo" />
-      <span class="nav-brand-name">MindDo</span>
+      <span class="b-name">MindDo</span>
     </a>
-    <nav class="nav-tabs" id="acctTabs" role="tablist" aria-label="Sections">
-      <button type="button" class="nav-tab active" data-tab="overview" role="tab" data-i18n="tabOverview"></button>
-      <button type="button" class="nav-tab" data-tab="schedule" role="tab" data-i18n="tabSchedule"></button>
-      <button type="button" class="nav-tab" data-tab="learning" role="tab" data-i18n="tabLearning"></button>
-      <button type="button" class="nav-tab" data-tab="profile" role="tab" data-i18n="tabProfile"></button>
-      <button type="button" class="nav-tab" data-tab="requests" role="tab" data-i18n="tabRequests"></button>
-      <button type="button" class="nav-tab" data-tab="settings" role="tab" data-i18n="tabSettings"></button>
-    </nav>
-    <div class="nav-right">
-      <div class="lang-switcher" data-lang-switcher>
-        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
-          <span class="lang-trigger-label">中文</span>
-          <span class="lang-caret" aria-hidden="true">▾</span>
+    <span class="topbar-page-title" id="topbarPageTitle" data-i18n="tabOverview"></span>
+    <div class="topbar-right">
+      <button type="button" class="user-trigger" id="userTrigger" aria-haspopup="menu" aria-expanded="false">
+        <span class="user-avatar" id="userAvatar">·</span>
+        <span class="user-name" id="userTriggerName">—</span>
+        <span class="caret" aria-hidden="true">▾</span>
+      </button>
+      <div class="user-menu" id="userMenu" role="menu" aria-labelledby="userTrigger">
+        <div class="user-menu-head">
+          <span class="user-avatar" id="userMenuAvatar">·</span>
+          <div class="um-text">
+            <span class="um-name" id="userMenuName">—</span>
+            <span class="um-email" id="userMenuEmail">—</span>
+          </div>
+        </div>
+        <button type="button" class="user-menu-item" data-tab="settings">
+          <span class="um-icon" aria-hidden="true">⚙</span>
+          <span data-i18n="tabSettings"></span>
         </button>
-        <div class="lang-menu" role="listbox">
-          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
-          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+        <button type="button" class="user-menu-item" id="userMenuContact">
+          <span class="um-icon" aria-hidden="true">✉</span>
+          <span data-i18n="userMenuContact"></span>
+        </button>
+        <button type="button" class="user-menu-item danger" id="userMenuLogout">
+          <span class="um-icon" aria-hidden="true">⎋</span>
+          <span data-i18n="logout"></span>
+        </button>
+        <hr />
+        <div class="user-menu-lang">
+          <button type="button" data-set-lang="zh-CN">中文</button>
+          <button type="button" data-set-lang="en">English</button>
         </div>
       </div>
-      <a class="nav-login" href="login.html"><span data-lang="zh">登录</span><span data-lang="en">Log In</span></a>
-      <button class="logout-btn" type="button" id="logoutBtn"><span data-lang="zh">退出登录</span><span data-lang="en">Log Out</span></button>
     </div>
-  </nav>
+  </header>
 
-  <div class="page-hero">
-    <div class="page-hero-inner">
-      <span class="identity-chip" id="identityChip" style="display:none;">
-        <span class="dot" aria-hidden="true"></span>
-        <span class="role" id="identityChipRole"></span>
-        <span class="sep" aria-hidden="true">·</span>
-        <span class="name" id="identityChipName"></span>
-      </span>
-      <div class="page-tag"><span id="pageTagText"></span></div>
-      <h1 id="heroTitle"></h1>
-      <p class="hero-viewing" id="heroViewing" style="display:none;"></p>
-      <div id="emptyFamilyBanner" role="status" style="display:none;margin-bottom:18px;padding:14px 16px;border-radius:14px;background:rgba(178,80,45,0.18);border:1px solid rgba(178,80,45,0.4);color:#f0f9ff;">
-        <strong id="emptyFamilyTitle" style="display:block;font-size:14px;font-weight:800;margin-bottom:4px;"></strong>
-        <span id="emptyFamilyDesc" style="display:block;font-size:13px;line-height:1.55;color:rgba(240,249,255,0.85);margin-bottom:10px;"></span>
-        <a id="emptyFamilyCta" class="btn-primary" href="add-child.html" style="font-size:13px;padding:8px 16px;"></a>
+  <div class="portal-layout">
+    <aside class="sidebar" aria-label="Sections">
+      <div class="sidebar-section" id="acctTabs" role="tablist">
+        <span class="sidebar-label" data-i18n="sidebarPortal"></span>
+        <button type="button" class="sidebar-item active" data-tab="overview" role="tab">
+          <span class="si-icon" aria-hidden="true">⌂</span><span data-i18n="tabOverview"></span>
+        </button>
+        <button type="button" class="sidebar-item" data-tab="schedule" role="tab">
+          <span class="si-icon" aria-hidden="true">▦</span><span data-i18n="tabSchedule"></span>
+        </button>
+        <button type="button" class="sidebar-item" data-tab="learning" role="tab">
+          <span class="si-icon" aria-hidden="true">◐</span><span data-i18n="tabLearning"></span>
+        </button>
+        <button type="button" class="sidebar-item" data-tab="profile" role="tab">
+          <span class="si-icon" aria-hidden="true">◉</span><span data-i18n="tabProfile"></span>
+        </button>
+        <button type="button" class="sidebar-item" data-tab="requests" role="tab">
+          <span class="si-icon" aria-hidden="true">✎</span><span data-i18n="tabRequests"></span>
+        </button>
+        <button type="button" class="sidebar-item" data-tab="settings" role="tab">
+          <span class="si-icon" aria-hidden="true">⚙</span><span data-i18n="tabSettings"></span>
+        </button>
       </div>
-      <div class="hero-action-links">
-        <a class="btn-ghost" href="feedback.html"><span data-lang="zh">查看课堂反馈</span><span data-lang="en">View Class Feedback</span></a>
-        <a class="btn-ghost" href="semester-report.html"><span data-lang="zh">查看学期报告</span><span data-lang="en">Semester Report</span></a>
-        <a class="btn-ghost" href="account-settings.html"><span data-lang="zh">家庭账户</span><span data-lang="en">Family Account</span></a>
+      <div class="sidebar-section">
+        <span class="sidebar-label" data-i18n="sidebarLinks"></span>
+        <a class="sidebar-item" href="trial.html">
+          <span class="si-icon" aria-hidden="true">📝</span><span data-i18n="sidebarBookTrial"></span>
+        </a>
+        <a class="sidebar-item" href="course-system.html">
+          <span class="si-icon" aria-hidden="true">📖</span><span data-i18n="sidebarCurriculum"></span>
+        </a>
+        <a class="sidebar-item" href="contact.html">
+          <span class="si-icon" aria-hidden="true">☎</span><span data-i18n="sidebarContact"></span>
+        </a>
       </div>
-      <div class="student-meta">
-        <div class="meta"><span class="k" data-i18n="heroStudentId"></span><strong class="v" id="heroStudentIdValue"></strong></div>
-        <div class="meta"><span class="k" data-i18n="heroGoal"></span><strong class="v" id="heroGoalValue"></strong></div>
-        <div class="meta"><span class="k" data-i18n="heroStage"></span><strong class="v" id="heroStageValue"></strong></div>
-      </div>
-    </div>
-  </div>
+    </aside>
 
-  <main id="main" class="page-content">
-    <div class="content-inner">
+    <main id="main" class="portal-main">
+      <div class="portal-main-inner">
+        <div id="emptyFamilyBanner" role="status" style="display:none;margin-bottom:18px;padding:14px 16px;border-radius:14px;background:rgba(178,80,45,0.08);border:1px solid rgba(178,80,45,0.28);color:#8e3d21;">
+          <strong id="emptyFamilyTitle" style="display:block;font-size:14px;font-weight:800;margin-bottom:4px;"></strong>
+          <span id="emptyFamilyDesc" style="display:block;font-size:13px;line-height:1.55;color:#8e3d21;margin-bottom:10px;"></span>
+          <a id="emptyFamilyCta" class="btn-primary" href="add-child.html" style="font-size:13px;padding:8px 16px;"></a>
+        </div>
+
+        <h1 class="greeting" id="heroTitle"></h1>
+        <p class="greeting-sub" id="heroViewing" style="display:none;"></p>
+
+        <span class="identity-chip" id="identityChip" style="display:none;">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="role" id="identityChipRole"></span>
+          <span class="sep" aria-hidden="true">·</span>
+          <span class="name" id="identityChipName"></span>
+        </span>
+        <span class="page-tag" id="pageTagText" style="display:none;"></span>
+
+        <div class="student-meta" style="display:none;">
+          <div class="meta"><span class="k" data-i18n="heroStudentId"></span><strong class="v" id="heroStudentIdValue"></strong></div>
+          <div class="meta"><span class="k" data-i18n="heroGoal"></span><strong class="v" id="heroGoalValue"></strong></div>
+          <div class="meta"><span class="k" data-i18n="heroStage"></span><strong class="v" id="heroStageValue"></strong></div>
+        </div>
+
+        <button type="button" class="logout-btn" id="logoutBtn" style="position:absolute;left:-9999px;" tabindex="-1" aria-hidden="true"><span data-lang="zh">退出登录</span><span data-lang="en">Log Out</span></button>
       <section class="family-panel" id="familyPanel" style="display:none;" aria-labelledby="familyPanelTitle">
         <div class="family-panel-head">
           <div>
@@ -1189,24 +1316,10 @@
           </div>
         </section>
 
-        <!-- 7. ACCOUNT BAR -->
-        <section class="dash-section" aria-labelledby="accountBarHead">
-          <div class="account-bar">
-            <div class="account-bar-text">
-              <div id="accountBarHead" class="account-bar-title" data-i18n="accountBarTitle"></div>
-              <div class="account-bar-copy" data-i18n="accountBarCopy"></div>
-            </div>
-            <div class="account-bar-actions">
-              <a class="btn-ghost" href="trial.html" data-i18n="bookTrialCta"></a>
-              <a class="btn-ghost" href="contact.html" data-i18n="getHelpCta"></a>
-              <button class="logout-btn" type="button" id="logoutBtnBottom" data-i18n="logout"></button>
-            </div>
-          </div>
-        </section>
-
       </div>
     </div>
   </main>
+  </div>
 
   <footer class="footer">
     <div class="footer-inner">
@@ -1326,6 +1439,12 @@
           tabProfile: "资料",
           tabRequests: "申请",
           tabSettings: "设置",
+          sidebarPortal: "我的家长中心",
+          sidebarLinks: "更多入口",
+          sidebarBookTrial: "预约试课",
+          sidebarCurriculum: "课程体系",
+          sidebarContact: "联系我们",
+          userMenuContact: "联系客服",
           settingsEyebrow: "账户与偏好",
           settingsTitle: "账户设置",
           settingsSub: "管理家庭账户、偏好设置与安全选项。仅主家长可执行修改类操作。",
@@ -1551,6 +1670,12 @@
           tabProfile: "Profile",
           tabRequests: "Requests",
           tabSettings: "Settings",
+          sidebarPortal: "My Portal",
+          sidebarLinks: "Quick Links",
+          sidebarBookTrial: "Book Trial",
+          sidebarCurriculum: "Curriculum",
+          sidebarContact: "Contact",
+          userMenuContact: "Contact Us",
           settingsEyebrow: "Account & Preferences",
           settingsTitle: "Account Settings",
           settingsSub: "Manage your family account, preferences, and security. Only the primary guardian can change anything here.",
@@ -1997,16 +2122,43 @@
           var guardian = acct.linkedEntityId ? flow.findGuardianById(acct.linkedEntityId) : null;
           parentDisplayName = (guardian && guardian.name) || "";
         }
-        // Identity chip — always visible when an account is loaded
-        if (identityChip && acct && t.roleLabels) {
-          document.getElementById("identityChipRole").textContent = t.roleLabels[acct.role] || acct.role;
-          var chipName = isGuardian ? (parentDisplayName || acct.email || "—")
-                                    : ((current.studentName || current.name) || acct.email || "—");
-          document.getElementById("identityChipName").textContent = chipName;
-          identityChip.style.display = "inline-flex";
-        } else if (identityChip) {
+        // Identity chip — kept in DOM for backward compat but the new
+        // portal layout shows identity in the topbar dropdown instead.
+        if (identityChip) {
+          if (acct && t.roleLabels) {
+            document.getElementById("identityChipRole").textContent = t.roleLabels[acct.role] || acct.role;
+            var chipName = isGuardian ? (parentDisplayName || acct.email || "—")
+                                      : ((current.studentName || current.name) || acct.email || "—");
+            document.getElementById("identityChipName").textContent = chipName;
+          }
           identityChip.style.display = "none";
         }
+
+        // Top-right user dropdown — populate the avatar initials + name +
+        // email from the active account so the chip in the topbar is the
+        // single source of identity at a glance.
+        (function () {
+          var topName = isGuardian ? (parentDisplayName || (acct && acct.email ? acct.email.split("@")[0] : "")) : ((current.studentName || current.name) || "");
+          var topEmail = (acct && acct.email) || (current && current.email) || "";
+          var initials = (topName || topEmail || "·")
+            .split(/\s+/).slice(0, 2)
+            .map(function (s) { return s.charAt(0).toUpperCase(); })
+            .join("") || "·";
+          var triggerName = document.getElementById("userTriggerName");
+          var triggerAvatar = document.getElementById("userAvatar");
+          var menuName = document.getElementById("userMenuName");
+          var menuEmail = document.getElementById("userMenuEmail");
+          var menuAvatar = document.getElementById("userMenuAvatar");
+          if (triggerName) triggerName.textContent = topName || topEmail || "—";
+          if (triggerAvatar) triggerAvatar.textContent = initials;
+          if (menuName) menuName.textContent = topName || "—";
+          if (menuEmail) menuEmail.textContent = topEmail || "—";
+          if (menuAvatar) menuAvatar.textContent = initials;
+          // Sync the language pills in the dropdown to current lang.
+          document.querySelectorAll("#userMenu [data-set-lang]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-set-lang") === lang);
+          });
+        })();
 
         // Page tag + title + viewing line shift based on role
         if (isGuardian) {
@@ -2402,10 +2554,10 @@
         });
       })();
 
-      // Tab switching: clicking a tab button (or a [data-jump-tab] link inside
-      // a panel) shows the matching dash-section and hides the rest. The
-      // active tab persists across reloads via sessionStorage so a parent
-      // returning from feedback.html lands back on the same tab they had open.
+      // Tab switching: clicking a sidebar item (or a [data-jump-tab] link
+      // inside a panel, or a Settings entry inside the user dropdown) shows
+      // the matching panel and updates the topbar page-title + sidebar
+      // active state. Active tab persists per session.
       (function () {
         var TAB_KEY = "minddo_acct_active_tab";
         var KNOWN_TABS = ["overview", "schedule", "learning", "profile", "requests", "settings"];
@@ -2417,16 +2569,22 @@
           document.querySelectorAll("[data-tab-panel]").forEach(function (panel) {
             panel.classList.toggle("active", panel.getAttribute("data-tab-panel") === key);
           });
+          // Update the topbar page title to mirror the active tab label.
+          var lang = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+          var t = I18N[lang] || I18N["zh-CN"];
+          var labelKey = "tab" + key.charAt(0).toUpperCase() + key.slice(1);
+          var titleEl = document.getElementById("topbarPageTitle");
+          if (titleEl && t[labelKey]) titleEl.textContent = t[labelKey];
           try { sessionStorage.setItem(TAB_KEY, key); } catch (_) {}
         }
-        var tabBar = document.getElementById("acctTabs");
-        if (tabBar) {
-          tabBar.addEventListener("click", function (e) {
-            var btn = e.target.closest("[data-tab]");
-            if (!btn) return;
-            setActiveTab(btn.getAttribute("data-tab"));
-          });
-        }
+        // Sidebar tabs live under #acctTabs; user-dropdown also has a
+        // [data-tab="settings"] entry. Use document-level delegation so both
+        // sources work without separate handlers.
+        document.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-tab]");
+          if (!btn) return;
+          setActiveTab(btn.getAttribute("data-tab"));
+        });
         // [data-jump-tab] anchors inside panels (e.g. "View schedule" inside
         // the next-class card) cross-link into another tab.
         document.addEventListener("click", function (e) {
@@ -2439,6 +2597,41 @@
         var saved;
         try { saved = sessionStorage.getItem(TAB_KEY); } catch (_) {}
         if (saved && KNOWN_TABS.indexOf(saved) >= 0) setActiveTab(saved);
+      })();
+
+      // Top-right user dropdown — toggle on click, close on outside click /
+      // Esc, and close after any item is selected (since the item triggers
+      // its own action).
+      (function () {
+        var trig = document.getElementById("userTrigger");
+        var menu = document.getElementById("userMenu");
+        if (!trig || !menu) return;
+        function close() { menu.classList.remove("open"); trig.classList.remove("open"); trig.setAttribute("aria-expanded", "false"); }
+        function open() { menu.classList.add("open"); trig.classList.add("open"); trig.setAttribute("aria-expanded", "true"); }
+        trig.addEventListener("click", function (e) {
+          e.stopPropagation();
+          menu.classList.contains("open") ? close() : open();
+        });
+        document.addEventListener("click", function (e) {
+          if (!menu.classList.contains("open")) return;
+          if (e.target.closest("#userMenu") || e.target.closest("#userTrigger")) {
+            // Item inside menu was clicked — close after the action runs.
+            if (e.target.closest(".user-menu-item")) close();
+            return;
+          }
+          close();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && menu.classList.contains("open")) close();
+        });
+        // Wire the contact + logout entries to existing helpers.
+        var contactBtn = document.getElementById("userMenuContact");
+        if (contactBtn) contactBtn.addEventListener("click", function () {
+          var fab = document.querySelector(".cs-fab");
+          if (fab) fab.click();
+        });
+        var logoutMenu = document.getElementById("userMenuLogout");
+        if (logoutMenu) logoutMenu.addEventListener("click", logout);
       })();
 
       function escHTML(s) {
