@@ -115,7 +115,7 @@
     .footer-col ul a { font-size: 14px; color: rgba(240,249,255,0.72); transition: 0.15s; }
     .footer-col ul a:hover { color: #f0f9ff; }
     .footer-bottom { max-width: 1280px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(224,242,254,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: rgba(240,249,255,0.45); }
-    @media (max-width: 900px) { .navbar { padding: 0 24px; } .nav-menu { display: none; } .page-hero-inner, .content-inner { padding: 0 24px; } .student-meta { grid-template-columns: repeat(2,1fr); } .footer-inner { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 900px) { .page-hero-inner, .content-inner { padding: 0 24px; } .student-meta { grid-template-columns: repeat(2,1fr); } .footer-inner { grid-template-columns: repeat(2,1fr); } }
     @media (max-width: 640px) { .student-meta { grid-template-columns: 1fr; } .footer-inner { grid-template-columns: 1fr; } .footer { padding: 48px 24px 28px; } }
 
     /* SECTION STRUCTURE */
@@ -590,31 +590,26 @@
       }
     }
 
-    /* TAB BAR — sticky primary navigation between family panel and content.
-       Stays inside content-inner so it lines up with the rest of the page;
-       styled as a contained card rather than a full-width banner. */
-    .tab-bar-wrap {
-      position: sticky; top: 80px; z-index: 90;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      box-shadow: 0 8px 22px rgba(30,58,95,0.08);
-      margin-bottom: 4px;
-      backdrop-filter: blur(10px);
-    }
-    .tab-bar { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 12px; }
-    .acct-tabs { display: flex; gap: 2px; flex-wrap: wrap; padding: 0; margin: 0; list-style: none; }
-    .acct-tab {
+    /* NAV TABS — primary navigation lives in the top navbar so there's only
+       one tab strip on the page. Replaces the old marketing nav-menu. */
+    .nav-tabs { display: flex; gap: 2px; flex-wrap: wrap; align-items: center; flex: 1; justify-content: center; }
+    .nav-tab {
       background: transparent; border: none; border-bottom: 2px solid transparent;
-      color: var(--muted); padding: 10px 14px;
+      color: var(--muted); padding: 22px 14px;
       font: inherit; font-size: 13.5px; font-weight: 700; letter-spacing: 0.01em;
-      cursor: pointer; border-radius: 8px 8px 0 0;
-      transition: 0.15s; display: inline-flex; align-items: center; gap: 8px;
+      cursor: pointer; border-radius: 0;
+      transition: 0.15s; display: inline-flex; align-items: center; gap: 6px;
     }
-    .acct-tab:hover { color: var(--clay); background: rgba(30,58,95,0.05); }
-    .acct-tab.active { color: var(--clay); border-bottom-color: var(--gold); font-weight: 800; background: rgba(186,230,253,0.18); }
-    @media (max-width: 900px) { .tab-bar-wrap { top: 0; border-radius: 12px; } }
-    @media (max-width: 640px) { .acct-tab { padding: 8px 10px; font-size: 13px; } }
+    .nav-tab:hover { color: var(--clay); background: rgba(30,58,95,0.04); }
+    .nav-tab.active { color: var(--clay); border-bottom-color: var(--gold); font-weight: 800; }
+    .nav-tab:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+    @media (max-width: 900px) {
+      .navbar { padding: 0 18px; height: auto; flex-wrap: wrap; gap: 6px; }
+      .nav-tabs { order: 3; flex: 1 1 100%; justify-content: flex-start; overflow-x: auto;
+        flex-wrap: nowrap; border-top: 1px solid var(--line); padding: 0 4px; }
+      .nav-tab { padding: 12px 12px; flex-shrink: 0; }
+    }
+    @media (max-width: 640px) { .nav-tab { padding: 12px 10px; font-size: 13px; } }
 
     /* SETTINGS TAB */
     .settings-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 18px; }
@@ -643,6 +638,28 @@
     .set-disabled { opacity: 0.6; cursor: not-allowed; }
     .set-disabled:hover { transform: none; border-color: var(--line); background: rgba(255,255,255,0.7); box-shadow: none; }
     .set-badge { font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: rgba(216,156,54,0.16); color: #8a5d11; border: 1px solid rgba(216,156,54,0.34); }
+    .set-form { display: grid; gap: 12px; }
+    .set-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+    @media (max-width: 540px) { .set-form-grid { grid-template-columns: 1fr; } }
+    .set-field { display: grid; gap: 5px; font-size: 12.5px; }
+    .set-field > span { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .set-field input, .set-field select {
+      width: 100%; border: 1px solid var(--line); background: #f8fafc; color: var(--text);
+      padding: 9px 12px; border-radius: 10px; font: inherit; font-size: 13.5px;
+      outline: none; transition: 0.15s; box-sizing: border-box;
+    }
+    .set-field input:focus, .set-field select:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.15); }
+    .set-form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+    .set-btn-primary {
+      background: linear-gradient(135deg,#bae6fd,var(--gold)); color: #0b2540; border: none;
+      border-radius: 999px; padding: 9px 22px; font-size: 13px; font-weight: 800;
+      cursor: pointer; font-family: inherit; transition: 0.15s; box-shadow: 0 4px 12px rgba(14,165,233,0.24);
+    }
+    .set-btn-primary:hover { transform: translateY(-1px); }
+    .set-btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+    .set-form-msg { font-size: 12px; line-height: 1.5; flex: 1; min-width: 0; }
+    .set-form-msg.error { color: var(--danger); }
+    .set-form-msg.success { color: var(--success); }
 
     /* DASHBOARD REDESIGN */
     .dash-stack { display: grid; gap: 28px; }
@@ -768,14 +785,14 @@
       <img src="assets/logo.png" alt="MindDo logo" />
       <span class="nav-brand-name">MindDo</span>
     </a>
-    <ul class="nav-menu">
-      <li><a href="index.html"><span data-lang="zh">首页</span><span data-lang="en">Home</span></a></li>
-      <li><a href="campuses.html"><span data-lang="zh">校区选择</span><span data-lang="en">Campuses</span></a></li>
-      <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
-      <li><a href="assessment.html"><span data-lang="zh">入学评估</span><span data-lang="en">Assessment</span></a></li>
-      <li><a href="course-selection.html"><span data-lang="zh">选课</span><span data-lang="en">Enroll</span></a></li>
-      <li><a href="feedback.html"><span data-lang="zh">课堂反馈</span><span data-lang="en">Feedback</span></a></li>
-    </ul>
+    <nav class="nav-tabs" id="acctTabs" role="tablist" aria-label="Sections">
+      <button type="button" class="nav-tab active" data-tab="overview" role="tab" data-i18n="tabOverview"></button>
+      <button type="button" class="nav-tab" data-tab="schedule" role="tab" data-i18n="tabSchedule"></button>
+      <button type="button" class="nav-tab" data-tab="learning" role="tab" data-i18n="tabLearning"></button>
+      <button type="button" class="nav-tab" data-tab="profile" role="tab" data-i18n="tabProfile"></button>
+      <button type="button" class="nav-tab" data-tab="requests" role="tab" data-i18n="tabRequests"></button>
+      <button type="button" class="nav-tab" data-tab="settings" role="tab" data-i18n="tabSettings"></button>
+    </nav>
     <div class="nav-right">
       <div class="lang-switcher" data-lang-switcher>
         <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
@@ -832,19 +849,6 @@
         </div>
         <div class="kid-grid" id="kidGrid"></div>
       </section>
-
-      <div class="tab-bar-wrap">
-        <div class="tab-bar">
-          <nav class="acct-tabs" id="acctTabs" role="tablist" aria-label="Sections">
-            <button type="button" class="acct-tab active" data-tab="overview" role="tab" data-i18n="tabOverview"></button>
-            <button type="button" class="acct-tab" data-tab="schedule" role="tab" data-i18n="tabSchedule"></button>
-            <button type="button" class="acct-tab" data-tab="learning" role="tab" data-i18n="tabLearning"></button>
-            <button type="button" class="acct-tab" data-tab="profile" role="tab" data-i18n="tabProfile"></button>
-            <button type="button" class="acct-tab" data-tab="requests" role="tab" data-i18n="tabRequests"></button>
-            <button type="button" class="acct-tab" data-tab="settings" role="tab" data-i18n="tabSettings"></button>
-          </nav>
-        </div>
-      </div>
 
       <div class="dash-stack">
 
@@ -1058,19 +1062,84 @@
                     </div>
                     <span class="set-action-arrow" aria-hidden="true">→</span>
                   </a>
-                  <a class="set-action" href="profile-setup.html" id="setActionEditProfile">
-                    <div class="set-action-text">
-                      <span class="set-action-title" data-i18n="setEditProfileTitle"></span>
-                      <span class="set-action-sub" data-i18n="setEditProfileSub"></span>
-                    </div>
-                    <span class="set-action-arrow" aria-hidden="true">→</span>
-                  </a>
                 </div>
+              </article>
+
+              <article class="set-card" id="setProfileCard">
+                <h3 data-i18n="setEditProfileTitle"></h3>
+                <p class="set-sub" data-i18n="setEditProfileSub"></p>
+                <form class="set-form" id="setProfileForm">
+                  <div class="set-form-grid">
+                    <label class="set-field">
+                      <span data-i18n="setProfileFieldStudentName"></span>
+                      <input type="text" id="setStudentName" autocomplete="off" />
+                    </label>
+                    <label class="set-field">
+                      <span data-i18n="setProfileFieldGrade"></span>
+                      <select id="setStudentGrade">
+                        <option value=""></option>
+                        <option value="K">K</option><option value="1">1</option><option value="2">2</option>
+                        <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                        <option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                        <option value="9">9</option><option value="10">10</option><option value="11">11</option>
+                        <option value="12">12</option>
+                      </select>
+                    </label>
+                    <label class="set-field">
+                      <span data-i18n="setProfileFieldBirthday"></span>
+                      <input type="date" id="setStudentBirthday" />
+                    </label>
+                    <label class="set-field">
+                      <span data-i18n="setProfileFieldGender"></span>
+                      <select id="setStudentGender">
+                        <option value="" data-zh="不填" data-en="Prefer not to say"></option>
+                        <option value="female" data-zh="女" data-en="Female"></option>
+                        <option value="male" data-zh="男" data-en="Male"></option>
+                        <option value="other" data-zh="其他" data-en="Other"></option>
+                      </select>
+                    </label>
+                    <label class="set-field">
+                      <span data-i18n="setProfileFieldParentName"></span>
+                      <input type="text" id="setParentName" autocomplete="off" />
+                    </label>
+                    <label class="set-field">
+                      <span data-i18n="setProfileFieldPhone"></span>
+                      <input type="tel" id="setParentPhone" autocomplete="off" />
+                    </label>
+                  </div>
+                  <div class="set-form-actions">
+                    <span class="set-form-msg" id="setProfileMsg" role="status" aria-live="polite"></span>
+                    <button type="submit" class="set-btn-primary" data-i18n="setProfileSave"></button>
+                  </div>
+                </form>
               </article>
             </div>
 
-            <!-- RIGHT COL: preferences + security + danger zone -->
+            <!-- RIGHT COL: password + preferences + security + danger zone -->
             <div style="display:grid;gap:18px;">
+              <article class="set-card" id="setPasswordCard">
+                <h3 data-i18n="setChangePasswordTitle"></h3>
+                <p class="set-sub" data-i18n="setChangePasswordSub"></p>
+                <form class="set-form" id="setPasswordForm">
+                  <label class="set-field">
+                    <span data-i18n="setPasswordCurrent"></span>
+                    <input type="password" id="setPwCurrent" autocomplete="current-password" required />
+                  </label>
+                  <label class="set-field">
+                    <span data-i18n="setPasswordNew"></span>
+                    <input type="password" id="setPwNew" autocomplete="new-password" minlength="8" required />
+                  </label>
+                  <label class="set-field">
+                    <span data-i18n="setPasswordConfirm"></span>
+                    <input type="password" id="setPwConfirm" autocomplete="new-password" minlength="8" required />
+                  </label>
+                  <div class="set-form-actions">
+                    <span class="set-form-msg" id="setPasswordMsg" role="status" aria-live="polite"></span>
+                    <button type="submit" class="set-btn-primary" data-i18n="setPasswordSave"></button>
+                  </div>
+                </form>
+              </article>
+
               <article class="set-card">
                 <h3 data-i18n="setPrefsTitle"></h3>
                 <p class="set-sub" data-i18n="setPrefsSub"></p>
@@ -1090,16 +1159,9 @@
               </article>
 
               <article class="set-card">
-                <h3 data-i18n="setSecurityTitle"></h3>
-                <p class="set-sub" data-i18n="setSecuritySub"></p>
+                <h3 data-i18n="setHelpTitle"></h3>
+                <p class="set-sub" data-i18n="setHelpSub"></p>
                 <div class="set-actions">
-                  <button type="button" class="set-action set-disabled" id="setActionChangePassword">
-                    <div class="set-action-text">
-                      <span class="set-action-title" data-i18n="setChangePasswordTitle"></span>
-                      <span class="set-action-sub" data-i18n="setChangePasswordSub"></span>
-                    </div>
-                    <span class="set-badge" data-i18n="setContactSupport"></span>
-                  </button>
                   <button type="button" class="set-action" id="setActionContactSupport">
                     <div class="set-action-text">
                       <span class="set-action-title" data-i18n="setContactSupportTitle"></span>
@@ -1282,7 +1344,27 @@
           setInviteCoparentTitle: "邀请副家长",
           setInviteCoparentSub: "向另一位监护人发送只读权限的激活邀请。",
           setEditProfileTitle: "编辑当前学员资料",
-          setEditProfileSub: "更新姓名、年级、出生日期和家长联系方式。",
+          setEditProfileSub: "更新当前查看的孩子的基础信息和家长联系方式，保存后即时生效。",
+          setProfileFieldStudentName: "学员姓名",
+          setProfileFieldGrade: "年级",
+          setProfileFieldBirthday: "出生日期",
+          setProfileFieldGender: "性别",
+          setProfileFieldParentName: "家长姓名",
+          setProfileFieldPhone: "家长电话",
+          setProfileSave: "保存修改",
+          setProfileSaved: "已保存 ✓",
+          setProfileNoActive: "请先在「家庭成员」中选择一位孩子。",
+          setPasswordCurrent: "当前密码",
+          setPasswordNew: "新密码（至少 8 位）",
+          setPasswordConfirm: "确认新密码",
+          setPasswordSave: "更新密码",
+          setPasswordSaved: "密码已更新，请下次用新密码登录。",
+          setPasswordWrong: "当前密码不正确。",
+          setPasswordWeak: "新密码至少 8 位。",
+          setPasswordMismatch: "两次输入的新密码不一致。",
+          setPasswordNoAccount: "尚未识别到登录账户，请重新登录后再试。",
+          setHelpTitle: "帮助与支持",
+          setHelpSub: "需要协助时随时联系我们的客服团队。",
           setPrefsTitle: "偏好设置",
           setPrefsSub: "界面语言与通知偏好，本地保存，下次登录依然生效。",
           setLangLabel: "界面语言",
@@ -1487,7 +1569,27 @@
           setInviteCoparentTitle: "Invite a Co-parent",
           setInviteCoparentSub: "Send a read-only activation invite to another guardian.",
           setEditProfileTitle: "Edit Active Student Profile",
-          setEditProfileSub: "Update name, grade, birthday, and parent contact details.",
+          setEditProfileSub: "Update the currently viewed child's basics and parent contact. Saved instantly.",
+          setProfileFieldStudentName: "Student Name",
+          setProfileFieldGrade: "Grade",
+          setProfileFieldBirthday: "Birthday",
+          setProfileFieldGender: "Gender",
+          setProfileFieldParentName: "Parent Name",
+          setProfileFieldPhone: "Parent Phone",
+          setProfileSave: "Save Changes",
+          setProfileSaved: "Saved ✓",
+          setProfileNoActive: "Pick a child from the family panel first.",
+          setPasswordCurrent: "Current Password",
+          setPasswordNew: "New Password (8+ chars)",
+          setPasswordConfirm: "Confirm New Password",
+          setPasswordSave: "Update Password",
+          setPasswordSaved: "Password updated — sign in with the new one next time.",
+          setPasswordWrong: "Current password is incorrect.",
+          setPasswordWeak: "New password must be at least 8 characters.",
+          setPasswordMismatch: "The two new passwords don't match.",
+          setPasswordNoAccount: "No active account detected — sign in again first.",
+          setHelpTitle: "Help & Support",
+          setHelpSub: "Reach out to our support team whenever you need a hand.",
           setPrefsTitle: "Preferences",
           setPrefsSub: "UI language and notification choices. Stored locally and persist across sessions.",
           setLangLabel: "Interface Language",
@@ -2021,6 +2123,43 @@
           var el = document.getElementById(id);
           if (el) el.style.display = isPrimary ? "" : "none";
         });
+        // Edit-profile inline form is primary-guardian-only too — co-parents
+        // and student-role accounts can't write to the student record.
+        var profCard = document.getElementById("setProfileCard");
+        if (profCard) profCard.style.display = isPrimary ? "" : "none";
+
+        // Prefill the edit-profile form from the active student + guardian.
+        // Read straight from the underlying entities so the form reflects the
+        // canonical record (not the looser current-student snapshot).
+        if (profCard && isPrimary) {
+          var stuRec = (current && current.studentId && flow && flow.findStudentById)
+            ? flow.findStudentById(current.studentId) : null;
+          var gdnRec = (acct && acct.linkedEntityId && flow && flow.findGuardianById)
+            ? flow.findGuardianById(acct.linkedEntityId) : null;
+          var nameEl = document.getElementById("setStudentName");
+          var gradeEl = document.getElementById("setStudentGrade");
+          var bdayEl = document.getElementById("setStudentBirthday");
+          var genderEl = document.getElementById("setStudentGender");
+          var pnameEl = document.getElementById("setParentName");
+          var phoneEl = document.getElementById("setParentPhone");
+          if (nameEl) nameEl.value = (stuRec && stuRec.name) || (current.studentName || current.name || "");
+          if (gradeEl) gradeEl.value = (stuRec && stuRec.grade) || current.grade || "";
+          if (bdayEl) bdayEl.value = (stuRec && stuRec.birthday) || current.birthday || "";
+          if (genderEl) genderEl.value = (stuRec && stuRec.gender) || current.gender || "";
+          if (pnameEl) pnameEl.value = (gdnRec && gdnRec.name) || current.parentName || "";
+          if (phoneEl) phoneEl.value = (gdnRec && gdnRec.phone) || current.phone || "";
+          // Refresh gender dropdown labels in current language.
+          if (genderEl) {
+            genderEl.querySelectorAll("option[data-zh][data-en]").forEach(function (opt) {
+              opt.textContent = opt.getAttribute(lang === "en" ? "data-en" : "data-zh");
+            });
+          }
+        }
+        // Clear any stale form messages on render (lang switch, child switch).
+        var profMsg = document.getElementById("setProfileMsg");
+        if (profMsg) { profMsg.textContent = ""; profMsg.className = "set-form-msg"; }
+        var pwMsg = document.getElementById("setPasswordMsg");
+        if (pwMsg) { pwMsg.textContent = ""; pwMsg.className = "set-form-msg"; }
 
         var latestCompletion = snapshot && snapshot.completion ? snapshot.completion : null;
         var latestEvaluation = snapshot && snapshot.evaluation ? snapshot.evaluation : null;
@@ -2369,13 +2508,10 @@
         btn.addEventListener("click", logout);
       });
 
-      // Settings tab: contact-support and change-password actions delegate
-      // to the floating customer-service widget. Change-password is
-      // intentionally inert in demo mode and just pops the support panel
-      // as the recovery path.
-      // (The language toggle inside this tab uses the standard
-      // [data-set-lang] selector and is already wired by the global
-      // buttons.forEach loop above — no extra handler needed.)
+      // Settings tab — contact-support pops the floating widget, edit-profile
+      // and change-password forms write straight through flow.* so the
+      // changes show up everywhere the snapshot reads from. (Language toggle
+      // uses the standard [data-set-lang] selector and is wired globally.)
       (function () {
         function popSupport() {
           var fab = document.querySelector(".cs-fab");
@@ -2383,8 +2519,110 @@
         }
         var contactBtn = document.getElementById("setActionContactSupport");
         if (contactBtn) contactBtn.addEventListener("click", popSupport);
-        var pwBtn = document.getElementById("setActionChangePassword");
-        if (pwBtn) pwBtn.addEventListener("click", popSupport);
+
+        function setMsg(el, kind, text) {
+          if (!el) return;
+          el.className = "set-form-msg" + (kind ? " " + kind : "");
+          el.textContent = text || "";
+        }
+        function dictNow() {
+          var l = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+          return I18N[l] || I18N["zh-CN"];
+        }
+
+        // Edit-profile form — writes to the canonical student + guardian
+        // entities and refreshes currentStudent so the rest of the page
+        // re-renders with the new values.
+        var profForm = document.getElementById("setProfileForm");
+        if (profForm) {
+          profForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            var t = dictNow();
+            var msg = document.getElementById("setProfileMsg");
+            var flow = window.MindDoFlow;
+            var acct = (flow && flow.getCurrentAccount) ? flow.getCurrentAccount() : null;
+            var current = (flow && flow.getCurrentStudent) ? flow.getCurrentStudent() : null;
+            if (!acct || !current || !current.studentId) {
+              setMsg(msg, "error", t.setProfileNoActive);
+              return;
+            }
+            var name = document.getElementById("setStudentName").value.trim();
+            var grade = document.getElementById("setStudentGrade").value;
+            var birthday = document.getElementById("setStudentBirthday").value;
+            var gender = document.getElementById("setStudentGender").value;
+            var parentName = document.getElementById("setParentName").value.trim();
+            var phone = document.getElementById("setParentPhone").value.trim();
+
+            if (flow.upsertStudent) {
+              flow.upsertStudent({
+                studentId: current.studentId,
+                name: name,
+                grade: grade,
+                birthday: birthday,
+                gender: gender
+              });
+            }
+            if (acct.linkedEntityId && flow.upsertGuardian) {
+              flow.upsertGuardian({
+                guardianId: acct.linkedEntityId,
+                name: parentName,
+                phone: phone
+              });
+            }
+            // Mirror student-name updates onto currentStudent so the hero,
+            // family panel, and identity chip pick them up immediately.
+            if (flow.setCurrentStudent) {
+              flow.setCurrentStudent({
+                studentName: name,
+                name: name,
+                grade: grade,
+                birthday: birthday,
+                gender: gender,
+                parentName: parentName,
+                phone: phone
+              });
+            }
+            setMsg(msg, "success", t.setProfileSaved);
+            var lang = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+            render(lang);
+          });
+        }
+
+        // Change-password form — verifies the old password via flow's hash
+        // helper and writes the new hash. Min-length is enforced in the
+        // flow helper too so the UI and backend agree.
+        var pwForm = document.getElementById("setPasswordForm");
+        if (pwForm) {
+          pwForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            var t = dictNow();
+            var msg = document.getElementById("setPasswordMsg");
+            var flow = window.MindDoFlow;
+            var acct = (flow && flow.getCurrentAccount) ? flow.getCurrentAccount() : null;
+            if (!acct || !acct.accountId) {
+              setMsg(msg, "error", t.setPasswordNoAccount);
+              return;
+            }
+            var cur = document.getElementById("setPwCurrent").value;
+            var pw1 = document.getElementById("setPwNew").value;
+            var pw2 = document.getElementById("setPwConfirm").value;
+            if (!pw1 || pw1.length < 8) { setMsg(msg, "error", t.setPasswordWeak); return; }
+            if (pw1 !== pw2) { setMsg(msg, "error", t.setPasswordMismatch); return; }
+            if (!flow.changeAccountPassword) {
+              setMsg(msg, "error", t.setPasswordNoAccount);
+              return;
+            }
+            var out = flow.changeAccountPassword(acct.accountId, cur, pw1);
+            if (!out || !out.ok) {
+              if (out && out.reason === "bad_password") setMsg(msg, "error", t.setPasswordWrong);
+              else if (out && out.reason === "weak") setMsg(msg, "error", t.setPasswordWeak);
+              else setMsg(msg, "error", t.setPasswordNoAccount);
+              return;
+            }
+            setMsg(msg, "success", t.setPasswordSaved);
+            pwForm.reset();
+          });
+        }
       })();
     })();
   </script>

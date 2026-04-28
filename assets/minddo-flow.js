@@ -1617,6 +1617,24 @@
   // Authenticate an email + password combo against the accounts table. Falls
   // back to the legacy signup_users list so anyone registered before this
   // model was introduced can still log in.
+  // Update an account's password. Verifies the old password (or accepts
+  // anything when the account has no stored hash — same demo affordance
+  // verifyAccountLogin uses) before writing the new hash. Returns
+  // { ok: bool, reason?: "bad_password" | "not_found" | "weak" }.
+  function changeAccountPassword(accountId, oldPassword, newPassword) {
+    if (!accountId) return { ok: false, reason: "not_found" };
+    if (!newPassword || String(newPassword).length < 8) return { ok: false, reason: "weak" };
+    var list = getAccounts();
+    var account = list.filter(function (a) { return a.accountId === accountId; })[0];
+    if (!account) return { ok: false, reason: "not_found" };
+    var hasStoredHash = !!account.passwordHash;
+    if (hasStoredHash && !checkPassword(oldPassword, account.passwordHash)) {
+      return { ok: false, reason: "bad_password" };
+    }
+    upsertAccount({ accountId: accountId, passwordHash: hashPassword(newPassword) });
+    return { ok: true };
+  }
+
   function verifyAccountLogin(email, password) {
     var account = findAccountByEmail(email);
     if (account) {
@@ -1728,6 +1746,7 @@
     consumeInviteToken: consumeInviteToken,
     findInviteToken: findInviteToken,
     verifyAccountLogin: verifyAccountLogin,
+    changeAccountPassword: changeAccountPassword,
     findAccountByEmail: findAccountByEmail,
     findAccountById: findAccountById,
     getAccounts: getAccounts,
