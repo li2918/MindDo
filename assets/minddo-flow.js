@@ -99,7 +99,16 @@
   function setCurrentStudent(student) {
     if (!student) return null;
     var current = getCurrentStudent() || {};
-    var merged = Object.assign({}, current, student);
+    // Strip undefined values from the patch before merging — otherwise
+    // Object.assign will overwrite existing fields with undefined. This
+    // matters for callers like savePayment that pass `{ email: payment.email }`
+    // where payment.email may be unset; without this filter that wipes
+    // currentStudent.email and breaks downstream account/snapshot lookups.
+    var patch = {};
+    Object.keys(student).forEach(function (k) {
+      if (student[k] !== undefined) patch[k] = student[k];
+    });
+    var merged = Object.assign({}, current, patch);
     if (!merged.email && merged.phone) merged.email = demoEmailFromPhone(merged.phone);
     if (!merged.studentId) {
       merged.studentId = current.studentId
