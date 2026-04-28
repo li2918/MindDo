@@ -590,9 +590,39 @@
       }
     }
 
+    /* TAB BAR — sticky primary navigation between family panel and content.
+       Stays inside content-inner so it lines up with the rest of the page;
+       styled as a contained card rather than a full-width banner. */
+    .tab-bar-wrap {
+      position: sticky; top: 80px; z-index: 90;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 8px 22px rgba(30,58,95,0.08);
+      margin-bottom: 4px;
+      backdrop-filter: blur(10px);
+    }
+    .tab-bar { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 12px; }
+    .acct-tabs { display: flex; gap: 2px; flex-wrap: wrap; padding: 0; margin: 0; list-style: none; }
+    .acct-tab {
+      background: transparent; border: none; border-bottom: 2px solid transparent;
+      color: var(--muted); padding: 10px 14px;
+      font: inherit; font-size: 13.5px; font-weight: 700; letter-spacing: 0.01em;
+      cursor: pointer; border-radius: 8px 8px 0 0;
+      transition: 0.15s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .acct-tab:hover { color: var(--clay); background: rgba(30,58,95,0.05); }
+    .acct-tab.active { color: var(--clay); border-bottom-color: var(--gold); font-weight: 800; background: rgba(186,230,253,0.18); }
+    @media (max-width: 900px) { .tab-bar-wrap { top: 0; border-radius: 12px; } }
+    @media (max-width: 640px) { .acct-tab { padding: 8px 10px; font-size: 13px; } }
+
     /* DASHBOARD REDESIGN */
     .dash-stack { display: grid; gap: 28px; }
     .dash-section { display: grid; gap: 18px; }
+    /* Tab-panel visibility — sections marked as panels hide unless active.
+       Active state preserves the grid layout from .dash-section. */
+    .dash-section[data-tab-panel] { display: none; }
+    .dash-section[data-tab-panel].active { display: grid; }
     .dash-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
     .dash-head-text { max-width: 560px; }
     .dash-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #1e3a5f; margin-bottom: 6px; }
@@ -775,10 +805,22 @@
         <div class="kid-grid" id="kidGrid"></div>
       </section>
 
+      <div class="tab-bar-wrap">
+        <div class="tab-bar">
+          <nav class="acct-tabs" id="acctTabs" role="tablist" aria-label="Sections">
+            <button type="button" class="acct-tab active" data-tab="overview" role="tab" data-i18n="tabOverview"></button>
+            <button type="button" class="acct-tab" data-tab="schedule" role="tab" data-i18n="tabSchedule"></button>
+            <button type="button" class="acct-tab" data-tab="learning" role="tab" data-i18n="tabLearning"></button>
+            <button type="button" class="acct-tab" data-tab="profile" role="tab" data-i18n="tabProfile"></button>
+            <button type="button" class="acct-tab" data-tab="requests" role="tab" data-i18n="tabRequests"></button>
+          </nav>
+        </div>
+      </div>
+
       <div class="dash-stack">
 
         <!-- 1. AT-A-GLANCE -->
-        <section class="dash-section" aria-labelledby="overviewHead">
+        <section class="dash-section active" data-tab-panel="overview" role="tabpanel" aria-labelledby="overviewHead">
           <div class="dash-head">
             <div class="dash-head-text">
               <div class="dash-eyebrow" data-i18n="overviewEyebrow"></div>
@@ -797,8 +839,8 @@
               <h3 class="next-class-title" id="nextLessonText"></h3>
               <div class="next-class-meta" id="nextLessonMeta"></div>
               <div class="next-class-cta">
-                <a class="btn-primary" href="#weekHead" data-i18n="viewScheduleCta"></a>
-                <a class="btn-ghost" href="#requestHead" data-i18n="submitRequestCta"></a>
+                <a class="btn-primary" href="#schedule" data-jump-tab="schedule" data-i18n="viewScheduleCta"></a>
+                <a class="btn-ghost" href="#requests" data-jump-tab="requests" data-i18n="submitRequestCta"></a>
               </div>
             </article>
 
@@ -816,7 +858,7 @@
         </section>
 
         <!-- 2. MY WEEK -->
-        <section class="dash-section" aria-labelledby="weekHead">
+        <section class="dash-section" data-tab-panel="schedule" role="tabpanel" aria-labelledby="weekHead">
           <div class="dash-head">
             <div class="dash-head-text">
               <div class="dash-eyebrow" data-i18n="weekEyebrow"></div>
@@ -843,7 +885,7 @@
         </section>
 
         <!-- 3. LEARNING SNAPSHOT -->
-        <section class="dash-section" aria-labelledby="snapshotHead">
+        <section class="dash-section" data-tab-panel="learning" role="tabpanel" aria-labelledby="snapshotHead">
           <div class="dash-head">
             <div class="dash-head-text">
               <div class="dash-eyebrow" data-i18n="snapshotEyebrow"></div>
@@ -878,7 +920,7 @@
         </section>
 
         <!-- 4. PROFILE -->
-        <section class="dash-section" aria-labelledby="profileHead">
+        <section class="dash-section" data-tab-panel="profile" role="tabpanel" aria-labelledby="profileHead">
           <div class="dash-head">
             <div class="dash-head-text">
               <div class="dash-eyebrow" data-i18n="profileEyebrow"></div>
@@ -900,7 +942,7 @@
         </section>
 
         <!-- 5. REQUESTS -->
-        <section class="dash-section" aria-labelledby="requestHead">
+        <section class="dash-section" data-tab-panel="requests" role="tabpanel" aria-labelledby="requestHead">
           <div class="dash-head">
             <div class="dash-head-text">
               <div class="dash-eyebrow" data-i18n="requestEyebrow"></div>
@@ -1074,6 +1116,11 @@
           summaryTitle: "学习概览",
           statusTitle: "流程进度",
           quickActionsTitle: "快捷入口",
+          tabOverview: "概览",
+          tabSchedule: "课表",
+          tabLearning: "学习记录",
+          tabProfile: "资料",
+          tabRequests: "申请",
           overviewEyebrow: "今日概览",
           overviewTitle: "今天该做什么？",
           overviewSub: "下一节课安排、账户进度与流程状态一屏可见，继续推进学习只需一个动作。",
@@ -1238,6 +1285,11 @@
           summaryTitle: "Learning Overview",
           statusTitle: "Flow Progress",
           quickActionsTitle: "Quick Actions",
+          tabOverview: "Overview",
+          tabSchedule: "Schedule",
+          tabLearning: "Learning",
+          tabProfile: "Profile",
+          tabRequests: "Requests",
           overviewEyebrow: "Today At A Glance",
           overviewTitle: "What's next for you?",
           overviewSub: "Your next class, account status, and flow progress in one view — everything you need to keep momentum.",
@@ -1964,6 +2016,45 @@
             document.getElementById("familyPanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
           } catch (_) {}
         });
+      })();
+
+      // Tab switching: clicking a tab button (or a [data-jump-tab] link inside
+      // a panel) shows the matching dash-section and hides the rest. The
+      // active tab persists across reloads via sessionStorage so a parent
+      // returning from feedback.html lands back on the same tab they had open.
+      (function () {
+        var TAB_KEY = "minddo_acct_active_tab";
+        var KNOWN_TABS = ["overview", "schedule", "learning", "profile", "requests"];
+        function setActiveTab(key) {
+          if (KNOWN_TABS.indexOf(key) === -1) key = "overview";
+          document.querySelectorAll("[data-tab]").forEach(function (btn) {
+            btn.classList.toggle("active", btn.getAttribute("data-tab") === key);
+          });
+          document.querySelectorAll("[data-tab-panel]").forEach(function (panel) {
+            panel.classList.toggle("active", panel.getAttribute("data-tab-panel") === key);
+          });
+          try { sessionStorage.setItem(TAB_KEY, key); } catch (_) {}
+        }
+        var tabBar = document.getElementById("acctTabs");
+        if (tabBar) {
+          tabBar.addEventListener("click", function (e) {
+            var btn = e.target.closest("[data-tab]");
+            if (!btn) return;
+            setActiveTab(btn.getAttribute("data-tab"));
+          });
+        }
+        // [data-jump-tab] anchors inside panels (e.g. "View schedule" inside
+        // the next-class card) cross-link into another tab.
+        document.addEventListener("click", function (e) {
+          var jump = e.target.closest("[data-jump-tab]");
+          if (!jump) return;
+          e.preventDefault();
+          setActiveTab(jump.getAttribute("data-jump-tab"));
+          try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (_) {}
+        });
+        var saved;
+        try { saved = sessionStorage.getItem(TAB_KEY); } catch (_) {}
+        if (saved && KNOWN_TABS.indexOf(saved) >= 0) setActiveTab(saved);
       })();
 
       function escHTML(s) {
