@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="为家庭账户添加另一位孩子 · Add another child to your MindDo family account." />
+  <meta name="theme-color" content="#1e3a5f" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="add-child.html" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <title>添加孩子 | Add a Child</title>
+  <style>
+    .skip-link { position:absolute; left:-9999px; top:0; background:#1e3a5f; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #0ea5e9; outline-offset:2px; }
+    :root {
+      --bg:#f6f8fb; --sand:#e8eef5; --card:rgba(240,249,255,0.94);
+      --line:rgba(30,58,95,0.14); --text:#0f172a; --muted:#5a6b81;
+      --gold:#0ea5e9; --gold-deep:#0284c7; --clay:#1e3a5f; --brown:#14294a;
+      --ok:#6f8f57; --warn:#d89c36; --danger:#c46a4d;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
+    a { color:inherit; text-decoration:none; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+
+    .navbar { position:sticky; top:0; z-index:100; background:rgba(240,249,255,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:44px; height:44px; object-fit:contain; }
+    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .btn-primary { background:linear-gradient(135deg,#bae6fd,var(--gold)); color:#0b2540; border:none; border-radius:999px; padding:11px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(14,165,233,0.28); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-primary:hover { transform:translateY(-2px); }
+    .btn-primary:disabled { opacity:0.55; cursor:not-allowed; transform:none; box-shadow:none; }
+    .btn-secondary { background:rgba(240,249,255,0.98); color:var(--clay); border:1px solid var(--line); border-radius:999px; padding:10px 20px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(14,165,233,0.38); }
+
+    .page-hero { background:linear-gradient(145deg,#0b1a2e 0%,#14294a 50%,#1e3a5f 100%); padding:52px 0 42px; }
+    .identity-chip { display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:999px; background:rgba(240,249,255,0.14); border:1px solid rgba(224,242,254,0.3); color:#f0f9ff; font-size:12px; font-weight:700; margin-bottom:14px; }
+    .identity-chip .dot { width:6px; height:6px; border-radius:999px; background:#0ea5e9; box-shadow:0 0 0 3px rgba(14,165,233,0.25); }
+    .identity-chip .role { text-transform:uppercase; letter-spacing:0.08em; font-size:11px; color:rgba(224,242,254,0.75); font-weight:800; }
+    .identity-chip .sep { color:rgba(224,242,254,0.35); }
+    .identity-chip .name { color:#f0f9ff; }
+    .page-hero-inner { max-width:720px; margin:0 auto; padding:0 48px; color:#f0f9ff; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(14,165,233,0.18); border:1px solid rgba(14,165,233,0.3); color:#bae6fd; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
+    .page-hero h1 { font-size:clamp(26px,3.2vw,38px); font-weight:900; letter-spacing:-0.02em; margin-bottom:10px; }
+    .page-hero p { font-size:14.5px; color:rgba(224,242,254,0.78); line-height:1.7; max-width:580px; }
+
+    .page-content { padding:40px 0 80px; }
+    .content-inner { max-width:720px; margin:0 auto; padding:0 48px; }
+    .panel { background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(30,58,95,0.08); padding:28px; }
+    .panel h2 { font-size:18px; font-weight:800; color:var(--clay); margin-bottom:4px; }
+    .panel .desc { font-size:13px; color:var(--muted); line-height:1.65; margin-bottom:18px; }
+
+    .field { display:flex; flex-direction:column; margin-bottom:14px; }
+    .field label { font-size:12px; font-weight:800; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; }
+    .field input, .field select {
+      width:100%; border:1px solid var(--line); background:#f8fafc; color:var(--text);
+      padding:10px 12px; border-radius:12px; font:inherit; font-size:14px; outline:none; transition:0.15s;
+    }
+    .field input:focus, .field select:focus { border-color:var(--gold); box-shadow:0 0 0 2px rgba(14,165,233,0.15); }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; }
+    @media (max-width:640px) { .form-grid { grid-template-columns:1fr; } }
+    .actions { display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:6px; }
+
+    .notice { padding:14px 16px; background:rgba(178,80,45,0.08); border:1px solid rgba(178,80,45,0.28); border-radius:14px; color:#8e3d21; font-size:13px; line-height:1.65; }
+
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--clay); color:#f0f9ff; padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:0 12px 28px rgba(30,58,95,0.3); opacity:0; transform:translateY(10px); transition:0.25s; pointer-events:none; z-index:2000; }
+    .toast.show { opacity:1; transform:translateY(0); }
+
+    .footer { background:var(--brown); color:rgba(240,249,255,0.78); padding:48px 48px 28px; }
+    .footer-inner { max-width:720px; margin:0 auto; font-size:13px; }
+    .footer-bottom { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(240,249,255,0.45); margin-top:22px; padding-top:20px; border-top:1px solid rgba(224,242,254,0.1); }
+
+    @media (max-width:900px) { .navbar { padding:0 24px; } .page-hero-inner, .content-inner { padding:0 24px; } }
+  </style>
+  <link rel="stylesheet" href="assets/minddo-theme.css" />
+  <link rel="stylesheet" href="assets/minddo-responsive.css" />
+</head>
+<body>
+  <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
+
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <div class="nav-right">
+      <div class="lang-switcher" data-lang-switcher>
+        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span class="lang-trigger-label">中文</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="lang-menu" role="listbox">
+          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
+          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+        </div>
+      </div>
+      <a class="btn-secondary" href="student-account.html"><span data-lang="zh">← 返回学员中心</span><span data-lang="en">← Back To My Account</span></a>
+    </div>
+  </nav>
+
+  <main id="main" class="page-hero">
+    <div class="page-hero-inner">
+      <span class="identity-chip" id="identityChip" style="display:none;">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="role" id="identityChipRole"></span>
+        <span class="sep" aria-hidden="true">·</span>
+        <span class="name" id="identityChipName"></span>
+      </span>
+      <div class="page-tag"><span data-lang="zh">添加孩子</span><span data-lang="en">Add Child</span></div>
+      <h1><span data-lang="zh">添加另一位孩子</span><span data-lang="en">Add Another Child</span></h1>
+      <p><span data-lang="zh">填写孩子的基本信息后，我们会为 TA 创建独立的学员档案，并直接进入试课预约。</span><span data-lang="en">Fill in the basics — we'll create a separate student profile and take you straight into trial booking.</span></p>
+    </div>
+  </main>
+
+  <section class="page-content">
+    <div class="content-inner">
+
+      <article class="panel" id="permissionNotice" style="display:none;">
+        <div class="notice" id="permissionNoticeText"></div>
+      </article>
+
+      <article class="panel" id="addChildPanel">
+        <h2 id="formTitle"></h2>
+        <p class="desc" id="formDesc"></p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="childName"><span data-lang="zh">学员姓名</span><span data-lang="en">Student Name</span></label>
+            <input id="childName" type="text" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="childGrade"><span data-lang="zh">年级</span><span data-lang="en">Grade</span></label>
+            <select id="childGrade">
+              <option value="" data-zh="请选择" data-en="Select"></option>
+              <option value="K">K</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="childBirthday"><span data-lang="zh">出生日期</span><span data-lang="en">Birthday</span></label>
+            <input id="childBirthday" type="date" />
+          </div>
+          <div class="field">
+            <label for="childGender"><span data-lang="zh">性别</span><span data-lang="en">Gender</span></label>
+            <select id="childGender">
+              <option value="" data-zh="不填" data-en="Prefer not to say"></option>
+              <option value="female" data-zh="女" data-en="Female"></option>
+              <option value="male" data-zh="男" data-en="Male"></option>
+              <option value="other" data-zh="其他" data-en="Other"></option>
+            </select>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn-secondary" href="student-account.html"><span data-lang="zh">取消</span><span data-lang="en">Cancel</span></a>
+          <button type="button" class="btn-primary" id="addChildBtn"><span data-lang="zh">添加孩子</span><span data-lang="en">Add Child</span></button>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <span>© 2025 MindDo Learning Center · <span data-lang="zh">保留所有权利</span><span data-lang="en">All rights reserved</span></span>
+        <span><a href="privacy.html" style="color:inherit;"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy</span></a> · <a href="terms.html" style="color:inherit;"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/minddo-flow.js"></script>
+  <script>
+    (function () {
+      var I18N = {
+        "zh-CN": {
+          pageTitle: "添加孩子",
+          formTitle: "孩子信息",
+          formDesc: "添加成功后会自动为 TA 创建学员档案与登录账号，然后跳转到试课预约页面。",
+          roleLabels: { guardian_primary: "主家长", guardian_secondary: "副家长", student: "学员" },
+          permissionNotPrimary: "只有主家长可以添加孩子。请联系主家长操作。",
+          permissionNoAccount: "未检测到登录账号，请先登录后再添加孩子。",
+          missingName: "请填写学员姓名再添加。",
+          navigatingToTrial: "已添加 {name}，跳转到试课预约……"
+        },
+        en: {
+          pageTitle: "Add a Child",
+          formTitle: "Child's Info",
+          formDesc: "Once added, we'll create a student profile and login automatically, then take you to trial booking.",
+          roleLabels: { guardian_primary: "Primary Guardian", guardian_secondary: "Co-parent", student: "Student" },
+          permissionNotPrimary: "Only the primary guardian can add a child. Please ask the primary guardian to do this.",
+          permissionNoAccount: "No active account detected. Please sign in before adding a child.",
+          missingName: "Please enter a student name first.",
+          navigatingToTrial: "Added {name} — taking you to trial booking…"
+        }
+      };
+
+      var html = document.documentElement;
+      var lang = localStorage.getItem("minddo_lang") === "en" ? "en" : "zh-CN";
+      var langButtons = document.querySelectorAll("[data-set-lang]");
+      var flow = window.MindDoFlow;
+
+      var addChildPanel = document.getElementById("addChildPanel");
+      var permissionNotice = document.getElementById("permissionNotice");
+      var permissionNoticeText = document.getElementById("permissionNoticeText");
+      var addChildBtn = document.getElementById("addChildBtn");
+      var toastEl = document.getElementById("toast");
+
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
+        setTimeout(function () { toastEl.classList.remove("show"); }, 2400);
+      }
+
+      function applyLang(l) {
+        lang = l;
+        html.setAttribute("lang", l);
+        localStorage.setItem("minddo_lang", l);
+        var t = I18N[l];
+        document.title = t.pageTitle + " | MindDo";
+        document.getElementById("formTitle").textContent = t.formTitle;
+        document.getElementById("formDesc").textContent = t.formDesc;
+        // Re-render dropdown labels by re-evaluating data-zh/data-en attrs
+        document.querySelectorAll("option[data-zh][data-en]").forEach(function (opt) {
+          opt.textContent = opt.getAttribute(l === "en" ? "data-en" : "data-zh");
+        });
+        langButtons.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-set-lang") === l);
+        });
+        renderIdentity();
+        renderPermission();
+      }
+
+      function renderIdentity() {
+        var t = I18N[lang];
+        var chip = document.getElementById("identityChip");
+        var account = (flow && flow.getCurrentAccount) ? flow.getCurrentAccount() : null;
+        if (!account) { chip.style.display = "none"; return; }
+        var name = "";
+        if (flow.findGuardianById && account.linkedEntityId) {
+          var g = flow.findGuardianById(account.linkedEntityId);
+          if (g) name = g.name || g.email || "";
+        }
+        document.getElementById("identityChipRole").textContent = t.roleLabels[account.role] || account.role;
+        document.getElementById("identityChipName").textContent = name || account.email || "—";
+        chip.style.display = "inline-flex";
+      }
+
+      function renderPermission() {
+        var t = I18N[lang];
+        var account = (flow && flow.getCurrentAccount) ? flow.getCurrentAccount() : null;
+        if (!account) {
+          permissionNoticeText.textContent = t.permissionNoAccount;
+          permissionNotice.style.display = "block";
+          addChildPanel.style.display = "none";
+          return;
+        }
+        var isPrimary = account.role === flow.ROLES.guardianPrimary;
+        if (!isPrimary) {
+          permissionNoticeText.textContent = t.permissionNotPrimary;
+          permissionNotice.style.display = "block";
+          addChildPanel.style.display = "none";
+          return;
+        }
+        permissionNotice.style.display = "none";
+        addChildPanel.style.display = "block";
+      }
+
+      langButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () { applyLang(btn.getAttribute("data-set-lang")); });
+      });
+
+      addChildBtn.addEventListener("click", function () {
+        var t = I18N[lang];
+        var name = document.getElementById("childName").value.trim();
+        if (!name) { showToast(t.missingName); return; }
+        var account = (flow && flow.getCurrentAccount) ? flow.getCurrentAccount() : null;
+        if (!account || !flow.addChildToFamily) return;
+        var student = flow.addChildToFamily(account.familyId, {
+          name: name,
+          grade: document.getElementById("childGrade").value,
+          birthday: document.getElementById("childBirthday").value,
+          gender: document.getElementById("childGender").value
+        });
+        if (!student) return;
+
+        document.getElementById("childName").value = "";
+        document.getElementById("childGrade").value = "";
+        document.getElementById("childBirthday").value = "";
+        document.getElementById("childGender").value = "";
+
+        // Every new child must go through a trial before enrolling — route the
+        // primary guardian into the booking flow scoped to the freshly minted
+        // studentId. The student's learning login was already auto-provisioned
+        // inside addChildToFamily.
+        showToast(t.navigatingToTrial.replace("{name}", student.name || ""));
+        addChildBtn.disabled = true;
+        setTimeout(function () {
+          window.location.href = "trial.html?sid=" + encodeURIComponent(student.studentId);
+        }, 700);
+      });
+
+      applyLang(lang);
+    })();
+  </script>
+  <script src="assets/lang-switcher.js" defer></script>
+  <script src="assets/minddo-nav.js" defer></script>
+  <script src="assets/consent.js" defer></script>
+</body>
+</html>
