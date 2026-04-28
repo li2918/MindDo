@@ -350,15 +350,12 @@
       var SAFE_NEXT = /^[a-z0-9_-]+\.html(#[a-z0-9_-]+)?$/i;
       // Post-signup routing:
       //   - Explicit ?next= always wins (enroll gate, assessment flow, etc.)
-      //   - Invite-driven signups (?sid= present, the parent came from a
-      //     trial-invite link) continue into the first student's course
-      //     selection, since the trial just finished and that's the next
-      //     step in their journey
-      //   - Plain registrations land on the guardian hub
-      var sidParamPeek = (urlParams.get("sid") || "").trim();
-      var defaultNext = sidParamPeek
-        ? "course-selection.html?sid=" + encodeURIComponent(sidParamPeek)
-        : "student-account.html";
+      //   - Otherwise everyone lands on the guardian hub (student-account.html
+      //     in role-adaptive guardian view). Invite-driven signups still seed
+      //     the current student via ?sid= below, so the just-trialed child is
+      //     the highlighted one in the family panel and the parent can drive
+      //     enrollment from there at their own pace.
+      var defaultNext = "student-account.html";
       var nextUrl = (nextParam && SAFE_NEXT.test(nextParam)) ? nextParam : defaultNext;
 
       // Invite-link prefill. The account-invite email carries `?sid=`, `?email=`
