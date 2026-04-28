@@ -168,11 +168,6 @@
                 <option value="other" data-zh="其他" data-en="Other"></option>
               </select>
             </div>
-            <div class="field full">
-              <label for="city"><span data-lang="zh">城市 / 校区</span><span data-lang="en">City / Campus</span></label>
-              <input id="city" name="city" type="text" autocomplete="address-level2" />
-              <div class="field-hint"><span data-lang="zh">线下就读请填写所在校区城市。</span><span data-lang="en">If attending in person, enter the campus city.</span></div>
-            </div>
           </div>
         </article>
 
@@ -277,7 +272,6 @@
         grade: document.getElementById("grade"),
         birthday: document.getElementById("birthday"),
         gender: document.getElementById("gender"),
-        city: document.getElementById("city"),
         parentName: document.getElementById("parentName"),
         parentRelation: document.getElementById("parentRelation"),
         phone: document.getElementById("phone"),
@@ -316,7 +310,6 @@
         }
         if (!fields.birthday.value && current.birthday) fields.birthday.value = current.birthday;
         if (!fields.gender.value && current.gender) fields.gender.value = current.gender;
-        if (!fields.city.value && current.city) fields.city.value = current.city;
         if (!fields.parentName.value && current.parentName) fields.parentName.value = current.parentName;
         if (!fields.parentRelation.value && current.parentRelation) fields.parentRelation.value = current.parentRelation;
         if (!fields.phone.value && current.phone) fields.phone.value = current.phone;
@@ -386,7 +379,6 @@
           grade: grade,
           birthday: fields.birthday.value || "",
           gender: fields.gender.value || "",
-          city: fields.city.value.trim(),
           parentName: parentName,
           parentRelation: fields.parentRelation.value || "",
           phone: phone,
@@ -406,8 +398,7 @@
             name: studentName,
             grade: grade,
             birthday: patch.birthday,
-            gender: patch.gender,
-            city: patch.city
+            gender: patch.gender
           });
           if (acct && acct.familyId && flow.addStudentToFamily) {
             flow.addStudentToFamily(acct.familyId, cur.studentId);
