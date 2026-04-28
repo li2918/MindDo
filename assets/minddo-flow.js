@@ -654,17 +654,36 @@
     return map[studentId] || "";
   }
 
-  // Account-invite bookkeeping: records one invite per email. Returns the
-  // stored record so UIs can show "Sent at ..." state.
+  // Account-invite bookkeeping. Accepts either a string email or a lead-like
+  // object with { email, studentId }. When a studentId is supplied and matches
+  // a record, that match is authoritative — siblings sharing a parent email
+  // each get their own invite. Email-only callers (legacy, no sid) still
+  // resolve to the latest invite for that email.
   function getAccountInvites() {
     return readJson(KEYS.invites, []);
   }
-  function getAccountInviteFor(email) {
-    var target = norm(email);
-    if (!target) return null;
+  function getAccountInviteFor(leadOrEmail) {
+    var email = "";
+    var id = "";
+    if (leadOrEmail && typeof leadOrEmail === "object") {
+      email = norm(leadOrEmail.email);
+      id = String(leadOrEmail.studentId || "");
+    } else {
+      email = norm(leadOrEmail);
+    }
+    if (!email && !id) return null;
     var list = getAccountInvites();
-    return list.filter(function (r) { return norm(r.email) === target; })
-      .sort(function (a, b) { return new Date(b.sentAt || 0) - new Date(a.sentAt || 0); })[0] || null;
+    var matches = list.filter(function (r) {
+      // If both sides carry a studentId, the sid match is authoritative —
+      // this is how we keep two siblings on the same parent email from
+      // mirroring each other's invite state. Email is the fallback for
+      // records (or callers) without a sid.
+      if (id && r.studentId) return String(r.studentId) === id;
+      return email && norm(r.email) === email;
+    });
+    return matches.sort(function (a, b) {
+      return new Date(b.sentAt || 0) - new Date(a.sentAt || 0);
+    })[0] || null;
   }
   // Look up the latest trial lead for a given studentId — used by the
   // invite briefing page (trial-invite.html) to render evaluation and
@@ -787,12 +806,13 @@
     var list = getTrialEvaluations();
     var email = norm(lead.email);
     var id = String(lead.studentId || "");
-    // OR-match is intentional: records may be written keyed to the lead's
-    // original studentId, while the caller may pass the current student's ID
-    // (different if the parent signed up in a fresh session). Email-match
-    // covers that gap; studentId-match covers the happy path.
+    // When both sides carry a studentId the sid match is authoritative —
+    // siblings sharing a parent email must not mirror each other's eval.
+    // Email-only match is the fallback for legacy rows (or callers) that
+    // arrive without a studentId.
     return list.filter(function (r) {
-      return (email && norm(r.email) === email) || (id && String(r.studentId || "") === id);
+      if (id && r.studentId) return String(r.studentId) === id;
+      return email && norm(r.email) === email;
     }).sort(function (a, b) {
       return new Date(b.evaluatedAt || 0) - new Date(a.evaluatedAt || 0);
     })[0] || null;
@@ -813,8 +833,13 @@
     var list = getTrialEvaluations();
     var email = norm(record.email);
     var id = String(record.studentId || "");
+    // Mirror the read-side rule: sid match is authoritative when both have
+    // one, so two siblings on the same parent email get separate eval rows
+    // instead of overwriting each other.
     var idx = list.findIndex(function (r) {
-      return (email && norm(r.email) === email) || (id && String(r.studentId || "") === id);
+      if (id && r.studentId) return String(r.studentId) === id;
+      if (id || r.studentId) return false;
+      return email && norm(r.email) === email;
     });
     if (idx >= 0) list[idx] = record;
     else list.push(record);
@@ -833,8 +858,12 @@
     var list = getTrialCompletions();
     var email = norm(lead.email);
     var id = String(lead.studentId || "");
+    // sid match wins when both sides have one, so siblings sharing a parent
+    // email don't read each other's completion state. Email is the fallback
+    // for rows / callers without a studentId.
     return list.filter(function (r) {
-      return (email && norm(r.email) === email) || (id && String(r.studentId || "") === id);
+      if (id && r.studentId) return String(r.studentId) === id;
+      return email && norm(r.email) === email;
     }).sort(function (a, b) {
       return new Date(b.completedAt || 0) - new Date(a.completedAt || 0);
     })[0] || null;
@@ -853,8 +882,12 @@
     var list = getTrialCompletions();
     var email = norm(record.email);
     var id = String(record.studentId || "");
+    // Same sid-authoritative upsert rule: don't collapse two siblings'
+    // completion records onto one row just because they share a parent email.
     var idx = list.findIndex(function (r) {
-      return (email && norm(r.email) === email) || (id && String(r.studentId || "") === id);
+      if (id && r.studentId) return String(r.studentId) === id;
+      if (id || r.studentId) return false;
+      return email && norm(r.email) === email;
     });
     if (idx >= 0) list[idx] = record;
     else list.push(record);
@@ -866,8 +899,13 @@
     var list = getTrialCompletions();
     var email = norm(lead.email);
     var id = String(lead.studentId || "");
+    // Match the same record that markTrialComplete would have created — sid
+    // when both sides have one, otherwise email — so undoing one sibling's
+    // completion doesn't wipe the other's.
     var next = list.filter(function (r) {
-      return !((email && norm(r.email) === email) || (id && String(r.studentId || "") === id));
+      if (id && r.studentId) return String(r.studentId) !== id;
+      if (id || r.studentId) return true;
+      return !(email && norm(r.email) === email);
     });
     writeJson(KEYS.completions, next);
     return next.length !== list.length;

@@ -529,7 +529,10 @@
 
       function inviteFor(lead) {
         if (!window.MindDoFlow || !window.MindDoFlow.getAccountInviteFor) return null;
-        return window.MindDoFlow.getAccountInviteFor(lead.email);
+        // Pass the whole lead so getAccountInviteFor can prefer studentId
+        // match over email — siblings on the same parent email each get
+        // their own invite row.
+        return window.MindDoFlow.getAccountInviteFor(lead);
       }
 
       function showToast(msg) {
@@ -697,7 +700,7 @@
           var cIdx = Number(copyBtnEl.getAttribute("data-copy-idx"));
           var cLead = tbody._leads && tbody._leads[cIdx];
           if (!cLead || !window.MindDoFlow || !window.MindDoFlow.getAccountInviteFor) return;
-          var cInvite = window.MindDoFlow.getAccountInviteFor(cLead.email);
+          var cInvite = window.MindDoFlow.getAccountInviteFor(cLead);
           var url = (cInvite && (cInvite.inviteUrl || cInvite.signupUrl)) || "";
           if (!url) return;
           copyToClipboard(url).then(function (ok) {
