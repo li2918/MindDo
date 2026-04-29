@@ -744,6 +744,21 @@
     .set-form-msg.error { color: var(--danger); }
     .set-form-msg.success { color: var(--success); }
 
+    /* Feedback tab — latest record card + compact history rows */
+    .fb-latest { display: grid; gap: 12px; }
+    .fb-latest .fb-row { display: grid; grid-template-columns: 110px 1fr; gap: 8px 14px; align-items: start; }
+    .fb-latest .fb-row .fb-k { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+    .fb-latest .fb-row .fb-v { font-size: 13.5px; color: var(--clay); line-height: 1.6; }
+    .fb-latest .fb-pill { display: inline-flex; padding: 3px 10px; border-radius: 999px; background: rgba(186,230,253,0.32); color: #0b4d70; border: 1px solid rgba(14,165,233,0.32); font-size: 12px; font-weight: 700; letter-spacing: 0.02em; }
+    .fb-latest .fb-pill.next { background: rgba(216,156,54,0.16); color: #8a5d11; border-color: rgba(216,156,54,0.34); }
+    .fb-empty { padding: 20px 16px; text-align: center; color: var(--muted); font-size: 13px; line-height: 1.7; background: rgba(240,249,255,0.6); border: 1px dashed rgba(30,58,95,0.18); border-radius: 12px; }
+    .fb-row-card { display: grid; gap: 4px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .fb-row-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .fb-row-date { font-size: 12px; color: var(--muted); font-weight: 700; }
+    .fb-row-rating { font-size: 12px; font-weight: 800; color: var(--gold-deep); }
+    .fb-row-body { font-size: 12.5px; color: var(--clay); line-height: 1.55; }
+    .fb-row-meta { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+
     /* DASHBOARD REDESIGN */
     .dash-stack { display: grid; gap: 28px; }
     .dash-section { display: grid; gap: 18px; }
@@ -798,7 +813,7 @@
     .stat-title { font-size: 15px; font-weight: 800; color: var(--clay); }
     .stat-text { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 0; }
 
-    .snap-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+    .snap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
     .snap-card {
       background: linear-gradient(180deg,rgba(240,249,255,0.96),rgba(240,249,255,0.96));
       border: 1px solid var(--line);
@@ -916,6 +931,9 @@
         </button>
         <button type="button" class="sidebar-item" data-tab="learning" role="tab">
           <span class="si-icon" aria-hidden="true">◐</span><span data-i18n="tabLearning"></span>
+        </button>
+        <button type="button" class="sidebar-item" data-tab="feedback" role="tab">
+          <span class="si-icon" aria-hidden="true">💬</span><span data-i18n="tabFeedback"></span>
         </button>
         <button type="button" class="sidebar-item" data-tab="profile" role="tab">
           <span class="si-icon" aria-hidden="true">◉</span><span data-i18n="tabProfile"></span>
@@ -1055,13 +1073,6 @@
           </div>
 
           <div class="snap-grid">
-            <a class="snap-card" href="feedback.html">
-              <span class="snap-icon" aria-hidden="true">💬</span>
-              <span class="snap-eyebrow" data-i18n="snapFeedbackEyebrow"></span>
-              <h3 class="snap-title" data-i18n="snapFeedbackTitle"></h3>
-              <p class="snap-copy" data-i18n="snapFeedbackCopy"></p>
-              <span class="snap-link" data-i18n="snapFeedbackCta"></span>
-            </a>
             <a class="snap-card" href="semester-report.html">
               <span class="snap-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>
               <span class="snap-eyebrow" data-i18n="snapReportEyebrow"></span>
@@ -1077,6 +1088,30 @@
               <span class="snap-link" data-i18n="snapAssessCta"></span>
             </a>
           </div>
+        </section>
+
+        <!-- 3.5. FEEDBACK -->
+        <section class="dash-section" data-tab-panel="feedback" role="tabpanel" aria-labelledby="feedbackHead">
+          <div class="dash-head">
+            <div class="dash-head-text">
+              <div class="dash-eyebrow" data-i18n="feedbackEyebrow"></div>
+              <h2 id="feedbackHead" class="dash-title" data-i18n="feedbackTitle"></h2>
+              <p class="dash-sub" data-i18n="feedbackSub"></p>
+            </div>
+            <div class="dash-head-actions">
+              <a class="btn-primary" href="feedback.html" data-i18n="feedbackSubmitNew"></a>
+            </div>
+          </div>
+
+          <article class="panel" id="feedbackLatestPanel">
+            <h2 data-i18n="feedbackLatestTitle"></h2>
+            <div id="feedbackLatestBody"></div>
+          </article>
+
+          <article class="panel" id="feedbackHistoryPanel">
+            <h2 data-i18n="feedbackHistoryTitle"></h2>
+            <ul class="schedule-list" id="feedbackHistoryList"></ul>
+          </article>
         </section>
 
         <!-- 4. PROFILE -->
@@ -1436,9 +1471,25 @@
           tabOverview: "概览",
           tabSchedule: "课表",
           tabLearning: "学习记录",
+          tabFeedback: "课堂反馈",
           tabProfile: "资料",
           tabRequests: "申请",
           tabSettings: "设置",
+          feedbackEyebrow: "课堂反馈",
+          feedbackTitle: "孩子的课堂反馈",
+          feedbackSub: "查看老师在每节课后提交的评价、建议与下一步规划，以及历史记录。",
+          feedbackSubmitNew: "提交新反馈",
+          feedbackLatestTitle: "最近一条反馈",
+          feedbackHistoryTitle: "历史反馈",
+          feedbackEmptyLatest: "尚无反馈记录。试课或正式课结束后，老师提交的反馈会出现在这里。",
+          feedbackEmptyHistory: "暂无历史反馈记录。",
+          feedbackLabelDate: "时间",
+          feedbackLabelCampus: "校区",
+          feedbackLabelRating: "评价等级",
+          feedbackLabelNext: "下一步建议",
+          feedbackLabelHighlights: "课堂亮点",
+          feedbackLabelSuggestion: "改进建议",
+          feedbackEmpty: "—",
           sidebarPortal: "我的家长中心",
           sidebarLinks: "更多入口",
           sidebarBookTrial: "预约试课",
@@ -1667,9 +1718,25 @@
           tabOverview: "Overview",
           tabSchedule: "Schedule",
           tabLearning: "Learning",
+          tabFeedback: "Class Feedback",
           tabProfile: "Profile",
           tabRequests: "Requests",
           tabSettings: "Settings",
+          feedbackEyebrow: "Class Feedback",
+          feedbackTitle: "Your Child's Class Feedback",
+          feedbackSub: "Review what the teacher noted after each class — ratings, highlights, and suggested next steps.",
+          feedbackSubmitNew: "Submit New Feedback",
+          feedbackLatestTitle: "Latest Feedback",
+          feedbackHistoryTitle: "Feedback History",
+          feedbackEmptyLatest: "No feedback yet. Teacher notes from each class will show up here.",
+          feedbackEmptyHistory: "No past feedback to show.",
+          feedbackLabelDate: "Date",
+          feedbackLabelCampus: "Campus",
+          feedbackLabelRating: "Rating",
+          feedbackLabelNext: "Next Step",
+          feedbackLabelHighlights: "Highlights",
+          feedbackLabelSuggestion: "Suggestion",
+          feedbackEmpty: "—",
           sidebarPortal: "My Portal",
           sidebarLinks: "Quick Links",
           sidebarBookTrial: "Book Trial",
@@ -2245,6 +2312,63 @@
           }
         }
 
+        // Feedback tab — populate latest record + history list. Records are
+        // matched to the active student via matchCurrentStudent so the tab
+        // pivots when the guardian switches between siblings.
+        (function () {
+          var latestBody = document.getElementById("feedbackLatestBody");
+          var histList = document.getElementById("feedbackHistoryList");
+          if (!latestBody || !histList) return;
+          var allFeedback = readJson("minddo_feedback")
+            .filter(function (item) { return matchCurrentStudent(item, current); })
+            .sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
+          var top = allFeedback[0] || null;
+
+          function fmtTime(iso) {
+            if (!iso) return "";
+            try {
+              var d = new Date(iso);
+              return d.toLocaleString(lang === "en" ? "en-US" : "zh-CN", {
+                year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
+              });
+            } catch (_) { return iso; }
+          }
+
+          if (!top) {
+            latestBody.innerHTML = "<div class=\"fb-empty\">" + escHTML(t.feedbackEmptyLatest) + "</div>";
+          } else {
+            var when = fmtTime(top.createdAt);
+            var rows = [
+              { k: t.feedbackLabelDate, v: escHTML(when || top.trialDate || t.feedbackEmpty) },
+              { k: t.feedbackLabelCampus, v: escHTML(top.campus || t.feedbackEmpty) },
+              { k: t.feedbackLabelRating, v: top.rating ? "<span class=\"fb-pill\">" + escHTML(top.rating) + "</span>" : escHTML(t.feedbackEmpty) },
+              { k: t.feedbackLabelNext, v: top.nextStep ? "<span class=\"fb-pill next\">" + escHTML(top.nextStep) + "</span>" : escHTML(t.feedbackEmpty) },
+              { k: t.feedbackLabelHighlights, v: top.highlights ? escHTML(top.highlights) : escHTML(t.feedbackEmpty) },
+              { k: t.feedbackLabelSuggestion, v: top.suggestion ? escHTML(top.suggestion) : escHTML(t.feedbackEmpty) }
+            ];
+            latestBody.innerHTML = "<div class=\"fb-latest\">" + rows.map(function (r) {
+              return "<div class=\"fb-row\"><span class=\"fb-k\">" + escHTML(r.k) + "</span><span class=\"fb-v\">" + r.v + "</span></div>";
+            }).join("") + "</div>";
+          }
+
+          var history = allFeedback.slice(1, 11);
+          if (!history.length) {
+            histList.innerHTML = "<li class=\"fb-empty\">" + escHTML(t.feedbackEmptyHistory) + "</li>";
+          } else {
+            histList.innerHTML = history.map(function (it) {
+              var when = fmtTime(it.createdAt);
+              var ratingMark = it.rating ? "<span class=\"fb-row-rating\">" + escHTML(it.rating) + "</span>" : "";
+              var meta = [it.nextStep, it.campus].filter(Boolean).join(" · ");
+              var bodyText = it.highlights || it.suggestion || "";
+              return "<li class=\"fb-row-card\">"
+                + "<div class=\"fb-row-head\"><span class=\"fb-row-date\">" + escHTML(when || it.trialDate || "") + "</span>" + ratingMark + "</div>"
+                + (bodyText ? "<div class=\"fb-row-body\">" + escHTML(bodyText) + "</div>" : "")
+                + (meta ? "<div class=\"fb-row-meta\">" + escHTML(meta) + "</div>" : "")
+                + "</li>";
+            }).join("");
+          }
+        })();
+
         // Settings tab: account info read-out + language toggle state.
         // Action buttons (logout, contact support, change password) are
         // wired once at script init below; this block is just the per-render
@@ -2560,7 +2684,7 @@
       // active state. Active tab persists per session.
       (function () {
         var TAB_KEY = "minddo_acct_active_tab";
-        var KNOWN_TABS = ["overview", "schedule", "learning", "profile", "requests", "settings"];
+        var KNOWN_TABS = ["overview", "schedule", "learning", "feedback", "profile", "requests", "settings"];
         function setActiveTab(key) {
           if (KNOWN_TABS.indexOf(key) === -1) key = "overview";
           document.querySelectorAll("[data-tab]").forEach(function (btn) {
