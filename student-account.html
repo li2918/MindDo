@@ -796,6 +796,28 @@
     .kid-class-card .kc-cta a:hover { transform: translateY(-1px); }
     .stat-card--full { width: 100%; }
 
+    /* Course materials tab — entry-point grid for the future curriculum
+       system. The "Live" card links to course-system.html; the rest are
+       coming-soon placeholders so parents see what's planned. */
+    .curriculum-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .curriculum-card { background: #fff; border: 1px solid var(--line); border-radius: 18px;
+      padding: 20px 22px; display: flex; flex-direction: column; gap: 10px;
+      box-shadow: 0 6px 16px rgba(15,23,42,0.04); transition: 0.15s; }
+    .curriculum-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(15,23,42,0.08); }
+    .curriculum-card--soon { background: rgba(240,249,255,0.55); border-style: dashed; opacity: 0.92; }
+    .curriculum-card--soon:hover { transform: none; box-shadow: 0 6px 16px rgba(15,23,42,0.04); }
+    .cur-card-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .cur-card-icon { width: 32px; height: 32px; border-radius: 10px; background: rgba(186,230,253,0.4);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 16px; color: var(--gold-deep); }
+    .curriculum-card--live .cur-card-icon { background: rgba(110,143,87,0.18); color: #4f6f38; }
+    .curriculum-card--soon .cur-card-icon { background: rgba(216,156,54,0.16); color: #8a5d11; }
+    .cur-card-eyebrow { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 999px; }
+    .curriculum-card--live .cur-card-eyebrow { background: rgba(110,143,87,0.16); color: #4f6f38; }
+    .curriculum-card--soon .cur-card-eyebrow { background: rgba(216,156,54,0.16); color: #8a5d11; border: 1px solid rgba(216,156,54,0.34); }
+    .cur-card-title { font-size: 16px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; line-height: 1.3; }
+    .cur-card-copy { font-size: 13px; color: var(--muted); line-height: 1.6; flex: 1; }
+
     /* DASHBOARD REDESIGN */
     .dash-stack { display: grid; gap: 28px; }
     .dash-section { display: grid; gap: 18px; }
@@ -1155,25 +1177,62 @@
           </article>
         </section>
 
-        <!-- 4. PROFILE -->
-        <section class="dash-section" data-tab-panel="profile" role="tabpanel" aria-labelledby="profileHead">
+        <!-- 4. COURSE MATERIALS — placeholder entry for the future curriculum
+             system. Kept the data-tab-panel="profile" key so persisted tab
+             state and existing handlers keep working. -->
+        <section class="dash-section" data-tab-panel="profile" role="tabpanel" aria-labelledby="curriculumHead">
           <div class="dash-head">
             <div class="dash-head-text">
-              <div class="dash-eyebrow" data-i18n="profileEyebrow"></div>
-              <h2 id="profileHead" class="dash-title" data-i18n="profileSectionTitle"></h2>
-              <p class="dash-sub" data-i18n="profileSectionSub"></p>
+              <div class="dash-eyebrow" data-i18n="curriculumEyebrow"></div>
+              <h2 id="curriculumHead" class="dash-title" data-i18n="curriculumTitle"></h2>
+              <p class="dash-sub" data-i18n="curriculumSub"></p>
             </div>
           </div>
 
-          <div class="dash-twin">
-            <article class="panel">
-              <h2 data-i18n="profileTitle"></h2>
-              <ul class="profile-list" id="profileList"></ul>
+          <div class="curriculum-grid">
+            <article class="curriculum-card curriculum-card--live">
+              <div class="cur-card-head">
+                <span class="cur-card-icon" aria-hidden="true">📖</span>
+                <span class="cur-card-eyebrow" data-i18n="curriculumLiveEyebrow"></span>
+              </div>
+              <h3 class="cur-card-title" data-i18n="curriculumLiveTitle"></h3>
+              <p class="cur-card-copy" data-i18n="curriculumLiveCopy"></p>
+              <a class="btn-primary" href="course-system.html" data-i18n="curriculumLiveCta" style="font-size:13px;padding:9px 18px;align-self:flex-start;"></a>
             </article>
-            <article class="panel">
-              <h2 data-i18n="summaryTitle"></h2>
-              <ul class="summary-list" id="summaryList"></ul>
+
+            <article class="curriculum-card curriculum-card--soon">
+              <div class="cur-card-head">
+                <span class="cur-card-icon" aria-hidden="true">▶</span>
+                <span class="cur-card-eyebrow" data-i18n="curriculumComingSoon"></span>
+              </div>
+              <h3 class="cur-card-title" data-i18n="curriculumRecordingsTitle"></h3>
+              <p class="cur-card-copy" data-i18n="curriculumRecordingsCopy"></p>
             </article>
+
+            <article class="curriculum-card curriculum-card--soon">
+              <div class="cur-card-head">
+                <span class="cur-card-icon" aria-hidden="true">📑</span>
+                <span class="cur-card-eyebrow" data-i18n="curriculumComingSoon"></span>
+              </div>
+              <h3 class="cur-card-title" data-i18n="curriculumSlidesTitle"></h3>
+              <p class="cur-card-copy" data-i18n="curriculumSlidesCopy"></p>
+            </article>
+
+            <article class="curriculum-card curriculum-card--soon">
+              <div class="cur-card-head">
+                <span class="cur-card-icon" aria-hidden="true">✎</span>
+                <span class="cur-card-eyebrow" data-i18n="curriculumComingSoon"></span>
+              </div>
+              <h3 class="cur-card-title" data-i18n="curriculumHomeworkTitle"></h3>
+              <p class="cur-card-copy" data-i18n="curriculumHomeworkCopy"></p>
+            </article>
+          </div>
+
+          <!-- Legacy profile/summary data writers; kept hidden so render() can
+               still safely populate them without breaking. -->
+          <div style="display:none;">
+            <ul id="profileList"></ul>
+            <ul id="summaryList"></ul>
           </div>
         </section>
 
@@ -1514,7 +1573,21 @@
           tabSchedule: "课表",
           tabLearning: "学习记录",
           tabFeedback: "课堂反馈",
-          tabProfile: "资料",
+          tabProfile: "课程资料",
+          curriculumEyebrow: "课程资料",
+          curriculumTitle: "课程教材与学习资源",
+          curriculumSub: "正式上线后会在此查看孩子当前阶段的教材、课件、录播与作业。课程体系入口已可访问。",
+          curriculumLiveEyebrow: "已上线",
+          curriculumLiveTitle: "课程体系",
+          curriculumLiveCopy: "查看 MindDo 当前的课程结构、阶段划分与每个阶段的核心能力。",
+          curriculumLiveCta: "查看课程体系 →",
+          curriculumComingSoon: "即将上线",
+          curriculumRecordingsTitle: "课堂录播",
+          curriculumRecordingsCopy: "孩子缺课时可以回放老师课堂讲解，按课次归档。",
+          curriculumSlidesTitle: "课件与教材",
+          curriculumSlidesCopy: "每节课的讲义、PDF 教材与课堂资料一键下载。",
+          curriculumHomeworkTitle: "作业与练习",
+          curriculumHomeworkCopy: "查看待完成与已批改的作业，跟踪练习进度。",
           tabRequests: "请假",
           tabSettings: "设置",
           enrollEyebrow: "课程选择",
@@ -1777,7 +1850,21 @@
           tabSchedule: "Schedule",
           tabLearning: "Learning",
           tabFeedback: "Class Feedback",
-          tabProfile: "Profile",
+          tabProfile: "Course Materials",
+          curriculumEyebrow: "Course Materials",
+          curriculumTitle: "Curriculum & Learning Resources",
+          curriculumSub: "Once live, this is where you'll find your child's textbooks, slides, recordings, and homework. The course system entry is already available.",
+          curriculumLiveEyebrow: "Live",
+          curriculumLiveTitle: "Course System",
+          curriculumLiveCopy: "Browse MindDo's current curriculum, stage breakdown, and the core skills each stage covers.",
+          curriculumLiveCta: "Open Course System →",
+          curriculumComingSoon: "Coming Soon",
+          curriculumRecordingsTitle: "Class Recordings",
+          curriculumRecordingsCopy: "Replay missed lessons, archived per class — playback ready when your child needs to catch up.",
+          curriculumSlidesTitle: "Slides & Textbooks",
+          curriculumSlidesCopy: "Download each lesson's slides, PDF materials, and class resources in one tap.",
+          curriculumHomeworkTitle: "Homework & Practice",
+          curriculumHomeworkCopy: "Track outstanding and graded assignments — keep practice on schedule.",
           tabRequests: "Leave",
           tabSettings: "Settings",
           enrollEyebrow: "Course Enrollment",
