@@ -926,6 +926,9 @@
         <button type="button" class="sidebar-item active" data-tab="overview" role="tab">
           <span class="si-icon" aria-hidden="true">⌂</span><span data-i18n="tabOverview"></span>
         </button>
+        <button type="button" class="sidebar-item" data-tab="enroll" role="tab">
+          <span class="si-icon" aria-hidden="true">＋</span><span data-i18n="tabEnroll"></span>
+        </button>
         <button type="button" class="sidebar-item" data-tab="schedule" role="tab">
           <span class="si-icon" aria-hidden="true">▦</span><span data-i18n="tabSchedule"></span>
         </button>
@@ -1005,10 +1008,6 @@
               <h2 id="overviewHead" class="dash-title" data-i18n="overviewTitle"></h2>
               <p class="dash-sub" data-i18n="overviewSub"></p>
             </div>
-            <div class="dash-head-actions">
-              <a class="btn-secondary" href="feedback.html" data-i18n="openFeedback"></a>
-              <a class="btn-primary" href="course-selection.html" data-i18n="openCourseSelection"></a>
-            </div>
           </div>
 
           <div class="dash-split">
@@ -1033,6 +1032,31 @@
               </article>
             </div>
           </div>
+        </section>
+
+        <!-- 1.5. ENROLL -->
+        <section class="dash-section" data-tab-panel="enroll" role="tabpanel" aria-labelledby="enrollHead">
+          <div class="dash-head">
+            <div class="dash-head-text">
+              <div class="dash-eyebrow" data-i18n="enrollEyebrow"></div>
+              <h2 id="enrollHead" class="dash-title" data-i18n="enrollTitle"></h2>
+              <p class="dash-sub" data-i18n="enrollSub"></p>
+            </div>
+          </div>
+
+          <article class="panel" id="enrollCurrentPanel">
+            <h2 data-i18n="enrollCurrentTitle"></h2>
+            <div id="enrollCurrentBody"></div>
+          </article>
+
+          <article class="panel">
+            <h2 data-i18n="enrollNewTitle"></h2>
+            <p class="muted" data-i18n="enrollNewCopy" style="margin-bottom:14px;"></p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <a class="btn-primary" href="course-selection.html" id="enrollGoBtn" data-i18n="enrollGo"></a>
+              <a class="btn-secondary" href="course-system.html" data-i18n="enrollViewCurriculum"></a>
+            </div>
+          </article>
         </section>
 
         <!-- 2. MY WEEK -->
@@ -1466,12 +1490,27 @@
           statusTitle: "流程进度",
           quickActionsTitle: "快捷入口",
           tabOverview: "概览",
+          tabEnroll: "选课",
           tabSchedule: "课表",
           tabLearning: "学习记录",
           tabFeedback: "课堂反馈",
           tabProfile: "资料",
           tabRequests: "申请",
           tabSettings: "设置",
+          enrollEyebrow: "课程选择",
+          enrollTitle: "选择课程方案",
+          enrollSub: "查看孩子当前的报名情况，或为新加入的学员开启正式课程注册。",
+          enrollCurrentTitle: "当前课程方案",
+          enrollCurrentEmpty: "当前学员还没有正式课程方案。点击下方「进入选课页面」开始报名。",
+          enrollCurrentRowPlan: "课程方案",
+          enrollCurrentRowSessions: "每周课时",
+          enrollCurrentRowSchedule: "上课时段",
+          enrollCurrentRowAmount: "本月费用",
+          enrollCurrentRowOrderId: "订单编号",
+          enrollNewTitle: "进入选课与排课",
+          enrollNewCopy: "选课页面提供完整的方案、课时与上课时段配置，付款后系统会自动生成课表。",
+          enrollGo: "进入选课页面 →",
+          enrollViewCurriculum: "查看课程体系",
           feedbackEyebrow: "课堂反馈",
           feedbackTitle: "老师课后反馈",
           feedbackSub: "每节课后老师会针对孩子的表现给出评价与下一步建议，本页只展示老师发布的内容，不需要你填写。",
@@ -1712,12 +1751,27 @@
           statusTitle: "Flow Progress",
           quickActionsTitle: "Quick Actions",
           tabOverview: "Overview",
+          tabEnroll: "Enroll",
           tabSchedule: "Schedule",
           tabLearning: "Learning",
           tabFeedback: "Class Feedback",
           tabProfile: "Profile",
           tabRequests: "Requests",
           tabSettings: "Settings",
+          enrollEyebrow: "Course Enrollment",
+          enrollTitle: "Pick a Course Plan",
+          enrollSub: "Review the active student's current plan or kick off enrollment for someone who hasn't registered yet.",
+          enrollCurrentTitle: "Current Plan",
+          enrollCurrentEmpty: "No active enrollment yet. Tap \"Open Enrollment Page\" below to start.",
+          enrollCurrentRowPlan: "Plan",
+          enrollCurrentRowSessions: "Sessions / Week",
+          enrollCurrentRowSchedule: "Weekly Slot",
+          enrollCurrentRowAmount: "Monthly Cost",
+          enrollCurrentRowOrderId: "Order ID",
+          enrollNewTitle: "Go to Enrollment & Scheduling",
+          enrollNewCopy: "The enrollment page lays out plans, weekly cadence, and time slots. Once payment clears, your schedule is generated automatically.",
+          enrollGo: "Open Enrollment Page →",
+          enrollViewCurriculum: "View Curriculum",
           feedbackEyebrow: "Class Feedback",
           feedbackTitle: "Teacher's Class Notes",
           feedbackSub: "Read the rating, highlights, and next-step recommendations the teacher posted after each class. This page is read-only — no need to fill anything in.",
@@ -2307,6 +2361,37 @@
           }
         }
 
+        // Enroll tab — show the active student's current plan if any, so the
+        // parent can see whether enrollment is still pending. Most data is
+        // already on snapshot.membership; we only render a compact KV grid.
+        (function () {
+          var body = document.getElementById("enrollCurrentBody");
+          if (!body) return;
+          var m = latestMembership;
+          if (!m || !m.plan) {
+            body.innerHTML = "<div class=\"fb-empty\">" + escHTML(t.enrollCurrentEmpty) + "</div>";
+            return;
+          }
+          var planLabel = m.planLabel || formatPlan(m.plan, lang) || m.plan;
+          var sessions = Array.isArray(m.sessions) ? m.sessions : [];
+          var sessionCount = sessions.length || (m.weekday ? 1 : 0);
+          var scheduleText = sessions.length
+            ? sessions.map(function (s) { return (s.weekday || "—") + " " + (s.timeSlot || ""); }).join(" / ")
+            : ((m.weekday || "—") + (m.timeSlot ? " " + m.timeSlot : ""));
+          var amount = (typeof m.totalMonthly === "string" && m.totalMonthly) ||
+            (m.totalAmount ? "$" + Number(m.totalAmount).toFixed(2) : "—");
+          var rows = [
+            { k: t.enrollCurrentRowPlan, v: escHTML(planLabel) },
+            { k: t.enrollCurrentRowSessions, v: sessionCount ? String(sessionCount) : "—" },
+            { k: t.enrollCurrentRowSchedule, v: escHTML(scheduleText || "—") },
+            { k: t.enrollCurrentRowAmount, v: escHTML(amount) },
+            { k: t.enrollCurrentRowOrderId, v: escHTML(m.orderId || "—") }
+          ];
+          body.innerHTML = "<div class=\"fb-latest\">" + rows.map(function (r) {
+            return "<div class=\"fb-row\"><span class=\"fb-k\">" + escHTML(r.k) + "</span><span class=\"fb-v\">" + r.v + "</span></div>";
+          }).join("") + "</div>";
+        })();
+
         // Feedback tab — populate latest record + history list. Records are
         // matched to the active student via matchCurrentStudent so the tab
         // pivots when the guardian switches between siblings.
@@ -2679,7 +2764,7 @@
       // active state. Active tab persists per session.
       (function () {
         var TAB_KEY = "minddo_acct_active_tab";
-        var KNOWN_TABS = ["overview", "schedule", "learning", "feedback", "profile", "requests", "settings"];
+        var KNOWN_TABS = ["overview", "enroll", "schedule", "learning", "feedback", "profile", "requests", "settings"];
         function setActiveTab(key) {
           if (KNOWN_TABS.indexOf(key) === -1) key = "overview";
           document.querySelectorAll("[data-tab]").forEach(function (btn) {
