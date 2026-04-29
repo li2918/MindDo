@@ -418,6 +418,7 @@
           emailSentTitle: "确认邮件已发送",
           emailPreviewToggle: "查看确认邮件内容",
           confirmContinue: "继续创建账户 →",
+          confirmReturnHub: "返回家长账户 →",
           confirmHome: "返回首页",
           demoNote: "演示环境：为避免真实外发邮件，确认邮件以本地预览形式呈现。",
           confirmDetailKeys: {
@@ -477,6 +478,7 @@
           emailSentTitle: "Confirmation email sent",
           emailPreviewToggle: "Preview the confirmation email",
           confirmContinue: "Create Your Account →",
+          confirmReturnHub: "Back to Parent Account →",
           confirmHome: "Back to Home",
           demoNote: "Demo environment: no real email is dispatched — a local preview is shown for transparency.",
           confirmDetailKeys: {
@@ -951,9 +953,24 @@
         document.getElementById("emailBody").innerHTML = buildEmailBodyHTML(lead, ref);
 
         var cont = document.getElementById("continueToSignup");
-        cont.onclick = function () {
-          window.location.href = "signup.html?next=assessment.html&reason=trial";
-        };
+        // Logged-in primary guardian booking a trial for an existing family
+        // child (the "add another child" path) doesn't need to create a new
+        // account — they already have one. Relabel and route them back to
+        // the parent hub instead of the signup form.
+        var loggedInAccount = (window.MindDoFlow && window.MindDoFlow.getCurrentAccount)
+          ? window.MindDoFlow.getCurrentAccount() : null;
+        var isPrimaryGuardian = !!(loggedInAccount && window.MindDoFlow
+          && loggedInAccount.role === window.MindDoFlow.ROLES.guardianPrimary);
+        if (isPrimaryGuardian) {
+          cont.textContent = t.confirmReturnHub || t.confirmContinue;
+          cont.onclick = function () {
+            window.location.href = "student-account.html";
+          };
+        } else {
+          cont.onclick = function () {
+            window.location.href = "signup.html?next=assessment.html&reason=trial";
+          };
+        }
       }
     })();
   </script>

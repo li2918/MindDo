@@ -238,7 +238,13 @@
           ctaTitle: "创建账户，开启正式课程",
           ctaDesc: "账户注册链接会根据学员号 ({sid}) 自动对接你本次的试课资料，无需重复填写。",
           ctaBlockTitle: "一步完成注册与报名对接",
-          ctaBlockCopy: "点击创建账户后，我们会把你这次的试课记录、评估等级和推荐班次与新账户绑定。"
+          ctaBlockCopy: "点击创建账户后，我们会把你这次的试课记录、评估等级和推荐班次与新账户绑定。",
+          ctaTitleLoggedIn: "继续报名",
+          ctaDescLoggedIn: "你已登录家长账户，下一步直接为学员 {sid} 选择课程方案与上课时段，无需再次注册。",
+          ctaBlockTitleLoggedIn: "前往选课页面",
+          ctaBlockCopyLoggedIn: "我们会把这次试课记录、评估等级和推荐班次直接关联到该学员的现有家庭账户。",
+          ctaContinueLoggedIn: "前往选课 →",
+          ctaContinueLoggedInHero: "前往选课"
         },
         en: {
           pageTitle: "Trial Report & Invite",
@@ -279,7 +285,13 @@
           ctaTitle: "Create Your Account",
           ctaDesc: "The registration link is tagged with your student ID ({sid}), so it auto-links to your trial — no duplicate info needed.",
           ctaBlockTitle: "One step — register and link up",
-          ctaBlockCopy: "When you click Create Account, your trial record, evaluated level, and recommended classes are tied to the new account."
+          ctaBlockCopy: "When you click Create Account, your trial record, evaluated level, and recommended classes are tied to the new account.",
+          ctaTitleLoggedIn: "Continue to Enrollment",
+          ctaDescLoggedIn: "You're already signed in. The next step is choosing the plan and schedule for student {sid} — no need to register again.",
+          ctaBlockTitleLoggedIn: "Open the Enrollment Page",
+          ctaBlockCopyLoggedIn: "Your trial record, evaluated level, and recommended classes will link directly to this student's family account.",
+          ctaContinueLoggedIn: "Continue to Enrollment →",
+          ctaContinueLoggedInHero: "Continue"
         }
       };
 
@@ -443,18 +455,44 @@
           }
         }
 
-        // CTA
+        // CTA — branches on whether the visitor is already logged in as the
+        // primary guardian for this lead's family. The "add another child"
+        // path lands here with the parent already signed in: they don't
+        // need to create a duplicate account, just continue into the
+        // course-selection step for this newly-trialed child.
         signupCta.style.display = "block";
-        document.getElementById("ctaTitle").textContent = t.ctaTitle;
-        document.getElementById("ctaDesc").textContent = tr(t.ctaDesc, { sid: lead.studentId || sid });
-        document.getElementById("ctaBlockTitle").textContent = t.ctaBlockTitle;
-        document.getElementById("ctaBlockCopy").textContent = t.ctaBlockCopy;
-        var qs = "sid=" + encodeURIComponent(lead.studentId || sid);
-        if (lead.email) qs += "&email=" + encodeURIComponent(lead.email);
-        if (lead.studentName) qs += "&name=" + encodeURIComponent(lead.studentName);
-        var signupHref = "signup.html?" + qs;
-        document.getElementById("createAccountBtn").setAttribute("href", signupHref);
-        document.getElementById("heroCtaBtn").setAttribute("href", signupHref);
+        var leadSid = lead.studentId || sid;
+        var account = (flow && flow.getCurrentAccount) ? flow.getCurrentAccount() : null;
+        var isFamilyMatch = false;
+        if (account && account.role === flow.ROLES.guardianPrimary && account.familyId && flow.listFamilyStudents) {
+          var siblings = flow.listFamilyStudents(account.familyId) || [];
+          isFamilyMatch = siblings.some(function (s) { return s.studentId === leadSid; });
+        }
+
+        if (isFamilyMatch) {
+          document.getElementById("ctaTitle").textContent = t.ctaTitleLoggedIn;
+          document.getElementById("ctaDesc").textContent = tr(t.ctaDescLoggedIn, { sid: leadSid });
+          document.getElementById("ctaBlockTitle").textContent = t.ctaBlockTitleLoggedIn;
+          document.getElementById("ctaBlockCopy").textContent = t.ctaBlockCopyLoggedIn;
+          var enrollHref = "course-selection.html?sid=" + encodeURIComponent(leadSid);
+          var createBtn = document.getElementById("createAccountBtn");
+          createBtn.setAttribute("href", enrollHref);
+          createBtn.textContent = t.ctaContinueLoggedIn;
+          var heroBtn = document.getElementById("heroCtaBtn");
+          heroBtn.setAttribute("href", enrollHref);
+          heroBtn.textContent = t.ctaContinueLoggedInHero;
+        } else {
+          document.getElementById("ctaTitle").textContent = t.ctaTitle;
+          document.getElementById("ctaDesc").textContent = tr(t.ctaDesc, { sid: leadSid });
+          document.getElementById("ctaBlockTitle").textContent = t.ctaBlockTitle;
+          document.getElementById("ctaBlockCopy").textContent = t.ctaBlockCopy;
+          var qs = "sid=" + encodeURIComponent(leadSid);
+          if (lead.email) qs += "&email=" + encodeURIComponent(lead.email);
+          if (lead.studentName) qs += "&name=" + encodeURIComponent(lead.studentName);
+          var signupHref = "signup.html?" + qs;
+          document.getElementById("createAccountBtn").setAttribute("href", signupHref);
+          document.getElementById("heroCtaBtn").setAttribute("href", signupHref);
+        }
       }
 
       langButtons.forEach(function (btn) {
