@@ -851,6 +851,34 @@
     .pf-meta { font-size: 11.5px; color: var(--muted); margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap; }
     .pf-meta strong { color: var(--clay); font-weight: 700; }
 
+    /* Membership tab — current tier card + upgrade options grid */
+    .upgrade-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .upgrade-card { background: #fff; border: 1px solid var(--line); border-radius: 16px;
+      padding: 18px 20px; display: flex; flex-direction: column; gap: 10px;
+      box-shadow: 0 6px 16px rgba(15,23,42,0.04); transition: 0.15s; }
+    .upgrade-card:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(15,23,42,0.08); border-color: rgba(14,165,233,0.32); }
+    .upgrade-card.current { background: linear-gradient(180deg,rgba(186,230,253,0.22),#fff);
+      border-color: rgba(14,165,233,0.45); box-shadow: 0 8px 22px rgba(14,165,233,0.14); }
+    .upgrade-card.recommended { border-color: rgba(216,156,54,0.5); position: relative; }
+    .upgrade-card.recommended::before { content: ""; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; border-radius: 16px 16px 0 0; background: linear-gradient(90deg,#f59e0b,#d89c36); }
+    .upgrade-tier-label { font-size: 11px; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--gold-deep); }
+    .upgrade-card.current .upgrade-tier-label { color: var(--clay); }
+    .upgrade-current-badge { display: inline-flex; padding: 2px 9px; border-radius: 999px;
+      background: rgba(14,165,233,0.18); color: #0b4d70; border: 1px solid rgba(14,165,233,0.32);
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+      align-self: flex-start; }
+    .upgrade-name { font-size: 16px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .upgrade-price { font-size: 22px; font-weight: 900; color: var(--clay); line-height: 1.1; }
+    .upgrade-diff { font-size: 11.5px; color: var(--success); font-weight: 700; }
+    .upgrade-cadence { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+    .upgrade-cta { background: linear-gradient(135deg,#bae6fd,var(--gold)); color: #0b2540;
+      border: 1px solid rgba(14,165,233,0.4); border-radius: 999px; padding: 9px 14px;
+      font-size: 12.5px; font-weight: 800; cursor: pointer; font-family: inherit;
+      text-decoration: none; text-align: center; transition: 0.15s; margin-top: 4px; }
+    .upgrade-cta:hover { transform: translateY(-1px); }
+
     /* DASHBOARD REDESIGN */
     .dash-stack { display: grid; gap: 28px; }
     .dash-section { display: grid; gap: 18px; }
@@ -1019,7 +1047,7 @@
           <span class="si-icon" aria-hidden="true">⌂</span><span data-i18n="tabOverview"></span>
         </button>
         <button type="button" class="sidebar-item" data-tab="enroll" role="tab">
-          <span class="si-icon" aria-hidden="true">＋</span><span data-i18n="tabEnroll"></span>
+          <span class="si-icon" aria-hidden="true">★</span><span data-i18n="tabEnroll"></span>
         </button>
         <button type="button" class="sidebar-item" data-tab="schedule" role="tab">
           <span class="si-icon" aria-hidden="true">▦</span><span data-i18n="tabSchedule"></span>
@@ -1107,28 +1135,17 @@
           </div>
         </section>
 
-        <!-- 1.5. ENROLL -->
-        <section class="dash-section" data-tab-panel="enroll" role="tabpanel" aria-labelledby="enrollHead">
-          <div class="dash-head">
-            <div class="dash-head-text">
-              <div class="dash-eyebrow" data-i18n="enrollEyebrow"></div>
-              <h2 id="enrollHead" class="dash-title" data-i18n="enrollTitle"></h2>
-              <p class="dash-sub" data-i18n="enrollSub"></p>
-            </div>
-          </div>
-
-          <article class="panel" id="enrollCurrentPanel">
-            <h2 data-i18n="enrollCurrentTitle"></h2>
-            <div id="enrollCurrentBody"></div>
+        <!-- 1.5. MEMBERSHIP — current tier + upgrade options -->
+        <section class="dash-section" data-tab-panel="enroll" role="tabpanel" aria-label="Membership">
+          <article class="panel" id="memberCurrentPanel">
+            <h2 data-i18n="memberCurrentTitle"></h2>
+            <div id="memberCurrentBody"></div>
           </article>
 
-          <article class="panel">
-            <h2 data-i18n="enrollNewTitle"></h2>
-            <p class="muted" data-i18n="enrollNewCopy" style="margin-bottom:14px;"></p>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <a class="btn-primary" href="course-selection.html" id="enrollGoBtn" data-i18n="enrollGo"></a>
-              <a class="btn-secondary" href="course-system.html" data-i18n="enrollViewCurriculum"></a>
-            </div>
+          <article class="panel" id="memberUpgradePanel">
+            <h2 data-i18n="memberUpgradeTitle"></h2>
+            <p class="muted" id="memberUpgradeSub" style="margin-bottom:14px;"></p>
+            <div class="upgrade-grid" id="memberUpgradeGrid"></div>
           </article>
         </section>
 
@@ -1606,7 +1623,7 @@
           statusTitle: "流程进度",
           quickActionsTitle: "快捷入口",
           tabOverview: "概览",
-          tabEnroll: "选课",
+          tabEnroll: "会员管理",
           tabSchedule: "课表",
           tabLearning: "学习记录",
           tabFeedback: "课堂反馈",
@@ -1627,20 +1644,23 @@
           curriculumHomeworkCopy: "查看待完成与已批改的作业，跟踪练习进度。",
           tabRequests: "请假",
           tabSettings: "设置",
-          enrollEyebrow: "课程选择",
-          enrollTitle: "选择课程方案",
-          enrollSub: "查看孩子当前的报名情况，或为新加入的学员开启正式课程注册。",
-          enrollCurrentTitle: "当前课程方案",
-          enrollCurrentEmpty: "当前学员还没有正式课程方案。点击下方「进入选课页面」开始报名。",
-          enrollCurrentRowPlan: "课程方案",
-          enrollCurrentRowSessions: "每周课时",
-          enrollCurrentRowSchedule: "上课时段",
-          enrollCurrentRowAmount: "本月费用",
-          enrollCurrentRowOrderId: "订单编号",
-          enrollNewTitle: "进入选课与排课",
-          enrollNewCopy: "选课页面提供完整的方案、课时与上课时段配置，付款后系统会自动生成课表。",
-          enrollGo: "进入选课页面 →",
-          enrollViewCurriculum: "查看课程体系",
+          memberCurrentTitle: "当前会员方案",
+          memberCurrentEmpty: "当前学员还没有正式会员方案。下方选择适合的会员等级即可开通。",
+          memberCurrentRowPlan: "会员等级",
+          memberCurrentRowSessions: "每周课时",
+          memberCurrentRowSchedule: "上课时段",
+          memberCurrentRowAmount: "本月费用",
+          memberCurrentRowOrderId: "订单编号",
+          memberUpgradeTitle: "升级到更高等级",
+          memberUpgradeSubBase: "升级后下个账期开始按新方案扣费，已排课时会自动延续。",
+          memberUpgradeTopTier: "你已经在最高会员等级。如需特殊安排请联系客服。",
+          memberPickPlan: "选择适合的会员方案开始报名。",
+          memberSessionsPerWeek: "每周 {n} 节",
+          memberPriceFmt: "${price} / 月",
+          memberDiffFmt: "比当前多 ${diff} / 月",
+          memberCurrentBadge: "当前方案",
+          memberUpgradeCta: "升级到这个方案 →",
+          memberStartCta: "开通这个方案 →",
           feedbackEyebrow: "课堂反馈",
           feedbackTitle: "老师课后反馈",
           feedbackSub: "每节课后老师会针对孩子的表现给出评价与下一步建议，本页只展示老师发布的内容，不需要你填写。",
@@ -1889,7 +1909,7 @@
           statusTitle: "Flow Progress",
           quickActionsTitle: "Quick Actions",
           tabOverview: "Overview",
-          tabEnroll: "Enroll",
+          tabEnroll: "Membership",
           tabSchedule: "Schedule",
           tabLearning: "Learning",
           tabFeedback: "Class Feedback",
@@ -1910,20 +1930,23 @@
           curriculumHomeworkCopy: "Track outstanding and graded assignments — keep practice on schedule.",
           tabRequests: "Leave",
           tabSettings: "Settings",
-          enrollEyebrow: "Course Enrollment",
-          enrollTitle: "Pick a Course Plan",
-          enrollSub: "Review the active student's current plan or kick off enrollment for someone who hasn't registered yet.",
-          enrollCurrentTitle: "Current Plan",
-          enrollCurrentEmpty: "No active enrollment yet. Tap \"Open Enrollment Page\" below to start.",
-          enrollCurrentRowPlan: "Plan",
-          enrollCurrentRowSessions: "Sessions / Week",
-          enrollCurrentRowSchedule: "Weekly Slot",
-          enrollCurrentRowAmount: "Monthly Cost",
-          enrollCurrentRowOrderId: "Order ID",
-          enrollNewTitle: "Go to Enrollment & Scheduling",
-          enrollNewCopy: "The enrollment page lays out plans, weekly cadence, and time slots. Once payment clears, your schedule is generated automatically.",
-          enrollGo: "Open Enrollment Page →",
-          enrollViewCurriculum: "View Curriculum",
+          memberCurrentTitle: "Current Membership",
+          memberCurrentEmpty: "No active membership yet. Pick a tier below to get started.",
+          memberCurrentRowPlan: "Tier",
+          memberCurrentRowSessions: "Sessions / Week",
+          memberCurrentRowSchedule: "Weekly Slot",
+          memberCurrentRowAmount: "Monthly Cost",
+          memberCurrentRowOrderId: "Order ID",
+          memberUpgradeTitle: "Upgrade to a Higher Tier",
+          memberUpgradeSubBase: "Upgrades take effect on the next billing cycle. Already-scheduled classes continue without disruption.",
+          memberUpgradeTopTier: "You're on the top tier. Reach out to support for any special arrangements.",
+          memberPickPlan: "Pick a tier below to enroll.",
+          memberSessionsPerWeek: "{n} class/week",
+          memberPriceFmt: "${price} / mo",
+          memberDiffFmt: "+${diff} / mo vs current",
+          memberCurrentBadge: "Current",
+          memberUpgradeCta: "Upgrade to this tier →",
+          memberStartCta: "Start with this tier →",
           feedbackEyebrow: "Class Feedback",
           feedbackTitle: "Teacher's Class Notes",
           feedbackSub: "Read the rating, highlights, and next-step recommendations the teacher posted after each class. This page is read-only — no need to fill anything in.",
@@ -2538,35 +2561,98 @@
           }
         }
 
-        // Enroll tab — show the active student's current plan if any, so the
-        // parent can see whether enrollment is still pending. Most data is
-        // already on snapshot.membership; we only render a compact KV grid.
+        // Membership tab — current tier panel + upgrade options grid.
         (function () {
-          var body = document.getElementById("enrollCurrentBody");
-          if (!body) return;
-          var m = latestMembership;
-          if (!m || !m.plan) {
-            body.innerHTML = "<div class=\"fb-empty\">" + escHTML(t.enrollCurrentEmpty) + "</div>";
-            return;
-          }
-          var planLabel = m.planLabel || formatPlan(m.plan, lang) || m.plan;
-          var sessions = Array.isArray(m.sessions) ? m.sessions : [];
-          var sessionCount = sessions.length || (m.weekday ? 1 : 0);
-          var scheduleText = sessions.length
-            ? sessions.map(function (s) { return (s.weekday || "—") + " " + (s.timeSlot || ""); }).join(" / ")
-            : ((m.weekday || "—") + (m.timeSlot ? " " + m.timeSlot : ""));
-          var amount = (typeof m.totalMonthly === "string" && m.totalMonthly) ||
-            (m.totalAmount ? "$" + Number(m.totalAmount).toFixed(2) : "—");
-          var rows = [
-            { k: t.enrollCurrentRowPlan, v: escHTML(planLabel) },
-            { k: t.enrollCurrentRowSessions, v: sessionCount ? String(sessionCount) : "—" },
-            { k: t.enrollCurrentRowSchedule, v: escHTML(scheduleText || "—") },
-            { k: t.enrollCurrentRowAmount, v: escHTML(amount) },
-            { k: t.enrollCurrentRowOrderId, v: escHTML(m.orderId || "—") }
+          var body = document.getElementById("memberCurrentBody");
+          var grid = document.getElementById("memberUpgradeGrid");
+          var subEl = document.getElementById("memberUpgradeSub");
+          if (!body || !grid) return;
+
+          // Mirror the price + label catalog from course-selection.html so
+          // the membership tab renders without the user navigating there.
+          var TIERS = [
+            { id: "weekly1", price: 199, sessionsPerWeek: 1,
+              labelZh: "每周一节", labelEn: "1 Class / Week" },
+            { id: "weekly2", price: 369, sessionsPerWeek: 2,
+              labelZh: "每周两节", labelEn: "2 Classes / Week" },
+            { id: "weekly3", price: 519, sessionsPerWeek: 3,
+              labelZh: "每周三节", labelEn: "3 Classes / Week" }
           ];
-          body.innerHTML = "<div class=\"fb-latest\">" + rows.map(function (r) {
-            return "<div class=\"fb-row\"><span class=\"fb-k\">" + escHTML(r.k) + "</span><span class=\"fb-v\">" + r.v + "</span></div>";
-          }).join("") + "</div>";
+          function tierLabel(tier) {
+            return lang === "en" ? tier.labelEn : tier.labelZh;
+          }
+
+          var m = latestMembership;
+          var currentTierIdx = -1;
+          if (m && m.plan) {
+            currentTierIdx = TIERS.findIndex(function (tt) { return tt.id === m.plan; });
+          }
+          var hasMembership = !!(m && m.plan);
+
+          // Current-tier panel
+          if (!hasMembership) {
+            body.innerHTML = "<div class=\"fb-empty\">" + escHTML(t.memberCurrentEmpty) + "</div>";
+          } else {
+            var planLabel = m.planLabel || formatPlan(m.plan, lang) || m.plan;
+            var sessions = Array.isArray(m.sessions) ? m.sessions : [];
+            var sessionCount = sessions.length || (m.weekday ? 1 : 0);
+            var scheduleText = sessions.length
+              ? sessions.map(function (s) { return (s.weekday || "—") + " " + (s.timeSlot || ""); }).join(" / ")
+              : ((m.weekday || "—") + (m.timeSlot ? " " + m.timeSlot : ""));
+            var amount = (typeof m.totalMonthly === "string" && m.totalMonthly) ||
+              (m.totalAmount ? "$" + Number(m.totalAmount).toFixed(2) : "—");
+            var rows = [
+              { k: t.memberCurrentRowPlan, v: escHTML(planLabel) },
+              { k: t.memberCurrentRowSessions, v: sessionCount ? String(sessionCount) : "—" },
+              { k: t.memberCurrentRowSchedule, v: escHTML(scheduleText || "—") },
+              { k: t.memberCurrentRowAmount, v: escHTML(amount) },
+              { k: t.memberCurrentRowOrderId, v: escHTML(m.orderId || "—") }
+            ];
+            body.innerHTML = "<div class=\"fb-latest\">" + rows.map(function (r) {
+              return "<div class=\"fb-row\"><span class=\"fb-k\">" + escHTML(r.k) + "</span><span class=\"fb-v\">" + r.v + "</span></div>";
+            }).join("") + "</div>";
+          }
+
+          // Upgrade grid sub-copy
+          if (subEl) {
+            if (!hasMembership) subEl.textContent = t.memberPickPlan;
+            else if (currentTierIdx >= 0 && currentTierIdx === TIERS.length - 1) subEl.textContent = t.memberUpgradeTopTier;
+            else subEl.textContent = t.memberUpgradeSubBase;
+          }
+
+          // Render only the current + higher tiers. If no membership, render
+          // every tier so the parent can pick one to start with.
+          var visible = hasMembership
+            ? TIERS.slice(Math.max(0, currentTierIdx))
+            : TIERS.slice();
+          var currentPrice = (currentTierIdx >= 0) ? TIERS[currentTierIdx].price : 0;
+
+          grid.innerHTML = visible.map(function (tier, idx) {
+            var isCurrent = hasMembership && tier.id === m.plan;
+            var isRecommended = !isCurrent && idx === 1; // middle option of the visible set
+            var diff = tier.price - currentPrice;
+            var ctaHref = "course-selection.html?upgradeTo=" + encodeURIComponent(tier.id);
+            var classes = "upgrade-card" + (isCurrent ? " current" : "") + (isRecommended ? " recommended" : "");
+            var sessionsLine = (t.memberSessionsPerWeek || "{n} / week").replace("{n}", tier.sessionsPerWeek);
+            var priceLine = (t.memberPriceFmt || "${price}").replace("{price}", tier.price);
+            var diffLine = (!isCurrent && hasMembership && diff > 0)
+              ? "<span class=\"upgrade-diff\">" + escHTML((t.memberDiffFmt || "+${diff}").replace("{diff}", diff)) + "</span>"
+              : "";
+            var ctaLabel = !hasMembership ? t.memberStartCta : t.memberUpgradeCta;
+            var ctaHtml = isCurrent ? "" :
+              "<a class=\"upgrade-cta\" href=\"" + ctaHref + "\">" + escHTML(ctaLabel) + "</a>";
+            var headerHtml = isCurrent
+              ? "<span class=\"upgrade-current-badge\">" + escHTML(t.memberCurrentBadge) + "</span>"
+              : "<span class=\"upgrade-tier-label\">" + escHTML(tierLabel(tier).toUpperCase()) + "</span>";
+            return "<article class=\"" + classes + "\">"
+              + headerHtml
+              + "<div class=\"upgrade-name\">" + escHTML(tierLabel(tier)) + "</div>"
+              + "<div class=\"upgrade-price\">" + escHTML(priceLine) + "</div>"
+              + diffLine
+              + "<div class=\"upgrade-cadence\">" + escHTML(sessionsLine) + "</div>"
+              + ctaHtml
+              + "</article>";
+          }).join("");
         })();
 
         // Sidebar badge counts — recompute on every render so adding new
