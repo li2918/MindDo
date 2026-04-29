@@ -18,7 +18,8 @@
     guardians: "minddo_guardians",
     accounts: "minddo_accounts",
     inviteTokens: "minddo_invite_tokens",
-    trialSlots: "minddo_trial_slots"
+    trialSlots: "minddo_trial_slots",
+    portfolio: "minddo_portfolio"
   };
 
   // Role constants for the new multi-account model. A single family has one
@@ -414,6 +415,25 @@
       studentName: current && current.studentName,
       studentId: current && current.studentId
     }));
+  }
+
+  // Student project portfolio. In a real deployment this comes from the
+  // curriculum / classroom platform; here we just persist demo entries
+  // keyed by studentId so the parent hub has something to render.
+  function getPortfolioForStudent(studentId) {
+    if (!studentId) return [];
+    return readJson(KEYS.portfolio, []).filter(function (p) {
+      return p && String(p.studentId || "") === String(studentId);
+    }).sort(function (a, b) {
+      return new Date(b.completedAt || b.createdAt || 0) - new Date(a.completedAt || a.createdAt || 0);
+    });
+  }
+  function savePortfolioItem(item) {
+    if (!item || !item.studentId) return null;
+    var record = Object.assign({
+      createdAt: new Date().toISOString()
+    }, item);
+    return appendRecord(KEYS.portfolio, record);
   }
 
   function saveFeedback(feedback) {
@@ -1072,6 +1092,49 @@
       status: "pending",
       createdAt: daysAgo(0)
     }]);
+
+    writeJson(KEYS.portfolio, [
+      {
+        studentId: student.studentId,
+        title: { zh: "AI 像素画生成器", en: "AI Pixel Art Generator" },
+        category: { zh: "AI 创作", en: "AI Creation" },
+        summary: {
+          zh: "用 prompt 输入主题，自动生成 8-bit 风格的像素画。集成色板与导出功能。",
+          en: "Generates 8-bit pixel art from prompts. Includes a palette picker and export."
+        },
+        techTags: ["Python", "Pillow", "Prompt design"],
+        teacher: "Dr. Sarah Chen",
+        completedAt: daysAgo(45),
+        createdAt: daysAgo(45)
+      },
+      {
+        studentId: student.studentId,
+        title: { zh: "智能作业助手 Bot", en: "Homework Helper Bot" },
+        category: { zh: "AI 工具", en: "AI Tools" },
+        summary: {
+          zh: "结合 RAG 思路，针对小学数学作业自动给出讲解和检查思路，避免直接给答案。",
+          en: "RAG-style helper that explains primary-school math problems and double-checks reasoning instead of just giving answers."
+        },
+        techTags: ["LangChain", "Prompt engineering", "Math reasoning"],
+        teacher: "Jenny Lin",
+        completedAt: daysAgo(20),
+        createdAt: daysAgo(20)
+      },
+      {
+        studentId: student.studentId,
+        title: { zh: "校园物品共享小程序", en: "Campus Share Mini-App" },
+        category: { zh: "项目营成果", en: "Project Camp" },
+        summary: {
+          zh: "和同学合作完成的物品借用平台原型：发布、申领、归还，配套提醒。项目营答辩 90 分。",
+          en: "Group project — a borrow / return platform prototype with reminders. Earned 90/100 at the project camp showcase."
+        },
+        techTags: ["Figma", "JavaScript", "Team collab"],
+        teacher: "David Park",
+        completedAt: daysAgo(7),
+        createdAt: daysAgo(7),
+        highlight: true
+      }
+    ]);
   }
 
   // =================================================================
@@ -1699,6 +1762,8 @@
     saveAssessment: saveAssessment,
     saveSignupUser: saveSignupUser,
     savePayment: savePayment,
+    getPortfolioForStudent: getPortfolioForStudent,
+    savePortfolioItem: savePortfolioItem,
     saveMembershipOrder: saveMembershipOrder,
     saveFeedback: saveFeedback,
     getScheduleRequests: getScheduleRequests,

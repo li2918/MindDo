@@ -818,6 +818,31 @@
     .cur-card-title { font-size: 16px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; line-height: 1.3; }
     .cur-card-copy { font-size: 13px; color: var(--muted); line-height: 1.6; flex: 1; }
 
+    /* Project portfolio inside the Learning tab — student-authored work
+       surfaced for the parent to review. */
+    .panel-head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    .portfolio-count { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 999px;
+      background: rgba(186,230,253,0.32); color: #0b4d70; border: 1px solid rgba(14,165,233,0.32); }
+    .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .portfolio-empty { padding: 20px 16px; text-align: center; color: var(--muted); font-size: 13px;
+      line-height: 1.7; background: rgba(240,249,255,0.6); border: 1px dashed rgba(30,58,95,0.18); border-radius: 12px; }
+    .pf-card { display: grid; gap: 8px; padding: 16px 18px; border-radius: 16px;
+      background: #fff; border: 1px solid var(--line);
+      box-shadow: 0 6px 16px rgba(15,23,42,0.04); transition: 0.15s; position: relative; }
+    .pf-card:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(15,23,42,0.08); border-color: rgba(14,165,233,0.3); }
+    .pf-card.highlight { border-color: rgba(216,156,54,0.45); background: linear-gradient(180deg,#fff,rgba(255,247,237,0.6)); }
+    .pf-card.highlight::after { content: "★"; position: absolute; top: 12px; right: 14px; color: #d89c36; font-size: 16px; }
+    .pf-cat { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--gold-deep); }
+    .pf-title { font-size: 15px; font-weight: 800; color: var(--clay); line-height: 1.35; padding-right: 24px; }
+    .pf-summary { font-size: 12.5px; color: #334155; line-height: 1.6; }
+    .pf-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+    .pf-tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+      background: #f1f5f9; color: #475569; }
+    .pf-meta { font-size: 11.5px; color: var(--muted); margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .pf-meta strong { color: var(--clay); font-weight: 700; }
+
     /* DASHBOARD REDESIGN */
     .dash-stack { display: grid; gap: 28px; }
     .dash-section { display: grid; gap: 18px; }
@@ -1137,6 +1162,17 @@
               <p class="dash-sub" data-i18n="snapshotSub"></p>
             </div>
           </div>
+
+          <article class="panel" id="portfolioPanel">
+            <div class="panel-head-row">
+              <div>
+                <h2 data-i18n="portfolioTitle"></h2>
+                <p class="panel-sub muted" data-i18n="portfolioSub" style="margin-top:4px;"></p>
+              </div>
+              <span class="portfolio-count" id="portfolioCount" hidden></span>
+            </div>
+            <div class="portfolio-grid" id="portfolioGrid"></div>
+          </article>
 
           <div class="snap-grid">
             <a class="snap-card" href="semester-report.html">
@@ -1693,6 +1729,12 @@
           snapshotEyebrow: "学习进度",
           snapshotTitle: "我的学习快照",
           snapshotSub: "最新课堂反馈、学期报告与入学评估，所有成长数据统一入口。",
+          portfolioTitle: "项目作品集",
+          portfolioSub: "每个阶段的代表性项目作品，由老师审核后发布到本页。",
+          portfolioEmpty: "孩子目前还没有发布的项目作品。完成阶段性课程或项目营后，老师会把代表作品同步到这里。",
+          portfolioCountFmt: "{n} 件作品",
+          portfolioMetaTeacher: "指导老师",
+          portfolioMetaDate: "完成时间",
           snapFeedbackEyebrow: "课堂反馈",
           snapFeedbackTitle: "老师最新反馈",
           snapFeedbackCopy: "每节课后老师都会给出专注度、理解度与作品亮点记录。",
@@ -1970,6 +2012,12 @@
           snapshotEyebrow: "Learning Progress",
           snapshotTitle: "My Learning Snapshot",
           snapshotSub: "Class feedback, semester reports, and entry assessment — every signal about your growth, one click away.",
+          portfolioTitle: "Project Portfolio",
+          portfolioSub: "Standout projects from each stage, published here once a teacher signs off.",
+          portfolioEmpty: "No published projects yet. Once your child wraps a stage or project camp, the teacher will share their featured work here.",
+          portfolioCountFmt: "{n} project{s}",
+          portfolioMetaTeacher: "Teacher",
+          portfolioMetaDate: "Completed",
           snapFeedbackEyebrow: "Class Feedback",
           snapFeedbackTitle: "Latest Teacher Notes",
           snapFeedbackCopy: "After every class, your teacher logs focus, comprehension, and project highlights.",
@@ -2518,6 +2566,69 @@
           body.innerHTML = "<div class=\"fb-latest\">" + rows.map(function (r) {
             return "<div class=\"fb-row\"><span class=\"fb-k\">" + escHTML(r.k) + "</span><span class=\"fb-v\">" + r.v + "</span></div>";
           }).join("") + "</div>";
+        })();
+
+        // Project portfolio (Learning tab) — list the active student's
+        // featured work with category, summary, tags, and meta. Empty state
+        // explains that teacher publishes projects after each stage.
+        (function () {
+          var grid = document.getElementById("portfolioGrid");
+          var countEl = document.getElementById("portfolioCount");
+          if (!grid) return;
+          function pickLang(field) {
+            if (field == null) return "";
+            if (typeof field === "string") return field;
+            return field[lang === "en" ? "en" : "zh"] || field.zh || field.en || "";
+          }
+          function fmtDate(iso) {
+            if (!iso) return "";
+            try {
+              var d = new Date(iso);
+              return d.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN",
+                { year: "numeric", month: "short", day: "numeric" });
+            } catch (_) { return iso; }
+          }
+          var items = (flow && flow.getPortfolioForStudent && current.studentId)
+            ? flow.getPortfolioForStudent(current.studentId)
+            : [];
+
+          if (countEl) {
+            if (items.length) {
+              var fmt = t.portfolioCountFmt || "{n}";
+              countEl.textContent = fmt.replace("{n}", items.length).replace("{s}", items.length === 1 ? "" : "s");
+              countEl.hidden = false;
+            } else {
+              countEl.hidden = true;
+            }
+          }
+
+          if (!items.length) {
+            grid.innerHTML = "<div class=\"portfolio-empty\">" + escHTML(t.portfolioEmpty) + "</div>";
+            return;
+          }
+
+          grid.innerHTML = items.map(function (p) {
+            var title = pickLang(p.title) || p.title || "";
+            var category = pickLang(p.category);
+            var summary = pickLang(p.summary);
+            var tags = (Array.isArray(p.techTags) ? p.techTags : [])
+              .map(function (tag) { return "<span class=\"pf-tag\">" + escHTML(tag) + "</span>"; }).join("");
+            var meta = [];
+            if (p.teacher) {
+              meta.push("<span>" + escHTML(t.portfolioMetaTeacher) + " · <strong>" + escHTML(p.teacher) + "</strong></span>");
+            }
+            var dateStr = fmtDate(p.completedAt || p.createdAt);
+            if (dateStr) {
+              meta.push("<span>" + escHTML(t.portfolioMetaDate) + " · <strong>" + escHTML(dateStr) + "</strong></span>");
+            }
+            return "<article class=\"pf-card" + (p.highlight ? " highlight" : "") + "\">"
+              + (category ? "<span class=\"pf-cat\">" + escHTML(category) + "</span>" : "")
+              + "<h3 class=\"pf-title\">" + escHTML(title) + "</h3>"
+              + (summary ? "<p class=\"pf-summary\">" + escHTML(summary) + "</p>" : "")
+              + (tags ? "<div class=\"pf-tags\">" + tags + "</div>" : "")
+              + (meta.length ? "<div class=\"pf-meta\">" + meta.join("") + "</div>" : "")
+              + "</article>";
+          }).join("");
         })();
 
         // Feedback tab — populate latest record + history list. Records are
