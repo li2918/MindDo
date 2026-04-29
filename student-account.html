@@ -1088,16 +1088,12 @@
         <section class="dash-section active" data-tab-panel="overview" role="tabpanel" aria-label="Overview">
           <div class="kids-stack" id="kidsScheduleStack"></div>
 
-          <article class="stat-card stat-card--full">
-            <span class="stat-eyebrow" data-i18n="statusTitle"></span>
-            <ul class="status-list" id="statusList"></ul>
-          </article>
-
-          <!-- Legacy single-class container kept hidden for back-compat
-               with code paths that still write to nextLessonText/Meta. -->
+          <!-- Legacy nodes kept hidden for back-compat with code paths that
+               still write to nextLessonText/Meta and the flow-progress list. -->
           <div style="display:none;">
             <h3 id="nextLessonText"></h3>
             <div id="nextLessonMeta"></div>
+            <ul id="statusList"></ul>
           </div>
         </section>
 
