@@ -879,6 +879,25 @@
       text-decoration: none; text-align: center; transition: 0.15s; margin-top: 4px; }
     .upgrade-cta:hover { transform: translateY(-1px); }
 
+    /* Billing tab — payment history table + download-invoice action */
+    .billing-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+    .billing-table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    .billing-table th, .billing-table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); font-size: 13px; }
+    .billing-table th { background: rgba(186,230,253,0.18); color: var(--clay); font-weight: 800;
+      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .billing-table tr:last-child td { border-bottom: none; }
+    .billing-table tr:hover td { background: rgba(186,230,253,0.08); }
+    .billing-table .b-amount { font-weight: 800; color: var(--clay); }
+    .billing-status { display: inline-flex; padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
+    .billing-status.paid { background: rgba(110,143,87,0.16); color: #4f6f38; border: 1px solid rgba(111,143,87,0.32); }
+    .billing-status.pending { background: rgba(216,156,54,0.14); color: #8a5d11; border: 1px solid rgba(216,156,54,0.32); }
+    .billing-action { background: rgba(240,249,255,0.95); color: var(--clay);
+      border: 1px solid rgba(2,132,199,0.3); border-radius: 999px; padding: 6px 12px;
+      font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: 0.15s; }
+    .billing-action:hover { background: rgba(186,230,253,0.4); border-color: var(--gold); }
+
     /* DASHBOARD REDESIGN */
     .dash-stack { display: grid; gap: 28px; }
     .dash-section { display: grid; gap: 18px; }
@@ -1049,6 +1068,9 @@
         <button type="button" class="sidebar-item" data-tab="enroll" role="tab">
           <span class="si-icon" aria-hidden="true">★</span><span data-i18n="tabEnroll"></span>
         </button>
+        <button type="button" class="sidebar-item" data-tab="billing" role="tab">
+          <span class="si-icon" aria-hidden="true">$</span><span data-i18n="tabBilling"></span>
+        </button>
         <button type="button" class="sidebar-item" data-tab="schedule" role="tab">
           <span class="si-icon" aria-hidden="true">▦</span><span data-i18n="tabSchedule"></span>
         </button>
@@ -1146,6 +1168,20 @@
             <h2 data-i18n="memberUpgradeTitle"></h2>
             <p class="muted" id="memberUpgradeSub" style="margin-bottom:14px;"></p>
             <div class="upgrade-grid" id="memberUpgradeGrid"></div>
+          </article>
+        </section>
+
+        <!-- 1.6. BILLING — payment history with downloadable invoices -->
+        <section class="dash-section" data-tab-panel="billing" role="tabpanel" aria-label="Billing">
+          <article class="panel" id="billingPanel">
+            <div class="panel-head-row">
+              <div>
+                <h2 data-i18n="billingTitle"></h2>
+                <p class="panel-sub muted" data-i18n="billingSub" style="margin-top:4px;"></p>
+              </div>
+              <span id="billingTotalChip" class="portfolio-count" hidden></span>
+            </div>
+            <div id="billingBody"></div>
           </article>
         </section>
 
@@ -1624,6 +1660,24 @@
           quickActionsTitle: "快捷入口",
           tabOverview: "概览",
           tabEnroll: "会员管理",
+          tabBilling: "付费记录",
+          billingTitle: "付费记录",
+          billingSub: "查看历史付款明细，每条记录可单独导出 PDF 发票（浏览器打印为 PDF 即可）。",
+          billingEmpty: "暂无付费记录。开通会员或续费后，发票会自动出现在这里。",
+          billingTotalFmt: "共 {n} 条 · 已支付 ${total}",
+          billingColDate: "付款时间",
+          billingColPlan: "对应方案",
+          billingColAmount: "金额",
+          billingColMethod: "支付方式",
+          billingColStatus: "状态",
+          billingColAction: "操作",
+          billingStatusPaid: "已完成",
+          billingStatusPending: "处理中",
+          billingDownload: "下载发票",
+          billingMethodAlipay: "支付宝",
+          billingMethodWechat: "微信支付",
+          billingMethodCard: "信用卡",
+          billingMethodEmail: "邮箱代收",
           tabSchedule: "课表",
           tabLearning: "学习记录",
           tabFeedback: "课堂反馈",
@@ -1910,6 +1964,24 @@
           quickActionsTitle: "Quick Actions",
           tabOverview: "Overview",
           tabEnroll: "Membership",
+          tabBilling: "Billing",
+          billingTitle: "Billing & Invoices",
+          billingSub: "Past payments. Each row can be exported as a PDF invoice — pick \"Save as PDF\" in the print dialog.",
+          billingEmpty: "No payments yet. Invoices for new memberships and renewals will show up here automatically.",
+          billingTotalFmt: "{n} entries · ${total} paid",
+          billingColDate: "Date",
+          billingColPlan: "Plan",
+          billingColAmount: "Amount",
+          billingColMethod: "Method",
+          billingColStatus: "Status",
+          billingColAction: "Action",
+          billingStatusPaid: "Paid",
+          billingStatusPending: "Processing",
+          billingDownload: "Download Invoice",
+          billingMethodAlipay: "Alipay",
+          billingMethodWechat: "WeChat Pay",
+          billingMethodCard: "Credit Card",
+          billingMethodEmail: "Email Pay",
           tabSchedule: "Schedule",
           tabLearning: "Learning",
           tabFeedback: "Class Feedback",
@@ -2660,6 +2732,91 @@
         // reflected immediately.
         computeBadgeCounts();
 
+        // Billing tab — render payment history filtered to the active
+        // student. Each row links to invoice.html?orderId=… so the parent
+        // can browser-print it as a PDF.
+        (function () {
+          var bbody = document.getElementById("billingBody");
+          var totalChip = document.getElementById("billingTotalChip");
+          if (!bbody) return;
+          function fmtDate(iso) {
+            if (!iso) return "—";
+            try {
+              var d = new Date(iso);
+              return d.toLocaleString(lang === "en" ? "en-US" : "zh-CN", {
+                year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
+              });
+            } catch (_) { return iso; }
+          }
+          function methodLabel(code) {
+            var map = {
+              alipay: t.billingMethodAlipay,
+              wechat: t.billingMethodWechat,
+              card: t.billingMethodCard,
+              email: t.billingMethodEmail
+            };
+            return map[String(code || "").toLowerCase()] || code || "—";
+          }
+          var payments = readJson("minddo_payments")
+            .filter(function (p) { return matchCurrentStudent(p, current); })
+            .sort(function (a, b) { return new Date(b.createdAt || b.paidAt || 0) - new Date(a.createdAt || a.paidAt || 0); });
+
+          if (totalChip) {
+            if (payments.length) {
+              var total = payments.reduce(function (acc, p) { return acc + (Number(p.amount) || 0); }, 0);
+              totalChip.textContent = (t.billingTotalFmt || "{n}").replace("{n}", payments.length).replace("{total}", total.toFixed(2));
+              totalChip.hidden = false;
+            } else {
+              totalChip.hidden = true;
+            }
+          }
+
+          if (!payments.length) {
+            bbody.innerHTML = "<div class=\"portfolio-empty\">" + escHTML(t.billingEmpty) + "</div>";
+            return;
+          }
+
+          // Pair each payment with its membership row (if any) so we can
+          // show the plan label without forcing the parent to remember
+          // which order is which.
+          var memberMap = {};
+          (memberships || []).forEach(function (m) { if (m && m.orderId) memberMap[m.orderId] = m; });
+
+          var rows = payments.map(function (p) {
+            var member = (p.orderId && memberMap[p.orderId]) || null;
+            var planText = member && (member.planLabel || formatPlan(member.plan, lang)) || "—";
+            var amount = (typeof p.amount === "number") ? "$" + Number(p.amount).toFixed(2) : (p.amount || "—");
+            var statusKey = (p.status === "pending") ? "pending" : "paid";
+            var statusText = statusKey === "pending" ? t.billingStatusPending : t.billingStatusPaid;
+            var orderId = p.orderId || (p.id || "");
+            var invoiceHref = "invoice.html?orderId=" + encodeURIComponent(orderId);
+            return "<tr>"
+              + "<td>" + escHTML(fmtDate(p.createdAt || p.paidAt)) + "</td>"
+              + "<td>" + escHTML(planText) + "</td>"
+              + "<td class=\"b-amount\">" + escHTML(amount) + "</td>"
+              + "<td>" + escHTML(methodLabel(p.method || p.source)) + "</td>"
+              + "<td><span class=\"billing-status " + statusKey + "\">" + escHTML(statusText) + "</span></td>"
+              + "<td>"
+              +   (orderId ? "<a class=\"billing-action\" href=\"" + invoiceHref + "\" target=\"_blank\" rel=\"noopener\">" + escHTML(t.billingDownload) + "</a>" : "—")
+              + "</td>"
+              + "</tr>";
+          }).join("");
+
+          bbody.innerHTML = "<div class=\"billing-table-wrap\">"
+            + "<table class=\"billing-table\">"
+            +   "<thead><tr>"
+            +     "<th>" + escHTML(t.billingColDate) + "</th>"
+            +     "<th>" + escHTML(t.billingColPlan) + "</th>"
+            +     "<th>" + escHTML(t.billingColAmount) + "</th>"
+            +     "<th>" + escHTML(t.billingColMethod) + "</th>"
+            +     "<th>" + escHTML(t.billingColStatus) + "</th>"
+            +     "<th>" + escHTML(t.billingColAction) + "</th>"
+            +   "</tr></thead>"
+            +   "<tbody>" + rows + "</tbody>"
+            + "</table>"
+            + "</div>";
+        })();
+
         // Project portfolio (Learning tab) — list the active student's
         // featured work with category, summary, tags, and meta. Empty state
         // explains that teacher publishes projects after each stage.
@@ -3181,7 +3338,7 @@
       // active state. Active tab persists per session.
       (function () {
         var TAB_KEY = "minddo_acct_active_tab";
-        var KNOWN_TABS = ["overview", "enroll", "schedule", "learning", "feedback", "profile", "requests", "settings"];
+        var KNOWN_TABS = ["overview", "enroll", "billing", "schedule", "learning", "feedback", "profile", "requests", "settings"];
         function setActiveTab(key) {
           if (KNOWN_TABS.indexOf(key) === -1) key = "overview";
           document.querySelectorAll("[data-tab]").forEach(function (btn) {
