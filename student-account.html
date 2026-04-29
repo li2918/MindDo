@@ -1023,10 +1023,6 @@
 
             <div class="stat-col">
               <article class="stat-card">
-                <span class="stat-eyebrow" data-i18n="statusBannerTitle"></span>
-                <p class="stat-text" id="statusBannerText"></p>
-              </article>
-              <article class="stat-card">
                 <span class="stat-eyebrow" data-i18n="statusTitle"></span>
                 <ul class="status-list" id="statusList"></ul>
               </article>
@@ -1588,7 +1584,7 @@
           setLogoutSub: "退出后将返回登录页，下次登录请使用相同邮箱与密码。",
           overviewEyebrow: "今日概览",
           overviewTitle: "今天该做什么？",
-          overviewSub: "下一节课安排、账户进度与流程状态一屏可见，继续推进学习只需一个动作。",
+          overviewSub: "实时显示孩子的下一节课与流程进度，所有信息根据当前学员的课程安排自动更新。",
           viewScheduleCta: "查看本周课表",
           submitRequestCta: "提交请假 / 改期",
           weekEyebrow: "本周课表",
@@ -1849,7 +1845,7 @@
           setLogoutSub: "Returns to the login page — sign back in with the same email and password.",
           overviewEyebrow: "Today At A Glance",
           overviewTitle: "What's next for you?",
-          overviewSub: "Your next class, account status, and flow progress in one view — everything you need to keep momentum.",
+          overviewSub: "Your child's next class and flow progress, updated live from the active student's enrollment.",
           viewScheduleCta: "View This Week",
           submitRequestCta: "Request Leave / Reschedule",
           weekEyebrow: "This Week",
@@ -1996,7 +1992,6 @@
       var heroStudentIdValue = document.getElementById("heroStudentIdValue");
       var heroGoalValue = document.getElementById("heroGoalValue");
       var heroStageValue = document.getElementById("heroStageValue");
-      var statusBannerText = document.getElementById("statusBannerText");
       var logoutButtons = [document.getElementById("logoutBtn"), document.getElementById("logoutBtnBottom"), document.getElementById("setActionLogout")];
 
       function readJson(key) {
@@ -2156,11 +2151,29 @@
         var idx = WEEKDAY_IDX[String(weekday || "").toLowerCase()] || WEEKDAY_IDX[String(weekday || "")];
         if (typeof idx !== "number") return null;
         var now = new Date();
+        // Allow today (diff 0) to be the answer — the overview is meant to
+        // surface "today's class" prominently. Callers that need strictly
+        // future dates should filter on (when - now) themselves.
         var diff = (idx - now.getDay() + 7) % 7;
-        if (diff === 0) diff = 7;
         var next = new Date(now);
+        next.setHours(0, 0, 0, 0);
         next.setDate(now.getDate() + diff);
         return next;
+      }
+      function relativeDayLabel(when, lang) {
+        if (!when) return "";
+        var today = new Date(); today.setHours(0, 0, 0, 0);
+        var diffDays = Math.round((when.getTime() - today.getTime()) / 86400000);
+        if (lang === "en") {
+          if (diffDays === 0) return "Today";
+          if (diffDays === 1) return "Tomorrow";
+          if (diffDays < 7) return "In " + diffDays + " days";
+        } else {
+          if (diffDays === 0) return "今天";
+          if (diffDays === 1) return "明天";
+          if (diffDays < 7) return diffDays + " 天后";
+        }
+        return "";
       }
 
       function syncCurrentStudentFromQuery() {
@@ -2525,19 +2538,9 @@
           opsLevel = window.MindDoFlow.getStudentLevel(current.studentId) || "";
         }
 
-        if (latestFeedback) {
-          statusBannerText.textContent = t.statusItems.hasFeedback;
-        } else if (latestCompletion) {
-          statusBannerText.textContent = (t.completionItems && t.completionItems.opsMarked) || t.statusItems.hasFeedback;
-        } else if (latestAssessment) {
-          statusBannerText.textContent = t.statusItems.hasAssessment;
-        } else if (latestLead) {
-          statusBannerText.textContent = t.statusItems.hasTrial;
-        } else {
-          statusBannerText.textContent = t.statusItems.noTrial;
-        }
-
-        // Flatten all sessions across active memberships, then pick the nearest upcoming one
+        // Next-class card: surface the active student's actual upcoming class
+        // (including today). Ordering is sid-keyed via memberships filter, so
+        // when the guardian flips between siblings the card re-pivots.
         var allSessions = [];
         memberships.forEach(function (m) {
           membershipSessions(m).forEach(function (s) { allSessions.push(s); });
@@ -2549,21 +2552,36 @@
 
         if (upcoming.length) {
           var pick = upcoming[0];
-          nextLessonText.textContent =
-            (formatPlan(pick.sess.plan, lang) || t.courseItems[0].fallback) +
-            " · " + (pick.sess.weekday || t.scheduleItems[0].fallback);
-          nextLessonMeta.innerHTML =
-            "<span class='reminder-pill'>" + (pick.sess.timeSlot || t.scheduleItems[1].fallback) + "</span>" +
-            "<span class='reminder-pill'>" + (formatClassMode(pick.sess.classMode, lang) || t.courseItems[1].fallback) + "</span>" +
-            (allSessions.length > 1
-              ? "<span class='reminder-pill'>" + (lang === "en" ? (allSessions.length + " classes / week") : (allSessions.length + " 节 / 周")) + "</span>"
-              : "");
+          var rel = relativeDayLabel(pick.when, lang);
+          var weekdayText = pick.sess.weekday || (rel || t.scheduleItems[0].fallback);
+          var titleParts = [];
+          if (rel) titleParts.push(rel);
+          titleParts.push(weekdayText);
+          if (pick.sess.timeSlot) titleParts.push(pick.sess.timeSlot);
+          nextLessonText.textContent = titleParts.join(" · ");
+          var metaPills = [];
+          var planLabel = formatPlan(pick.sess.plan, lang);
+          if (planLabel) metaPills.push("<span class='reminder-pill'>" + escHTML(planLabel) + "</span>");
+          var modeLabel = formatClassMode(pick.sess.classMode, lang);
+          if (modeLabel) metaPills.push("<span class='reminder-pill'>" + escHTML(modeLabel) + "</span>");
+          if (pick.sess.teacher) metaPills.push("<span class='reminder-pill'>" + escHTML(pick.sess.teacher) + "</span>");
+          if (allSessions.length > 1) {
+            metaPills.push("<span class='reminder-pill'>" +
+              (lang === "en" ? (allSessions.length + " classes / week") : (allSessions.length + " 节 / 周")) +
+              "</span>");
+          }
+          nextLessonMeta.innerHTML = metaPills.join("");
         } else if (memberships.length) {
+          // Membership exists but no parseable weekday — surface plan + slot
+          // text directly so the parent at least sees what they enrolled in.
           var fallbackClass = memberships[0];
-          nextLessonText.textContent = (formatPlan(fallbackClass.plan, lang) || t.courseItems[0].fallback) + " · " + (fallbackClass.weekday || t.scheduleItems[0].fallback);
-          nextLessonMeta.innerHTML =
-            "<span class='reminder-pill'>" + (fallbackClass.timeSlot || t.scheduleItems[1].fallback) + "</span>" +
-            "<span class='reminder-pill'>" + (formatClassMode(fallbackClass.classMode, lang) || t.courseItems[1].fallback) + "</span>";
+          var fbParts = [];
+          var fbPlan = formatPlan(fallbackClass.plan, lang);
+          if (fbPlan) fbParts.push(fbPlan);
+          if (fallbackClass.weekday) fbParts.push(fallbackClass.weekday);
+          if (fallbackClass.timeSlot) fbParts.push(fallbackClass.timeSlot);
+          nextLessonText.textContent = fbParts.join(" · ") || t.nextLessonEmpty;
+          nextLessonMeta.innerHTML = "";
         } else {
           nextLessonText.textContent = t.nextLessonEmpty;
           nextLessonMeta.innerHTML = "";
