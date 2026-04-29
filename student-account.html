@@ -666,6 +666,14 @@
       display: inline-flex; align-items: center; justify-content: center; }
     .sidebar-item.active .si-icon { color: var(--clay); }
     .sidebar-item .si-arrow { margin-left: auto; color: #94a3b8; font-size: 11px; }
+    .sidebar-item .tab-pill {
+      margin-left: auto; display: inline-flex; min-width: 18px;
+      padding: 1px 7px; border-radius: 999px; font-size: 10px; font-weight: 800;
+      align-items: center; justify-content: center;
+      background: rgba(196,106,77,0.14); color: var(--danger);
+      border: 1px solid rgba(196,106,77,0.32);
+    }
+    .sidebar-item.active .tab-pill { background: var(--danger); color: #fff; border-color: var(--danger); }
 
     .portal-main { padding: 36px 40px 80px; min-width: 0; overflow-x: hidden; }
     .portal-main-inner { max-width: 980px; margin: 0 auto; }
@@ -1021,12 +1029,14 @@
         </button>
         <button type="button" class="sidebar-item" data-tab="feedback" role="tab">
           <span class="si-icon" aria-hidden="true">💬</span><span data-i18n="tabFeedback"></span>
+          <span class="tab-pill" data-tab-pill="feedback" hidden>0</span>
         </button>
         <button type="button" class="sidebar-item" data-tab="profile" role="tab">
           <span class="si-icon" aria-hidden="true">◉</span><span data-i18n="tabProfile"></span>
         </button>
         <button type="button" class="sidebar-item" data-tab="requests" role="tab">
           <span class="si-icon" aria-hidden="true">✎</span><span data-i18n="tabRequests"></span>
+          <span class="tab-pill" data-tab-pill="requests" hidden>0</span>
         </button>
         <button type="button" class="sidebar-item" data-tab="settings" role="tab">
           <span class="si-icon" aria-hidden="true">⚙</span><span data-i18n="tabSettings"></span>
@@ -1562,6 +1572,9 @@
         window.location.replace("login.html");
         return;
       }
+      var BADGE_TABS = ["feedback", "requests"];
+      var LASTSEEN_PREFIX = "minddo_acct_lastseen_";
+
       var I18N = {
         "zh-CN": {
           backFlow: "返回流程总览",
@@ -2564,6 +2577,11 @@
           }).join("") + "</div>";
         })();
 
+        // Sidebar badge counts — recompute on every render so adding new
+        // feedback / request data via seedDemoData or another tab is
+        // reflected immediately.
+        computeBadgeCounts();
+
         // Project portfolio (Learning tab) — list the active student's
         // featured work with category, summary, tags, and meta. Empty state
         // explains that teacher publishes projects after each stage.
@@ -3030,6 +3048,55 @@
         });
       })();
 
+      // Per-tab "last seen" tracking for badge counts. New items in
+      // minddo_feedback / minddo_schedule_requests written after the user
+      // last opened the corresponding tab show up as a red pill on the
+      // sidebar so something's-new is visible at a glance.
+      // (BADGE_TABS / LASTSEEN_PREFIX are declared up at the top of the
+      // IIFE so the first render() call — which happens before this block
+      // executes linearly — already has them in scope.)
+      function getLastseen(tab) {
+        try { return localStorage.getItem(LASTSEEN_PREFIX + tab) || ""; } catch (_) { return ""; }
+      }
+      function setLastseen(tab, iso) {
+        try { localStorage.setItem(LASTSEEN_PREFIX + tab, iso); } catch (_) {}
+      }
+      function setBadge(tab, count) {
+        var pill = document.querySelector('[data-tab-pill="' + tab + '"]');
+        if (!pill) return;
+        if (count > 0) { pill.textContent = count > 99 ? "99+" : String(count); pill.hidden = false; }
+        else { pill.hidden = true; }
+      }
+      function computeBadgeCounts() {
+        // Anchor first-visit users to "now" so they don't get pelted with
+        // counts for every existing record. Subsequent visits compare new
+        // records' timestamps against this anchor.
+        BADGE_TABS.forEach(function (tab) {
+          if (!getLastseen(tab)) setLastseen(tab, new Date().toISOString());
+        });
+        var current = (window.MindDoFlow && window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent()) || {};
+        // Feedback: count records newer than lastseen, scoped to active student.
+        var fbLast = getLastseen("feedback");
+        var fbCount = readJson("minddo_feedback").filter(function (r) {
+          if (!matchCurrentStudent(r, current)) return false;
+          return r.createdAt && r.createdAt > fbLast;
+        }).length;
+        // Requests: count items where ops changed status (updatedAt) or new
+        // requests since lastseen — scoped to active student.
+        var reqLast = getLastseen("requests");
+        var reqCount = readJson("minddo_schedule_requests").filter(function (r) {
+          if (!matchCurrentStudent(r, current)) return false;
+          var stamp = r.updatedAt || r.createdAt;
+          return stamp && stamp > reqLast;
+        }).length;
+        // If the user is currently sitting on the tab, treat as seen so the
+        // pill never lingers while they're looking at the content.
+        var active = "";
+        try { active = sessionStorage.getItem("minddo_acct_active_tab") || ""; } catch (_) {}
+        setBadge("feedback", active === "feedback" ? 0 : fbCount);
+        setBadge("requests", active === "requests" ? 0 : reqCount);
+      }
+
       // Tab switching: clicking a sidebar item (or a [data-jump-tab] link
       // inside a panel, or a Settings entry inside the user dropdown) shows
       // the matching panel and updates the topbar page-title + sidebar
@@ -3052,6 +3119,13 @@
           var titleEl = document.getElementById("topbarPageTitle");
           if (titleEl && t[labelKey]) titleEl.textContent = t[labelKey];
           try { sessionStorage.setItem(TAB_KEY, key); } catch (_) {}
+          // If the activated tab carries a badge, mark its content as seen
+          // — both clears the pill and prevents the count from re-appearing
+          // until something genuinely new is added.
+          if (BADGE_TABS.indexOf(key) >= 0) {
+            setLastseen(key, new Date().toISOString());
+            setBadge(key, 0);
+          }
         }
         // Sidebar tabs live under #acctTabs; user-dropdown also has a
         // [data-tab="settings"] entry. Use document-level delegation so both
