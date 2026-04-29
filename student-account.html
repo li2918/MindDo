@@ -759,6 +759,43 @@
     .fb-row-body { font-size: 12.5px; color: var(--clay); line-height: 1.55; }
     .fb-row-meta { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
 
+    /* Per-kid schedule cards on the Overview tab — one card per child in
+       the family, so guardians with multiple kids see every schedule at
+       once instead of having to flip the active student. */
+    .kids-stack { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px; margin-bottom: 20px; }
+    .kid-class-card { background: #fff; border: 1px solid var(--line); border-radius: 16px;
+      padding: 18px 20px; display: grid; gap: 8px;
+      box-shadow: 0 6px 18px rgba(15,23,42,0.04); transition: 0.15s; }
+    .kid-class-card:hover { border-color: rgba(14,165,233,0.32); box-shadow: 0 10px 24px rgba(14,165,233,0.08); }
+    .kid-class-card .kc-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .kid-class-card .kc-name { font-size: 14px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .kid-class-card .kc-grade { font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 0.02em; }
+    .kid-class-card .kc-rel { display: inline-flex; align-items: center; padding: 3px 10px;
+      border-radius: 999px; background: rgba(186,230,253,0.32); color: #0b4d70;
+      border: 1px solid rgba(14,165,233,0.32); font-size: 11px; font-weight: 800;
+      letter-spacing: 0.04em; text-transform: uppercase; }
+    .kid-class-card .kc-rel.today { background: rgba(110,143,87,0.16); color: #4f6f38;
+      border-color: rgba(111,143,87,0.32); }
+    .kid-class-card .kc-title { font-size: 17px; font-weight: 800; color: var(--clay);
+      letter-spacing: -0.005em; line-height: 1.3; }
+    .kid-class-card .kc-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+    .kid-class-card .kc-pill { display: inline-flex; padding: 3px 10px; border-radius: 999px;
+      background: rgba(240,249,255,0.7); border: 1px solid var(--line);
+      font-size: 12px; font-weight: 700; color: var(--clay); }
+    .kid-class-card.empty { background: rgba(240,249,255,0.5); border-style: dashed; }
+    .kid-class-card.empty .kc-title { color: var(--muted); font-weight: 700; font-size: 14px; }
+    .kid-class-card .kc-cta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    .kid-class-card .kc-cta a { display: inline-flex; align-items: center;
+      padding: 7px 14px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      text-decoration: none; transition: 0.15s; cursor: pointer; }
+    .kid-class-card .kc-cta a.kc-cta-primary { background: linear-gradient(135deg,#bae6fd,var(--gold));
+      color: #0b2540; border: 1px solid rgba(14,165,233,0.4); }
+    .kid-class-card .kc-cta a.kc-cta-ghost { background: transparent; color: var(--clay);
+      border: 1px solid var(--line); }
+    .kid-class-card .kc-cta a:hover { transform: translateY(-1px); }
+    .stat-card--full { width: 100%; }
+
     /* DASHBOARD REDESIGN */
     .dash-stack { display: grid; gap: 28px; }
     .dash-section { display: grid; gap: 18px; }
@@ -1010,23 +1047,18 @@
             </div>
           </div>
 
-          <div class="dash-split">
-            <article class="next-class-card">
-              <span class="next-class-eyebrow" data-i18n="nextLessonTitle"></span>
-              <h3 class="next-class-title" id="nextLessonText"></h3>
-              <div class="next-class-meta" id="nextLessonMeta"></div>
-              <div class="next-class-cta">
-                <a class="btn-primary" href="#schedule" data-jump-tab="schedule" data-i18n="viewScheduleCta"></a>
-                <a class="btn-ghost" href="#requests" data-jump-tab="requests" data-i18n="submitRequestCta"></a>
-              </div>
-            </article>
+          <div class="kids-stack" id="kidsScheduleStack"></div>
 
-            <div class="stat-col">
-              <article class="stat-card">
-                <span class="stat-eyebrow" data-i18n="statusTitle"></span>
-                <ul class="status-list" id="statusList"></ul>
-              </article>
-            </div>
+          <article class="stat-card stat-card--full">
+            <span class="stat-eyebrow" data-i18n="statusTitle"></span>
+            <ul class="status-list" id="statusList"></ul>
+          </article>
+
+          <!-- Legacy single-class container kept hidden for back-compat
+               with code paths that still write to nextLessonText/Meta. -->
+          <div style="display:none;">
+            <h3 id="nextLessonText"></h3>
+            <div id="nextLessonMeta"></div>
           </div>
         </section>
 
@@ -1583,8 +1615,10 @@
           setLogoutTitle: "退出当前账号",
           setLogoutSub: "退出后将返回登录页，下次登录请使用相同邮箱与密码。",
           overviewEyebrow: "今日概览",
-          overviewTitle: "今天该做什么？",
-          overviewSub: "实时显示孩子的下一节课与流程进度，所有信息根据当前学员的课程安排自动更新。",
+          overviewTitle: "今日课程安排",
+          overviewSub: "家庭中每位学员的下一节课和当前流程进度，按学员独立显示。",
+          todayCardTitleTmpl: "{name} 今天的安排",
+          todayCardEmpty: "暂未安排课程，可前往「选课」开始报名。",
           viewScheduleCta: "查看本周课表",
           submitRequestCta: "提交请假 / 改期",
           weekEyebrow: "本周课表",
@@ -1844,8 +1878,10 @@
           setLogoutTitle: "Sign Out",
           setLogoutSub: "Returns to the login page — sign back in with the same email and password.",
           overviewEyebrow: "Today At A Glance",
-          overviewTitle: "What's next for you?",
-          overviewSub: "Your child's next class and flow progress, updated live from the active student's enrollment.",
+          overviewTitle: "Today's Schedule",
+          overviewSub: "Each child's next class and current flow progress, shown side by side.",
+          todayCardTitleTmpl: "{name}'s schedule",
+          todayCardEmpty: "No class scheduled yet — head to Enroll to set one up.",
           viewScheduleCta: "View This Week",
           submitRequestCta: "Request Leave / Reschedule",
           weekEyebrow: "This Week",
@@ -2538,54 +2574,86 @@
           opsLevel = window.MindDoFlow.getStudentLevel(current.studentId) || "";
         }
 
-        // Next-class card: surface the active student's actual upcoming class
-        // (including today). Ordering is sid-keyed via memberships filter, so
-        // when the guardian flips between siblings the card re-pivots.
-        var allSessions = [];
-        memberships.forEach(function (m) {
-          membershipSessions(m).forEach(function (s) { allSessions.push(s); });
-        });
-        var upcoming = allSessions
-          .map(function (s) { return { sess: s, when: nextOccurrence(s.weekday) }; })
-          .filter(function (x) { return x.when; })
-          .sort(function (a, b) { return a.when - b.when; });
-
-        if (upcoming.length) {
-          var pick = upcoming[0];
-          var rel = relativeDayLabel(pick.when, lang);
-          var weekdayText = pick.sess.weekday || (rel || t.scheduleItems[0].fallback);
-          var titleParts = [];
-          if (rel) titleParts.push(rel);
-          titleParts.push(weekdayText);
-          if (pick.sess.timeSlot) titleParts.push(pick.sess.timeSlot);
-          nextLessonText.textContent = titleParts.join(" · ");
-          var metaPills = [];
-          var planLabel = formatPlan(pick.sess.plan, lang);
-          if (planLabel) metaPills.push("<span class='reminder-pill'>" + escHTML(planLabel) + "</span>");
-          var modeLabel = formatClassMode(pick.sess.classMode, lang);
-          if (modeLabel) metaPills.push("<span class='reminder-pill'>" + escHTML(modeLabel) + "</span>");
-          if (pick.sess.teacher) metaPills.push("<span class='reminder-pill'>" + escHTML(pick.sess.teacher) + "</span>");
-          if (allSessions.length > 1) {
-            metaPills.push("<span class='reminder-pill'>" +
-              (lang === "en" ? (allSessions.length + " classes / week") : (allSessions.length + " 节 / 周")) +
-              "</span>");
+        // Per-kid schedule cards on Overview. Render one card per family
+        // child (or just the active student for non-guardian accounts), so
+        // a guardian with multiple kids sees everyone's next class at a
+        // glance instead of having to flip the active student to peek.
+        (function () {
+          var stack = document.getElementById("kidsScheduleStack");
+          if (!stack) return;
+          var rosterIds = (isGuardian && kids && kids.length)
+            ? kids.map(function (k) { return k.studentId; })
+            : (current.studentId ? [current.studentId] : []);
+          if (!rosterIds.length) {
+            stack.innerHTML = "";
+            return;
           }
-          nextLessonMeta.innerHTML = metaPills.join("");
-        } else if (memberships.length) {
-          // Membership exists but no parseable weekday — surface plan + slot
-          // text directly so the parent at least sees what they enrolled in.
-          var fallbackClass = memberships[0];
-          var fbParts = [];
-          var fbPlan = formatPlan(fallbackClass.plan, lang);
-          if (fbPlan) fbParts.push(fbPlan);
-          if (fallbackClass.weekday) fbParts.push(fallbackClass.weekday);
-          if (fallbackClass.timeSlot) fbParts.push(fallbackClass.timeSlot);
-          nextLessonText.textContent = fbParts.join(" · ") || t.nextLessonEmpty;
-          nextLessonMeta.innerHTML = "";
-        } else {
-          nextLessonText.textContent = t.nextLessonEmpty;
-          nextLessonMeta.innerHTML = "";
-        }
+          var allMemberships = readJson("minddo_membership_orders");
+          var titleTmpl = t.todayCardTitleTmpl || "{name} 今天的安排";
+          var emptyHint = t.todayCardEmpty || t.nextLessonEmpty;
+          var enrollLabel = (t.enrollGo || "进入选课页面 →").replace(/\s*→\s*$/, "");
+
+          stack.innerHTML = rosterIds.map(function (sid) {
+            var stu = (flow && flow.findStudentById) ? (flow.findStudentById(sid) || {}) : {};
+            var displayName = stu.name || (sid === current.studentId ? (current.studentName || current.name) : sid);
+            var gradeBit = stu.grade ? (t.familyGradeLabel || "{grade} 年级").replace("{grade}", stu.grade) : "";
+
+            var kidMems = allMemberships.filter(function (m) {
+              return String(m && m.studentId || "") === String(sid);
+            }).sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
+
+            var kidSessions = [];
+            kidMems.forEach(function (m) {
+              membershipSessions(m).forEach(function (s) { kidSessions.push(s); });
+            });
+            var kidUpcoming = kidSessions
+              .map(function (s) { return { sess: s, when: nextOccurrence(s.weekday) }; })
+              .filter(function (x) { return x.when; })
+              .sort(function (a, b) { return a.when - b.when; });
+
+            var headHtml = "<div class=\"kc-head\">"
+              + "<span class=\"kc-name\">" + escHTML(titleTmpl.replace("{name}", displayName)) + "</span>"
+              + (gradeBit ? "<span class=\"kc-grade\">" + escHTML(gradeBit) + "</span>" : "")
+              + "</div>";
+
+            if (kidUpcoming.length) {
+              var pick = kidUpcoming[0];
+              var rel = relativeDayLabel(pick.when, lang);
+              var isToday = rel === (lang === "en" ? "Today" : "今天");
+              var titleParts = [pick.sess.weekday || rel];
+              if (pick.sess.timeSlot) titleParts.push(pick.sess.timeSlot);
+              var metaPills = [];
+              var planLabel = formatPlan(pick.sess.plan, lang);
+              if (planLabel) metaPills.push("<span class=\"kc-pill\">" + escHTML(planLabel) + "</span>");
+              var modeLabel = formatClassMode(pick.sess.classMode, lang);
+              if (modeLabel) metaPills.push("<span class=\"kc-pill\">" + escHTML(modeLabel) + "</span>");
+              if (pick.sess.teacher) metaPills.push("<span class=\"kc-pill\">" + escHTML(pick.sess.teacher) + "</span>");
+              if (kidSessions.length > 1) {
+                metaPills.push("<span class=\"kc-pill\">" +
+                  (lang === "en" ? (kidSessions.length + " classes / week") : (kidSessions.length + " 节 / 周")) +
+                  "</span>");
+              }
+              return "<article class=\"kid-class-card\">"
+                + headHtml
+                + "<span class=\"kc-rel" + (isToday ? " today" : "") + "\">" + escHTML(rel || "") + "</span>"
+                + "<h3 class=\"kc-title\">" + escHTML(titleParts.join(" · ")) + "</h3>"
+                + "<div class=\"kc-meta\">" + metaPills.join("") + "</div>"
+                + "<div class=\"kc-cta\">"
+                +   "<a class=\"kc-cta-primary\" href=\"#schedule\" data-jump-tab=\"schedule\">" + escHTML(t.viewScheduleCta) + "</a>"
+                +   "<a class=\"kc-cta-ghost\" href=\"#requests\" data-jump-tab=\"requests\">" + escHTML(t.submitRequestCta) + "</a>"
+                + "</div>"
+                + "</article>";
+            }
+            // No parsable upcoming session — surface enrollment CTA instead.
+            return "<article class=\"kid-class-card empty\">"
+              + headHtml
+              + "<h3 class=\"kc-title\">" + escHTML(emptyHint) + "</h3>"
+              + "<div class=\"kc-cta\">"
+              +   "<a class=\"kc-cta-primary\" href=\"#enroll\" data-jump-tab=\"enroll\">" + escHTML(enrollLabel) + "</a>"
+              + "</div>"
+              + "</article>";
+          }).join("");
+        })();
 
         var profileValues = [
           current.studentName || current.name || t.profileItems[0].fallback,
