@@ -1018,6 +1018,34 @@
       text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: 0.15s; }
     .billing-action:hover { background: rgba(186,230,253,0.4); border-color: var(--gold); }
 
+    /* Billing filters + export */
+    .billing-toolbar { display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; gap: 12px; padding: 10px 14px;
+      background: rgba(240,249,255,0.6); border: 1px solid var(--line);
+      border-radius: 12px; margin-bottom: 14px; }
+    .billing-filter-group { display: inline-flex; gap: 2px; padding: 3px;
+      background: #fff; border: 1px solid var(--line); border-radius: 999px; }
+    .billing-filter-group button { all: unset; cursor: pointer; padding: 6px 14px;
+      border-radius: 999px; font-size: 12px; font-weight: 700; color: var(--muted);
+      transition: 0.12s; font-family: inherit; }
+    .billing-filter-group button.active { background: var(--clay); color: #fff; }
+    .billing-filter-group button:not(.active):hover { background: #f1f5f9; color: var(--clay); }
+    .billing-filter-secondary { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .billing-select { background: #fff; border: 1px solid var(--line); border-radius: 999px;
+      padding: 6px 12px; font: inherit; font-size: 12.5px; color: var(--clay);
+      font-family: inherit; cursor: pointer; transition: 0.12s; }
+    .billing-select:hover { border-color: var(--gold); }
+    .billing-select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.15); }
+    .billing-export-btn { background: linear-gradient(135deg,#bae6fd,var(--gold)); color: #0b2540;
+      border: 1px solid rgba(14,165,233,0.4); border-radius: 999px; padding: 7px 16px;
+      font: inherit; font-size: 12.5px; font-weight: 800; cursor: pointer;
+      font-family: inherit; transition: 0.12s; box-shadow: 0 4px 10px rgba(14,165,233,0.18); }
+    .billing-export-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(14,165,233,0.28); }
+    .billing-export-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .billing-empty-filter { padding: 24px 16px; text-align: center; color: var(--muted);
+      font-size: 13px; line-height: 1.6; background: rgba(240,249,255,0.6);
+      border: 1px dashed rgba(30,58,95,0.18); border-radius: 12px; }
+
     /* Schedule tab — forward-looking list of classes, grouped by week */
     .upcoming-range { display: inline-flex; gap: 2px; padding: 3px; background: #f1f5f9; border-radius: 999px; }
     .upcoming-range button { all: unset; cursor: pointer; padding: 6px 14px; border-radius: 999px;
@@ -1470,7 +1498,7 @@
           </article>
         </section>
 
-        <!-- 1.6. BILLING — payment history with downloadable invoices -->
+        <!-- 1.6. BILLING — payment history with filters + downloadable invoices -->
         <section class="dash-section" data-tab-panel="billing" role="tabpanel" aria-label="Billing">
           <article class="panel" id="billingPanel">
             <div class="panel-head-row">
@@ -1480,6 +1508,21 @@
               </div>
               <span id="billingTotalChip" class="portfolio-count" hidden></span>
             </div>
+
+            <div class="billing-toolbar" role="region" aria-label="Filters">
+              <div class="billing-filter-group" id="billingRangeFilter" role="group" aria-label="Range">
+                <button type="button" data-billing-range="all" class="active" data-i18n="billingRangeAll"></button>
+                <button type="button" data-billing-range="month" data-i18n="billingRangeMonth"></button>
+                <button type="button" data-billing-range="3m" data-i18n="billingRange3m"></button>
+                <button type="button" data-billing-range="year" data-i18n="billingRangeYear"></button>
+              </div>
+              <div class="billing-filter-secondary">
+                <select id="billingStatusFilter" class="billing-select"></select>
+                <select id="billingMethodFilter" class="billing-select"></select>
+                <button type="button" class="billing-export-btn" id="billingExportBtn" data-i18n="billingExport"></button>
+              </div>
+            </div>
+
             <div id="billingBody"></div>
           </article>
         </section>
@@ -2075,6 +2118,17 @@
           billingMethodWechat: "微信支付",
           billingMethodCard: "信用卡",
           billingMethodEmail: "邮箱代收",
+          billingRangeAll: "全部",
+          billingRangeMonth: "本月",
+          billingRange3m: "近 3 个月",
+          billingRangeYear: "今年",
+          billingStatusAll: "所有状态",
+          billingStatusFilterPaid: "仅已完成",
+          billingStatusFilterPending: "仅处理中",
+          billingMethodAll: "所有支付方式",
+          billingExport: "导出 CSV",
+          billingFilterEmpty: "当前筛选条件下没有付费记录。",
+          billingTotalFilteredFmt: "筛选后 {n} 条 · 已支付 ${total}",
           tabSchedule: "课程安排",
           tabLearning: "学习记录",
           tabFeedback: "课堂反馈",
@@ -2475,6 +2529,17 @@
           billingMethodWechat: "WeChat Pay",
           billingMethodCard: "Credit Card",
           billingMethodEmail: "Email Pay",
+          billingRangeAll: "All",
+          billingRangeMonth: "This Month",
+          billingRange3m: "Last 3 Months",
+          billingRangeYear: "This Year",
+          billingStatusAll: "All Statuses",
+          billingStatusFilterPaid: "Paid Only",
+          billingStatusFilterPending: "Processing Only",
+          billingMethodAll: "All Methods",
+          billingExport: "Export CSV",
+          billingFilterEmpty: "No payments match the current filters.",
+          billingTotalFilteredFmt: "{n} filtered · ${total} paid",
           tabSchedule: "Schedule",
           tabLearning: "Learning",
           tabFeedback: "Class Feedback",
@@ -3683,89 +3748,173 @@
           }
         })();
 
-        // Billing tab — render payment history filtered to the active
-        // student. Each row links to invoice.html?orderId=… so the parent
-        // can browser-print it as a PDF.
+        // Billing tab — payment history with date / status / method
+        // filters + CSV export. Each row keeps its per-record "下载发票"
+        // link to invoice.html.
         (function () {
           var bbody = document.getElementById("billingBody");
           var totalChip = document.getElementById("billingTotalChip");
+          var rangeBar = document.getElementById("billingRangeFilter");
+          var statusSel = document.getElementById("billingStatusFilter");
+          var methodSel = document.getElementById("billingMethodFilter");
+          var exportBtn = document.getElementById("billingExportBtn");
           if (!bbody) return;
-          function fmtDate(iso) {
+
+          function fmtDateTime(iso) {
             if (!iso) return "—";
             try {
-              var d = new Date(iso);
-              return d.toLocaleString(lang === "en" ? "en-US" : "zh-CN", {
+              return new Date(iso).toLocaleString(lang === "en" ? "en-US" : "zh-CN", {
                 year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
               });
             } catch (_) { return iso; }
           }
           function methodLabel(code) {
             var map = {
-              alipay: t.billingMethodAlipay,
-              wechat: t.billingMethodWechat,
-              card: t.billingMethodCard,
-              email: t.billingMethodEmail
+              alipay: t.billingMethodAlipay, wechat: t.billingMethodWechat,
+              card: t.billingMethodCard, email: t.billingMethodEmail
             };
             return map[String(code || "").toLowerCase()] || code || "—";
           }
-          var payments = readJson("minddo_payments")
+
+          // Hydrate the secondary filter dropdowns once per render with
+          // the current language. Preserve selected value across re-renders
+          // via a sticky billing-state object on window.
+          window.__minddoBillingState = window.__minddoBillingState || { range: "all", status: "all", method: "all" };
+          var billingState = window.__minddoBillingState;
+          function ensureSelectOptions(sel, defs, selectedValue) {
+            sel.innerHTML = defs.map(function (d) {
+              return "<option value=\"" + d.value + "\">" + escHTML(d.label) + "</option>";
+            }).join("");
+            sel.value = selectedValue;
+          }
+          if (statusSel) ensureSelectOptions(statusSel, [
+            { value: "all", label: t.billingStatusAll },
+            { value: "paid", label: t.billingStatusFilterPaid },
+            { value: "pending", label: t.billingStatusFilterPending }
+          ], billingState.status);
+          if (methodSel) ensureSelectOptions(methodSel, [
+            { value: "all", label: t.billingMethodAll },
+            { value: "alipay", label: t.billingMethodAlipay },
+            { value: "wechat", label: t.billingMethodWechat },
+            { value: "card", label: t.billingMethodCard },
+            { value: "email", label: t.billingMethodEmail }
+          ], billingState.method);
+          if (rangeBar) {
+            rangeBar.querySelectorAll("[data-billing-range]").forEach(function (b) {
+              b.classList.toggle("active", b.getAttribute("data-billing-range") === billingState.range);
+            });
+          }
+
+          // Pull payments scoped to the active student, sort newest first.
+          var allPayments = readJson("minddo_payments")
             .filter(function (p) { return matchCurrentStudent(p, current); })
             .sort(function (a, b) { return new Date(b.createdAt || b.paidAt || 0) - new Date(a.createdAt || a.paidAt || 0); });
 
-          if (totalChip) {
-            if (payments.length) {
-              var total = payments.reduce(function (acc, p) { return acc + (Number(p.amount) || 0); }, 0);
-              totalChip.textContent = (t.billingTotalFmt || "{n}").replace("{n}", payments.length).replace("{total}", total.toFixed(2));
-              totalChip.hidden = false;
-            } else {
-              totalChip.hidden = true;
-            }
-          }
-
-          if (!payments.length) {
-            bbody.innerHTML = "<div class=\"portfolio-empty\">" + escHTML(t.billingEmpty) + "</div>";
-            return;
-          }
-
-          // Pair each payment with its membership row (if any) so we can
-          // show the plan label without forcing the parent to remember
-          // which order is which.
+          // Build a memberships index keyed by orderId for plan labels.
           var memberMap = {};
           (memberships || []).forEach(function (m) { if (m && m.orderId) memberMap[m.orderId] = m; });
 
-          var rows = payments.map(function (p) {
-            var member = (p.orderId && memberMap[p.orderId]) || null;
-            var planText = member && (member.planLabel || formatPlan(member.plan, lang)) || "—";
-            var amount = (typeof p.amount === "number") ? "$" + Number(p.amount).toFixed(2) : (p.amount || "—");
-            var statusKey = (p.status === "pending") ? "pending" : "paid";
-            var statusText = statusKey === "pending" ? t.billingStatusPending : t.billingStatusPaid;
-            var orderId = p.orderId || (p.id || "");
-            var invoiceHref = "invoice.html?orderId=" + encodeURIComponent(orderId);
-            return "<tr>"
-              + "<td>" + escHTML(fmtDate(p.createdAt || p.paidAt)) + "</td>"
-              + "<td>" + escHTML(planText) + "</td>"
-              + "<td class=\"b-amount\">" + escHTML(amount) + "</td>"
-              + "<td>" + escHTML(methodLabel(p.method || p.source)) + "</td>"
-              + "<td><span class=\"billing-status " + statusKey + "\">" + escHTML(statusText) + "</span></td>"
-              + "<td>"
-              +   (orderId ? "<a class=\"billing-action\" href=\"" + invoiceHref + "\" target=\"_blank\" rel=\"noopener\">" + escHTML(t.billingDownload) + "</a>" : "—")
-              + "</td>"
-              + "</tr>";
-          }).join("");
+          function applyFilters(list) {
+            var now = new Date();
+            var rangeStart = null;
+            if (billingState.range === "month") {
+              rangeStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            } else if (billingState.range === "3m") {
+              rangeStart = new Date(now); rangeStart.setMonth(rangeStart.getMonth() - 3);
+            } else if (billingState.range === "year") {
+              rangeStart = new Date(now.getFullYear(), 0, 1);
+            }
+            return list.filter(function (p) {
+              if (rangeStart) {
+                var d = new Date(p.createdAt || p.paidAt || 0);
+                if (d < rangeStart) return false;
+              }
+              if (billingState.status !== "all") {
+                var sk = p.status === "pending" ? "pending" : "paid";
+                if (sk !== billingState.status) return false;
+              }
+              if (billingState.method !== "all") {
+                var mk = String(p.method || p.source || "").toLowerCase();
+                if (mk !== billingState.method) return false;
+              }
+              return true;
+            });
+          }
 
-          bbody.innerHTML = "<div class=\"billing-table-wrap\">"
-            + "<table class=\"billing-table\">"
-            +   "<thead><tr>"
-            +     "<th>" + escHTML(t.billingColDate) + "</th>"
-            +     "<th>" + escHTML(t.billingColPlan) + "</th>"
-            +     "<th>" + escHTML(t.billingColAmount) + "</th>"
-            +     "<th>" + escHTML(t.billingColMethod) + "</th>"
-            +     "<th>" + escHTML(t.billingColStatus) + "</th>"
-            +     "<th>" + escHTML(t.billingColAction) + "</th>"
-            +   "</tr></thead>"
-            +   "<tbody>" + rows + "</tbody>"
-            + "</table>"
-            + "</div>";
+          function renderTable() {
+            var filtered = applyFilters(allPayments);
+
+            if (totalChip) {
+              if (allPayments.length) {
+                var totalAll = allPayments.reduce(function (acc, p) { return acc + (Number(p.amount) || 0); }, 0);
+                var totalFiltered = filtered.reduce(function (acc, p) { return acc + (Number(p.amount) || 0); }, 0);
+                var fmt = (filtered.length === allPayments.length)
+                  ? (t.billingTotalFmt || "{n}")
+                  : (t.billingTotalFilteredFmt || t.billingTotalFmt || "{n}");
+                totalChip.textContent = fmt
+                  .replace("{n}", filtered.length)
+                  .replace("{total}", (filtered.length === allPayments.length ? totalAll : totalFiltered).toFixed(2));
+                totalChip.hidden = false;
+              } else {
+                totalChip.hidden = true;
+              }
+            }
+
+            if (exportBtn) exportBtn.disabled = filtered.length === 0;
+
+            if (!allPayments.length) {
+              bbody.innerHTML = "<div class=\"portfolio-empty\">" + escHTML(t.billingEmpty) + "</div>";
+              return;
+            }
+            if (!filtered.length) {
+              bbody.innerHTML = "<div class=\"billing-empty-filter\">" + escHTML(t.billingFilterEmpty) + "</div>";
+              return;
+            }
+
+            var rows = filtered.map(function (p) {
+              var member = (p.orderId && memberMap[p.orderId]) || null;
+              var planText = member && (member.planLabel || formatPlan(member.plan, lang)) || "—";
+              var amount = (typeof p.amount === "number") ? "$" + Number(p.amount).toFixed(2) : (p.amount || "—");
+              var statusKey = (p.status === "pending") ? "pending" : "paid";
+              var statusText = statusKey === "pending" ? t.billingStatusPending : t.billingStatusPaid;
+              var orderId = p.orderId || (p.id || "");
+              var invoiceHref = "invoice.html?orderId=" + encodeURIComponent(orderId);
+              return "<tr>"
+                + "<td>" + escHTML(fmtDateTime(p.createdAt || p.paidAt)) + "</td>"
+                + "<td>" + escHTML(planText) + "</td>"
+                + "<td class=\"b-amount\">" + escHTML(amount) + "</td>"
+                + "<td>" + escHTML(methodLabel(p.method || p.source)) + "</td>"
+                + "<td><span class=\"billing-status " + statusKey + "\">" + escHTML(statusText) + "</span></td>"
+                + "<td>"
+                +   (orderId ? "<a class=\"billing-action\" href=\"" + invoiceHref + "\" target=\"_blank\" rel=\"noopener\">" + escHTML(t.billingDownload) + "</a>" : "—")
+                + "</td>"
+                + "</tr>";
+            }).join("");
+
+            bbody.innerHTML = "<div class=\"billing-table-wrap\">"
+              + "<table class=\"billing-table\">"
+              +   "<thead><tr>"
+              +     "<th>" + escHTML(t.billingColDate) + "</th>"
+              +     "<th>" + escHTML(t.billingColPlan) + "</th>"
+              +     "<th>" + escHTML(t.billingColAmount) + "</th>"
+              +     "<th>" + escHTML(t.billingColMethod) + "</th>"
+              +     "<th>" + escHTML(t.billingColStatus) + "</th>"
+              +     "<th>" + escHTML(t.billingColAction) + "</th>"
+              +   "</tr></thead>"
+              +   "<tbody>" + rows + "</tbody>"
+              + "</table>"
+              + "</div>";
+          }
+
+          // Stash latest data references on window so the once-bound
+          // top-level click / change / export handlers can re-read fresh.
+          window.__minddoBillingPay = {
+            all: allPayments, memberMap: memberMap,
+            applyFilters: applyFilters, renderTable: renderTable,
+            methodLabel: methodLabel, fmtDateTime: fmtDateTime,
+            t: t, lang: lang
+          };
+          renderTable();
         })();
 
         // Referral tab — show the parent's code, copy / share helpers,
@@ -4629,6 +4778,89 @@
           .replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;");
       }
+
+      // Billing tab handlers — filter pills, status / method dropdowns,
+      // CSV export. Bound once at script load; render block re-runs on
+      // each interaction via window.__minddoBillingPay.renderTable().
+      (function () {
+        var rangeBar = document.getElementById("billingRangeFilter");
+        var statusSel = document.getElementById("billingStatusFilter");
+        var methodSel = document.getElementById("billingMethodFilter");
+        var exportBtn = document.getElementById("billingExportBtn");
+        function applyAndRerender() {
+          var s = window.__minddoBillingPay;
+          if (s && typeof s.renderTable === "function") s.renderTable();
+        }
+        if (rangeBar) {
+          rangeBar.addEventListener("click", function (e) {
+            var b = e.target.closest("[data-billing-range]");
+            if (!b) return;
+            window.__minddoBillingState = window.__minddoBillingState || {};
+            window.__minddoBillingState.range = b.getAttribute("data-billing-range");
+            rangeBar.querySelectorAll("[data-billing-range]").forEach(function (btn) {
+              btn.classList.toggle("active", btn === b);
+            });
+            applyAndRerender();
+          });
+        }
+        if (statusSel) {
+          statusSel.addEventListener("change", function () {
+            window.__minddoBillingState = window.__minddoBillingState || {};
+            window.__minddoBillingState.status = statusSel.value;
+            applyAndRerender();
+          });
+        }
+        if (methodSel) {
+          methodSel.addEventListener("change", function () {
+            window.__minddoBillingState = window.__minddoBillingState || {};
+            window.__minddoBillingState.method = methodSel.value;
+            applyAndRerender();
+          });
+        }
+        if (exportBtn) {
+          exportBtn.addEventListener("click", function () {
+            var s = window.__minddoBillingPay;
+            if (!s) return;
+            var rows = s.applyFilters(s.all);
+            if (!rows.length) return;
+            // Build CSV. Minimal escape-quotes pass to handle commas /
+            // newlines / quotes inside fields.
+            function csvCell(v) {
+              if (v == null) return "";
+              var str = String(v);
+              if (/[",\r\n]/.test(str)) return "\"" + str.replace(/"/g, "\"\"") + "\"";
+              return str;
+            }
+            var headers = [s.t.billingColDate, s.t.billingColPlan, s.t.billingColAmount, s.t.billingColMethod, s.t.billingColStatus, "Order ID"];
+            var body = rows.map(function (p) {
+              var member = (p.orderId && s.memberMap[p.orderId]) || null;
+              var planText = member && (member.planLabel || formatPlan(member.plan, s.lang)) || "";
+              var amount = (typeof p.amount === "number") ? Number(p.amount).toFixed(2) : (p.amount || "");
+              var statusKey = (p.status === "pending") ? "pending" : "paid";
+              var statusText = statusKey === "pending" ? s.t.billingStatusPending : s.t.billingStatusPaid;
+              return [
+                s.fmtDateTime(p.createdAt || p.paidAt),
+                planText,
+                amount,
+                s.methodLabel(p.method || p.source),
+                statusText,
+                p.orderId || ""
+              ].map(csvCell).join(",");
+            }).join("\r\n");
+            // BOM keeps Excel happy with the Chinese cells.
+            var csv = "﻿" + headers.map(csvCell).join(",") + "\r\n" + body;
+            var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = "minddo-billing-" + new Date().toISOString().slice(0, 10) + ".csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+          });
+        }
+      })();
 
       // Referral tab handlers — copy buttons, native share, invite form.
       // Re-renders the page on successful invite so the new entry slots
