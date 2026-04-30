@@ -937,6 +937,56 @@
       .up-date .day { font-size: 18px; }
     }
 
+    /* Calendar view: month grid */
+    .upcoming-view-toggle { display: inline-flex; gap: 2px; padding: 3px; background: #f1f5f9; border-radius: 999px; }
+    .upcoming-view-toggle button { all: unset; cursor: pointer; padding: 6px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 700; color: var(--muted); transition: 0.12s; font-family: inherit; }
+    .upcoming-view-toggle button.active { background: #fff; color: var(--clay); box-shadow: 0 1px 4px rgba(15,23,42,0.08); }
+
+    .cal-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .cal-nav-month { font-size: 18px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .cal-nav-buttons { display: inline-flex; gap: 6px; align-items: center; }
+    .cal-nav-btn { all: unset; cursor: pointer; padding: 6px 12px; border-radius: 999px;
+      background: #fff; border: 1px solid var(--line); font-size: 12px; font-weight: 700;
+      color: var(--clay); transition: 0.12s; font-family: inherit;
+      display: inline-flex; align-items: center; justify-content: center; min-width: 32px; }
+    .cal-nav-btn:hover { background: #f1f5f9; border-color: var(--gold); }
+    .cal-nav-today { padding: 6px 14px; }
+
+    .cal-weekhead { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
+    .cal-weekhead span { text-align: center; font-size: 11px; font-weight: 800;
+      color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 0; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
+      border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--line); }
+    .cal-cell { background: #fff; min-height: 96px; padding: 6px 8px;
+      display: flex; flex-direction: column; gap: 4px; position: relative; }
+    .cal-cell.out { background: rgba(240,249,255,0.4); }
+    .cal-cell.is-today { background: linear-gradient(180deg, rgba(186,230,253,0.32), #fff); }
+    .cal-cell .cal-day { font-size: 12.5px; font-weight: 700; color: var(--clay); line-height: 1; }
+    .cal-cell.out .cal-day { color: #cbd5e1; }
+    .cal-cell.is-today .cal-day { color: var(--gold-deep); font-weight: 900; }
+    .cal-cell.is-weekend .cal-day { color: var(--muted); }
+    .cal-cell .cal-chips { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+    .cal-chip { display: flex; align-items: center; gap: 4px; padding: 2px 6px;
+      border-radius: 6px; font-size: 10.5px; font-weight: 700;
+      background: rgba(186,230,253,0.42); color: #0b4d70; border: 1px solid rgba(14,165,233,0.32);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      min-width: 0; }
+    .cal-chip .cc-time { font-weight: 800; flex-shrink: 0; }
+    .cal-chip .cc-name { color: #0b2540; opacity: 0.8; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .cal-chip-more { font-size: 10.5px; color: var(--muted); font-weight: 700; padding-left: 4px; }
+
+    .cal-empty { padding: 28px 16px; text-align: center; color: var(--muted); font-size: 13px;
+      line-height: 1.7; background: rgba(240,249,255,0.6); border: 1px dashed rgba(30,58,95,0.18);
+      border-radius: 12px; }
+
+    @media (max-width: 720px) {
+      .cal-cell { min-height: 64px; padding: 4px 5px; }
+      .cal-cell .cal-day { font-size: 11px; }
+      .cal-chip .cc-name { display: none; }
+      .cal-chip { padding: 1px 4px; }
+    }
+
     /* DASHBOARD REDESIGN */
     .dash-stack { display: grid; gap: 28px; }
     .dash-section { display: grid; gap: 18px; }
@@ -1232,13 +1282,24 @@
                 <h2 data-i18n="upcomingTitle"></h2>
                 <p class="panel-sub muted" data-i18n="upcomingSub" style="margin-top:4px;"></p>
               </div>
-              <div class="upcoming-range" id="upcomingRange" role="group" aria-label="Range">
+              <div class="upcoming-view-toggle" id="upcomingViewToggle" role="group" aria-label="View">
+                <button type="button" data-view="calendar" class="active" data-i18n="upcomingViewCalendar"></button>
+                <button type="button" data-view="list" data-i18n="upcomingViewList"></button>
+              </div>
+            </div>
+
+            <!-- Calendar view: month grid with prev/next navigation -->
+            <div id="upcomingCalendar"></div>
+
+            <!-- List view: range selector + week-grouped chronological rows -->
+            <div id="upcomingList" hidden>
+              <div class="upcoming-range" id="upcomingRange" role="group" aria-label="Range" style="margin-bottom:14px;">
                 <button type="button" data-range="4" class="active" data-i18n="upcomingRange4"></button>
                 <button type="button" data-range="8" data-i18n="upcomingRange8"></button>
                 <button type="button" data-range="12" data-i18n="upcomingRange12"></button>
               </div>
+              <div id="upcomingBody"></div>
             </div>
-            <div id="upcomingBody"></div>
           </article>
 
           <!-- Legacy nodes kept hidden so existing render() blocks that
@@ -1848,7 +1909,9 @@
           weekSub: "当前所选课程、每周上课时段与本周课表一览。",
           weekBoardTitle: "本周日历",
           upcomingTitle: "未来课程安排",
-          upcomingSub: "按周展开家庭中每位学员未来的所有课程，今天的课会绿色高亮。",
+          upcomingSub: "家庭中每位学员的所有课程，今天的课蓝底高亮，可在日历或列表视图间切换。",
+          upcomingViewCalendar: "日历",
+          upcomingViewList: "列表",
           upcomingRange4: "接下来 4 周",
           upcomingRange8: "接下来 8 周",
           upcomingRange12: "接下来 12 周",
@@ -1856,6 +1919,11 @@
           upcomingWeekHeadFmt: "{start} – {end}",
           upcomingCountFmt: "共 {n} 节课",
           upcomingTodayTag: "今天",
+          calNavToday: "回到今天",
+          calNavPrev: "上个月",
+          calNavNext: "下个月",
+          calMoreFmt: "+{n}",
+          calWeekdaysShort: ["一", "二", "三", "四", "五", "六", "日"],
           snapshotEyebrow: "学习进度",
           snapshotTitle: "我的学习快照",
           snapshotSub: "最新课堂反馈、学期报告与入学评估，所有成长数据统一入口。",
@@ -2161,7 +2229,9 @@
           weekSub: "Your enrolled plan, weekly slot, and this week's class calendar in one place.",
           weekBoardTitle: "This Week's Calendar",
           upcomingTitle: "Upcoming Classes",
-          upcomingSub: "Every upcoming session for every child in the family, grouped by week. Today's classes are highlighted in green.",
+          upcomingSub: "Every upcoming session for every child in the family. Today is highlighted; switch between calendar and list views.",
+          upcomingViewCalendar: "Calendar",
+          upcomingViewList: "List",
           upcomingRange4: "Next 4 weeks",
           upcomingRange8: "Next 8 weeks",
           upcomingRange12: "Next 12 weeks",
@@ -2169,6 +2239,11 @@
           upcomingWeekHeadFmt: "{start} – {end}",
           upcomingCountFmt: "{n} classes",
           upcomingTodayTag: "Today",
+          calNavToday: "Today",
+          calNavPrev: "Prev month",
+          calNavNext: "Next month",
+          calMoreFmt: "+{n} more",
+          calWeekdaysShort: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
           snapshotEyebrow: "Learning Progress",
           snapshotTitle: "My Learning Snapshot",
           snapshotSub: "Class feedback, semester reports, and entry assessment — every signal about your growth, one click away.",
@@ -2796,14 +2871,17 @@
         // reflected immediately.
         computeBadgeCounts();
 
-        // Schedule tab — full forward-looking list of classes for every
-        // family child, grouped by week. Replaces the old courseList /
-        // scheduleList / weekBoard split which only showed the current week
-        // for the active student and overlapped with the Overview cards.
+        // Schedule tab — calendar (default) + list view of every upcoming
+        // class for every family child. Replaces the old this-week-only
+        // courseList / scheduleList / weekBoard split.
         (function () {
           var body = document.getElementById("upcomingBody");
           var rangeBar = document.getElementById("upcomingRange");
-          if (!body || !rangeBar) return;
+          var calBox = document.getElementById("upcomingCalendar");
+          var listBox = document.getElementById("upcomingList");
+          var viewBar = document.getElementById("upcomingViewToggle");
+          if (!body || !rangeBar || !calBox || !listBox || !viewBar) return;
+
           var storedRange = 4;
           try { storedRange = Number(localStorage.getItem("minddo_upcoming_weeks")) || 4; } catch (_) {}
           if ([4, 8, 12].indexOf(storedRange) === -1) storedRange = 4;
@@ -2811,18 +2889,22 @@
             b.classList.toggle("active", Number(b.getAttribute("data-range")) === storedRange);
           });
 
+          var storedView = "calendar";
+          try { storedView = localStorage.getItem("minddo_upcoming_view") || "calendar"; } catch (_) {}
+          if (storedView !== "list" && storedView !== "calendar") storedView = "calendar";
+
           var rosterIds = (isGuardian && kids && kids.length)
             ? kids.map(function (k) { return k.studentId; })
             : (current.studentId ? [current.studentId] : []);
           var multiKid = rosterIds.length > 1;
           var allMems = readJson("minddo_membership_orders");
 
-          // Generate weekly occurrences across the requested horizon for
-          // every active session of every family kid. Sort by date so the
-          // overall list reads chronologically; group by week-of-year.
-          function expandSessions(weeks) {
-            var horizon = new Date(); horizon.setHours(0, 0, 0, 0);
-            horizon.setDate(horizon.getDate() + weeks * 7);
+          // Generate weekly occurrences across [from, to). Used by both the
+          // list view (with a horizon set by range pills) and the calendar
+          // view (one month at a time).
+          function expandSessions(from, to) {
+            var fromMs = from.getTime();
+            var toMs = to.getTime();
             var today = new Date(); today.setHours(0, 0, 0, 0);
             var occ = [];
             rosterIds.forEach(function (sid) {
@@ -2835,8 +2917,14 @@
                 membershipSessions(m).forEach(function (s) {
                   var first = nextOccurrence(s.weekday);
                   if (!first) return;
-                  for (var d = new Date(first); d <= horizon; d.setDate(d.getDate() + 7)) {
-                    if (d < today) continue; // safety
+                  // Walk back from "first" by 7 days while still inside the
+                  // window (covers the calendar's prior-month weekday cells).
+                  var anchor = new Date(first);
+                  while (anchor.getTime() - 7 * 86400000 >= fromMs) {
+                    anchor.setDate(anchor.getDate() - 7);
+                  }
+                  for (var d = new Date(anchor); d.getTime() < toMs; d.setDate(d.getDate() + 7)) {
+                    if (d.getTime() < fromMs) continue;
                     occ.push({
                       when: new Date(d),
                       kidName: name,
@@ -2850,6 +2938,13 @@
             });
             occ.sort(function (a, b) { return a.when - b.when; });
             return occ;
+          }
+
+          // List-mode wrapper: keep the old "next N weeks" semantics.
+          function expandSessionsForListWeeks(weeks) {
+            var from = new Date(); from.setHours(0, 0, 0, 0);
+            var to = new Date(from); to.setDate(to.getDate() + weeks * 7);
+            return expandSessions(from, to);
           }
 
           function weekKey(date) {
@@ -2877,8 +2972,8 @@
             return date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { month: "short" });
           }
 
-          function render(weeks) {
-            var occ = expandSessions(weeks);
+          function renderList(weeks) {
+            var occ = expandSessionsForListWeeks(weeks);
             if (!occ.length) {
               body.innerHTML = "<div class=\"portfolio-empty\">" + escHTML(t.upcomingEmpty) + "</div>";
               return;
@@ -2926,7 +3021,7 @@
             }).join("");
           }
 
-          render(storedRange);
+          renderList(storedRange);
           rangeBar.onclick = function (e) {
             var b = e.target.closest("[data-range]");
             if (!b) return;
@@ -2935,8 +3030,126 @@
             rangeBar.querySelectorAll("[data-range]").forEach(function (btn) {
               btn.classList.toggle("active", btn === b);
             });
-            render(weeks);
+            renderList(weeks);
           };
+
+          // -------- Calendar view (month grid) --------
+          var calCursor = new Date();
+          calCursor.setDate(1);
+          calCursor.setHours(0, 0, 0, 0);
+
+          function renderCalendar() {
+            var year = calCursor.getFullYear();
+            var month = calCursor.getMonth();
+            var monthLabel = calCursor.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "long" });
+
+            // Calendar window: 6 weeks starting from the Monday on or before
+            // the 1st of the month. Always 42 cells so the grid is stable.
+            var first = new Date(year, month, 1);
+            var firstDow = first.getDay(); // 0 = Sun
+            var offset = (firstDow === 0) ? -6 : (1 - firstDow); // Monday-anchored
+            var gridStart = new Date(year, month, 1 + offset);
+            gridStart.setHours(0, 0, 0, 0);
+            var gridEnd = new Date(gridStart);
+            gridEnd.setDate(gridStart.getDate() + 42);
+
+            var occ = expandSessions(gridStart, gridEnd);
+            // Index occurrences by yyyy-mm-dd for fast cell lookup
+            var byDay = {};
+            occ.forEach(function (o) {
+              var k = o.when.toISOString().slice(0, 10);
+              (byDay[k] = byDay[k] || []).push(o);
+            });
+
+            var today = new Date(); today.setHours(0, 0, 0, 0);
+            var weekdayLabels = t.calWeekdaysShort || ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+            var cells = [];
+            for (var i = 0; i < 42; i++) {
+              var d = new Date(gridStart);
+              d.setDate(gridStart.getDate() + i);
+              var dayKey = d.toISOString().slice(0, 10);
+              var inMonth = (d.getMonth() === month);
+              var isToday = (d.getTime() === today.getTime());
+              var dow = d.getDay();
+              var isWeekend = (dow === 0 || dow === 6);
+              var entries = byDay[dayKey] || [];
+              var chips = entries.slice(0, 3).map(function (item) {
+                var sess = item.session || {};
+                var time = (sess.timeSlot || "").split(/[–\-]/)[0].trim();
+                return "<span class=\"cal-chip\" title=\""
+                  + escHTML((sess.timeSlot || "") + " · " + (multiKid ? item.kidName : "") + (sess.teacher ? " · " + sess.teacher : ""))
+                  + "\"><span class=\"cc-time\">" + escHTML(time) + "</span>"
+                  + (multiKid ? "<span class=\"cc-name\">" + escHTML(item.kidName) + "</span>" : "")
+                  + "</span>";
+              }).join("");
+              if (entries.length > 3) {
+                chips += "<span class=\"cal-chip-more\">"
+                  + escHTML((t.calMoreFmt || "+{n}").replace("{n}", entries.length - 3))
+                  + "</span>";
+              }
+              var classes = "cal-cell"
+                + (inMonth ? "" : " out")
+                + (isToday ? " is-today" : "")
+                + (isWeekend ? " is-weekend" : "");
+              cells.push("<div class=\"" + classes + "\">"
+                + "<span class=\"cal-day\">" + d.getDate() + "</span>"
+                + (chips ? "<div class=\"cal-chips\">" + chips + "</div>" : "")
+                + "</div>");
+            }
+
+            calBox.innerHTML = ""
+              + "<div class=\"cal-nav\">"
+              +   "<span class=\"cal-nav-month\">" + escHTML(monthLabel) + "</span>"
+              +   "<div class=\"cal-nav-buttons\">"
+              +     "<button type=\"button\" class=\"cal-nav-btn\" data-cal-nav=\"prev\" aria-label=\"" + escHTML(t.calNavPrev) + "\">‹</button>"
+              +     "<button type=\"button\" class=\"cal-nav-btn cal-nav-today\" data-cal-nav=\"today\">" + escHTML(t.calNavToday) + "</button>"
+              +     "<button type=\"button\" class=\"cal-nav-btn\" data-cal-nav=\"next\" aria-label=\"" + escHTML(t.calNavNext) + "\">›</button>"
+              +   "</div>"
+              + "</div>"
+              + "<div class=\"cal-weekhead\">"
+              +   weekdayLabels.map(function (w) { return "<span>" + escHTML(w) + "</span>"; }).join("")
+              + "</div>"
+              + "<div class=\"cal-grid\">" + cells.join("") + "</div>";
+
+            // Empty hint when no occurrences anywhere in the visible window.
+            if (!occ.length) {
+              calBox.insertAdjacentHTML("beforeend",
+                "<div class=\"cal-empty\" style=\"margin-top:14px;\">" + escHTML(t.upcomingEmpty) + "</div>");
+            }
+          }
+
+          calBox.onclick = function (e) {
+            var b = e.target.closest("[data-cal-nav]");
+            if (!b) return;
+            var dir = b.getAttribute("data-cal-nav");
+            if (dir === "prev") calCursor.setMonth(calCursor.getMonth() - 1);
+            else if (dir === "next") calCursor.setMonth(calCursor.getMonth() + 1);
+            else if (dir === "today") {
+              calCursor = new Date();
+              calCursor.setDate(1);
+              calCursor.setHours(0, 0, 0, 0);
+            }
+            renderCalendar();
+          };
+
+          // -------- View toggle --------
+          function applyView(view) {
+            var calMode = (view === "calendar");
+            calBox.hidden = !calMode;
+            listBox.hidden = calMode;
+            viewBar.querySelectorAll("[data-view]").forEach(function (btn) {
+              btn.classList.toggle("active", btn.getAttribute("data-view") === view);
+            });
+            try { localStorage.setItem("minddo_upcoming_view", view); } catch (_) {}
+            if (calMode) renderCalendar();
+          }
+          viewBar.onclick = function (e) {
+            var b = e.target.closest("[data-view]");
+            if (!b) return;
+            applyView(b.getAttribute("data-view"));
+          };
+          applyView(storedView);
         })();
 
         // Billing tab — render payment history filtered to the active
