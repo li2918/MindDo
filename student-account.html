@@ -2000,10 +2000,10 @@
           calNavNext: "下个月",
           calMoreFmt: "+{n}",
           calWeekdaysShort: ["一", "二", "三", "四", "五", "六", "日"],
-          reschedTitle: "改期到本周其他时间",
-          reschedSub: "点击下方任意空闲时段即可发起改期申请，运营审核通过后排课会自动更新。",
+          reschedTitle: "改期到其他时间段",
+          reschedSub: "下面列出所有同等级且你尚未安排课的时间段，按最近一次开课日期排序。点击任意一行即可发起改期申请。",
           reschedOriginalLabel: "原课程时段",
-          reschedNoOptions: "本周已没有其他可选时段。可在「请假」tab 提交说明。",
+          reschedNoOptions: "暂无可选时段：当前等级下没有更多空闲时间。需要其他安排请联系客服或在「请假」tab 提交。",
           reschedSeatsAvail: "{n} 个空位",
           reschedSeatsFull: "已满",
           reschedSubmitting: "提交中…",
@@ -2337,10 +2337,10 @@
           calNavNext: "Next month",
           calMoreFmt: "+{n} more",
           calWeekdaysShort: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          reschedTitle: "Reschedule within this week",
-          reschedSub: "Pick any open slot below to file the reschedule. Ops will confirm and the schedule updates automatically.",
+          reschedTitle: "Reschedule to another slot",
+          reschedSub: "All same-level slots that don't conflict with your current schedule, sorted by the next class date. Pick any row to file the reschedule.",
           reschedOriginalLabel: "Current slot",
-          reschedNoOptions: "No other slots open this week. File a leave request from the Leave tab if needed.",
+          reschedNoOptions: "No other slots available at this level. Reach out to support, or file a leave request via the Leave tab.",
           reschedSeatsAvail: "{n} seats open",
           reschedSeatsFull: "Full",
           reschedSubmitting: "Submitting…",
@@ -4051,29 +4051,13 @@
           return date.toLocaleDateString(ln === "en" ? "en-US" : "zh-CN",
             { year: "numeric", month: "short", day: "numeric", weekday: "short" });
         }
-        function dayOfClick(occWeekday, weekStart) {
-          // Map an offering's weekday string ("Monday" / "周一" / "Mon") to
-          // a date inside [weekStart, weekStart+6].
-          var WEEKDAY_IDX = {
-            "周一": 1, "周二": 2, "周三": 3, "周四": 4, "周五": 5, "周六": 6, "周日": 0,
-            "monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6, "sunday": 0,
-            "mon": 1, "tue": 2, "wed": 3, "thu": 4, "fri": 5, "sat": 6, "sun": 0
-          };
-          var idx = WEEKDAY_IDX[String(occWeekday || "").toLowerCase()];
-          if (typeof idx !== "number") return null;
-          // weekStart is Monday. Map idx 1 (Mon) -> 0, 2 -> 1, ..., 0 (Sun) -> 6.
-          var offset = (idx === 0) ? 6 : (idx - 1);
-          var d = new Date(weekStart);
-          d.setDate(weekStart.getDate() + offset);
-          d.setHours(0, 0, 0, 0);
-          return d;
-        }
 
         function open(occ) {
           var ln = langNow();
           var t = dictNow();
           var sess = occ.session || {};
-          var courseName = sess.courseName || (window.MindDoFlow && formatPlanForLang(sess.plan, ln)) || "";
+          var flow = window.MindDoFlow;
+          var courseName = sess.courseName || formatPlanForLang(sess.plan, ln) || "";
           var origLineText = fmtDateLine(occ.when, ln)
             + (sess.timeSlot ? " · " + sess.timeSlot : "")
             + (courseName ? " · " + courseName : "")
@@ -4082,26 +4066,54 @@
           msgEl.textContent = "";
           msgEl.className = "resched-msg";
 
-          // Same-week range: Monday → Sunday of the clicked occurrence.
-          var weekStart = new Date(occ.when); weekStart.setHours(0, 0, 0, 0);
-          var dow = weekStart.getDay();
-          var diff = (dow === 0) ? -6 : (1 - dow);
-          weekStart.setDate(weekStart.getDate() + diff);
-          var weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 7);
           var today = new Date(); today.setHours(0, 0, 0, 0);
 
-          var offerings = (window.MindDoFlow && window.MindDoFlow.getClassOfferings)
-            ? (window.MindDoFlow.getClassOfferings() || [])
-            : [];
-          var origStamp = (occ.when.toISOString().slice(0, 10) + "@" + (sess.timeSlot || "")).toLowerCase();
+          // Same-level filter: read the kid's canonical level. Falls back
+          // to the offering's own level when the kid has no level set yet.
+          var kidLevel = (flow && flow.getStudentLevel && occ.kidId) ? flow.getStudentLevel(occ.kidId) : "";
+
+          // Build a set of weekday@timeSlot keys the kid is *already*
+          // booked into, so reschedule alternatives never collide with
+          // their existing schedule.
+          var bookedKeys = {};
+          if (flow && flow.getClassOfferings) {
+            var allMems = readJson("minddo_membership_orders");
+            allMems.forEach(function (m) {
+              if (!m || String(m.studentId || "") !== String(occ.kidId || "")) return;
+              membershipSessions(m).forEach(function (s) {
+                var wd = String(s.weekday || "").toLowerCase();
+                var ts = String(s.timeSlot || "").toLowerCase();
+                if (wd && ts) bookedKeys[wd + "@" + ts] = true;
+              });
+            });
+          }
+
+          var offerings = (flow && flow.getClassOfferings) ? (flow.getClassOfferings() || []) : [];
+          var normLevel = function (v) {
+            var s = String(v || "").trim().toLowerCase();
+            // Light normalization to align EN/ZH labels with canonical EN.
+            var ZH_TO_EN = { "入门": "beginner", "中级": "intermediate", "进阶": "advanced", "竞赛": "competition", "项目营": "project camp" };
+            return ZH_TO_EN[s] || s;
+          };
+          var kidLevelKey = normLevel(kidLevel);
           var alts = [];
           offerings.forEach(function (o) {
+            // Same-level filter: compare normalized level when both sides
+            // have one. If the kid has no level set, accept any.
+            if (kidLevelKey) {
+              var oLevel = (o.level && (o.level.en || o.level.zh)) || "";
+              if (normLevel(oLevel) !== kidLevelKey) return;
+            }
+            // Skip offerings the kid is already booked into.
             var weekdayStr = o.weekday && (o.weekday[ln === "en" ? "en" : "zh"] || o.weekday.zh || o.weekday.en);
-            var date = dayOfClick(weekdayStr, weekStart);
+            var weekdayKey = (o.weekday && o.weekday.en ? o.weekday.en : (weekdayStr || "")).toLowerCase();
+            var slotKey = String(o.timeSlot || "").toLowerCase();
+            if (weekdayKey && slotKey && bookedKeys[weekdayKey + "@" + slotKey]) return;
+            // Compute the next occurrence of this offering's weekday from today.
+            var date = nextOccurrence(weekdayStr) || nextOccurrence(o.weekday && o.weekday.en);
             if (!date) return;
-            if (date < today) return; // past / earlier today
-            var stamp = (date.toISOString().slice(0, 10) + "@" + (o.timeSlot || "")).toLowerCase();
-            if (stamp === origStamp) return;
+            // Belt-and-braces: ensure date is today or future.
+            if (date < today) return;
             alts.push({ offering: o, date: date, weekdayStr: weekdayStr });
           });
           alts.sort(function (a, b) { return a.date - b.date; });
