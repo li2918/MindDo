@@ -702,12 +702,25 @@
       .portal-main { padding: 24px 18px 60px; }
     }
 
-    /* SETTINGS TAB */
-    .settings-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 18px; }
+    /* SETTINGS TAB — single-column sectioned flow.
+       Each "group" has a small label header + a compact card. Keeps the
+       cognitive load low (one decision per section) and lets the parent
+       scan top-to-bottom. */
+    .settings-stack { display: grid; gap: 28px; max-width: 720px; }
+    .settings-group { display: grid; gap: 10px; }
+    .settings-group-head { display: grid; gap: 4px; padding: 0 4px; }
+    .settings-group-head h3 { font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--gold-deep); margin: 0; }
+    .settings-group-head p { font-size: 12.5px; color: var(--muted); line-height: 1.55; margin: 0; }
+    .settings-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 18px; } /* legacy, retained */
     @media (max-width: 880px) { .settings-grid { grid-template-columns: 1fr; } }
-    .set-card { background: rgba(240,249,255,0.96); border: 1px solid var(--line); border-radius: 18px; padding: 20px 22px; box-shadow: 0 12px 30px rgba(30,58,95,0.06); }
+    .set-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; box-shadow: 0 4px 14px rgba(30,58,95,0.04); }
     .set-card h3 { font-size: 15px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; margin-bottom: 4px; }
     .set-card .set-sub { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+    /* Preference rows hairline divider for cleaner grouping */
+    .set-pref-list { display: grid; gap: 0; }
+    .set-pref-list .set-pref + .set-pref { border-top: 1px solid var(--line); margin-top: 0; }
+    .set-pref-list .set-pref { background: transparent; border: none; padding: 14px 4px; border-radius: 0; }
     .set-kv { display: grid; grid-template-columns: 110px 1fr; gap: 8px 14px; font-size: 13px; padding: 12px 14px; background: rgba(255,255,255,0.7); border: 1px solid var(--line); border-radius: 12px; }
     .set-kv .k { color: var(--muted); font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; align-self: center; }
     .set-kv .v { color: var(--clay); font-weight: 700; word-break: break-all; }
@@ -1789,56 +1802,28 @@
           </article>
         </section>
 
-        <!-- 6. SETTINGS -->
-        <section class="dash-section" data-tab-panel="settings" role="tabpanel" aria-labelledby="settingsHead">
-          <div class="dash-head">
-            <div class="dash-head-text">
-              <div class="dash-eyebrow" data-i18n="settingsEyebrow"></div>
-              <h2 id="settingsHead" class="dash-title" data-i18n="settingsTitle"></h2>
-              <p class="dash-sub" data-i18n="settingsSub"></p>
-            </div>
-          </div>
+        <!-- 6. SETTINGS — single-column sectioned flow -->
+        <section class="dash-section" data-tab-panel="settings" role="tabpanel" aria-label="Settings">
+          <div class="settings-stack">
 
-          <div class="settings-grid">
-            <!-- LEFT COL: account info + family management actions -->
-            <div style="display:grid;gap:18px;">
-              <article class="set-card">
+            <!-- 1) Account identity (read-only) -->
+            <div class="settings-group">
+              <div class="settings-group-head">
                 <h3 data-i18n="setAccountTitle"></h3>
-                <p class="set-sub" data-i18n="setAccountSub"></p>
+                <p data-i18n="setAccountSub"></p>
+              </div>
+              <article class="set-card">
                 <div class="set-kv" id="setAccountKv"></div>
               </article>
+            </div>
 
-              <article class="set-card">
-                <h3 data-i18n="setFamilyTitle"></h3>
-                <p class="set-sub" data-i18n="setFamilySub"></p>
-                <div class="set-actions">
-                  <a class="set-action" href="add-child.html" id="setActionAddChild">
-                    <div class="set-action-text">
-                      <span class="set-action-title" data-i18n="setAddChildTitle"></span>
-                      <span class="set-action-sub" data-i18n="setAddChildSub"></span>
-                    </div>
-                    <span class="set-action-arrow" aria-hidden="true">→</span>
-                  </a>
-                  <a class="set-action" href="account-settings.html" id="setActionManageLogins">
-                    <div class="set-action-text">
-                      <span class="set-action-title" data-i18n="setManageLoginsTitle"></span>
-                      <span class="set-action-sub" data-i18n="setManageLoginsSub"></span>
-                    </div>
-                    <span class="set-action-arrow" aria-hidden="true">→</span>
-                  </a>
-                  <a class="set-action" href="account-settings.html#guardiansPanel" id="setActionInviteCoparent">
-                    <div class="set-action-text">
-                      <span class="set-action-title" data-i18n="setInviteCoparentTitle"></span>
-                      <span class="set-action-sub" data-i18n="setInviteCoparentSub"></span>
-                    </div>
-                    <span class="set-action-arrow" aria-hidden="true">→</span>
-                  </a>
-                </div>
-              </article>
-
-              <article class="set-card" id="setProfileCard">
+            <!-- 2) Student profile -->
+            <div class="settings-group" id="setProfileCard">
+              <div class="settings-group-head">
                 <h3 data-i18n="setEditProfileTitle"></h3>
-                <p class="set-sub" data-i18n="setEditProfileSub"></p>
+                <p data-i18n="setEditProfileSub"></p>
+              </div>
+              <article class="set-card">
                 <form class="set-form" id="setProfileForm">
                   <div class="set-form-grid">
                     <label class="set-field">
@@ -1886,11 +1871,46 @@
               </article>
             </div>
 
-            <!-- RIGHT COL: password + preferences + security + danger zone -->
-            <div style="display:grid;gap:18px;">
-              <article class="set-card" id="setPasswordCard">
+            <!-- 3) Family management -->
+            <div class="settings-group">
+              <div class="settings-group-head">
+                <h3 data-i18n="setFamilyTitle"></h3>
+                <p data-i18n="setFamilySub"></p>
+              </div>
+              <article class="set-card">
+                <div class="set-actions">
+                  <a class="set-action" href="add-child.html" id="setActionAddChild">
+                    <div class="set-action-text">
+                      <span class="set-action-title" data-i18n="setAddChildTitle"></span>
+                      <span class="set-action-sub" data-i18n="setAddChildSub"></span>
+                    </div>
+                    <span class="set-action-arrow" aria-hidden="true">→</span>
+                  </a>
+                  <a class="set-action" href="account-settings.html" id="setActionManageLogins">
+                    <div class="set-action-text">
+                      <span class="set-action-title" data-i18n="setManageLoginsTitle"></span>
+                      <span class="set-action-sub" data-i18n="setManageLoginsSub"></span>
+                    </div>
+                    <span class="set-action-arrow" aria-hidden="true">→</span>
+                  </a>
+                  <a class="set-action" href="account-settings.html#guardiansPanel" id="setActionInviteCoparent">
+                    <div class="set-action-text">
+                      <span class="set-action-title" data-i18n="setInviteCoparentTitle"></span>
+                      <span class="set-action-sub" data-i18n="setInviteCoparentSub"></span>
+                    </div>
+                    <span class="set-action-arrow" aria-hidden="true">→</span>
+                  </a>
+                </div>
+              </article>
+            </div>
+
+            <!-- 4) Security (password) -->
+            <div class="settings-group" id="setPasswordCard">
+              <div class="settings-group-head">
                 <h3 data-i18n="setChangePasswordTitle"></h3>
-                <p class="set-sub" data-i18n="setChangePasswordSub"></p>
+                <p data-i18n="setChangePasswordSub"></p>
+              </div>
+              <article class="set-card">
                 <form class="set-form" id="setPasswordForm">
                   <label class="set-field">
                     <span data-i18n="setPasswordCurrent"></span>
@@ -1910,11 +1930,16 @@
                   </div>
                 </form>
               </article>
+            </div>
 
-              <article class="set-card">
+            <!-- 5) Preferences -->
+            <div class="settings-group">
+              <div class="settings-group-head">
                 <h3 data-i18n="setPrefsTitle"></h3>
-                <p class="set-sub" data-i18n="setPrefsSub"></p>
-                <div class="set-actions">
+                <p data-i18n="setPrefsSub"></p>
+              </div>
+              <article class="set-card">
+                <div class="set-pref-list">
                   <div class="set-pref">
                     <span class="set-pref-label" data-i18n="setLangLabel"></span>
                     <div class="set-pref-toggle" id="setLangToggle">
@@ -1928,10 +1953,15 @@
                   </div>
                 </div>
               </article>
+            </div>
 
-              <article class="set-card">
+            <!-- 6) Help & Support -->
+            <div class="settings-group">
+              <div class="settings-group-head">
                 <h3 data-i18n="setHelpTitle"></h3>
-                <p class="set-sub" data-i18n="setHelpSub"></p>
+                <p data-i18n="setHelpSub"></p>
+              </div>
+              <article class="set-card">
                 <div class="set-actions">
                   <button type="button" class="set-action" id="setActionContactSupport">
                     <div class="set-action-text">
@@ -1942,10 +1972,15 @@
                   </button>
                 </div>
               </article>
+            </div>
 
-              <article class="set-card">
+            <!-- 7) Sign out -->
+            <div class="settings-group">
+              <div class="settings-group-head">
                 <h3 data-i18n="setDangerTitle"></h3>
-                <p class="set-sub" data-i18n="setDangerSub"></p>
+                <p data-i18n="setDangerSub"></p>
+              </div>
+              <article class="set-card">
                 <div class="set-actions">
                   <button type="button" class="set-action set-danger" id="setActionLogout">
                     <div class="set-action-text">
@@ -1957,6 +1992,7 @@
                 </div>
               </article>
             </div>
+
           </div>
         </section>
 
