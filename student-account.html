@@ -976,13 +976,19 @@
     .cal-cell.is-today .cal-day { color: var(--gold-deep); font-weight: 900; }
     .cal-cell.is-weekend .cal-day { color: var(--muted); }
     .cal-cell .cal-chips { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
-    .cal-chip { display: flex; align-items: center; gap: 4px; padding: 2px 6px;
+    .cal-chip { display: flex; align-items: center; gap: 4px; padding: 2px 4px 2px 6px;
       border-radius: 6px; font-size: 10.5px; font-weight: 700;
       background: rgba(186,230,253,0.42); color: #0b4d70; border: 1px solid rgba(14,165,233,0.32);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      min-width: 0; }
+      white-space: nowrap; overflow: hidden; min-width: 0; }
     .cal-chip .cc-time { font-weight: 800; flex-shrink: 0; }
     .cal-chip .cc-name { color: #0b2540; opacity: 0.8; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .cal-chip .cc-leave { margin-left: auto; flex-shrink: 0;
+      width: 16px; height: 16px; border-radius: 4px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(178,80,45,0.14); color: #b2502d;
+      font-size: 9px; font-weight: 800; letter-spacing: 0;
+      transition: 0.12s; }
+    .cal-chip:hover .cc-leave { background: rgba(178,80,45,0.28); }
     .cal-chip-more { font-size: 10.5px; color: var(--muted); font-weight: 700; padding-left: 4px; }
 
     .cal-empty { padding: 28px 16px; text-align: center; color: var(--muted); font-size: 13px;
@@ -2012,6 +2018,7 @@
           calNavNext: "下个月",
           calMoreFmt: "+{n}",
           calWeekdaysShort: ["一", "二", "三", "四", "五", "六", "日"],
+          calChipLeaveTip: "点击请假 / 改期",
           reschedTitle: "改期到其他时间段",
           reschedSub: "下面列出所有同等级且你尚未安排课的时间段，按最近一次开课日期排序。点击任意一行即可发起改期申请。",
           reschedOriginalLabel: "原课程时段",
@@ -2354,6 +2361,7 @@
           calNavNext: "Next month",
           calMoreFmt: "+{n} more",
           calWeekdaysShort: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          calChipLeaveTip: "Click to leave / reschedule",
           reschedTitle: "Reschedule to another slot",
           reschedSub: "All same-level slots that don't conflict with your current schedule, sorted by the next class date. Pick any row to file the reschedule.",
           reschedOriginalLabel: "Current slot",
@@ -3231,10 +3239,13 @@
                 var item = entry.item;
                 var sess = item.session || {};
                 var time = (sess.timeSlot || "").split(/[–\-]/)[0].trim();
+                var leaveTip = (t.calChipLeaveTip || "请假 / 改期");
+                var titleText = (sess.timeSlot || "") + " · " + (multiKid ? item.kidName : "") + (sess.teacher ? " · " + sess.teacher : "") + " — " + leaveTip;
                 return "<span class=\"cal-chip\" data-occ-scope=\"cal\" data-occ-idx=\"" + entry.idx + "\" title=\""
-                  + escHTML((sess.timeSlot || "") + " · " + (multiKid ? item.kidName : "") + (sess.teacher ? " · " + sess.teacher : ""))
+                  + escHTML(titleText)
                   + "\"><span class=\"cc-time\">" + escHTML(time) + "</span>"
                   + (multiKid ? "<span class=\"cc-name\">" + escHTML(item.kidName) + "</span>" : "")
+                  + "<span class=\"cc-leave\" aria-label=\"" + escHTML(leaveTip) + "\">✎</span>"
                   + "</span>";
               }).join("");
               if (entries.length > 3) {
