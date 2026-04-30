@@ -987,23 +987,52 @@
       .cal-chip { padding: 1px 4px; }
     }
 
-    /* Inline leave/reschedule form on the Schedule tab — sits below the
-       calendar/list so the parent can submit a request without leaving
-       the schedule view. Visual treatment matches the rest of the tab. */
-    .leave-inline { display: grid; gap: 12px; margin-top: 4px; }
-    .leave-inline .leave-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
-    @media (max-width: 540px) { .leave-inline .leave-grid { grid-template-columns: 1fr; } }
-    .leave-inline label { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; display: grid; gap: 5px; }
-    .leave-inline select, .leave-inline textarea {
-      width: 100%; border: 1px solid var(--line); background: #f8fafc; color: var(--text);
-      padding: 9px 12px; border-radius: 10px; font: inherit; font-size: 13.5px; outline: none;
-      transition: 0.15s; box-sizing: border-box; resize: vertical;
-    }
-    .leave-inline select:focus, .leave-inline textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.15); }
-    .leave-inline .actions-row { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
-    .leave-inline-msg { font-size: 12px; line-height: 1.5; min-height: 16px; flex: 1; min-width: 0; }
-    .leave-inline-msg.error { color: var(--danger); }
-    .leave-inline-msg.success { color: var(--success); }
+    /* Reschedule modal — opens on calendar chip / list row click. The
+       parent picks any open same-week slot to swap the class to. No
+       form input needed; the picked slot IS the submission. */
+    .cal-cell .cal-chips .cal-chip { cursor: pointer; }
+    .cal-cell .cal-chips .cal-chip:hover { background: rgba(186,230,253,0.62); }
+    .upcoming-row { cursor: pointer; }
+
+    .resched-overlay { position: fixed; inset: 0; z-index: 2000; padding: 20px;
+      background: rgba(15,23,42,0.45); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; }
+    .resched-overlay.open { display: flex; animation: reschedFade 0.18s ease-out; }
+    @keyframes reschedFade { from { opacity: 0; } to { opacity: 1; } }
+    .resched-card { background: #fff; border-radius: 18px; box-shadow: 0 30px 60px rgba(15,23,42,0.32);
+      width: min(480px, 100%); padding: 26px 28px; position: relative; font-family: inherit; }
+    .resched-card h3 { font-size: 18px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; margin-bottom: 6px; }
+    .resched-card .resched-sub { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+    .resched-close { position: absolute; top: 12px; right: 14px; width: 30px; height: 30px;
+      border-radius: 50%; background: transparent; border: 1px solid var(--line);
+      cursor: pointer; font-size: 16px; line-height: 1; color: var(--muted);
+      display: inline-flex; align-items: center; justify-content: center; transition: 0.12s; font-family: inherit; }
+    .resched-close:hover { background: #f1f5f9; color: var(--clay); }
+    .resched-original { padding: 12px 14px; background: #f1f5f9; border-radius: 12px;
+      display: grid; gap: 4px; margin-bottom: 16px; font-size: 13px; }
+    .resched-original-label { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); }
+    .resched-original-line { color: var(--clay); font-weight: 700; }
+    .resched-options { display: grid; gap: 8px; max-height: 320px; overflow-y: auto; padding-right: 2px; }
+    .resched-option { display: grid; grid-template-columns: 70px 1fr auto; gap: 12px; align-items: center;
+      padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; cursor: pointer;
+      background: #fff; transition: 0.12s; text-align: left; }
+    .resched-option:hover { border-color: var(--gold); box-shadow: 0 6px 16px rgba(14,165,233,0.12); }
+    .resched-option:disabled { cursor: not-allowed; opacity: 0.55; }
+    .resched-option:disabled:hover { border-color: var(--line); box-shadow: none; }
+    .resched-opt-date { display: grid; gap: 1px; }
+    .resched-opt-date .day { font-size: 18px; font-weight: 900; color: var(--clay); line-height: 1; }
+    .resched-opt-date .weekday { font-size: 11px; color: var(--muted); font-weight: 700; }
+    .resched-opt-info { display: grid; gap: 2px; min-width: 0; }
+    .resched-opt-info .title { font-size: 13.5px; font-weight: 700; color: var(--clay); }
+    .resched-opt-info .meta { font-size: 11.5px; color: var(--muted); }
+    .resched-opt-time { font-size: 13px; font-weight: 800; color: var(--gold-deep); white-space: nowrap; }
+    .resched-empty { padding: 18px 14px; text-align: center; color: var(--muted); font-size: 13px;
+      line-height: 1.6; background: rgba(240,249,255,0.6); border: 1px dashed rgba(30,58,95,0.18); border-radius: 12px; }
+    .resched-msg { font-size: 12.5px; line-height: 1.5; margin-top: 12px; min-height: 16px; }
+    .resched-msg.error { color: var(--danger); }
+    .resched-msg.success { color: var(--success); }
+
     .leave-history-list { display: grid; gap: 8px; }
     .leave-history-row { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline;
       padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
@@ -1335,34 +1364,6 @@
             <ul id="scheduleList"></ul>
             <div id="weekBoard"></div>
           </div>
-
-          <article class="panel" id="schedLeavePanel">
-            <h2 data-i18n="schedLeaveTitle"></h2>
-            <p class="panel-sub muted" data-i18n="schedLeaveSub" style="margin-top:4px;margin-bottom:14px;"></p>
-            <form class="leave-inline" id="schedLeaveForm" novalidate>
-              <div class="leave-grid">
-                <label>
-                  <span data-i18n="leaveTypeLabel"></span>
-                  <select id="schedLeaveType">
-                    <option value="leave" data-i18n="leaveTypeLeave"></option>
-                    <option value="reschedule" data-i18n="leaveTypeReschedule"></option>
-                  </select>
-                </label>
-                <label>
-                  <span data-i18n="schedLeaveTargetLabel"></span>
-                  <select id="schedLeaveTarget"></select>
-                </label>
-              </div>
-              <label>
-                <span data-i18n="leaveReasonLabel"></span>
-                <textarea id="schedLeaveReason" rows="3" data-i18n-placeholder="leaveReasonPlaceholder"></textarea>
-              </label>
-              <div class="actions-row">
-                <span class="leave-inline-msg" id="schedLeaveMsg" role="status" aria-live="polite"></span>
-                <button type="submit" class="btn-primary" data-i18n="leaveSubmit"></button>
-              </div>
-            </form>
-          </article>
 
           <article class="panel" id="schedHistoryPanel">
             <h2 data-i18n="schedHistoryTitle"></h2>
@@ -1710,6 +1711,21 @@
   </main>
   </div>
 
+  <!-- Reschedule modal — opens when a class chip / row is tapped. -->
+  <div class="resched-overlay" id="reschedOverlay" role="dialog" aria-modal="true" aria-labelledby="reschedTitle" aria-hidden="true">
+    <div class="resched-card">
+      <button type="button" class="resched-close" id="reschedCloseBtn" aria-label="Close">×</button>
+      <h3 id="reschedTitle" data-i18n="reschedTitle"></h3>
+      <p class="resched-sub" data-i18n="reschedSub"></p>
+      <div class="resched-original">
+        <span class="resched-original-label" data-i18n="reschedOriginalLabel"></span>
+        <span class="resched-original-line" id="reschedOriginalLine"></span>
+      </div>
+      <div class="resched-options" id="reschedOptions"></div>
+      <p class="resched-msg" id="reschedMsg" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-brand">
@@ -1984,22 +2000,15 @@
           calNavNext: "下个月",
           calMoreFmt: "+{n}",
           calWeekdaysShort: ["一", "二", "三", "四", "五", "六", "日"],
-          leaveTypeLabel: "申请类型",
-          leaveTypeLeave: "请假",
-          leaveTypeReschedule: "改期",
-          leaveReasonLabel: "说明（必填）",
-          leaveReasonPlaceholder: "例如：本周有学校活动，希望下周同时间补课。",
-          leaveSubmit: "提交申请",
-          leaveSubmitting: "提交中…",
-          leaveSuccess: "已提交，运营会尽快审核。",
-          leaveErrorReason: "请填写申请说明。",
-          leaveErrorTarget: "请选择具体的课程时段。",
-          leaveErrorGeneric: "提交失败，请稍后再试。",
-          schedLeaveTitle: "申请请假 / 改期",
-          schedLeaveSub: "选择具体的课程时段，填写原因后提交。审核结果会同步显示在下方记录中。",
-          schedLeaveTargetLabel: "目标课程",
-          schedLeaveTargetEmpty: "暂无可申请的课程时段，请先报名会员",
-          schedLeaveTargetFmt: "{course} · {weekday} {time}",
+          reschedTitle: "改期到本周其他时间",
+          reschedSub: "点击下方任意空闲时段即可发起改期申请，运营审核通过后排课会自动更新。",
+          reschedOriginalLabel: "原课程时段",
+          reschedNoOptions: "本周已没有其他可选时段。可在「请假」tab 提交说明。",
+          reschedSeatsAvail: "{n} 个空位",
+          reschedSeatsFull: "已满",
+          reschedSubmitting: "提交中…",
+          reschedSuccess: "已提交改期申请，等待运营确认。",
+          reschedError: "提交失败，请稍后再试。",
           schedHistoryTitle: "我的申请记录",
           schedHistorySub: "最近 8 条请假与改期申请，可在此查看运营审核状态。",
           schedHistoryEmpty: "暂无申请记录。",
@@ -2328,22 +2337,15 @@
           calNavNext: "Next month",
           calMoreFmt: "+{n} more",
           calWeekdaysShort: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          leaveTypeLabel: "Request Type",
-          leaveTypeLeave: "Leave",
-          leaveTypeReschedule: "Reschedule",
-          leaveReasonLabel: "Reason (required)",
-          leaveReasonPlaceholder: "e.g. school event this week — would like to make it up next week at the same time.",
-          leaveSubmit: "Submit",
-          leaveSubmitting: "Submitting…",
-          leaveSuccess: "Submitted — ops will review shortly.",
-          leaveErrorReason: "Please write a short reason.",
-          leaveErrorTarget: "Please pick a class slot.",
-          leaveErrorGeneric: "Couldn't submit. Try again in a moment.",
-          schedLeaveTitle: "Request Leave or Reschedule",
-          schedLeaveSub: "Pick a class slot and add a short reason. Approval status appears in the history below.",
-          schedLeaveTargetLabel: "Target Class",
-          schedLeaveTargetEmpty: "No active class slots — enroll first",
-          schedLeaveTargetFmt: "{course} · {weekday} {time}",
+          reschedTitle: "Reschedule within this week",
+          reschedSub: "Pick any open slot below to file the reschedule. Ops will confirm and the schedule updates automatically.",
+          reschedOriginalLabel: "Current slot",
+          reschedNoOptions: "No other slots open this week. File a leave request from the Leave tab if needed.",
+          reschedSeatsAvail: "{n} seats open",
+          reschedSeatsFull: "Full",
+          reschedSubmitting: "Submitting…",
+          reschedSuccess: "Reschedule request filed — waiting for ops confirmation.",
+          reschedError: "Couldn't submit. Try again in a moment.",
           schedHistoryTitle: "My Requests",
           schedHistorySub: "Your 8 most recent leave / reschedule requests with current ops review status.",
           schedHistoryEmpty: "No requests yet.",
@@ -3282,49 +3284,17 @@
           applyView(storedView);
         })();
 
-        // Schedule tab — populate the inline leave/reschedule form's target
-        // dropdown (one option per active session across the family) and
-        // render the recent-requests history panel below it.
+        // Schedule tab — recent-requests history panel below the calendar.
+        // Submission UX is now click-to-reschedule on the calendar itself
+        // (no inline form); this panel just lists the resulting requests.
         (function () {
-          var targetSel = document.getElementById("schedLeaveTarget");
           var historyBody = document.getElementById("schedHistoryBody");
-          if (!targetSel || !historyBody) return;
+          if (!historyBody) return;
 
-          // Build target options from each family kid's active sessions.
           var rosterIdsLocal = (isGuardian && kids && kids.length)
             ? kids.map(function (k) { return k.studentId; })
             : (current.studentId ? [current.studentId] : []);
           var multiKidLocal = rosterIdsLocal.length > 1;
-          var allMemsLocal = readJson("minddo_membership_orders");
-          var options = [];
-          rosterIdsLocal.forEach(function (sid) {
-            var stu = (flow && flow.findStudentById) ? (flow.findStudentById(sid) || {}) : {};
-            var sname = stu.name || (sid === current.studentId ? (current.studentName || current.name) : sid);
-            var kidMems = allMemsLocal.filter(function (m) {
-              return String(m && m.studentId || "") === String(sid);
-            });
-            kidMems.forEach(function (m) {
-              membershipSessions(m).forEach(function (s) {
-                var courseName = s.courseName || formatPlan(s.plan, lang) || "";
-                var label = (t.schedLeaveTargetFmt || "{course} · {weekday} {time}")
-                  .replace("{course}", courseName)
-                  .replace("{weekday}", s.weekday || "")
-                  .replace("{time}", s.timeSlot || "");
-                if (multiKidLocal) label = sname + " · " + label;
-                options.push({ label: label, sid: sid, sname: sname });
-              });
-            });
-          });
-          if (!options.length) {
-            targetSel.innerHTML = "<option value=\"\">" + escHTML(t.schedLeaveTargetEmpty) + "</option>";
-            targetSel.disabled = true;
-          } else {
-            targetSel.disabled = false;
-            targetSel.innerHTML = options.map(function (o, i) {
-              return "<option value=\"" + i + "\" data-sid=\"" + escHTML(o.sid) + "\" data-student-name=\"" + escHTML(o.sname) + "\">"
-                + escHTML(o.label) + "</option>";
-            }).join("");
-          }
 
           // History panel — show this family's recent requests with status.
           var familyRequests = readJson("minddo_schedule_requests").filter(function (r) {
@@ -4064,57 +4034,195 @@
           .replace(/"/g, "&quot;");
       }
 
-      // Inline leave/reschedule form on the Schedule tab — submits via
-      // flow.saveScheduleRequest and re-renders so the new entry shows
-      // up in the history panel right below.
+      // Reschedule modal — opens when a class chip / list row is tapped.
+      // Body shows the same week's open offering slots (excluding the
+      // clicked one); clicking one of those files a reschedule request
+      // through flow.saveScheduleRequest. No textual form.
       (function () {
-        var form = document.getElementById("schedLeaveForm");
-        if (!form) return;
-        form.addEventListener("submit", function (e) {
-          e.preventDefault();
-          var lang = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
-          var t = I18N[lang] || I18N["zh-CN"];
-          var msgEl = document.getElementById("schedLeaveMsg");
-          msgEl.className = "leave-inline-msg";
+        var overlay = document.getElementById("reschedOverlay");
+        if (!overlay) return;
+        var optionsBox = document.getElementById("reschedOptions");
+        var origLine = document.getElementById("reschedOriginalLine");
+        var msgEl = document.getElementById("reschedMsg");
+
+        function langNow() { return document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN"; }
+        function dictNow() { return I18N[langNow()] || I18N["zh-CN"]; }
+        function fmtDateLine(date, ln) {
+          return date.toLocaleDateString(ln === "en" ? "en-US" : "zh-CN",
+            { year: "numeric", month: "short", day: "numeric", weekday: "short" });
+        }
+        function dayOfClick(occWeekday, weekStart) {
+          // Map an offering's weekday string ("Monday" / "周一" / "Mon") to
+          // a date inside [weekStart, weekStart+6].
+          var WEEKDAY_IDX = {
+            "周一": 1, "周二": 2, "周三": 3, "周四": 4, "周五": 5, "周六": 6, "周日": 0,
+            "monday": 1, "tuesday": 2, "wednesday": 3, "thursday": 4, "friday": 5, "saturday": 6, "sunday": 0,
+            "mon": 1, "tue": 2, "wed": 3, "thu": 4, "fri": 5, "sat": 6, "sun": 0
+          };
+          var idx = WEEKDAY_IDX[String(occWeekday || "").toLowerCase()];
+          if (typeof idx !== "number") return null;
+          // weekStart is Monday. Map idx 1 (Mon) -> 0, 2 -> 1, ..., 0 (Sun) -> 6.
+          var offset = (idx === 0) ? 6 : (idx - 1);
+          var d = new Date(weekStart);
+          d.setDate(weekStart.getDate() + offset);
+          d.setHours(0, 0, 0, 0);
+          return d;
+        }
+
+        function open(occ) {
+          var ln = langNow();
+          var t = dictNow();
+          var sess = occ.session || {};
+          var courseName = sess.courseName || (window.MindDoFlow && formatPlanForLang(sess.plan, ln)) || "";
+          var origLineText = fmtDateLine(occ.when, ln)
+            + (sess.timeSlot ? " · " + sess.timeSlot : "")
+            + (courseName ? " · " + courseName : "")
+            + (occ.kidName ? " · " + occ.kidName : "");
+          origLine.textContent = origLineText;
           msgEl.textContent = "";
-          var typeVal = document.getElementById("schedLeaveType").value;
-          var targetSel = document.getElementById("schedLeaveTarget");
-          var reason = String(document.getElementById("schedLeaveReason").value || "").trim();
-          if (!targetSel.value) {
-            msgEl.textContent = t.leaveErrorTarget;
-            msgEl.className = "leave-inline-msg error";
-            return;
+          msgEl.className = "resched-msg";
+
+          // Same-week range: Monday → Sunday of the clicked occurrence.
+          var weekStart = new Date(occ.when); weekStart.setHours(0, 0, 0, 0);
+          var dow = weekStart.getDay();
+          var diff = (dow === 0) ? -6 : (1 - dow);
+          weekStart.setDate(weekStart.getDate() + diff);
+          var weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 7);
+          var today = new Date(); today.setHours(0, 0, 0, 0);
+
+          var offerings = (window.MindDoFlow && window.MindDoFlow.getClassOfferings)
+            ? (window.MindDoFlow.getClassOfferings() || [])
+            : [];
+          var origStamp = (occ.when.toISOString().slice(0, 10) + "@" + (sess.timeSlot || "")).toLowerCase();
+          var alts = [];
+          offerings.forEach(function (o) {
+            var weekdayStr = o.weekday && (o.weekday[ln === "en" ? "en" : "zh"] || o.weekday.zh || o.weekday.en);
+            var date = dayOfClick(weekdayStr, weekStart);
+            if (!date) return;
+            if (date < today) return; // past / earlier today
+            var stamp = (date.toISOString().slice(0, 10) + "@" + (o.timeSlot || "")).toLowerCase();
+            if (stamp === origStamp) return;
+            alts.push({ offering: o, date: date, weekdayStr: weekdayStr });
+          });
+          alts.sort(function (a, b) { return a.date - b.date; });
+
+          if (!alts.length) {
+            optionsBox.innerHTML = "<div class=\"resched-empty\">" + escHTML(t.reschedNoOptions) + "</div>";
+          } else {
+            optionsBox.innerHTML = alts.map(function (alt, i) {
+              var o = alt.offering;
+              var courseLabel = o.courseName ? (o.courseName[ln === "en" ? "en" : "zh"] || o.courseName.zh) : "";
+              var levelLabel = o.level ? (o.level[ln === "en" ? "en" : "zh"] || o.level.zh) : "";
+              var seatsLeft = Math.max(0, (o.seatsTotal || 0) - (o.seatsTaken || 0));
+              var full = (seatsLeft <= 0);
+              var seatText = full ? t.reschedSeatsFull
+                : (t.reschedSeatsAvail || "{n}").replace("{n}", seatsLeft);
+              var disabledAttr = full ? " disabled" : "";
+              return "<button type=\"button\" class=\"resched-option\" data-alt-idx=\"" + i + "\"" + disabledAttr + ">"
+                + "<div class=\"resched-opt-date\">"
+                +   "<span class=\"day\">" + alt.date.getDate() + "</span>"
+                +   "<span class=\"weekday\">" + escHTML(alt.weekdayStr || "") + "</span>"
+                + "</div>"
+                + "<div class=\"resched-opt-info\">"
+                +   "<div class=\"title\">" + escHTML(courseLabel || "—") + "</div>"
+                +   "<div class=\"meta\">" + [levelLabel, o.teacher, seatText].filter(Boolean).map(escHTML).join(" · ") + "</div>"
+                + "</div>"
+                + "<div class=\"resched-opt-time\">" + escHTML(o.timeSlot || "") + "</div>"
+                + "</button>";
+            }).join("");
           }
-          if (!reason) {
-            msgEl.textContent = t.leaveErrorReason;
-            msgEl.className = "leave-inline-msg error";
-            return;
-          }
+
+          overlay.dataset.occState = JSON.stringify({
+            kidId: occ.kidId || "",
+            kidName: occ.kidName || "",
+            originalLine: origLineText,
+            sessTimeSlot: sess.timeSlot || ""
+          });
+          overlay._alts = alts;
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+        }
+        function close() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          overlay._alts = null;
+        }
+
+        // Tiny formatter shim — render() has formatPlan in scope but the
+        // modal lives at IIFE scope. Re-derive from window if needed.
+        function formatPlanForLang(plan, ln) {
+          if (!plan) return "";
+          // Best-effort: course-selection.html's PLANS map is duplicated
+          // here for label purposes only; falls back to the raw key.
+          var P = {
+            weekly1: { zh: "每周一节课", en: "1 Class / Week" },
+            weekly2: { zh: "每周两节课", en: "2 Classes / Week" },
+            weekly3: { zh: "每周三节课", en: "3 Classes / Week" }
+          };
+          var p = P[plan];
+          return p ? (ln === "en" ? p.en : p.zh) : plan;
+        }
+
+        // Click any class chip / list row to open the modal.
+        document.addEventListener("click", function (e) {
+          var trigger = e.target.closest("[data-occ-scope][data-occ-idx]");
+          if (!trigger) return;
+          var scope = trigger.getAttribute("data-occ-scope");
+          var idx = Number(trigger.getAttribute("data-occ-idx"));
+          var registry = window.__minddoOccRegistry || {};
+          var occ = (registry[scope] || [])[idx];
+          if (occ) open(occ);
+        });
+        document.getElementById("reschedCloseBtn").addEventListener("click", close);
+        overlay.addEventListener("click", function (e) {
+          if (e.target === overlay) close();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && overlay.classList.contains("open")) close();
+        });
+
+        // Click a slot option to file the reschedule.
+        optionsBox.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-alt-idx]");
+          if (!btn || btn.disabled) return;
+          var ln = langNow();
+          var t = dictNow();
+          var alts = overlay._alts || [];
+          var alt = alts[Number(btn.getAttribute("data-alt-idx"))];
+          if (!alt) return;
+          var state = {};
+          try { state = JSON.parse(overlay.dataset.occState || "{}"); } catch (_) {}
+
+          var newCourse = alt.offering.courseName ? (alt.offering.courseName[ln === "en" ? "en" : "zh"] || alt.offering.courseName.zh) : "";
+          var newWhen = fmtDateLine(alt.date, ln) + " · " + (alt.offering.timeSlot || "");
+          var arrow = (ln === "en") ? " → " : " → ";
+          var targetLabel = state.originalLine + arrow + newWhen + (newCourse ? " (" + newCourse + ")" : "");
+
+          msgEl.textContent = t.reschedSubmitting;
+          msgEl.className = "resched-msg";
+          var cur = (window.MindDoFlow && window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent()) || {};
           if (!window.MindDoFlow || !window.MindDoFlow.saveScheduleRequest) {
-            msgEl.textContent = t.leaveErrorGeneric;
-            msgEl.className = "leave-inline-msg error";
+            msgEl.textContent = t.reschedError;
+            msgEl.className = "resched-msg error";
             return;
           }
-          var targetOption = targetSel.options[targetSel.selectedIndex];
-          var sid = targetOption.getAttribute("data-sid") || "";
-          var sname = targetOption.getAttribute("data-student-name") || "";
-          var cur = (window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent()) || {};
           try {
             window.MindDoFlow.saveScheduleRequest({
-              type: typeVal,
-              targetLabel: targetOption.textContent || "",
-              reason: reason,
+              type: "reschedule",
+              targetLabel: targetLabel,
+              reason: (ln === "en")
+                ? ("Move " + state.sessTimeSlot + " to " + (alt.offering.timeSlot || "") + " (" + (alt.weekdayStr || "") + ")")
+                : ("申请将 " + state.sessTimeSlot + " 改至 " + (alt.weekdayStr || "") + " " + (alt.offering.timeSlot || "")),
               email: cur.email || "",
-              studentName: sname || cur.studentName || cur.name || "",
-              studentId: sid || cur.studentId || ""
+              studentName: state.kidName || cur.studentName || cur.name || "",
+              studentId: state.kidId || cur.studentId || ""
             });
-            msgEl.textContent = t.leaveSuccess;
-            msgEl.className = "leave-inline-msg success";
-            document.getElementById("schedLeaveReason").value = "";
-            render(lang);
+            msgEl.textContent = t.reschedSuccess;
+            msgEl.className = "resched-msg success";
+            setTimeout(function () { close(); render(ln); }, 700);
           } catch (_) {
-            msgEl.textContent = t.leaveErrorGeneric;
-            msgEl.className = "leave-inline-msg error";
+            msgEl.textContent = t.reschedError;
+            msgEl.className = "resched-msg error";
           }
         });
       })();
