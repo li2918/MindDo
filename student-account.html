@@ -75,6 +75,7 @@
 
     /* Family overview card grid (guardian view only) */
     .family-panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 22px 24px; margin-bottom: 24px; box-shadow: var(--shadow-md); }
+    body.minddo-hide-family-panel #familyPanel { display: none !important; }
     .family-panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
     .family-panel-head h2 { font-size: 18px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
     .family-panel-head .sub { font-size: 13px; color: var(--muted); line-height: 1.55; }
@@ -4786,6 +4787,11 @@
           var titleEl = document.getElementById("topbarPageTitle");
           if (titleEl && t[labelKey]) titleEl.textContent = t[labelKey];
           try { sessionStorage.setItem(TAB_KEY, key); } catch (_) {}
+          // Settings is account-management surface — the family-members
+          // kid switcher above the panels isn't relevant there. Hide it
+          // via a body class; the family panel comes back automatically
+          // on any other tab.
+          document.body.classList.toggle("minddo-hide-family-panel", key === "settings");
           // If the activated tab carries a badge, mark its content as seen
           // — both clears the pill and prevents the count from re-appearing
           // until something genuinely new is added.
