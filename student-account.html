@@ -1033,6 +1033,28 @@
     .resched-msg.error { color: var(--danger); }
     .resched-msg.success { color: var(--success); }
 
+    /* Schedule tab — visible hint so parents discover the click-to-leave
+       affordance without needing the old standalone Leave tab. */
+    .sched-leave-hint { display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; background: rgba(186,230,253,0.22);
+      border: 1px solid rgba(14,165,233,0.32); border-radius: 12px;
+      margin-bottom: 16px; }
+    .sched-leave-hint .sched-leave-icon { width: 32px; height: 32px; flex-shrink: 0;
+      border-radius: 999px; background: rgba(14,165,233,0.18); color: var(--gold-deep);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; }
+    .sched-leave-hint > div { display: grid; gap: 2px; }
+    .sched-leave-hint strong { font-size: 13.5px; color: var(--clay); font-weight: 800; }
+    .sched-leave-hint span { font-size: 12.5px; color: #475569; line-height: 1.5; }
+
+    /* Leave-only link inside the reschedule modal — for parents who
+       just want to skip the class without scheduling a makeup. */
+    .resched-leave-only { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
+      text-align: center; }
+    .resched-leave-only-btn { background: transparent; border: none; cursor: pointer;
+      font: inherit; font-size: 12.5px; color: #b2502d; font-weight: 700;
+      padding: 6px 12px; border-radius: 8px; transition: 0.12s; font-family: inherit; }
+    .resched-leave-only-btn:hover { background: rgba(178,80,45,0.08); color: #8e3d21; }
+
     .leave-history-list { display: grid; gap: 8px; }
     .leave-history-row { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline;
       padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
@@ -1232,10 +1254,6 @@
         <button type="button" class="sidebar-item" data-tab="profile" role="tab">
           <span class="si-icon" aria-hidden="true">◉</span><span data-i18n="tabProfile"></span>
         </button>
-        <button type="button" class="sidebar-item" data-tab="requests" role="tab">
-          <span class="si-icon" aria-hidden="true">✎</span><span data-i18n="tabRequests"></span>
-          <span class="tab-pill" data-tab-pill="requests" hidden>0</span>
-        </button>
         <button type="button" class="sidebar-item" data-tab="settings" role="tab">
           <span class="si-icon" aria-hidden="true">⚙</span><span data-i18n="tabSettings"></span>
         </button>
@@ -1335,6 +1353,14 @@
 
         <!-- 2. SCHEDULE — forward-looking list of upcoming classes -->
         <section class="dash-section" data-tab-panel="schedule" role="tabpanel" aria-label="Schedule">
+          <div class="sched-leave-hint" role="note">
+            <span class="sched-leave-icon" aria-hidden="true">✎</span>
+            <div>
+              <strong data-i18n="schedLeaveHintTitle"></strong>
+              <span data-i18n="schedLeaveHintSub"></span>
+            </div>
+          </div>
+
           <article class="panel" id="upcomingPanel">
             <div class="panel-head-row" style="justify-content:flex-end;">
               <div class="upcoming-view-toggle" id="upcomingViewToggle" role="group" aria-label="View">
@@ -1491,49 +1517,22 @@
           </div>
         </section>
 
-        <!-- 5. REQUESTS -->
-        <section class="dash-section" data-tab-panel="requests" role="tabpanel" aria-labelledby="requestHead">
-          <div class="dash-head">
-            <div class="dash-head-text">
-              <div class="dash-eyebrow" data-i18n="requestEyebrow"></div>
-              <h2 id="requestHead" class="dash-title" data-i18n="requestTitle"></h2>
-              <p class="dash-sub" data-i18n="requestIntro"></p>
-            </div>
-          </div>
-
-          <div class="request-split">
-            <article class="panel">
-              <form class="request-form" id="requestForm">
-                <div class="request-row">
-                  <div>
-                    <label for="requestType" data-i18n="requestType"></label>
-                    <select id="requestType">
-                      <option value="leave" data-i18n="requestLeave"></option>
-                      <option value="reschedule" data-i18n="requestReschedule"></option>
-                    </select>
-                  </div>
-                  <div>
-                    <label for="requestTarget" data-i18n="requestTarget"></label>
-                    <select id="requestTarget"></select>
-                  </div>
-                </div>
-                <div>
-                  <label for="requestReason" data-i18n="requestReason"></label>
-                  <textarea id="requestReason"></textarea>
-                </div>
-                <div class="action-row">
-                  <button class="action-btn" type="submit" data-i18n="requestSubmit"></button>
-                </div>
-                <div id="requestResult" class="request-result" role="status" aria-live="polite"></div>
-              </form>
-            </article>
-
-            <article class="panel">
-              <h2 data-i18n="requestHistoryTitle"></h2>
-              <ul class="schedule-list" id="requestHistory"></ul>
-            </article>
-          </div>
-        </section>
+        <!-- Legacy request form / history nodes hidden so the existing
+             render() and submit handlers keep no-op-ing without null
+             guards. The standalone Leave tab UI is gone — requests are
+             filed from the Schedule tab's class-click modal instead. -->
+        <div style="display:none;">
+          <form id="requestForm">
+            <select id="requestType">
+              <option value="leave"></option>
+              <option value="reschedule"></option>
+            </select>
+            <select id="requestTarget"></select>
+            <textarea id="requestReason"></textarea>
+            <div id="requestResult"></div>
+          </form>
+          <ul id="requestHistory"></ul>
+        </div>
 
         <!-- 6. SETTINGS -->
         <section class="dash-section" data-tab-panel="settings" role="tabpanel" aria-labelledby="settingsHead">
@@ -1723,6 +1722,9 @@
       </div>
       <div class="resched-options" id="reschedOptions"></div>
       <p class="resched-msg" id="reschedMsg" role="status" aria-live="polite"></p>
+      <div class="resched-leave-only">
+        <button type="button" class="resched-leave-only-btn" id="reschedLeaveOnlyBtn" data-i18n="reschedLeaveOnly"></button>
+      </div>
     </div>
   </div>
 
@@ -1800,7 +1802,7 @@
         window.location.replace("login.html");
         return;
       }
-      var BADGE_TABS = ["feedback", "requests"];
+      var BADGE_TABS = ["feedback"];
       var LASTSEEN_PREFIX = "minddo_acct_lastseen_";
 
       var I18N = {
@@ -2003,12 +2005,16 @@
           reschedTitle: "改期到其他时间段",
           reschedSub: "下面列出所有同等级且你尚未安排课的时间段，按最近一次开课日期排序。点击任意一行即可发起改期申请。",
           reschedOriginalLabel: "原课程时段",
-          reschedNoOptions: "暂无可选时段：当前等级下没有更多空闲时间。需要其他安排请联系客服或在「请假」tab 提交。",
+          reschedNoOptions: "暂无可选时段：当前等级下没有更多空闲时间。需要其他安排请联系客服。",
           reschedSeatsAvail: "{n} 个空位",
           reschedSeatsFull: "已满",
           reschedSubmitting: "提交中…",
           reschedSuccess: "已提交改期申请，等待运营确认。",
           reschedError: "提交失败，请稍后再试。",
+          reschedLeaveOnly: "无需补课，直接请假",
+          reschedLeaveSuccess: "已提交请假申请（不补课），等待运营确认。",
+          schedLeaveHintTitle: "请假 / 改期入口",
+          schedLeaveHintSub: "在下方日历或列表中点击任意一节课，即可改期到本等级其他空闲时段，或选择直接请假。",
           schedHistoryTitle: "我的申请记录",
           schedHistorySub: "最近 8 条请假与改期申请，可在此查看运营审核状态。",
           schedHistoryEmpty: "暂无申请记录。",
@@ -2340,12 +2346,16 @@
           reschedTitle: "Reschedule to another slot",
           reschedSub: "All same-level slots that don't conflict with your current schedule, sorted by the next class date. Pick any row to file the reschedule.",
           reschedOriginalLabel: "Current slot",
-          reschedNoOptions: "No other slots available at this level. Reach out to support, or file a leave request via the Leave tab.",
+          reschedNoOptions: "No other slots available at this level. Please contact support for help.",
           reschedSeatsAvail: "{n} seats open",
           reschedSeatsFull: "Full",
           reschedSubmitting: "Submitting…",
           reschedSuccess: "Reschedule request filed — waiting for ops confirmation.",
           reschedError: "Couldn't submit. Try again in a moment.",
+          reschedLeaveOnly: "Skip this class without a make-up",
+          reschedLeaveSuccess: "Leave request filed (no make-up) — waiting for ops confirmation.",
+          schedLeaveHintTitle: "Leave & Reschedule",
+          schedLeaveHintSub: "Tap any class on the calendar or list below to reschedule it to another open same-level slot, or to file a no-make-up leave.",
           schedHistoryTitle: "My Requests",
           schedHistorySub: "Your 8 most recent leave / reschedule requests with current ops review status.",
           schedHistoryEmpty: "No requests yet.",
@@ -3923,20 +3933,11 @@
           if (!matchCurrentStudent(r, current)) return false;
           return r.createdAt && r.createdAt > fbLast;
         }).length;
-        // Requests: count items where ops changed status (updatedAt) or new
-        // requests since lastseen — scoped to active student.
-        var reqLast = getLastseen("requests");
-        var reqCount = readJson("minddo_schedule_requests").filter(function (r) {
-          if (!matchCurrentStudent(r, current)) return false;
-          var stamp = r.updatedAt || r.createdAt;
-          return stamp && stamp > reqLast;
-        }).length;
         // If the user is currently sitting on the tab, treat as seen so the
         // pill never lingers while they're looking at the content.
         var active = "";
         try { active = sessionStorage.getItem("minddo_acct_active_tab") || ""; } catch (_) {}
         setBadge("feedback", active === "feedback" ? 0 : fbCount);
-        setBadge("requests", active === "requests" ? 0 : reqCount);
       }
 
       // Tab switching: clicking a sidebar item (or a [data-jump-tab] link
@@ -3945,7 +3946,7 @@
       // active state. Active tab persists per session.
       (function () {
         var TAB_KEY = "minddo_acct_active_tab";
-        var KNOWN_TABS = ["overview", "enroll", "billing", "schedule", "learning", "feedback", "profile", "requests", "settings"];
+        var KNOWN_TABS = ["overview", "enroll", "billing", "schedule", "learning", "feedback", "profile", "settings"];
         function setActiveTab(key) {
           if (KNOWN_TABS.indexOf(key) === -1) key = "overview";
           document.querySelectorAll("[data-tab]").forEach(function (btn) {
@@ -4237,6 +4238,42 @@
             msgEl.className = "resched-msg error";
           }
         });
+
+        // "Skip without makeup" — file a leave request scoped to the
+        // clicked class. No alternative slot picked.
+        var leaveOnlyBtn = document.getElementById("reschedLeaveOnlyBtn");
+        if (leaveOnlyBtn) {
+          leaveOnlyBtn.addEventListener("click", function () {
+            var ln = langNow();
+            var t = dictNow();
+            var state = {};
+            try { state = JSON.parse(overlay.dataset.occState || "{}"); } catch (_) {}
+            msgEl.textContent = t.reschedSubmitting;
+            msgEl.className = "resched-msg";
+            var cur = (window.MindDoFlow && window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent()) || {};
+            if (!window.MindDoFlow || !window.MindDoFlow.saveScheduleRequest) {
+              msgEl.textContent = t.reschedError;
+              msgEl.className = "resched-msg error";
+              return;
+            }
+            try {
+              window.MindDoFlow.saveScheduleRequest({
+                type: "leave",
+                targetLabel: state.originalLine || "",
+                reason: (ln === "en") ? "Skip without makeup" : "请假不补课",
+                email: cur.email || "",
+                studentName: state.kidName || cur.studentName || cur.name || "",
+                studentId: state.kidId || cur.studentId || ""
+              });
+              msgEl.textContent = t.reschedLeaveSuccess;
+              msgEl.className = "resched-msg success";
+              setTimeout(function () { close(); render(ln); }, 700);
+            } catch (_) {
+              msgEl.textContent = t.reschedError;
+              msgEl.className = "resched-msg error";
+            }
+          });
+        }
       })();
 
       requestForm.addEventListener("submit", function (e) {
