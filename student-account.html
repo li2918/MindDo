@@ -898,6 +898,45 @@
       text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: 0.15s; }
     .billing-action:hover { background: rgba(186,230,253,0.4); border-color: var(--gold); }
 
+    /* Schedule tab — forward-looking list of classes, grouped by week */
+    .upcoming-range { display: inline-flex; gap: 2px; padding: 3px; background: #f1f5f9; border-radius: 999px; }
+    .upcoming-range button { all: unset; cursor: pointer; padding: 6px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 700; color: var(--muted); transition: 0.12s; font-family: inherit; }
+    .upcoming-range button.active { background: #fff; color: var(--clay); box-shadow: 0 1px 4px rgba(15,23,42,0.08); }
+    .week-group { margin-top: 18px; }
+    .week-group:first-child { margin-top: 4px; }
+    .week-group-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+      padding: 0 4px 8px; border-bottom: 1px solid var(--line); margin-bottom: 10px; }
+    .week-group-label { font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--clay); }
+    .week-group-count { font-size: 11px; color: var(--muted); font-weight: 700; }
+    .upcoming-list { display: grid; gap: 8px; }
+    .upcoming-row { display: grid; grid-template-columns: 110px 1fr auto; gap: 14px; align-items: center;
+      padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px;
+      transition: 0.12s; }
+    .upcoming-row:hover { border-color: rgba(14,165,233,0.32); box-shadow: 0 6px 16px rgba(15,23,42,0.06); }
+    .upcoming-row.is-today { background: linear-gradient(180deg,rgba(186,230,253,0.18),#fff); border-color: rgba(14,165,233,0.45); }
+    .up-date { display: grid; gap: 2px; }
+    .up-date .day { font-size: 22px; font-weight: 900; color: var(--clay); line-height: 1; }
+    .up-date .month { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .up-date .weekday { font-size: 11px; color: var(--muted); font-weight: 700; }
+    .up-info { display: grid; gap: 3px; min-width: 0; }
+    .up-info .title { font-size: 14px; font-weight: 800; color: var(--clay); }
+    .up-info .meta { font-size: 12px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
+    .up-info .meta strong { color: var(--clay); font-weight: 700; }
+    .up-kid-pill { display: inline-flex; padding: 2px 9px; border-radius: 999px;
+      background: rgba(186,230,253,0.32); color: #0b4d70; border: 1px solid rgba(14,165,233,0.32);
+      font-size: 11px; font-weight: 800; }
+    .up-time { font-size: 13px; font-weight: 700; color: var(--clay); white-space: nowrap; }
+    .up-today-tag { display: inline-flex; padding: 2px 9px; border-radius: 999px;
+      background: rgba(110,143,87,0.18); color: #4f6f38; border: 1px solid rgba(111,143,87,0.34);
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; margin-left: 6px; }
+    @media (max-width: 540px) {
+      .upcoming-row { grid-template-columns: 64px 1fr; gap: 10px; }
+      .up-time { grid-column: 1 / -1; text-align: right; padding-top: 4px; border-top: 1px dashed var(--line); }
+      .up-date .day { font-size: 18px; }
+    }
+
     /* DASHBOARD REDESIGN */
     .dash-stack { display: grid; gap: 28px; }
     .dash-section { display: grid; gap: 18px; }
@@ -1185,23 +1224,30 @@
           </article>
         </section>
 
-        <!-- 2. MY WEEK -->
+        <!-- 2. SCHEDULE — forward-looking list of upcoming classes -->
         <section class="dash-section" data-tab-panel="schedule" role="tabpanel" aria-label="Schedule">
-          <div class="dash-twin">
-            <article class="panel">
-              <h2 data-i18n="myCourseTitle"></h2>
-              <ul class="schedule-list" id="courseList"></ul>
-            </article>
-            <article class="panel">
-              <h2 data-i18n="myScheduleTitle"></h2>
-              <ul class="schedule-list" id="scheduleList"></ul>
-            </article>
-          </div>
-
-          <article class="panel">
-            <h2 data-i18n="weekBoardTitle"></h2>
-            <div class="week-board" id="weekBoard"></div>
+          <article class="panel" id="upcomingPanel">
+            <div class="panel-head-row">
+              <div>
+                <h2 data-i18n="upcomingTitle"></h2>
+                <p class="panel-sub muted" data-i18n="upcomingSub" style="margin-top:4px;"></p>
+              </div>
+              <div class="upcoming-range" id="upcomingRange" role="group" aria-label="Range">
+                <button type="button" data-range="4" class="active" data-i18n="upcomingRange4"></button>
+                <button type="button" data-range="8" data-i18n="upcomingRange8"></button>
+                <button type="button" data-range="12" data-i18n="upcomingRange12"></button>
+              </div>
+            </div>
+            <div id="upcomingBody"></div>
           </article>
+
+          <!-- Legacy nodes kept hidden so existing render() blocks that
+               populate courseList / scheduleList / weekBoard keep no-op-ing. -->
+          <div style="display:none;">
+            <ul id="courseList"></ul>
+            <ul id="scheduleList"></ul>
+            <div id="weekBoard"></div>
+          </div>
         </section>
 
         <!-- 3. LEARNING SNAPSHOT -->
@@ -1801,6 +1847,15 @@
           weekTitle: "我的课表安排",
           weekSub: "当前所选课程、每周上课时段与本周课表一览。",
           weekBoardTitle: "本周日历",
+          upcomingTitle: "未来课程安排",
+          upcomingSub: "按周展开家庭中每位学员未来的所有课程，今天的课会绿色高亮。",
+          upcomingRange4: "接下来 4 周",
+          upcomingRange8: "接下来 8 周",
+          upcomingRange12: "接下来 12 周",
+          upcomingEmpty: "暂未排课。报名会员后未来的课程会自动出现在这里。",
+          upcomingWeekHeadFmt: "{start} – {end}",
+          upcomingCountFmt: "共 {n} 节课",
+          upcomingTodayTag: "今天",
           snapshotEyebrow: "学习进度",
           snapshotTitle: "我的学习快照",
           snapshotSub: "最新课堂反馈、学期报告与入学评估，所有成长数据统一入口。",
@@ -2105,6 +2160,15 @@
           weekTitle: "My Schedule",
           weekSub: "Your enrolled plan, weekly slot, and this week's class calendar in one place.",
           weekBoardTitle: "This Week's Calendar",
+          upcomingTitle: "Upcoming Classes",
+          upcomingSub: "Every upcoming session for every child in the family, grouped by week. Today's classes are highlighted in green.",
+          upcomingRange4: "Next 4 weeks",
+          upcomingRange8: "Next 8 weeks",
+          upcomingRange12: "Next 12 weeks",
+          upcomingEmpty: "No upcoming classes yet. Once a membership is active, sessions will appear here automatically.",
+          upcomingWeekHeadFmt: "{start} – {end}",
+          upcomingCountFmt: "{n} classes",
+          upcomingTodayTag: "Today",
           snapshotEyebrow: "Learning Progress",
           snapshotTitle: "My Learning Snapshot",
           snapshotSub: "Class feedback, semester reports, and entry assessment — every signal about your growth, one click away.",
@@ -2731,6 +2795,149 @@
         // feedback / request data via seedDemoData or another tab is
         // reflected immediately.
         computeBadgeCounts();
+
+        // Schedule tab — full forward-looking list of classes for every
+        // family child, grouped by week. Replaces the old courseList /
+        // scheduleList / weekBoard split which only showed the current week
+        // for the active student and overlapped with the Overview cards.
+        (function () {
+          var body = document.getElementById("upcomingBody");
+          var rangeBar = document.getElementById("upcomingRange");
+          if (!body || !rangeBar) return;
+          var storedRange = 4;
+          try { storedRange = Number(localStorage.getItem("minddo_upcoming_weeks")) || 4; } catch (_) {}
+          if ([4, 8, 12].indexOf(storedRange) === -1) storedRange = 4;
+          rangeBar.querySelectorAll("[data-range]").forEach(function (b) {
+            b.classList.toggle("active", Number(b.getAttribute("data-range")) === storedRange);
+          });
+
+          var rosterIds = (isGuardian && kids && kids.length)
+            ? kids.map(function (k) { return k.studentId; })
+            : (current.studentId ? [current.studentId] : []);
+          var multiKid = rosterIds.length > 1;
+          var allMems = readJson("minddo_membership_orders");
+
+          // Generate weekly occurrences across the requested horizon for
+          // every active session of every family kid. Sort by date so the
+          // overall list reads chronologically; group by week-of-year.
+          function expandSessions(weeks) {
+            var horizon = new Date(); horizon.setHours(0, 0, 0, 0);
+            horizon.setDate(horizon.getDate() + weeks * 7);
+            var today = new Date(); today.setHours(0, 0, 0, 0);
+            var occ = [];
+            rosterIds.forEach(function (sid) {
+              var stu = (flow && flow.findStudentById) ? (flow.findStudentById(sid) || {}) : {};
+              var name = stu.name || (sid === current.studentId ? (current.studentName || current.name) : sid);
+              var kidMems = allMems.filter(function (m) {
+                return String(m && m.studentId || "") === String(sid);
+              });
+              kidMems.forEach(function (m) {
+                membershipSessions(m).forEach(function (s) {
+                  var first = nextOccurrence(s.weekday);
+                  if (!first) return;
+                  for (var d = new Date(first); d <= horizon; d.setDate(d.getDate() + 7)) {
+                    if (d < today) continue; // safety
+                    occ.push({
+                      when: new Date(d),
+                      kidName: name,
+                      kidId: sid,
+                      session: s,
+                      isToday: (d.getTime() === today.getTime())
+                    });
+                  }
+                });
+              });
+            });
+            occ.sort(function (a, b) { return a.when - b.when; });
+            return occ;
+          }
+
+          function weekKey(date) {
+            // Monday-anchored week start (matches MindDo's class week feel
+            // better than Sunday). Returns YYYY-MM-DD of the Monday.
+            var d = new Date(date);
+            d.setHours(0, 0, 0, 0);
+            var dow = d.getDay(); // 0 = Sun
+            var diff = (dow === 0) ? -6 : (1 - dow);
+            d.setDate(d.getDate() + diff);
+            return d.toISOString().slice(0, 10);
+          }
+          function fmtWeekRange(monday) {
+            var s = new Date(monday); s.setHours(0, 0, 0, 0);
+            var e = new Date(s); e.setDate(s.getDate() + 6);
+            var fmt = function (d) {
+              return d.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { month: "short", day: "numeric" });
+            };
+            return (t.upcomingWeekHeadFmt || "{start} – {end}").replace("{start}", fmt(s)).replace("{end}", fmt(e));
+          }
+          function fmtDayLabel(date) {
+            return date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { weekday: "short" });
+          }
+          function fmtMonthShort(date) {
+            return date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { month: "short" });
+          }
+
+          function render(weeks) {
+            var occ = expandSessions(weeks);
+            if (!occ.length) {
+              body.innerHTML = "<div class=\"portfolio-empty\">" + escHTML(t.upcomingEmpty) + "</div>";
+              return;
+            }
+            // Group by ISO week
+            var groups = {};
+            var groupOrder = [];
+            occ.forEach(function (item) {
+              var key = weekKey(item.when);
+              if (!groups[key]) { groups[key] = []; groupOrder.push(key); }
+              groups[key].push(item);
+            });
+
+            body.innerHTML = groupOrder.map(function (mondayKey) {
+              var entries = groups[mondayKey];
+              var head = "<div class=\"week-group-head\">"
+                + "<span class=\"week-group-label\">" + escHTML(fmtWeekRange(new Date(mondayKey))) + "</span>"
+                + "<span class=\"week-group-count\">" + escHTML((t.upcomingCountFmt || "{n}").replace("{n}", entries.length)) + "</span>"
+                + "</div>";
+              var rows = entries.map(function (item) {
+                var sess = item.session || {};
+                var courseName = sess.courseName || (formatPlan(sess.plan, lang) || "");
+                var modeLabel = formatClassMode(sess.classMode, lang) || "";
+                var titleParts = [courseName].filter(Boolean);
+                var metaParts = [];
+                if (multiKid) metaParts.push("<span class=\"up-kid-pill\">" + escHTML(item.kidName) + "</span>");
+                if (sess.teacher) metaParts.push("<span><strong>" + escHTML(sess.teacher) + "</strong></span>");
+                if (modeLabel) metaParts.push("<span>" + escHTML(modeLabel) + "</span>");
+                var todayBadge = item.isToday
+                  ? "<span class=\"up-today-tag\">" + escHTML(t.upcomingTodayTag) + "</span>" : "";
+                return "<div class=\"upcoming-row" + (item.isToday ? " is-today" : "") + "\">"
+                  + "<div class=\"up-date\">"
+                  +   "<span class=\"day\">" + item.when.getDate() + "</span>"
+                  +   "<span class=\"month\">" + escHTML(fmtMonthShort(item.when)) + "</span>"
+                  +   "<span class=\"weekday\">" + escHTML(fmtDayLabel(item.when)) + "</span>"
+                  + "</div>"
+                  + "<div class=\"up-info\">"
+                  +   "<div class=\"title\">" + escHTML(titleParts.join(" · ") || "—") + todayBadge + "</div>"
+                  +   "<div class=\"meta\">" + metaParts.join("") + "</div>"
+                  + "</div>"
+                  + "<div class=\"up-time\">" + escHTML(sess.timeSlot || "—") + "</div>"
+                  + "</div>";
+              }).join("");
+              return "<div class=\"week-group\">" + head + "<div class=\"upcoming-list\">" + rows + "</div></div>";
+            }).join("");
+          }
+
+          render(storedRange);
+          rangeBar.onclick = function (e) {
+            var b = e.target.closest("[data-range]");
+            if (!b) return;
+            var weeks = Number(b.getAttribute("data-range")) || 4;
+            try { localStorage.setItem("minddo_upcoming_weeks", String(weeks)); } catch (_) {}
+            rangeBar.querySelectorAll("[data-range]").forEach(function (btn) {
+              btn.classList.toggle("active", btn === b);
+            });
+            render(weeks);
+          };
+        })();
 
         // Billing tab — render payment history filtered to the active
         // student. Each row links to invoice.html?orderId=… so the parent
