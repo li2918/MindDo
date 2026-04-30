@@ -987,6 +987,48 @@
       .cal-chip { padding: 1px 4px; }
     }
 
+    /* Click-to-leave modal — opens when a calendar chip / list row is
+       tapped so the parent can submit a leave / reschedule request
+       scoped to that specific class without leaving the schedule view. */
+    .cal-cell .cal-chips .cal-chip { cursor: pointer; }
+    .cal-cell .cal-chips .cal-chip:hover { background: rgba(186,230,253,0.62); }
+    .upcoming-row { cursor: pointer; }
+    .leave-overlay {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(15,23,42,0.42); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .leave-overlay.open { display: flex; animation: leaveFade 0.18s ease-out; }
+    @keyframes leaveFade { from { opacity: 0; } to { opacity: 1; } }
+    .leave-card { background: #fff; border-radius: 18px; box-shadow: 0 30px 60px rgba(15,23,42,0.32);
+      width: min(440px, 100%); padding: 26px 28px; position: relative;
+      font-family: inherit; }
+    .leave-card h3 { font-size: 18px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; margin-bottom: 6px; }
+    .leave-card .leave-sub { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+    .leave-close { position: absolute; top: 12px; right: 14px; width: 30px; height: 30px;
+      border-radius: 50%; background: transparent; border: 1px solid var(--line);
+      cursor: pointer; font-size: 16px; line-height: 1; color: var(--muted);
+      display: inline-flex; align-items: center; justify-content: center; transition: 0.12s; font-family: inherit; }
+    .leave-close:hover { background: #f1f5f9; color: var(--clay); }
+    .leave-class-info { padding: 12px 14px; background: #f1f5f9; border-radius: 12px;
+      display: grid; gap: 4px; margin-bottom: 16px; font-size: 13px; }
+    .leave-class-info .lci-line { color: var(--clay); font-weight: 700; }
+    .leave-class-info .lci-meta { color: var(--muted); font-size: 12px; }
+    .leave-field { display: grid; gap: 6px; margin-bottom: 14px; font-size: 13px; }
+    .leave-field label { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .leave-field select, .leave-field textarea {
+      width: 100%; border: 1px solid var(--line); background: #f8fafc; color: var(--text);
+      padding: 9px 12px; border-radius: 10px; font: inherit; font-size: 13.5px; outline: none;
+      transition: 0.15s; box-sizing: border-box; resize: vertical;
+    }
+    .leave-field select:focus, .leave-field textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.15); }
+    .leave-actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+    .leave-actions .btn-secondary { padding: 9px 18px; font-size: 13px; }
+    .leave-actions .btn-primary { padding: 9px 22px; font-size: 13px; }
+    .leave-msg { font-size: 12px; line-height: 1.5; min-height: 16px; }
+    .leave-msg.error { color: var(--danger); }
+    .leave-msg.success { color: var(--success); }
+
     /* DASHBOARD REDESIGN */
     .dash-stack { display: grid; gap: 28px; }
     .dash-section { display: grid; gap: 18px; }
@@ -1646,6 +1688,35 @@
   </main>
   </div>
 
+  <!-- Click-to-leave modal — wired by the Schedule render block. -->
+  <div class="leave-overlay" id="leaveOverlay" role="dialog" aria-modal="true" aria-labelledby="leaveModalTitle" aria-hidden="true">
+    <div class="leave-card">
+      <button type="button" class="leave-close" id="leaveCloseBtn" aria-label="Close">×</button>
+      <h3 id="leaveModalTitle" data-i18n="leaveModalTitle"></h3>
+      <p class="leave-sub" data-i18n="leaveModalSub"></p>
+      <div class="leave-class-info">
+        <div class="lci-line" id="leaveClassLine"></div>
+        <div class="lci-meta" id="leaveClassMeta"></div>
+      </div>
+      <div class="leave-field">
+        <label for="leaveType" data-i18n="leaveTypeLabel"></label>
+        <select id="leaveType">
+          <option value="leave" data-i18n="leaveTypeLeave"></option>
+          <option value="reschedule" data-i18n="leaveTypeReschedule"></option>
+        </select>
+      </div>
+      <div class="leave-field">
+        <label for="leaveReason" data-i18n="leaveReasonLabel"></label>
+        <textarea id="leaveReason" rows="3" data-i18n-placeholder="leaveReasonPlaceholder"></textarea>
+      </div>
+      <div class="leave-msg" id="leaveMsg" role="status" aria-live="polite"></div>
+      <div class="leave-actions">
+        <button type="button" class="btn-secondary" id="leaveCancelBtn" data-i18n="leaveCancel"></button>
+        <button type="button" class="btn-primary" id="leaveSubmitBtn" data-i18n="leaveSubmit"></button>
+      </div>
+    </div>
+  </div>
+
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-brand">
@@ -1920,6 +1991,19 @@
           calNavNext: "下个月",
           calMoreFmt: "+{n}",
           calWeekdaysShort: ["一", "二", "三", "四", "五", "六", "日"],
+          leaveModalTitle: "为这节课申请请假 / 改期",
+          leaveModalSub: "提交后系统会通知运营审核，审核结果会出现在「请假」tab 中。",
+          leaveTypeLabel: "申请类型",
+          leaveTypeLeave: "请假",
+          leaveTypeReschedule: "改期",
+          leaveReasonLabel: "说明（必填）",
+          leaveReasonPlaceholder: "例如：本周有学校活动，希望下周同时间补课。",
+          leaveCancel: "取消",
+          leaveSubmit: "提交申请",
+          leaveSubmitting: "提交中…",
+          leaveSuccess: "已提交，运营会尽快审核。",
+          leaveErrorReason: "请填写申请说明。",
+          leaveErrorGeneric: "提交失败，请稍后再试。",
           snapshotEyebrow: "学习进度",
           snapshotTitle: "我的学习快照",
           snapshotSub: "最新课堂反馈、学期报告与入学评估，所有成长数据统一入口。",
@@ -2240,6 +2324,19 @@
           calNavNext: "Next month",
           calMoreFmt: "+{n} more",
           calWeekdaysShort: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          leaveModalTitle: "Request leave or reschedule for this class",
+          leaveModalSub: "Once submitted, ops will review and the outcome will show up under the Leave tab.",
+          leaveTypeLabel: "Request Type",
+          leaveTypeLeave: "Leave",
+          leaveTypeReschedule: "Reschedule",
+          leaveReasonLabel: "Reason (required)",
+          leaveReasonPlaceholder: "e.g. school event this week — would like to make it up next week at the same time.",
+          leaveCancel: "Cancel",
+          leaveSubmit: "Submit",
+          leaveSubmitting: "Submitting…",
+          leaveSuccess: "Submitted — ops will review shortly.",
+          leaveErrorReason: "Please write a short reason.",
+          leaveErrorGeneric: "Couldn't submit. Try again in a moment.",
           snapshotEyebrow: "Learning Progress",
           snapshotTitle: "My Learning Snapshot",
           snapshotSub: "Class feedback, semester reports, and entry assessment — every signal about your growth, one click away.",
@@ -2628,6 +2725,10 @@
           var key = el.getAttribute("data-i18n");
           if (t[key]) el.textContent = t[key];
         });
+        document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
+          var key = el.getAttribute("data-i18n-placeholder");
+          if (t[key]) el.setAttribute("placeholder", t[key]);
+        });
 
         // ---------- Identity + role-adaptive hero ----------
         var acct = (window.MindDoFlow && window.MindDoFlow.getCurrentAccount) ? window.MindDoFlow.getCurrentAccount() : null;
@@ -2867,6 +2968,48 @@
         // reflected immediately.
         computeBadgeCounts();
 
+        // Click-to-leave modal helpers — populates and opens the modal
+        // when a calendar chip or list row is tapped, then submits the
+        // request through the existing flow.saveScheduleRequest helper.
+        // Also reused for the Schedule tab's row click handler below.
+        var leaveOverlay = document.getElementById("leaveOverlay");
+        var leaveModalActive = null; // { occ, current }
+        function openLeaveModal(occ) {
+          if (!leaveOverlay) return;
+          var sess = (occ && occ.session) || {};
+          var t2 = I18N[document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN"] || I18N["zh-CN"];
+          var dateText = occ.when.toLocaleDateString(
+            document.documentElement.getAttribute("lang") === "en" ? "en-US" : "zh-CN",
+            { year: "numeric", month: "short", day: "numeric", weekday: "short" }
+          );
+          var titleParts = [];
+          if (sess.courseName) titleParts.push(sess.courseName);
+          else if (sess.plan) titleParts.push(formatPlan(sess.plan, lang) || "");
+          var lineHtml = dateText + (sess.timeSlot ? " · " + sess.timeSlot : "");
+          var metaParts = [];
+          if (occ.kidName) metaParts.push(escHTML(occ.kidName));
+          if (sess.teacher) metaParts.push(escHTML(sess.teacher));
+          if (titleParts.length) metaParts.unshift(escHTML(titleParts.join(" · ")));
+          document.getElementById("leaveClassLine").textContent = lineHtml;
+          document.getElementById("leaveClassMeta").innerHTML = metaParts.join(" · ");
+          document.getElementById("leaveType").value = "leave";
+          document.getElementById("leaveReason").value = "";
+          var msg = document.getElementById("leaveMsg");
+          if (msg) { msg.textContent = ""; msg.className = "leave-msg"; }
+          var sb = document.getElementById("leaveSubmitBtn");
+          if (sb) { sb.disabled = false; sb.textContent = t2.leaveSubmit; }
+          leaveModalActive = { occ: occ, current: current };
+          leaveOverlay.classList.add("open");
+          leaveOverlay.setAttribute("aria-hidden", "false");
+          setTimeout(function () { document.getElementById("leaveReason").focus(); }, 50);
+        }
+        function closeLeaveModal() {
+          if (!leaveOverlay) return;
+          leaveOverlay.classList.remove("open");
+          leaveOverlay.setAttribute("aria-hidden", "true");
+          leaveModalActive = null;
+        }
+
         // Schedule tab — calendar (default) + list view of every upcoming
         // class for every family child. Replaces the old this-week-only
         // courseList / scheduleList / weekBoard split.
@@ -2968,8 +3111,21 @@
             return date.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN", { month: "short" });
           }
 
+          // Stash occurrences in a tab-scoped registry so click handlers
+          // can hand them to the leave modal without serializing. Both
+          // calendar and list re-write into this map on each render.
+          var occRegistry = (window.__minddoOccRegistry = window.__minddoOccRegistry || {});
+          function registerOccurrences(scope, list) {
+            occRegistry[scope] = list;
+          }
+          function lookupOccurrence(scope, idx) {
+            var list = occRegistry[scope] || [];
+            return list[idx] || null;
+          }
+
           function renderList(weeks) {
             var occ = expandSessionsForListWeeks(weeks);
+            registerOccurrences("list", occ);
             if (!occ.length) {
               body.innerHTML = "<div class=\"portfolio-empty\">" + escHTML(t.upcomingEmpty) + "</div>";
               return;
@@ -3000,7 +3156,8 @@
                 if (modeLabel) metaParts.push("<span>" + escHTML(modeLabel) + "</span>");
                 var todayBadge = item.isToday
                   ? "<span class=\"up-today-tag\">" + escHTML(t.upcomingTodayTag) + "</span>" : "";
-                return "<div class=\"upcoming-row" + (item.isToday ? " is-today" : "") + "\">"
+                var occIdx = occ.indexOf(item);
+                return "<div class=\"upcoming-row" + (item.isToday ? " is-today" : "") + "\" data-occ-scope=\"list\" data-occ-idx=\"" + occIdx + "\">"
                   + "<div class=\"up-date\">"
                   +   "<span class=\"day\">" + item.when.getDate() + "</span>"
                   +   "<span class=\"month\">" + escHTML(fmtMonthShort(item.when)) + "</span>"
@@ -3050,11 +3207,14 @@
             gridEnd.setDate(gridStart.getDate() + 42);
 
             var occ = expandSessions(gridStart, gridEnd);
-            // Index occurrences by yyyy-mm-dd for fast cell lookup
+            registerOccurrences("cal", occ);
+            // Index occurrences by yyyy-mm-dd for fast cell lookup. Each
+            // entry carries its global occ index so a chip click can hand
+            // the right session to the leave modal.
             var byDay = {};
-            occ.forEach(function (o) {
+            occ.forEach(function (o, idx) {
               var k = o.when.toISOString().slice(0, 10);
-              (byDay[k] = byDay[k] || []).push(o);
+              (byDay[k] = byDay[k] || []).push({ item: o, idx: idx });
             });
 
             var today = new Date(); today.setHours(0, 0, 0, 0);
@@ -3070,10 +3230,11 @@
               var dow = d.getDay();
               var isWeekend = (dow === 0 || dow === 6);
               var entries = byDay[dayKey] || [];
-              var chips = entries.slice(0, 3).map(function (item) {
+              var chips = entries.slice(0, 3).map(function (entry) {
+                var item = entry.item;
                 var sess = item.session || {};
                 var time = (sess.timeSlot || "").split(/[–\-]/)[0].trim();
-                return "<span class=\"cal-chip\" title=\""
+                return "<span class=\"cal-chip\" data-occ-scope=\"cal\" data-occ-idx=\"" + entry.idx + "\" title=\""
                   + escHTML((sess.timeSlot || "") + " · " + (multiKid ? item.kidName : "") + (sess.teacher ? " · " + sess.teacher : ""))
                   + "\"><span class=\"cc-time\">" + escHTML(time) + "</span>"
                   + (multiKid ? "<span class=\"cc-name\">" + escHTML(item.kidName) + "</span>" : "")
@@ -3842,6 +4003,87 @@
           .replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;");
       }
+
+      // Click-to-leave modal — delegate clicks anywhere on the page to
+      // pick up calendar chips + list rows that carry an [data-occ-scope]
+      // marker, then look up the occurrence in the registry the Schedule
+      // render block populated.
+      (function () {
+        if (!leaveOverlay) return;
+        document.addEventListener("click", function (e) {
+          var trigger = e.target.closest("[data-occ-scope][data-occ-idx]");
+          if (!trigger) return;
+          var scope = trigger.getAttribute("data-occ-scope");
+          var idx = Number(trigger.getAttribute("data-occ-idx"));
+          var registry = window.__minddoOccRegistry || {};
+          var item = (registry[scope] || [])[idx];
+          if (!item) return;
+          openLeaveModal(item);
+        });
+        document.getElementById("leaveCloseBtn").addEventListener("click", closeLeaveModal);
+        document.getElementById("leaveCancelBtn").addEventListener("click", closeLeaveModal);
+        leaveOverlay.addEventListener("click", function (e) {
+          if (e.target === leaveOverlay) closeLeaveModal();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && leaveOverlay.classList.contains("open")) closeLeaveModal();
+        });
+        document.getElementById("leaveSubmitBtn").addEventListener("click", function () {
+          if (!leaveModalActive) return;
+          var lang = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+          var t = I18N[lang] || I18N["zh-CN"];
+          var msg = document.getElementById("leaveMsg");
+          var sb = document.getElementById("leaveSubmitBtn");
+          var occ = leaveModalActive.occ;
+          var sess = (occ && occ.session) || {};
+          var typeVal = document.getElementById("leaveType").value;
+          var reason = String(document.getElementById("leaveReason").value || "").trim();
+          if (!reason) {
+            msg.textContent = t.leaveErrorReason;
+            msg.className = "leave-msg error";
+            return;
+          }
+          if (!window.MindDoFlow || !window.MindDoFlow.saveScheduleRequest) {
+            msg.textContent = t.leaveErrorGeneric;
+            msg.className = "leave-msg error";
+            return;
+          }
+          // Build a target label that uniquely identifies the class we're
+          // applying for, so ops can review without clicking through.
+          var dateText = occ.when.toLocaleDateString(lang === "en" ? "en-US" : "zh-CN",
+            { year: "numeric", month: "short", day: "numeric", weekday: "short" });
+          var targetLabel = [
+            sess.courseName || formatPlan(sess.plan, lang) || "",
+            occ.kidName || "",
+            dateText,
+            sess.timeSlot || ""
+          ].filter(Boolean).join(" · ");
+          var cur = leaveModalActive.current || {};
+          sb.disabled = true;
+          sb.textContent = t.leaveSubmitting;
+          try {
+            window.MindDoFlow.saveScheduleRequest({
+              type: typeVal,
+              targetLabel: targetLabel,
+              reason: reason,
+              email: cur.email || "",
+              studentName: occ.kidName || cur.studentName || cur.name || "",
+              studentId: occ.kidId || cur.studentId || ""
+            });
+            msg.textContent = t.leaveSuccess;
+            msg.className = "leave-msg success";
+            setTimeout(function () {
+              closeLeaveModal();
+              render(lang);
+            }, 700);
+          } catch (_) {
+            msg.textContent = t.leaveErrorGeneric;
+            msg.className = "leave-msg error";
+            sb.disabled = false;
+            sb.textContent = t.leaveSubmit;
+          }
+        });
+      })();
 
       requestForm.addEventListener("submit", function (e) {
         e.preventDefault();
