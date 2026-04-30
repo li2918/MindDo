@@ -572,6 +572,84 @@
     if (Array.isArray(override) && override.length) return override.slice();
     return CLASS_OFFERINGS.slice();
   }
+
+  // Competition catalog — surfaces upcoming AI / coding contests on the
+  // parent hub so families know what to register for. Each entry carries
+  // bilingual copy, eligible levels (canonical EN tags), the registration
+  // deadline (used to compute "X days left" badges), and the actual
+  // competition date. In a real deployment this would be a remote feed.
+  var COMPETITION_CATALOG = [
+    {
+      id: "comp-summer-ai-cup-2026",
+      name: { zh: "MindDo 夏季 AI 创作大赛", en: "MindDo Summer AI Creation Cup" },
+      category: { zh: "创作 · 团队", en: "Creative · Team" },
+      levels: ["Intermediate", "Advanced", "Project Camp"],
+      summary: {
+        zh: "用 AI 工具围绕「我和我的城市」主题完成一个互动作品，可以是网页、动画或小游戏。",
+        en: "Build an interactive piece — webpage, animation, or game — on the theme \"My City and Me\" using AI tools."
+      },
+      competitionDate: "2026-06-15",
+      registrationDeadline: "2026-05-30",
+      prizes: {
+        zh: "一等奖 $500 学习基金 + 项目展示机会；二三等奖 MindDo 学分礼包。",
+        en: "1st: $500 learning grant + showcase slot; 2nd/3rd: MindDo credit bundles."
+      },
+      organizer: "MindDo + Code Future Foundation",
+      cta: "https://example.com/comp-summer"
+    },
+    {
+      id: "comp-noi-junior-2026",
+      name: { zh: "全国青少年编程挑战 (初赛)", en: "National Youth Coding Challenge (Regional)" },
+      category: { zh: "竞赛 · 个人", en: "Competition · Individual" },
+      levels: ["Advanced", "Competition"],
+      summary: {
+        zh: "面向 8-15 岁的算法竞赛初赛，覆盖搜索、动态规划基础题型，线上 90 分钟。",
+        en: "Algorithmic regional round for ages 8-15. Search + intro DP. 90 minutes online."
+      },
+      competitionDate: "2026-05-18",
+      registrationDeadline: "2026-05-10",
+      prizes: {
+        zh: "前 30% 晋级全国决赛，全员获学习证书。",
+        en: "Top 30% advance to nationals; all participants receive a certificate."
+      },
+      organizer: "Code Future Foundation",
+      cta: "https://example.com/comp-noi"
+    },
+    {
+      id: "comp-creative-spring-2026",
+      name: { zh: "AI 启蒙小作家", en: "AI Junior Storyteller" },
+      category: { zh: "启蒙 · 个人", en: "Beginner · Individual" },
+      levels: ["Beginner", "Intermediate"],
+      summary: {
+        zh: "适合一二年级新手家庭：用 AI 工具配图配音，做一本三页绘本故事。",
+        en: "First-time entry friendly: build a 3-page picture story with AI illustration + voiceover."
+      },
+      competitionDate: "2026-05-25",
+      registrationDeadline: "2026-05-20",
+      prizes: {
+        zh: "全员可获作品电子合集；优秀作品收录到 MindDo 课程示例库。",
+        en: "Everyone gets a digital anthology; standout works are added to MindDo's curriculum library."
+      },
+      organizer: "MindDo",
+      cta: ""
+    }
+  ];
+
+  function getCompetitions() {
+    return COMPETITION_CATALOG.slice().sort(function (a, b) {
+      return new Date(a.competitionDate || 0) - new Date(b.competitionDate || 0);
+    });
+  }
+  function getCompetitionsForStudent(studentId) {
+    var lvl = studentId ? getStudentLevel(studentId) : "";
+    var canon = lvl ? canonicalLevel(lvl) : "";
+    var all = getCompetitions();
+    if (!canon) return all;
+    return all.map(function (c) {
+      var match = (c.levels || []).indexOf(canon) !== -1;
+      return Object.assign({}, c, { recommended: match });
+    });
+  }
   function saveClassOfferings(list) {
     if (!Array.isArray(list)) return null;
     writeJson(KEYS.offerings, list);
@@ -1793,6 +1871,8 @@
     seedDemoData: seedDemoData,
     mockPaymentForCurrentStudent: mockPaymentForCurrentStudent,
     getClassOfferings: getClassOfferings,
+    getCompetitions: getCompetitions,
+    getCompetitionsForStudent: getCompetitionsForStudent,
     saveClassOfferings: saveClassOfferings,
     resetClassOfferings: resetClassOfferings,
     getDefaultClassOfferings: getDefaultClassOfferings,

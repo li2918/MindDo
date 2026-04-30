@@ -851,6 +851,56 @@
     .pf-meta { font-size: 11.5px; color: var(--muted); margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap; }
     .pf-meta strong { color: var(--clay); font-weight: 700; }
 
+    /* Competitions tab — deadline reminder hero + per-competition cards. */
+    .comp-hero { padding: 14px 18px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(216,156,54,0.18), rgba(186,230,253,0.32));
+      border: 1px solid rgba(216,156,54,0.34); margin-bottom: 18px;
+      display: flex; align-items: center; gap: 12px; }
+    .comp-hero-icon { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+      background: rgba(216,156,54,0.24); color: #8a5d11;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 800; }
+    .comp-hero-text { display: grid; gap: 2px; }
+    .comp-hero-text strong { font-size: 13.5px; color: var(--clay); font-weight: 800; }
+    .comp-hero-text span { font-size: 12.5px; color: #475569; line-height: 1.5; }
+    .comp-list { display: grid; gap: 14px; }
+    .comp-card { background: #fff; border: 1px solid var(--line); border-radius: 16px;
+      padding: 20px 22px; display: grid; gap: 10px;
+      box-shadow: 0 6px 16px rgba(15,23,42,0.04); transition: 0.15s; }
+    .comp-card:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(15,23,42,0.08); border-color: rgba(14,165,233,0.32); }
+    .comp-card.recommended { border-color: rgba(216,156,54,0.5); }
+    .comp-card.recommended::before { content: "★"; position: absolute; }
+    .comp-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .comp-card-headtext { display: grid; gap: 4px; min-width: 0; }
+    .comp-card-cat { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-deep); }
+    .comp-card-name { font-size: 16px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; line-height: 1.3; }
+    .comp-card-deadline { display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 800;
+      letter-spacing: 0.02em; white-space: nowrap; flex-shrink: 0; }
+    .comp-card-deadline.soon { background: rgba(196,106,77,0.14); color: var(--danger); border: 1px solid rgba(196,106,77,0.32); }
+    .comp-card-deadline.warn { background: rgba(216,156,54,0.16); color: #8a5d11; border: 1px solid rgba(216,156,54,0.34); }
+    .comp-card-deadline.normal { background: rgba(186,230,253,0.32); color: #0b4d70; border: 1px solid rgba(14,165,233,0.32); }
+    .comp-card-deadline.passed { background: #f1f5f9; color: var(--muted); border: 1px solid var(--line); }
+    .comp-card-summary { font-size: 13px; color: #334155; line-height: 1.65; }
+    .comp-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; padding: 10px 12px;
+      background: rgba(240,249,255,0.6); border: 1px solid rgba(30,58,95,0.08); border-radius: 10px; font-size: 12.5px; }
+    @media (max-width: 540px) { .comp-card-grid { grid-template-columns: 1fr; } }
+    .comp-card-grid .k { color: var(--muted); font-weight: 700; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; padding-top: 2px; }
+    .comp-card-grid .v { color: var(--clay); font-weight: 700; }
+    .comp-card-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .comp-card-tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+      background: #f1f5f9; color: #475569; }
+    .comp-card-tag.match { background: rgba(110,143,87,0.16); color: #4f6f38; border: 1px solid rgba(111,143,87,0.34); }
+    .comp-card-cta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .comp-card-cta a { display: inline-flex; align-items: center; padding: 8px 16px; border-radius: 999px;
+      font-size: 12.5px; font-weight: 700; text-decoration: none; transition: 0.12s; }
+    .comp-card-cta .comp-cta-primary {
+      background: linear-gradient(135deg,#bae6fd,var(--gold)); color: #0b2540;
+      border: 1px solid rgba(14,165,233,0.4); }
+    .comp-card-cta .comp-cta-primary:hover { transform: translateY(-1px); }
+    .comp-card-cta .comp-cta-ghost { background: transparent; color: var(--clay); border: 1px solid var(--line); }
+    .comp-card-cta .comp-cta-ghost:hover { background: #f1f5f9; }
+
     /* Membership tab — current tier card + upgrade options grid */
     .upgrade-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
     .upgrade-card { background: #fff; border: 1px solid var(--line); border-radius: 16px;
@@ -1262,6 +1312,9 @@
         <button type="button" class="sidebar-item" data-tab="learning" role="tab">
           <span class="si-icon" aria-hidden="true">◐</span><span data-i18n="tabLearning"></span>
         </button>
+        <button type="button" class="sidebar-item" data-tab="competitions" role="tab">
+          <span class="si-icon" aria-hidden="true">🏆</span><span data-i18n="tabCompetitions"></span>
+        </button>
         <button type="button" class="sidebar-item" data-tab="feedback" role="tab">
           <span class="si-icon" aria-hidden="true">💬</span><span data-i18n="tabFeedback"></span>
           <span class="tab-pill" data-tab-pill="feedback" hidden>0</span>
@@ -1450,6 +1503,21 @@
               <span class="snap-link" data-i18n="snapAssessCta"></span>
             </a>
           </div>
+        </section>
+
+        <!-- 3.4. COMPETITIONS — upcoming AI / coding contests, with deadline reminders. -->
+        <section class="dash-section" data-tab-panel="competitions" role="tabpanel" aria-label="Competitions">
+          <div class="comp-hero" id="compHero" hidden></div>
+          <article class="panel" id="compListPanel">
+            <div class="panel-head-row">
+              <div>
+                <h2 data-i18n="compTitle"></h2>
+                <p class="panel-sub muted" data-i18n="compSub" style="margin-top:4px;"></p>
+              </div>
+              <span id="compCount" class="portfolio-count" hidden></span>
+            </div>
+            <div id="compList"></div>
+          </article>
         </section>
 
         <!-- 3.5. FEEDBACK (read-only for parents — teacher-to-student notes) -->
@@ -1881,6 +1949,25 @@
           tabSchedule: "课程安排",
           tabLearning: "学习记录",
           tabFeedback: "课堂反馈",
+          tabCompetitions: "竞赛",
+          compTitle: "近期 AI 与编程竞赛",
+          compSub: "按报名截止日期排序，与孩子等级匹配的竞赛会有「推荐」标记。",
+          compEmpty: "暂无近期竞赛安排，新赛事会在这里第一时间推送。",
+          compHeroFmt: "下一个报名截止：{name}（{daysLeft}）",
+          compHeroEmpty: "近期没有迫近的报名截止。",
+          compCountFmt: "共 {n} 项",
+          compRecommended: "推荐适配",
+          compRowDeadline: "报名截止",
+          compRowEvent: "竞赛日期",
+          compRowOrganizer: "主办",
+          compRowPrizes: "奖励",
+          compDeadlineSoon: "{n} 天后截止",
+          compDeadlineToday: "今天截止",
+          compDeadlineTomorrow: "明天截止",
+          compDeadlineDays: "{n} 天后截止",
+          compDeadlinePassed: "已截止",
+          compCtaRegister: "立即报名 →",
+          compCtaDetails: "查看详情",
           tabProfile: "课程资料",
           curriculumEyebrow: "课程资料",
           curriculumTitle: "课程教材与学习资源",
@@ -2224,6 +2311,25 @@
           tabSchedule: "Schedule",
           tabLearning: "Learning",
           tabFeedback: "Class Feedback",
+          tabCompetitions: "Competitions",
+          compTitle: "Upcoming AI & Coding Contests",
+          compSub: "Sorted by registration deadline. Contests matching your child's level are tagged \"Recommended\".",
+          compEmpty: "No competitions on the calendar right now. New contests will surface here automatically.",
+          compHeroFmt: "Next deadline: {name} ({daysLeft})",
+          compHeroEmpty: "No deadlines coming up soon.",
+          compCountFmt: "{n} contests",
+          compRecommended: "Recommended",
+          compRowDeadline: "Register By",
+          compRowEvent: "Event Date",
+          compRowOrganizer: "Organizer",
+          compRowPrizes: "Prizes",
+          compDeadlineSoon: "Closes in {n} days",
+          compDeadlineToday: "Closes today",
+          compDeadlineTomorrow: "Closes tomorrow",
+          compDeadlineDays: "Closes in {n} days",
+          compDeadlinePassed: "Closed",
+          compCtaRegister: "Register →",
+          compCtaDetails: "Details",
           tabProfile: "Course Materials",
           curriculumEyebrow: "Course Materials",
           curriculumTitle: "Curriculum & Learning Resources",
@@ -3457,6 +3563,133 @@
             + "</div>";
         })();
 
+        // Competitions tab — surface upcoming AI / coding contests with
+        // a deadline-aware reminder and per-card register CTA.
+        (function () {
+          var listEl = document.getElementById("compList");
+          var heroEl = document.getElementById("compHero");
+          var countEl = document.getElementById("compCount");
+          if (!listEl) return;
+
+          function fmtDate(iso) {
+            if (!iso) return "—";
+            try {
+              return new Date(iso).toLocaleDateString(lang === "en" ? "en-US" : "zh-CN",
+                { year: "numeric", month: "short", day: "numeric", weekday: "short" });
+            } catch (_) { return iso; }
+          }
+          function pickLang(field) {
+            if (field == null) return "";
+            if (typeof field === "string") return field;
+            return field[lang === "en" ? "en" : "zh"] || field.zh || field.en || "";
+          }
+
+          var today = new Date(); today.setHours(0, 0, 0, 0);
+          var items = (flow && flow.getCompetitionsForStudent && current.studentId)
+            ? flow.getCompetitionsForStudent(current.studentId)
+            : (flow && flow.getCompetitions ? flow.getCompetitions() : []);
+
+          // Compute deadline status per item; sort by upcoming deadline.
+          items = items.map(function (c) {
+            var d = c.registrationDeadline ? new Date(c.registrationDeadline) : null;
+            if (d) d.setHours(0, 0, 0, 0);
+            var diffDays = d ? Math.round((d - today) / 86400000) : null;
+            return Object.assign({}, c, { _deadline: d, _diff: diffDays });
+          }).sort(function (a, b) {
+            // Future deadlines first (asc); past deadlines fall to the end.
+            var aPast = a._diff != null && a._diff < 0;
+            var bPast = b._diff != null && b._diff < 0;
+            if (aPast !== bPast) return aPast ? 1 : -1;
+            return (a._diff == null ? 9999 : a._diff) - (b._diff == null ? 9999 : b._diff);
+          });
+
+          function deadlineLabel(diff) {
+            if (diff == null) return "";
+            if (diff < 0) return t.compDeadlinePassed || "Closed";
+            if (diff === 0) return t.compDeadlineToday || "Today";
+            if (diff === 1) return t.compDeadlineTomorrow || "Tomorrow";
+            return (t.compDeadlineDays || "{n} days").replace("{n}", diff);
+          }
+          function deadlineClass(diff) {
+            if (diff == null || diff < 0) return "passed";
+            if (diff <= 3) return "soon";
+            if (diff <= 7) return "warn";
+            return "normal";
+          }
+
+          // Hero strip: highlight the soonest non-passed deadline so
+          // parents see the most urgent action up top.
+          if (heroEl) {
+            var nextDue = items.filter(function (c) { return c._diff != null && c._diff >= 0; })[0];
+            if (nextDue) {
+              var rec = nextDue.recommended ? " ★ " : "";
+              var heroText = (t.compHeroFmt || "Next deadline: {name} ({daysLeft})")
+                .replace("{name}", rec + pickLang(nextDue.name))
+                .replace("{daysLeft}", deadlineLabel(nextDue._diff));
+              heroEl.innerHTML = "<span class=\"comp-hero-icon\" aria-hidden=\"true\">⏰</span>"
+                + "<div class=\"comp-hero-text\">"
+                +   "<strong>" + escHTML(heroText) + "</strong>"
+                +   "<span>" + escHTML(pickLang(nextDue.summary)) + "</span>"
+                + "</div>";
+              heroEl.hidden = false;
+            } else {
+              heroEl.innerHTML = "<span class=\"comp-hero-icon\" aria-hidden=\"true\">⏰</span>"
+                + "<div class=\"comp-hero-text\"><strong>" + escHTML(t.compHeroEmpty) + "</strong></div>";
+              heroEl.hidden = items.length === 0;
+            }
+          }
+
+          if (countEl) {
+            if (items.length) {
+              countEl.textContent = (t.compCountFmt || "{n}").replace("{n}", items.length);
+              countEl.hidden = false;
+            } else countEl.hidden = true;
+          }
+
+          if (!items.length) {
+            listEl.innerHTML = "<div class=\"portfolio-empty\">" + escHTML(t.compEmpty) + "</div>";
+            return;
+          }
+
+          listEl.innerHTML = "<div class=\"comp-list\">" + items.map(function (c) {
+            var deadlineCls = deadlineClass(c._diff);
+            var deadlineText = deadlineLabel(c._diff);
+            var levels = (c.levels || []).map(function (lv) {
+              return "<span class=\"comp-card-tag\">" + escHTML(lv) + "</span>";
+            });
+            if (c.recommended) {
+              levels.unshift("<span class=\"comp-card-tag match\">★ " + escHTML(t.compRecommended) + "</span>");
+            }
+            var ctas = [];
+            if (c.cta) {
+              ctas.push("<a class=\"comp-cta-primary\" href=\"" + escHTML(c.cta) + "\" target=\"_blank\" rel=\"noopener\">"
+                + escHTML(t.compCtaRegister) + "</a>");
+            }
+            return "<article class=\"comp-card" + (c.recommended ? " recommended" : "") + "\">"
+              + "<div class=\"comp-card-head\">"
+              +   "<div class=\"comp-card-headtext\">"
+              +     "<span class=\"comp-card-cat\">" + escHTML(pickLang(c.category)) + "</span>"
+              +     "<h3 class=\"comp-card-name\">" + escHTML(pickLang(c.name)) + "</h3>"
+              +   "</div>"
+              +   "<span class=\"comp-card-deadline " + deadlineCls + "\">" + escHTML(deadlineText) + "</span>"
+              + "</div>"
+              + "<p class=\"comp-card-summary\">" + escHTML(pickLang(c.summary)) + "</p>"
+              + "<div class=\"comp-card-tags\">" + levels.join("") + "</div>"
+              + "<div class=\"comp-card-grid\">"
+              +   "<span class=\"k\">" + escHTML(t.compRowDeadline) + "</span>"
+              +   "<span class=\"v\">" + escHTML(fmtDate(c.registrationDeadline)) + "</span>"
+              +   "<span class=\"k\">" + escHTML(t.compRowEvent) + "</span>"
+              +   "<span class=\"v\">" + escHTML(fmtDate(c.competitionDate)) + "</span>"
+              +   "<span class=\"k\">" + escHTML(t.compRowOrganizer) + "</span>"
+              +   "<span class=\"v\">" + escHTML(c.organizer || "—") + "</span>"
+              +   "<span class=\"k\">" + escHTML(t.compRowPrizes) + "</span>"
+              +   "<span class=\"v\">" + escHTML(pickLang(c.prizes)) + "</span>"
+              + "</div>"
+              + (ctas.length ? "<div class=\"comp-card-cta\">" + ctas.join("") + "</div>" : "")
+              + "</article>";
+          }).join("") + "</div>";
+        })();
+
         // Project portfolio (Learning tab) — list the active student's
         // featured work with category, summary, tags, and meta. Empty state
         // explains that teacher publishes projects after each stage.
@@ -3969,7 +4202,7 @@
       // active state. Active tab persists per session.
       (function () {
         var TAB_KEY = "minddo_acct_active_tab";
-        var KNOWN_TABS = ["overview", "enroll", "billing", "schedule", "learning", "feedback", "profile", "settings"];
+        var KNOWN_TABS = ["overview", "enroll", "billing", "schedule", "learning", "competitions", "feedback", "profile", "settings"];
         function setActiveTab(key) {
           if (KNOWN_TABS.indexOf(key) === -1) key = "overview";
           document.querySelectorAll("[data-tab]").forEach(function (btn) {
