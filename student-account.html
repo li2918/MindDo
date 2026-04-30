@@ -4787,11 +4787,12 @@
           var titleEl = document.getElementById("topbarPageTitle");
           if (titleEl && t[labelKey]) titleEl.textContent = t[labelKey];
           try { sessionStorage.setItem(TAB_KEY, key); } catch (_) {}
-          // Settings is account-management surface — the family-members
-          // kid switcher above the panels isn't relevant there. Hide it
-          // via a body class; the family panel comes back automatically
-          // on any other tab.
-          document.body.classList.toggle("minddo-hide-family-panel", key === "settings");
+          // Hide the family-members kid switcher on tabs where it isn't
+          // relevant: Settings (account-level), Referrals (parent-level
+          // share-and-earn), Curriculum (catalog content not pivoted by
+          // student). Other tabs keep the panel.
+          var FAMILY_HIDDEN_TABS = ["settings", "referrals", "profile"];
+          document.body.classList.toggle("minddo-hide-family-panel", FAMILY_HIDDEN_TABS.indexOf(key) >= 0);
           // If the activated tab carries a badge, mark its content as seen
           // — both clears the pill and prevents the count from re-appearing
           // until something genuinely new is added.
