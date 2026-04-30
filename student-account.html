@@ -3296,7 +3296,7 @@
           document.title = (t.guardianPageTag || t.title) + " | MindDo";
           if (heroViewing) {
             if (current.studentId && (current.studentName || current.name)) {
-              var gradeBit = current.grade ? " · " + t.familyGradeLabel.replace("{grade}", current.grade) : "";
+              var gradeBit = current.grade ? " · " + t.familyGradeLabel.replace("{grade}", String(current.grade).replace(/年级$/, "")) : "";
               var tmpl = kids.length > 1 ? t.guardianViewingMulti : t.guardianViewingSingle;
               heroViewing.innerHTML = tmpl
                 .replace("{child}", escHTML(current.studentName || current.name))
@@ -3339,7 +3339,7 @@
               } else {
                 lastLine = t.familyNoActivity;
               }
-              var gradeTxt = k.grade ? (t.familyGradeLabel || "Grade {grade}").replace("{grade}", k.grade) : "";
+              var gradeTxt = k.grade ? (t.familyGradeLabel || "Grade {grade}").replace("{grade}", String(k.grade).replace(/年级$/, "")) : "";
               return "<button type=\"button\" class=\"kid-card" + (isActive ? " active" : "") + "\" data-switch-sid=\"" + escHTML(k.studentId) + "\">"
                 + "<div class=\"kid-top\">"
                 +   "<span class=\"kid-name\">" + escHTML(k.name || k.studentId) + "</span>"
@@ -4452,7 +4452,7 @@
           stack.innerHTML = rosterIds.map(function (sid) {
             var stu = (flow && flow.findStudentById) ? (flow.findStudentById(sid) || {}) : {};
             var displayName = stu.name || (sid === current.studentId ? (current.studentName || current.name) : sid);
-            var gradeBit = stu.grade ? (t.familyGradeLabel || "{grade} 年级").replace("{grade}", stu.grade) : "";
+            var gradeBit = stu.grade ? (t.familyGradeLabel || "{grade} 年级").replace("{grade}", String(stu.grade).replace(/年级$/, "")) : "";
 
             var kidMems = allMemberships.filter(function (m) {
               return String(m && m.studentId || "") === String(sid);
