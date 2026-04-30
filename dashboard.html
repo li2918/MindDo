@@ -476,6 +476,105 @@
       .footer-inner { grid-template-columns: 1fr; }
       .footer { padding: 48px 24px 28px; }
     }
+
+    /* PORTAL SHELL — mirrors student-account so ops pages share visual
+       language. Slim white topbar + 240px sidebar + scrolling main. */
+    body { background: #f8fafc; }
+    .topbar { position: sticky; top: 0; z-index: 100; height: 64px;
+      background: #fff; border-bottom: 1px solid var(--line);
+      display: grid; grid-template-columns: 240px 1fr auto; align-items: center;
+      padding: 0 28px 0 0; }
+    .topbar-brand { display: flex; align-items: center; gap: 10px; padding: 0 24px;
+      height: 100%; border-right: 1px solid var(--line); text-decoration: none; }
+    .topbar-brand img { width: 32px; height: 32px; object-fit: contain; }
+    .topbar-brand .b-name { font-size: 17px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .topbar-page-title { font-size: 14px; color: #475569; font-weight: 600; padding-left: 28px; }
+    .topbar-right { display: flex; align-items: center; gap: 14px; position: relative; }
+    .user-trigger { display: inline-flex; align-items: center; gap: 10px;
+      background: transparent; border: 1px solid transparent;
+      padding: 6px 14px 6px 6px; border-radius: 999px; cursor: pointer;
+      font-family: inherit; font-size: 14px; color: var(--clay); font-weight: 700;
+      transition: 0.15s; }
+    .user-trigger:hover, .user-trigger.open { background: #f1f5f9; border-color: var(--line); }
+    .user-avatar { width: 32px; height: 32px; border-radius: 999px;
+      background: linear-gradient(135deg,#14294a,#0ea5e9); color: #fff;
+      font-size: 12px; font-weight: 800; letter-spacing: 0.04em;
+      display: inline-flex; align-items: center; justify-content: center; }
+    .user-trigger .caret { font-size: 12px; color: #64748b; transition: transform 0.15s; }
+    .user-trigger.open .caret { transform: rotate(180deg); }
+    .user-menu { position: absolute; top: calc(100% + 6px); right: 0;
+      width: 260px; background: #fff; border: 1px solid var(--line);
+      border-radius: 14px; box-shadow: 0 18px 44px rgba(15,23,42,0.12);
+      padding: 8px; display: none; z-index: 200; }
+    .user-menu.open { display: block; }
+    .user-menu-head { display: flex; gap: 12px; align-items: center; padding: 12px;
+      border-bottom: 1px solid var(--line); margin-bottom: 6px; }
+    .user-menu-head .um-text { display: grid; gap: 2px; }
+    .user-menu-head .um-name { font-size: 14px; font-weight: 800; color: var(--clay); }
+    .user-menu-head .um-role { font-size: 12px; color: #64748b; }
+    .user-menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border-radius: 10px; background: transparent; border: none;
+      color: var(--clay); font: inherit; font-size: 13.5px; font-weight: 600;
+      cursor: pointer; width: 100%; text-align: left; text-decoration: none;
+      transition: 0.12s; font-family: inherit; }
+    .user-menu-item:hover { background: #f1f5f9; }
+    .user-menu-item .um-icon { width: 18px; height: 18px; color: #64748b; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center; }
+    .user-menu hr { border: none; border-top: 1px solid var(--line); margin: 6px 4px; }
+    .user-menu-lang { display: flex; gap: 4px; padding: 4px; background: #f1f5f9;
+      border-radius: 999px; margin: 6px 4px 4px; }
+    .user-menu-lang button { all: unset; flex: 1; text-align: center; padding: 6px 12px;
+      border-radius: 999px; font-size: 12px; font-weight: 700; color: #64748b;
+      cursor: pointer; transition: 0.12s; font-family: inherit; }
+    .user-menu-lang button.active { background: #fff; color: var(--clay); box-shadow: 0 1px 3px rgba(15,23,42,0.08); }
+
+    .portal-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); }
+    .sidebar { background: #fff; border-right: 1px solid var(--line);
+      padding: 24px 14px; display: flex; flex-direction: column; gap: 18px; }
+    .sidebar-section { display: flex; flex-direction: column; gap: 2px; }
+    .sidebar-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+      color: #94a3b8; padding: 0 12px 4px; }
+    .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 9px 12px;
+      border-radius: 8px; background: transparent; border: none; color: #334155;
+      font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+      width: 100%; text-align: left; text-decoration: none; transition: 0.12s; font-family: inherit; }
+    .sidebar-item:hover { background: #f1f5f9; color: var(--clay); }
+    .sidebar-item.active { background: #e2e8f0; color: var(--clay); font-weight: 700; }
+    .sidebar-item .si-icon { width: 18px; height: 18px; color: #64748b; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center; }
+    .sidebar-item.active .si-icon { color: var(--clay); }
+    .sidebar-item .tab-pill {
+      margin-left: auto; display: inline-flex; min-width: 18px;
+      padding: 1px 7px; border-radius: 999px; font-size: 10px; font-weight: 800;
+      align-items: center; justify-content: center;
+      background: rgba(196,106,77,0.14); color: var(--danger);
+      border: 1px solid rgba(196,106,77,0.32);
+    }
+    .sidebar-item.active .tab-pill { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+    .portal-main { padding: 28px 36px 80px; min-width: 0; overflow-x: hidden; }
+    .portal-main-inner { max-width: 1200px; margin: 0 auto; }
+    .ops-toolbar { display: flex; align-items: center; justify-content: space-between;
+      gap: 14px; flex-wrap: wrap; margin-bottom: 22px;
+      padding: 12px 16px; background: #fff; border: 1px solid var(--line);
+      border-radius: 14px; box-shadow: 0 4px 12px rgba(15,23,42,0.04); }
+    .ops-toolbar .campus-chip { background: transparent; border: 1px solid var(--line); }
+    .ops-toolbar .campus-chip .cc-select { font-size: 12.5px; }
+    .ops-toolbar .toolbar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    @media (max-width: 880px) {
+      .topbar { grid-template-columns: auto 1fr auto; padding: 0 16px 0 0; }
+      .topbar-brand { padding: 0 16px; }
+      .topbar-page-title { display: none; }
+      .user-trigger .um-greeting { display: none; }
+      .portal-layout { grid-template-columns: 1fr; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--line);
+        flex-direction: row; overflow-x: auto; padding: 10px 12px; gap: 8px; }
+      .sidebar-section { flex-direction: row; gap: 4px; flex-wrap: nowrap; }
+      .sidebar-label { display: none; }
+      .sidebar-item { white-space: nowrap; padding: 8px 12px; font-size: 13px; }
+      .portal-main { padding: 22px 18px 60px; }
+    }
   </style>
   <link rel="stylesheet" href="assets/minddo-theme.css" />
   <link rel="stylesheet" href="assets/minddo-responsive.css" />
@@ -483,65 +582,102 @@
 <body>
   <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
 
-  <nav class="navbar">
-    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+  <header class="topbar" role="banner">
+    <a class="topbar-brand" href="index.html" aria-label="MindDo home">
       <img src="assets/logo.png" alt="MindDo logo" />
-      <span class="nav-brand-name">MindDo</span>
+      <span class="b-name">MindDo</span>
     </a>
-    <ul class="nav-menu">
-      <li><a href="index.html"><span data-lang="zh">首页</span><span data-lang="en">Home</span></a></li>
-    </ul>
-    <div class="nav-right">
-      <div class="lang-switcher" data-lang-switcher>
-        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
-          <span class="lang-trigger-label">中文</span>
-          <span class="lang-caret" aria-hidden="true">▾</span>
-        </button>
-        <div class="lang-menu" role="listbox">
-          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
-          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+    <span class="topbar-page-title" id="topbarPageTitle" data-i18n="tabOverview"></span>
+    <div class="topbar-right">
+      <button type="button" class="user-trigger" id="userTrigger" aria-haspopup="menu" aria-expanded="false">
+        <span class="user-avatar">OP</span>
+        <span class="um-greeting"><span data-lang="zh">运营</span><span data-lang="en">Operations</span></span>
+        <span class="caret" aria-hidden="true">▾</span>
+      </button>
+      <div class="user-menu" id="userMenu" role="menu" aria-labelledby="userTrigger">
+        <div class="user-menu-head">
+          <span class="user-avatar">OP</span>
+          <div class="um-text">
+            <span class="um-name"><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></span>
+            <span class="um-role"><span data-lang="zh">内部账户</span><span data-lang="en">Internal account</span></span>
+          </div>
         </div>
-      </div>
-      <a class="nav-login" href="login.html"><span data-lang="zh">登录</span><span data-lang="en">Log In</span></a>
-      <a class="btn-primary" href="trial.html"><span data-lang="zh">新试课</span><span data-lang="en">New Trial</span></a>
-    </div>
-  </nav>
-
-  <!-- Slim hero: title + campus chip + one-line subtitle -->
-  <header class="page-hero page-hero--slim">
-    <div class="page-hero-inner hero-slim-inner">
-      <div class="hero-slim-text">
-        <div class="page-tag"><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></div>
-        <h1 data-i18n="title"></h1>
-        <p class="hero-sub"><span data-lang="zh">实时查看学员注册、付费、评估和申请数据。</span><span data-lang="en">Monitor registrations, payments, assessments, and requests in real time.</span></p>
-      </div>
-      <div class="campus-chip">
-        <span class="cc-label" data-i18n="activeCampusLabel"></span>
-        <select id="campusFilter" class="cc-select"></select>
+        <a class="user-menu-item" href="trial.html">
+          <span class="um-icon" aria-hidden="true">＋</span>
+          <span><span data-lang="zh">新建试课</span><span data-lang="en">New Trial</span></span>
+        </a>
+        <a class="user-menu-item" href="index.html">
+          <span class="um-icon" aria-hidden="true">⌂</span>
+          <span><span data-lang="zh">回到首页</span><span data-lang="en">Home</span></span>
+        </a>
+        <a class="user-menu-item" href="login.html">
+          <span class="um-icon" aria-hidden="true">⎋</span>
+          <span><span data-lang="zh">退出登录</span><span data-lang="en">Log Out</span></span>
+        </a>
+        <hr />
+        <div class="user-menu-lang" data-lang-switcher>
+          <button type="button" class="lang-btn active" data-set-lang="zh-CN">中文</button>
+          <button type="button" class="lang-btn" data-set-lang="en">English</button>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Sticky tab bar: tabs on the left, date-range + refresh on the right -->
-  <div class="tab-bar-wrap">
-    <div class="content-inner tab-bar">
-      <nav class="dash-tabs" id="dashTabs" role="tablist">
-        <button type="button" class="dash-tab active" data-tab="overview" role="tab"><span data-i18n="tabOverview"></span></button>
-        <button type="button" class="dash-tab" data-tab="enrollment" role="tab"><span data-i18n="tabEnrollment"></span><span class="tab-pill" id="enrollmentBadge" hidden>0</span></button>
-        <button type="button" class="dash-tab" data-tab="teaching" role="tab"><span data-i18n="tabTeaching"></span></button>
-        <button type="button" class="dash-tab" data-tab="finance" role="tab"><span data-i18n="tabFinance"></span></button>
-        <button type="button" class="dash-tab" data-tab="requests" role="tab"><span data-i18n="tabRequests"></span><span class="tab-pill" id="requestsBadge" hidden>0</span></button>
-        <button type="button" class="dash-tab" data-tab="settings" role="tab"><span data-i18n="tabSettings"></span></button>
-      </nav>
-      <div class="tab-bar-actions">
-        <div class="range-group" id="rangeGroup"></div>
-        <button class="btn btn-refresh" id="refreshBtn" data-i18n="refresh" aria-label="Refresh"></button>
+  <div class="portal-layout">
+    <aside class="sidebar" aria-label="Operations Sections">
+      <div class="sidebar-section" id="dashTabs" role="tablist">
+        <span class="sidebar-label"><span data-lang="zh">运营</span><span data-lang="en">Operations</span></span>
+        <button type="button" class="sidebar-item active" data-tab="overview" role="tab">
+          <span class="si-icon" aria-hidden="true">⌂</span><span data-i18n="tabOverview"></span>
+        </button>
+        <button type="button" class="sidebar-item" data-tab="enrollment" role="tab">
+          <span class="si-icon" aria-hidden="true">◉</span><span data-i18n="tabEnrollment"></span>
+          <span class="tab-pill" id="enrollmentBadge" hidden>0</span>
+        </button>
+        <button type="button" class="sidebar-item" data-tab="teaching" role="tab">
+          <span class="si-icon" aria-hidden="true">◐</span><span data-i18n="tabTeaching"></span>
+        </button>
+        <button type="button" class="sidebar-item" data-tab="finance" role="tab">
+          <span class="si-icon" aria-hidden="true">$</span><span data-i18n="tabFinance"></span>
+        </button>
+        <button type="button" class="sidebar-item" data-tab="requests" role="tab">
+          <span class="si-icon" aria-hidden="true">✎</span><span data-i18n="tabRequests"></span>
+          <span class="tab-pill" id="requestsBadge" hidden>0</span>
+        </button>
+        <button type="button" class="sidebar-item" data-tab="settings" role="tab">
+          <span class="si-icon" aria-hidden="true">⚙</span><span data-i18n="tabSettings"></span>
+        </button>
       </div>
-    </div>
-  </div>
+      <div class="sidebar-section">
+        <span class="sidebar-label"><span data-lang="zh">直达</span><span data-lang="en">Quick Links</span></span>
+        <a class="sidebar-item" href="student-management.html">
+          <span class="si-icon" aria-hidden="true">👥</span><span data-lang="zh">学员管理</span><span data-lang="en">Students</span>
+        </a>
+        <a class="sidebar-item" href="new-trials.html">
+          <span class="si-icon" aria-hidden="true">📝</span><span data-lang="zh">新试课</span><span data-lang="en">New Trials</span>
+        </a>
+        <a class="sidebar-item" href="request-center.html">
+          <span class="si-icon" aria-hidden="true">📥</span><span data-lang="zh">申请中心</span><span data-lang="en">Requests</span>
+        </a>
+        <a class="sidebar-item" href="email-outbox.html">
+          <span class="si-icon" aria-hidden="true">📧</span><span data-lang="zh">邮件发件箱</span><span data-lang="en">Mail Outbox</span>
+        </a>
+      </div>
+    </aside>
 
-  <div class="page-content">
-    <div class="content-inner">
+    <main id="main" class="portal-main">
+      <div class="portal-main-inner">
+
+        <div class="ops-toolbar" role="region" aria-label="Filters">
+          <div class="campus-chip">
+            <span class="cc-label" data-i18n="activeCampusLabel"></span>
+            <select id="campusFilter" class="cc-select"></select>
+          </div>
+          <div class="toolbar-actions">
+            <div class="range-group" id="rangeGroup"></div>
+            <button class="btn btn-refresh" id="refreshBtn" data-i18n="refresh" aria-label="Refresh"></button>
+          </div>
+        </div>
 
       <!-- ========== Overview ========== -->
       <section class="dash-panel active" data-tab-panel="overview" role="tabpanel">
@@ -768,7 +904,8 @@
         </section>
       </section>
 
-    </div>
+      </div>
+    </main>
   </div>
 
   <footer class="footer">
@@ -1646,6 +1783,13 @@
           panel.classList.toggle("active", match);
           panel.hidden = !match;
         });
+        // Mirror the active tab label into the topbar page title.
+        var titleEl = document.getElementById("topbarPageTitle");
+        if (titleEl) {
+          var labelKey = "tab" + key.charAt(0).toUpperCase() + key.slice(1);
+          var dict = (state && state.lang) ? I18N[state.lang] : I18N["zh-CN"];
+          if (dict && dict[labelKey]) titleEl.textContent = dict[labelKey];
+        }
         try { localStorage.setItem("minddo_dashboard_tab", key); } catch (_) {}
       }
       if (dashTabs) {
@@ -1660,6 +1804,31 @@
         });
         setActiveTab(savedTab);
       }
+
+      // Top-right user dropdown — toggle on click, close on outside / Esc.
+      (function () {
+        var trig = document.getElementById("userTrigger");
+        var menu = document.getElementById("userMenu");
+        if (!trig || !menu) return;
+        function close() { menu.classList.remove("open"); trig.classList.remove("open"); trig.setAttribute("aria-expanded", "false"); }
+        function open() { menu.classList.add("open"); trig.classList.add("open"); trig.setAttribute("aria-expanded", "true"); }
+        trig.addEventListener("click", function (e) {
+          e.stopPropagation();
+          menu.classList.contains("open") ? close() : open();
+        });
+        document.addEventListener("click", function (e) {
+          if (!menu.classList.contains("open")) return;
+          if (e.target.closest("#userMenu") || e.target.closest("#userTrigger")) {
+            // Item inside menu was clicked — close after the action runs.
+            if (e.target.closest(".user-menu-item")) close();
+            return;
+          }
+          close();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && menu.classList.contains("open")) close();
+        });
+      })();
 
       // ---------- Course Settings tab ----------
       var settingsWeekdayEl = document.getElementById("settingsWeekday");
