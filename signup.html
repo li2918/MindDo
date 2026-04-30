@@ -372,6 +372,7 @@
       var paramSid = (urlParams.get("sid") || "").trim();
       var paramEmail = (urlParams.get("email") || "").trim();
       var paramName = (urlParams.get("name") || "").trim();
+      var paramRef = (urlParams.get("ref") || "").trim().toUpperCase();
       if ((paramSid || paramEmail) && window.MindDoFlow && window.MindDoFlow.setCurrentStudent) {
         var seed = {};
         if (paramSid) seed.studentId = paramSid;
@@ -480,6 +481,9 @@
       }
 
       function saveAndLogin(payload, provider) {
+        // Carry forward any ?ref=CODE from the URL so the new account is
+        // attributed to the inviting parent's referral pool.
+        if (paramRef) payload = Object.assign({}, payload, { referralCode: paramRef });
         if (window.MindDoFlow && window.MindDoFlow.saveSignupUser) {
           window.MindDoFlow.saveSignupUser(payload);
         } else {

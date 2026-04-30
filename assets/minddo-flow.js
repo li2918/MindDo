@@ -19,8 +19,17 @@
     accounts: "minddo_accounts",
     inviteTokens: "minddo_invite_tokens",
     trialSlots: "minddo_trial_slots",
-    portfolio: "minddo_portfolio"
+    portfolio: "minddo_portfolio",
+    referrals: "minddo_referrals"
   };
+
+  // Reward economy. Real deployment would key these off a backend
+  // promo config; demo just uses fixed amounts.
+  var REFERRAL_REWARD_USD = 50;
+  var REFERRAL_BONUS_TIERS = [
+    { count: 3, bonus: 100, key: "tier3" },
+    { count: 5, bonus: 200, key: "tier5" }
+  ];
 
   // Role constants for the new multi-account model. A single family has one
   // primary guardian (the one that registered), optionally a second guardian,
@@ -394,6 +403,11 @@
       // Stash the accountId back onto the signup record for ops visibility.
       upsertByEmail(KEYS.signups, { email: record.email, accountId: account.accountId });
     }
+    // Referral attribution: if the signup carried a ?ref=CODE, link the
+    // new account to its inviter and progress that referral to "signed_up".
+    if (user.referralCode && record.email) {
+      attachReferralOnSignup(record.email, user.referralCode);
+    }
     return record;
   }
 
@@ -402,10 +416,15 @@
       email: payment.email
     });
 
-    return appendRecord(KEYS.payments, Object.assign({}, payment, {
+    var record = appendRecord(KEYS.payments, Object.assign({}, payment, {
       email: payment.email || current.email,
       studentId: current.studentId
     }));
+    // Referral lifecycle: a successful first payment progresses the
+    // matching referral to "paid" and unlocks the inviter's reward.
+    var emailForRef = (payment.email || current.email || "").trim();
+    if (emailForRef) markReferralPaid(emailForRef);
+    return record;
   }
 
   function saveMembershipOrder(order) {
@@ -434,6 +453,149 @@
       createdAt: new Date().toISOString()
     }, item);
     return appendRecord(KEYS.portfolio, record);
+  }
+
+  // --------- Referral program ---------
+  // Each guardian gets a deterministic 8-char code derived from their
+  // accountId. We store referral records when the parent invites a
+  // contact, then progress them through "sent" → "signed_up" → "paid"
+  // as the lifecycle events fire. Rewards are computed lazily from
+  // the records (cleaner than tracking redemptions separately).
+  function referralCodeForAccount(accountId) {
+    if (!accountId) return "";
+    // Compact, uppercase, no ambiguous chars (no I/O/0/1).
+    var alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    var hash = 0;
+    var s = String(accountId);
+    for (var i = 0; i < s.length; i++) {
+      hash = ((hash << 5) - hash + s.charCodeAt(i)) | 0;
+    }
+    var u = (hash >>> 0);
+    var out = "";
+    for (var j = 0; j < 6; j++) {
+      out += alphabet.charAt(u % alphabet.length);
+      u = Math.floor(u / alphabet.length) || (u + 1);
+    }
+    return "MD-" + out;
+  }
+  function findAccountByReferralCode(code) {
+    if (!code) return null;
+    var normCode = String(code).trim().toUpperCase();
+    var accounts = getAccounts();
+    for (var i = 0; i < accounts.length; i++) {
+      if (referralCodeForAccount(accounts[i].accountId) === normCode) {
+        return accounts[i];
+      }
+    }
+    return null;
+  }
+  function getReferrals() { return readJson(KEYS.referrals, []); }
+  function getReferralsByReferrer(accountId) {
+    if (!accountId) return [];
+    return getReferrals().filter(function (r) {
+      return r && String(r.referrerAccountId || "") === String(accountId);
+    }).sort(function (a, b) {
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    });
+  }
+  function recordReferralInvite(referrerAccountId, refereeEmail, refereeName) {
+    if (!referrerAccountId || !refereeEmail) return null;
+    var referrer = getAccounts().filter(function (a) { return a.accountId === referrerAccountId; })[0];
+    if (!referrer) return null;
+    var list = getReferrals();
+    var dup = list.filter(function (r) {
+      return String(r.referrerAccountId || "") === String(referrerAccountId)
+        && norm(r.refereeEmail) === norm(refereeEmail);
+    })[0];
+    if (dup) return dup;
+    var record = {
+      id: genId("REF"),
+      referrerAccountId: referrerAccountId,
+      referrerEmail: referrer.email || "",
+      code: referralCodeForAccount(referrerAccountId),
+      refereeEmail: refereeEmail,
+      refereeName: refereeName || "",
+      status: "sent",
+      createdAt: new Date().toISOString()
+    };
+    list.push(record);
+    writeJson(KEYS.referrals, list);
+    return record;
+  }
+  // Called from saveSignupUser when ?ref=CODE is present on the signup
+  // URL. Marks the matching invite as "signed_up", or creates a fresh
+  // referral if no prior invite was logged (e.g. parent shared the
+  // code informally without using the formal "invite" CTA).
+  function attachReferralOnSignup(refereeEmail, code) {
+    if (!refereeEmail || !code) return null;
+    var inviter = findAccountByReferralCode(code);
+    if (!inviter) return null;
+    var list = getReferrals();
+    var existing = list.filter(function (r) {
+      return String(r.referrerAccountId || "") === String(inviter.accountId)
+        && norm(r.refereeEmail) === norm(refereeEmail);
+    })[0];
+    if (existing) {
+      existing.status = (existing.status === "paid") ? existing.status : "signed_up";
+      existing.signedUpAt = existing.signedUpAt || new Date().toISOString();
+      writeJson(KEYS.referrals, list);
+      return existing;
+    }
+    var record = {
+      id: genId("REF"),
+      referrerAccountId: inviter.accountId,
+      referrerEmail: inviter.email || "",
+      code: code,
+      refereeEmail: refereeEmail,
+      refereeName: "",
+      status: "signed_up",
+      createdAt: new Date().toISOString(),
+      signedUpAt: new Date().toISOString()
+    };
+    list.push(record);
+    writeJson(KEYS.referrals, list);
+    return record;
+  }
+  function markReferralPaid(refereeEmail) {
+    if (!refereeEmail) return false;
+    var list = getReferrals();
+    var changed = false;
+    list.forEach(function (r) {
+      if (norm(r.refereeEmail) === norm(refereeEmail) && r.status !== "paid") {
+        r.status = "paid";
+        r.paidAt = new Date().toISOString();
+        changed = true;
+      }
+    });
+    if (changed) writeJson(KEYS.referrals, list);
+    return changed;
+  }
+  function getReferralRewards(accountId) {
+    if (!accountId) return { earned: 0, pending: 0, paidCount: 0, signedUpCount: 0, sentCount: 0, bonus: 0, total: 0 };
+    var refs = getReferralsByReferrer(accountId);
+    var paidCount = 0, signedUpCount = 0, sentCount = 0;
+    refs.forEach(function (r) {
+      if (r.status === "paid") paidCount++;
+      else if (r.status === "signed_up") signedUpCount++;
+      else sentCount++;
+    });
+    var earned = paidCount * REFERRAL_REWARD_USD;
+    var pending = signedUpCount * REFERRAL_REWARD_USD;
+    var bonus = 0;
+    REFERRAL_BONUS_TIERS.forEach(function (tier) {
+      if (paidCount >= tier.count) bonus += tier.bonus;
+    });
+    return {
+      earned: earned,
+      pending: pending,
+      bonus: bonus,
+      total: earned + bonus,
+      paidCount: paidCount,
+      signedUpCount: signedUpCount,
+      sentCount: sentCount,
+      perRef: REFERRAL_REWARD_USD,
+      tiers: REFERRAL_BONUS_TIERS
+    };
   }
 
   function saveFeedback(feedback) {
@@ -1191,6 +1353,20 @@
       createdAt: daysAgo(0)
     }]);
 
+    // Provision the demo guardian account up-front so the family /
+    // referral / settings tabs have a stable accountId to bind against
+    // (otherwise account creation only happens later in
+    // migrateLegacySignups, after seedDemoData returns).
+    var demoAccount = provisionGuardianPrimary({
+      email: student.email,
+      studentName: student.studentName,
+      studentId: student.studentId,
+      parentName: student.parentName,
+      phone: student.phone,
+      password: ""
+    });
+    var demoAcctId = (demoAccount && demoAccount.accountId) || "";
+
     writeJson(KEYS.portfolio, [
       {
         studentId: student.studentId,
@@ -1231,6 +1407,45 @@
         completedAt: daysAgo(7),
         createdAt: daysAgo(7),
         highlight: true
+      }
+    ]);
+
+    // Sample referrals: one paid (reward earned), one signed up (pending),
+    // one still in "sent" status. Bound to the demo account provisioned
+    // above so the parent hub can resolve them by accountId.
+    writeJson(KEYS.referrals, [
+      {
+        id: "REF-DEMO-1",
+        referrerAccountId: demoAcctId,
+        referrerEmail: student.email,
+        code: referralCodeForAccount(demoAcctId),
+        refereeEmail: "wangmom@example.com",
+        refereeName: "王女士",
+        status: "paid",
+        createdAt: daysAgo(20),
+        signedUpAt: daysAgo(15),
+        paidAt: daysAgo(10)
+      },
+      {
+        id: "REF-DEMO-2",
+        referrerAccountId: demoAcctId,
+        referrerEmail: student.email,
+        code: referralCodeForAccount(demoAcctId),
+        refereeEmail: "chen.parent@example.com",
+        refereeName: "陈先生",
+        status: "signed_up",
+        createdAt: daysAgo(8),
+        signedUpAt: daysAgo(4)
+      },
+      {
+        id: "REF-DEMO-3",
+        referrerAccountId: demoAcctId,
+        referrerEmail: student.email,
+        code: referralCodeForAccount(demoAcctId),
+        refereeEmail: "neighbor@example.com",
+        refereeName: "邻居张家",
+        status: "sent",
+        createdAt: daysAgo(2)
       }
     ]);
   }
@@ -1862,6 +2077,14 @@
     savePayment: savePayment,
     getPortfolioForStudent: getPortfolioForStudent,
     savePortfolioItem: savePortfolioItem,
+    referralCodeForAccount: referralCodeForAccount,
+    findAccountByReferralCode: findAccountByReferralCode,
+    getReferrals: getReferrals,
+    getReferralsByReferrer: getReferralsByReferrer,
+    recordReferralInvite: recordReferralInvite,
+    attachReferralOnSignup: attachReferralOnSignup,
+    markReferralPaid: markReferralPaid,
+    getReferralRewards: getReferralRewards,
     saveMembershipOrder: saveMembershipOrder,
     saveFeedback: saveFeedback,
     getScheduleRequests: getScheduleRequests,

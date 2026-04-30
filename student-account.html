@@ -901,6 +901,76 @@
     .comp-card-cta .comp-cta-ghost { background: transparent; color: var(--clay); border: 1px solid var(--line); }
     .comp-card-cta .comp-cta-ghost:hover { background: #f1f5f9; }
 
+    /* Referral tab — share-the-code hero, invite shortcuts, history */
+    .ref-rewards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; }
+    .ref-stat { background: linear-gradient(180deg, rgba(186,230,253,0.32), rgba(255,255,255,0.6));
+      border: 1px solid rgba(14,165,233,0.32); border-radius: 14px; padding: 16px 18px; display: grid; gap: 4px; }
+    .ref-stat .label { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #475569; }
+    .ref-stat .value { font-size: 24px; font-weight: 900; color: var(--clay); letter-spacing: -0.01em; line-height: 1.05; }
+    .ref-stat .sub { font-size: 11.5px; color: var(--muted); }
+    .ref-stat.gold { background: linear-gradient(180deg, rgba(216,156,54,0.22), rgba(255,255,255,0.6));
+      border-color: rgba(216,156,54,0.4); }
+    .ref-stat.gold .value { color: #8a5d11; }
+    .ref-stat.success { background: linear-gradient(180deg, rgba(110,143,87,0.22), rgba(255,255,255,0.6));
+      border-color: rgba(111,143,87,0.4); }
+    .ref-stat.success .value { color: #4f6f38; }
+
+    .ref-share-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 14px; margin-bottom: 16px; }
+    @media (max-width: 720px) { .ref-share-grid { grid-template-columns: 1fr; } }
+    .ref-code-block { display: grid; gap: 6px; }
+    .ref-code-label { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .ref-code-row { display: flex; gap: 8px; align-items: stretch; }
+    .ref-code { flex: 1; padding: 10px 14px; border-radius: 10px; background: #f1f5f9;
+      border: 1px solid var(--line); font: inherit;
+      font-family: "SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+      font-size: 16px; font-weight: 800; color: var(--clay); letter-spacing: 0.06em;
+      display: inline-flex; align-items: center; }
+    .ref-link { flex: 1; padding: 10px 14px; border-radius: 10px; background: #f1f5f9;
+      border: 1px solid var(--line); font: inherit; font-size: 12.5px; color: var(--clay); }
+    .ref-copy-btn { background: var(--clay); color: #fff; border: none; border-radius: 10px;
+      padding: 10px 16px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: 0.12s; white-space: nowrap; }
+    .ref-copy-btn:hover { background: var(--brown); }
+    .ref-copy-btn.copied { background: #4f6f38; }
+
+    .ref-share-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .ref-share-btn { background: rgba(240,249,255,0.6); border: 1px solid var(--line);
+      border-radius: 999px; padding: 8px 16px; font: inherit; font-size: 12.5px; font-weight: 700;
+      color: var(--clay); cursor: pointer; text-decoration: none; transition: 0.12s; font-family: inherit;
+      display: inline-flex; align-items: center; gap: 6px; }
+    .ref-share-btn:hover { border-color: var(--gold); background: rgba(186,230,253,0.4); transform: translateY(-1px); }
+
+    .ref-invite-details { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
+    .ref-invite-details summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--clay); padding: 6px 0; }
+    .ref-invite-form { display: grid; gap: 12px; margin-top: 10px; }
+    .ref-invite-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+    @media (max-width: 540px) { .ref-invite-grid { grid-template-columns: 1fr; } }
+    .ref-invite-form label { display: grid; gap: 5px; font-size: 11px; font-weight: 800;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .ref-invite-form input { width: 100%; border: 1px solid var(--line); background: #f8fafc;
+      color: var(--text); padding: 9px 12px; border-radius: 10px; font: inherit; font-size: 13.5px;
+      outline: none; transition: 0.15s; box-sizing: border-box; }
+    .ref-invite-form input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.15); }
+    .ref-invite-row { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+    .ref-invite-msg { font-size: 12px; line-height: 1.5; flex: 1; min-width: 0; }
+    .ref-invite-msg.error { color: var(--danger); }
+    .ref-invite-msg.success { color: var(--success); }
+
+    .ref-list { display: grid; gap: 8px; }
+    .ref-row { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center;
+      padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+    .ref-row .who { display: grid; gap: 2px; min-width: 0; }
+    .ref-row .who-name { font-size: 13.5px; font-weight: 700; color: var(--clay); }
+    .ref-row .who-email { font-size: 11.5px; color: var(--muted); word-break: break-all; }
+    .ref-row .ref-status { font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
+    .ref-status.sent { background: #f1f5f9; color: #475569; border: 1px solid var(--line); }
+    .ref-status.signed_up { background: rgba(216,156,54,0.16); color: #8a5d11; border: 1px solid rgba(216,156,54,0.34); }
+    .ref-status.paid { background: rgba(110,143,87,0.18); color: #4f6f38; border: 1px solid rgba(111,143,87,0.34); }
+    .ref-row .ref-reward { font-size: 12.5px; font-weight: 800; color: var(--clay); white-space: nowrap; }
+    .ref-row .ref-reward.pending { color: #8a5d11; }
+    .ref-row .ref-reward.muted { color: var(--muted); }
+
     /* Membership tab — current tier card + upgrade options grid */
     .upgrade-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
     .upgrade-card { background: #fff; border: 1px solid var(--line); border-radius: 16px;
@@ -1323,6 +1393,9 @@
         <button type="button" class="sidebar-item" data-tab="profile" role="tab">
           <span class="si-icon" aria-hidden="true">◉</span><span data-i18n="tabProfile"></span>
         </button>
+        <button type="button" class="sidebar-item" data-tab="referrals" role="tab">
+          <span class="si-icon" aria-hidden="true">🎁</span><span data-i18n="tabReferrals"></span>
+        </button>
         <button type="button" class="sidebar-item" data-tab="settings" role="tab">
           <span class="si-icon" aria-hidden="true">⚙</span><span data-i18n="tabSettings"></span>
         </button>
@@ -1617,6 +1690,70 @@
           </form>
           <ul id="requestHistory"></ul>
         </div>
+
+        <!-- 5.5. REFERRALS — invite-a-friend program with rewards -->
+        <section class="dash-section" data-tab-panel="referrals" role="tabpanel" aria-label="Referrals">
+          <article class="panel" id="refRewardsPanel">
+            <div class="ref-rewards" id="refRewardsBody"></div>
+          </article>
+
+          <article class="panel" id="refSharePanel">
+            <h2 data-i18n="refShareTitle"></h2>
+            <p class="panel-sub muted" data-i18n="refShareSub" style="margin-top:4px;margin-bottom:14px;"></p>
+            <div class="ref-share-grid">
+              <div class="ref-code-block">
+                <span class="ref-code-label" data-i18n="refCodeLabel"></span>
+                <div class="ref-code-row">
+                  <code class="ref-code" id="refCodeText">—</code>
+                  <button type="button" class="ref-copy-btn" id="refCopyCodeBtn" data-i18n="refCopyCode"></button>
+                </div>
+              </div>
+              <div class="ref-code-block">
+                <span class="ref-code-label" data-i18n="refLinkLabel"></span>
+                <div class="ref-code-row">
+                  <input type="text" class="ref-link" id="refLinkText" readonly />
+                  <button type="button" class="ref-copy-btn" id="refCopyLinkBtn" data-i18n="refCopyLink"></button>
+                </div>
+              </div>
+            </div>
+            <div class="ref-share-actions">
+              <a class="ref-share-btn" id="refShareEmail" target="_blank" rel="noopener" data-i18n="refShareEmail"></a>
+              <a class="ref-share-btn" id="refShareSms" target="_blank" rel="noopener" data-i18n="refShareSms"></a>
+              <button type="button" class="ref-share-btn" id="refShareNative" data-i18n="refShareNative"></button>
+            </div>
+
+            <details class="ref-invite-details">
+              <summary data-i18n="refInviteSummary"></summary>
+              <form class="ref-invite-form" id="refInviteForm" novalidate>
+                <div class="ref-invite-grid">
+                  <label>
+                    <span data-i18n="refInviteName"></span>
+                    <input type="text" id="refInviteName" autocomplete="off" />
+                  </label>
+                  <label>
+                    <span data-i18n="refInviteEmail"></span>
+                    <input type="email" id="refInviteEmail" autocomplete="off" required />
+                  </label>
+                </div>
+                <div class="ref-invite-row">
+                  <span class="ref-invite-msg" id="refInviteMsg" role="status" aria-live="polite"></span>
+                  <button type="submit" class="btn-primary" data-i18n="refInviteSubmit"></button>
+                </div>
+              </form>
+            </details>
+          </article>
+
+          <article class="panel" id="refListPanel">
+            <div class="panel-head-row">
+              <div>
+                <h2 data-i18n="refListTitle"></h2>
+                <p class="panel-sub muted" data-i18n="refListSub" style="margin-top:4px;"></p>
+              </div>
+              <span id="refListCount" class="portfolio-count" hidden></span>
+            </div>
+            <div id="refListBody"></div>
+          </article>
+        </section>
 
         <!-- 6. SETTINGS -->
         <section class="dash-section" data-tab-panel="settings" role="tabpanel" aria-labelledby="settingsHead">
@@ -1951,6 +2088,44 @@
           tabLearning: "学习记录",
           tabFeedback: "课堂反馈",
           tabCompetitions: "竞赛",
+          tabReferrals: "推荐有礼",
+          refStatEarnedLabel: "已获奖励",
+          refStatPendingLabel: "待发放",
+          refStatPaidLabel: "成功推荐",
+          refStatBonusLabel: "里程碑奖励",
+          refStatPerRefSub: "每位完成首次付款 ${amount}",
+          refStatTierSub: "{count} 位完成额外奖 ${bonus}",
+          refStatNextTierSub: "再推荐 {n} 位解锁 ${bonus} 奖励",
+          refStatAllUnlocked: "已解锁全部里程碑奖励",
+          refShareTitle: "分享专属推荐码",
+          refShareSub: "把下面的推荐码或链接发给朋友。新家长完成第一次付费后，你将获得 ${amount} 学习金奖励。",
+          refCodeLabel: "推荐码",
+          refLinkLabel: "推荐链接",
+          refCopyCode: "复制",
+          refCopyLink: "复制",
+          refCopiedTip: "已复制",
+          refShareEmail: "邮件邀请",
+          refShareSms: "短信邀请",
+          refShareNative: "更多分享方式",
+          refInviteSummary: "通过邮箱直接邀请",
+          refInviteName: "朋友的姓名（可选）",
+          refInviteEmail: "朋友的邮箱",
+          refInviteSubmit: "记录邀请",
+          refInviteMissing: "请填写朋友的邮箱。",
+          refInviteSent: "已记录推荐 → {email}",
+          refInviteDup: "已经邀请过该邮箱。",
+          refInviteError: "记录失败，请稍后再试。",
+          refListTitle: "邀请记录",
+          refListSub: "你发出的邀请、对方的状态以及奖励发放情况。",
+          refListEmpty: "暂无邀请记录。把推荐码或链接分享给朋友，他们注册后会出现在这里。",
+          refListCountFmt: "共 {n} 条",
+          refStatusSent: "待注册",
+          refStatusSignedUp: "已注册",
+          refStatusPaid: "已付费",
+          refRewardEarned: "+${amount} 已发放",
+          refRewardPending: "+${amount} 待发放",
+          refRewardSent: "—",
+          refTimeFmt: "{date}",
           compTitle: "近期 AI 与编程竞赛",
           compSub: "按报名截止日期排序，与孩子等级匹配的竞赛会有「推荐」标记。",
           compEmpty: "暂无近期竞赛安排，新赛事会在这里第一时间推送。",
@@ -2313,6 +2488,44 @@
           tabLearning: "Learning",
           tabFeedback: "Class Feedback",
           tabCompetitions: "Competitions",
+          tabReferrals: "Refer & Earn",
+          refStatEarnedLabel: "Earned",
+          refStatPendingLabel: "Pending",
+          refStatPaidLabel: "Successful Referrals",
+          refStatBonusLabel: "Milestone Bonus",
+          refStatPerRefSub: "${amount} per first payment",
+          refStatTierSub: "{count} successful → ${bonus} extra",
+          refStatNextTierSub: "{n} more to unlock ${bonus}",
+          refStatAllUnlocked: "All milestones unlocked",
+          refShareTitle: "Share Your Referral Code",
+          refShareSub: "Send the code or link below to a friend. You earn ${amount} in learning credits when they complete their first payment.",
+          refCodeLabel: "Code",
+          refLinkLabel: "Link",
+          refCopyCode: "Copy",
+          refCopyLink: "Copy",
+          refCopiedTip: "Copied",
+          refShareEmail: "Email",
+          refShareSms: "SMS",
+          refShareNative: "More",
+          refInviteSummary: "Invite by email",
+          refInviteName: "Friend's name (optional)",
+          refInviteEmail: "Friend's email",
+          refInviteSubmit: "Log Invite",
+          refInviteMissing: "Please enter your friend's email.",
+          refInviteSent: "Invite logged → {email}",
+          refInviteDup: "You've already invited this email.",
+          refInviteError: "Couldn't save. Try again in a moment.",
+          refListTitle: "Invite History",
+          refListSub: "Track who you've invited, where they are in the funnel, and what's been credited.",
+          refListEmpty: "No invites yet. Share the code or link with a friend — they'll show up here once they sign up.",
+          refListCountFmt: "{n} invites",
+          refStatusSent: "Sent",
+          refStatusSignedUp: "Signed Up",
+          refStatusPaid: "Paid",
+          refRewardEarned: "+${amount} credited",
+          refRewardPending: "+${amount} pending",
+          refRewardSent: "—",
+          refTimeFmt: "{date}",
           compTitle: "Upcoming AI & Coding Contests",
           compSub: "Sorted by registration deadline. Contests matching your child's level are tagged \"Recommended\".",
           compEmpty: "No competitions on the calendar right now. New contests will surface here automatically.",
@@ -3564,6 +3777,115 @@
             + "</div>";
         })();
 
+        // Referral tab — show the parent's code, copy / share helpers,
+        // invite history, and reward summary. State writes happen via
+        // flow.recordReferralInvite; UI re-renders on each change.
+        (function () {
+          var rewardsBody = document.getElementById("refRewardsBody");
+          var listBody = document.getElementById("refListBody");
+          var listCount = document.getElementById("refListCount");
+          var codeText = document.getElementById("refCodeText");
+          var linkText = document.getElementById("refLinkText");
+          if (!rewardsBody || !listBody || !codeText || !linkText) return;
+
+          var refAcct = acct;
+          var code = (refAcct && flow && flow.referralCodeForAccount)
+            ? flow.referralCodeForAccount(refAcct.accountId) : "";
+          var origin = "";
+          try { origin = window.location.origin + window.location.pathname.replace(/[^\/]+$/, ""); } catch (_) {}
+          var refLink = code ? (origin + "signup.html?ref=" + encodeURIComponent(code)) : "";
+          codeText.textContent = code || "—";
+          linkText.value = refLink;
+
+          // Rewards strip
+          var rewards = (refAcct && flow && flow.getReferralRewards)
+            ? flow.getReferralRewards(refAcct.accountId)
+            : { earned: 0, pending: 0, paidCount: 0, bonus: 0, perRef: 50, tiers: [] };
+          var nextTierLine = "";
+          var nextTier = (rewards.tiers || []).filter(function (tt) { return rewards.paidCount < tt.count; })[0];
+          if (nextTier) {
+            nextTierLine = (t.refStatNextTierSub || "{n} more to unlock ${bonus}")
+              .replace("{n}", nextTier.count - rewards.paidCount)
+              .replace("{bonus}", nextTier.bonus);
+          } else if ((rewards.tiers || []).length) {
+            nextTierLine = t.refStatAllUnlocked || "All milestones unlocked";
+          }
+          rewardsBody.innerHTML = ""
+            + "<div class=\"ref-stat success\">"
+            +   "<span class=\"label\">" + escHTML(t.refStatEarnedLabel) + "</span>"
+            +   "<span class=\"value\">$" + (rewards.earned + rewards.bonus) + "</span>"
+            +   "<span class=\"sub\">" + escHTML((t.refStatPerRefSub || "${amount}").replace("{amount}", rewards.perRef)) + "</span>"
+            + "</div>"
+            + "<div class=\"ref-stat gold\">"
+            +   "<span class=\"label\">" + escHTML(t.refStatPendingLabel) + "</span>"
+            +   "<span class=\"value\">$" + rewards.pending + "</span>"
+            +   "<span class=\"sub\">" + escHTML(t.refStatusSignedUp) + " · " + rewards.signedUpCount + "</span>"
+            + "</div>"
+            + "<div class=\"ref-stat\">"
+            +   "<span class=\"label\">" + escHTML(t.refStatPaidLabel) + "</span>"
+            +   "<span class=\"value\">" + rewards.paidCount + "</span>"
+            +   "<span class=\"sub\">" + escHTML(nextTierLine) + "</span>"
+            + "</div>";
+
+          // Share-action targets — mailto / sms / native share
+          var subject = lang === "en" ? "Join me on MindDo!" : "一起来 MindDo 学 AI！";
+          var body = (lang === "en"
+            ? "I've been using MindDo for AI / coding classes — sign up with my code "
+            : "我家孩子在 MindDo 上 AI 课，强烈推荐你也试试！注册时填我的推荐码 ")
+            + code + (lang === "en"
+              ? " and we both get learning credits.\n\nSign up here: "
+              : "，注册成功并完成首次付款后，我们都能拿到学习金奖励。\n\n注册链接：")
+            + refLink;
+          var emailEl = document.getElementById("refShareEmail");
+          var smsEl = document.getElementById("refShareSms");
+          if (emailEl) emailEl.setAttribute("href", "mailto:?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body));
+          if (smsEl) smsEl.setAttribute("href", "sms:?body=" + encodeURIComponent(body));
+
+          // Invite list
+          var invites = (refAcct && flow && flow.getReferralsByReferrer)
+            ? flow.getReferralsByReferrer(refAcct.accountId) : [];
+          if (listCount) {
+            if (invites.length) {
+              listCount.textContent = (t.refListCountFmt || "{n}").replace("{n}", invites.length);
+              listCount.hidden = false;
+            } else listCount.hidden = true;
+          }
+          function fmtDate(iso) {
+            if (!iso) return "—";
+            try {
+              return new Date(iso).toLocaleDateString(lang === "en" ? "en-US" : "zh-CN",
+                { year: "numeric", month: "short", day: "numeric" });
+            } catch (_) { return iso; }
+          }
+          if (!invites.length) {
+            listBody.innerHTML = "<div class=\"portfolio-empty\">" + escHTML(t.refListEmpty) + "</div>";
+          } else {
+            listBody.innerHTML = "<div class=\"ref-list\">" + invites.map(function (r) {
+              var statusKey = r.status || "sent";
+              var statusText = statusKey === "paid" ? t.refStatusPaid
+                : statusKey === "signed_up" ? t.refStatusSignedUp : t.refStatusSent;
+              var rewardClass = "muted";
+              var rewardText = t.refRewardSent;
+              if (statusKey === "paid") {
+                rewardClass = "";
+                rewardText = (t.refRewardEarned || "+${amount}").replace("{amount}", rewards.perRef);
+              } else if (statusKey === "signed_up") {
+                rewardClass = "pending";
+                rewardText = (t.refRewardPending || "+${amount}").replace("{amount}", rewards.perRef);
+              }
+              var nameLine = r.refereeName || (r.refereeEmail || "").split("@")[0];
+              return "<div class=\"ref-row\">"
+                + "<div class=\"who\">"
+                +   "<span class=\"who-name\">" + escHTML(nameLine || "—") + "</span>"
+                +   "<span class=\"who-email\">" + escHTML(r.refereeEmail || "") + " · " + escHTML(fmtDate(r.createdAt)) + "</span>"
+                + "</div>"
+                + "<span class=\"ref-status " + statusKey + "\">" + escHTML(statusText) + "</span>"
+                + "<span class=\"ref-reward " + rewardClass + "\">" + escHTML(rewardText) + "</span>"
+                + "</div>";
+            }).join("") + "</div>";
+          }
+        })();
+
         // Competitions tab — surface upcoming AI / coding contests with
         // a deadline-aware reminder and per-card register CTA.
         (function () {
@@ -4228,7 +4550,7 @@
       // active state. Active tab persists per session.
       (function () {
         var TAB_KEY = "minddo_acct_active_tab";
-        var KNOWN_TABS = ["overview", "enroll", "billing", "schedule", "learning", "competitions", "feedback", "profile", "settings"];
+        var KNOWN_TABS = ["overview", "enroll", "billing", "schedule", "learning", "competitions", "feedback", "profile", "referrals", "settings"];
         function setActiveTab(key) {
           if (KNOWN_TABS.indexOf(key) === -1) key = "overview";
           document.querySelectorAll("[data-tab]").forEach(function (btn) {
@@ -4316,6 +4638,104 @@
           .replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;");
       }
+
+      // Referral tab handlers — copy buttons, native share, invite form.
+      // Re-renders the page on successful invite so the new entry slots
+      // straight into the history panel.
+      (function () {
+        function flashCopied(btnId) {
+          var btn = document.getElementById(btnId);
+          if (!btn) return;
+          var t = I18N[document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN"] || I18N["zh-CN"];
+          var orig = btn.textContent;
+          btn.textContent = t.refCopiedTip || "Copied";
+          btn.classList.add("copied");
+          setTimeout(function () { btn.textContent = orig; btn.classList.remove("copied"); }, 1600);
+        }
+        function copyText(text, btnId) {
+          if (!text) return;
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(function () { flashCopied(btnId); }, function () { fallback(); });
+          } else { fallback(); }
+          function fallback() {
+            try {
+              var ta = document.createElement("textarea");
+              ta.value = text;
+              ta.style.position = "fixed"; ta.style.left = "-9999px";
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand && document.execCommand("copy");
+              document.body.removeChild(ta);
+              flashCopied(btnId);
+            } catch (_) {}
+          }
+        }
+        var copyCodeBtn = document.getElementById("refCopyCodeBtn");
+        if (copyCodeBtn) copyCodeBtn.addEventListener("click", function () {
+          copyText(document.getElementById("refCodeText").textContent || "", "refCopyCodeBtn");
+        });
+        var copyLinkBtn = document.getElementById("refCopyLinkBtn");
+        if (copyLinkBtn) copyLinkBtn.addEventListener("click", function () {
+          copyText(document.getElementById("refLinkText").value || "", "refCopyLinkBtn");
+        });
+        var nativeShareBtn = document.getElementById("refShareNative");
+        if (nativeShareBtn) nativeShareBtn.addEventListener("click", function () {
+          var ln = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+          var link = document.getElementById("refLinkText").value || "";
+          var text = (ln === "en")
+            ? "Join me on MindDo and we both get learning credits!"
+            : "用我的推荐码注册 MindDo，我们都能拿学习金！";
+          if (navigator.share) {
+            navigator.share({ title: "MindDo", text: text, url: link }).catch(function () {});
+          } else {
+            copyText(link, "refCopyLinkBtn");
+          }
+        });
+        var inviteForm = document.getElementById("refInviteForm");
+        if (inviteForm) {
+          inviteForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            var ln = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+            var t = I18N[ln] || I18N["zh-CN"];
+            var msg = document.getElementById("refInviteMsg");
+            msg.className = "ref-invite-msg"; msg.textContent = "";
+            var name = String(document.getElementById("refInviteName").value || "").trim();
+            var email = String(document.getElementById("refInviteEmail").value || "").trim();
+            if (!email) {
+              msg.textContent = t.refInviteMissing;
+              msg.className = "ref-invite-msg error";
+              return;
+            }
+            var flow = window.MindDoFlow;
+            var account = (flow && flow.getCurrentAccount) ? flow.getCurrentAccount() : null;
+            if (!account || !flow || !flow.recordReferralInvite) {
+              msg.textContent = t.refInviteError;
+              msg.className = "ref-invite-msg error";
+              return;
+            }
+            var existing = flow.getReferralsByReferrer
+              ? flow.getReferralsByReferrer(account.accountId).filter(function (r) {
+                  return (r.refereeEmail || "").toLowerCase() === email.toLowerCase();
+                })[0]
+              : null;
+            if (existing) {
+              msg.textContent = t.refInviteDup;
+              msg.className = "ref-invite-msg error";
+              return;
+            }
+            var rec = flow.recordReferralInvite(account.accountId, email, name);
+            if (!rec) {
+              msg.textContent = t.refInviteError;
+              msg.className = "ref-invite-msg error";
+              return;
+            }
+            msg.textContent = (t.refInviteSent || "{email}").replace("{email}", email);
+            msg.className = "ref-invite-msg success";
+            inviteForm.reset();
+            render(ln);
+          });
+        }
+      })();
 
       // Reschedule modal — opens when a class chip / list row is tapped.
       // Body shows the same week's open offering slots (excluding the
