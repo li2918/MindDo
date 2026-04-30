@@ -196,3 +196,121 @@ input.invalid, select.invalid, textarea.invalid,
 
 /* Global safety: images scale inside their containers */
 img { max-width: 100%; height: auto; }
+
+/* ==========================================================================
+   Portal shell — student-account + dashboard share .topbar / .sidebar /
+   .portal-layout. Inline page CSS handles 880px and below; here we add
+   tablet (1024–881px) handling + tighten the mobile drawer.
+   ========================================================================== */
+
+/* ============ Tablet (881–1024px): keep sidebar visible but narrower ============ */
+@media (min-width: 881px) and (max-width: 1024px) {
+  .topbar { grid-template-columns: 200px 1fr auto !important; }
+  .topbar-brand { padding: 0 16px !important; }
+  .topbar-brand .b-name { font-size: 16px; }
+  .topbar-page-title { padding-left: 18px; font-size: 13px; }
+
+  .portal-layout { grid-template-columns: 200px 1fr !important; }
+  .sidebar { padding: 18px 10px; gap: 14px; }
+  .sidebar-item { padding: 8px 10px; font-size: 13px; }
+  .sidebar-label { padding: 0 10px 4px; }
+
+  .portal-main { padding: 24px 24px 60px !important; }
+  .portal-main-inner { max-width: 100%; }
+}
+
+/* ============ Mobile (≤880px): refine the inline drawer rules ============ */
+@media (max-width: 880px) {
+  /* Topbar tightening */
+  .topbar { height: auto; min-height: 56px; }
+  .topbar-page-title { display: none; }
+  .topbar-right { padding-right: 4px; }
+  .user-trigger { padding: 5px 12px 5px 5px; font-size: 13px; }
+  .user-trigger .user-avatar { width: 28px; height: 28px; font-size: 11px; }
+  .user-menu { right: 12px; width: calc(100vw - 24px); max-width: 320px; }
+
+  /* Sidebar collapsed to horizontal scrolling strip — make scroll smoother */
+  .sidebar { -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+  .sidebar::-webkit-scrollbar { height: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: rgba(30,58,95,0.18); border-radius: 4px; }
+
+  .portal-main { padding: 18px 14px 60px !important; }
+}
+
+/* ============ Small phones (≤480px): compact further ============ */
+@media (max-width: 480px) {
+  .topbar-brand { padding: 0 12px !important; }
+  .topbar-brand img { width: 28px; height: 28px; }
+  .topbar-brand .b-name { font-size: 15px; }
+  .user-trigger .um-greeting,
+  .user-trigger .user-name { display: none; }
+  .portal-main { padding: 14px 10px 50px !important; }
+}
+
+/* ==========================================================================
+   Common widgets that show up across pages
+   ========================================================================== */
+
+/* Tables — always scrollable horizontally on narrow screens. Many ops
+   pages render <table class="..."> inside a .table-wrap div; backstop
+   any direct <table> too. */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+@media (max-width: 720px) {
+  table { font-size: 12.5px; }
+  .table-wrap th, .table-wrap td { padding-left: 10px; padding-right: 10px; }
+}
+
+/* Modal overlays — cap height on small screens so the body scrolls
+   inside the card instead of pushing the whole viewport. Common across
+   reschedule, leave, delete-student, customer-service modals. */
+@media (max-width: 640px) {
+  .modal-card,
+  .modal,
+  .resched-card,
+  .leave-card,
+  .modal-backdrop .modal-card {
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .resched-overlay,
+  .leave-overlay,
+  .modal-overlay,
+  .modal-backdrop {
+    padding: 12px !important;
+  }
+}
+
+/* Form rows — universally stack on narrow screens. Many pages declare
+   .form-grid with grid-template-columns: 1fr 1fr; collapse to one column
+   below 540px so labels/inputs stay readable. */
+@media (max-width: 540px) {
+  .form-grid,
+  .row,
+  .request-row,
+  .pay-form { grid-template-columns: 1fr !important; }
+}
+
+/* Page hero — many marketing/funnel pages use a 2-column .hero-split on
+   desktop; collapse universally on tablet-narrow so the right-rail card
+   doesn't squeeze the headline. */
+@media (max-width: 900px) {
+  .hero-split { grid-template-columns: 1fr !important; }
+  .hero-info-card { display: none; }
+}
+
+/* Footer — already handled per-page in most files; backstop here for
+   any page that forgot the override. */
+@media (max-width: 640px) {
+  .footer { padding-left: 18px !important; padding-right: 18px !important; }
+  .footer-inner { grid-template-columns: 1fr !important; gap: 24px !important; }
+}
+
+/* ==========================================================================
+   Customer-service floating widget — keeps clear of mobile bottom edges
+   (iOS home bar, Android nav bar) and shrinks the panel on small phones.
+   ========================================================================== */
+@media (max-width: 480px) {
+  .cs-fab { bottom: max(16px, env(safe-area-inset-bottom, 16px)) !important; }
+  .cs-panel { bottom: 78px !important; max-height: calc(100vh - 110px); overflow-y: auto; }
+}
