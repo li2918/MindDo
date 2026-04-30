@@ -681,6 +681,9 @@
     .greeting { font-size: clamp(24px, 3vw, 30px); font-weight: 800; color: var(--clay);
       letter-spacing: -0.01em; margin-bottom: 6px; }
     .greeting-sub { font-size: 14px; color: #64748b; margin-bottom: 28px; line-height: 1.6; }
+    /* Greeting + viewing-line removed per user request. Nodes stay in the
+       DOM so render() can keep populating them, but they never paint. */
+    #heroTitle, #heroViewing { display: none !important; }
     /* The "viewing {child}" line reuses guardian template HTML that was
        authored for the dark hero — re-color the inner muted/strong on the
        light portal layout so the line is readable. */
@@ -1471,7 +1474,10 @@
           <a id="emptyFamilyCta" class="btn-primary" href="add-child.html" style="font-size:13px;padding:8px 16px;"></a>
         </div>
 
-        <h1 class="greeting" id="heroTitle"></h1>
+        <!-- Greeting + viewing-line nodes kept hidden so render() can keep
+             populating heroTitle / heroViewing without null-guarding. The
+             actual text is no longer rendered to the page. -->
+        <h1 class="greeting" id="heroTitle" style="display:none;"></h1>
         <p class="greeting-sub" id="heroViewing" style="display:none;"></p>
 
         <span class="identity-chip" id="identityChip" style="display:none;">
