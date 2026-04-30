@@ -1314,6 +1314,7 @@
         </button>
         <button type="button" class="sidebar-item" data-tab="competitions" role="tab">
           <span class="si-icon" aria-hidden="true">🏆</span><span data-i18n="tabCompetitions"></span>
+          <span class="tab-pill" data-tab-pill="competitions" hidden>0</span>
         </button>
         <button type="button" class="sidebar-item" data-tab="feedback" role="tab">
           <span class="si-icon" aria-hidden="true">💬</span><span data-i18n="tabFeedback"></span>
@@ -1885,7 +1886,7 @@
         window.location.replace("login.html");
         return;
       }
-      var BADGE_TABS = ["feedback"];
+      var BADGE_TABS = ["feedback", "competitions"];
       var LASTSEEN_PREFIX = "minddo_acct_lastseen_";
 
       var I18N = {
@@ -4189,11 +4190,36 @@
           if (!matchCurrentStudent(r, current)) return false;
           return r.createdAt && r.createdAt > fbLast;
         }).length;
+        // Competitions: count items whose publishedAt is newer than the
+        // parent's last visit AND the registration deadline hasn't lapsed,
+        // scoped to ones recommended for the active student when a level
+        // is set (so a Beginner kid doesn't get pinged about Advanced
+        // contests they can't enter).
+        var compLast = getLastseen("competitions");
+        var compCount = 0;
+        if (window.MindDoFlow && window.MindDoFlow.getCompetitionsForStudent) {
+          var todayMs = (function () { var d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); })();
+          var roster = (window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent()) || {};
+          var comps = window.MindDoFlow.getCompetitionsForStudent(roster.studentId || "");
+          // If we got recommendations back (recommended:true on at least
+          // some entries), filter to those; else count all entries.
+          var hasRecommendations = comps.some(function (c) { return c.recommended; });
+          comps.forEach(function (c) {
+            if (hasRecommendations && !c.recommended) return;
+            if (!c.publishedAt || c.publishedAt <= compLast) return;
+            if (c.registrationDeadline) {
+              var dl = new Date(c.registrationDeadline).getTime();
+              if (dl < todayMs) return;
+            }
+            compCount += 1;
+          });
+        }
         // If the user is currently sitting on the tab, treat as seen so the
         // pill never lingers while they're looking at the content.
         var active = "";
         try { active = sessionStorage.getItem("minddo_acct_active_tab") || ""; } catch (_) {}
         setBadge("feedback", active === "feedback" ? 0 : fbCount);
+        setBadge("competitions", active === "competitions" ? 0 : compCount);
       }
 
       // Tab switching: clicking a sidebar item (or a [data-jump-tab] link

@@ -590,6 +590,7 @@
       },
       competitionDate: "2026-06-15",
       registrationDeadline: "2026-05-30",
+      publishedAt: "2026-04-22T09:00:00Z",
       prizes: {
         zh: "一等奖 $500 学习基金 + 项目展示机会；二三等奖 MindDo 学分礼包。",
         en: "1st: $500 learning grant + showcase slot; 2nd/3rd: MindDo credit bundles."
@@ -608,6 +609,7 @@
       },
       competitionDate: "2026-05-18",
       registrationDeadline: "2026-05-10",
+      publishedAt: "2026-04-15T09:00:00Z",
       prizes: {
         zh: "前 30% 晋级全国决赛，全员获学习证书。",
         en: "Top 30% advance to nationals; all participants receive a certificate."
@@ -626,6 +628,7 @@
       },
       competitionDate: "2026-05-25",
       registrationDeadline: "2026-05-20",
+      publishedAt: "2026-04-28T09:00:00Z",
       prizes: {
         zh: "全员可获作品电子合集；优秀作品收录到 MindDo 课程示例库。",
         en: "Everyone gets a digital anthology; standout works are added to MindDo's curriculum library."
