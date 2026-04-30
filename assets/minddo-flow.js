@@ -1374,11 +1374,24 @@
     // record around.
     upsertStudent({
       studentId: student.studentId,
+      familyId: demoAccount && demoAccount.familyId,
       name: student.studentName,
       grade: student.grade,
       birthday: student.birthday,
       gender: student.gender || ""
     });
+
+    // Second demo child — exercises the multi-kid family panel + the
+    // per-kid Schedule / Overview / Membership rendering paths.
+    if (demoAccount && demoAccount.familyId) {
+      addChildToFamily(demoAccount.familyId, {
+        studentId: "MD2026-0418",
+        name: "李若涵",
+        grade: "五年级",
+        birthday: "2015-09-12",
+        gender: "female"
+      });
+    }
 
     writeJson(KEYS.portfolio, [
       {
