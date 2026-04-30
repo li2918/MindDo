@@ -1363,6 +1363,8 @@
       studentId: student.studentId,
       parentName: student.parentName,
       phone: student.phone,
+      grade: student.grade,
+      birthday: student.birthday,
       password: ""
     });
     var demoAcctId = (demoAccount && demoAccount.accountId) || "";
