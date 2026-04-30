@@ -1368,6 +1368,17 @@
       password: ""
     });
     var demoAcctId = (demoAccount && demoAccount.accountId) || "";
+    // Belt-and-braces: explicitly upsert the student entity with full
+    // profile data so the kid card on the family panel always picks up
+    // grade / birthday even if a prior seedDemoData run left a partial
+    // record around.
+    upsertStudent({
+      studentId: student.studentId,
+      name: student.studentName,
+      grade: student.grade,
+      birthday: student.birthday,
+      gender: student.gender || ""
+    });
 
     writeJson(KEYS.portfolio, [
       {
