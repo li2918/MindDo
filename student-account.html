@@ -911,7 +911,7 @@
       color: var(--clay); }
     .week-group-count { font-size: 11px; color: var(--muted); font-weight: 700; }
     .upcoming-list { display: grid; gap: 8px; }
-    .upcoming-row { display: grid; grid-template-columns: 110px 1fr auto; gap: 14px; align-items: center;
+    .upcoming-row { display: grid; grid-template-columns: 110px 1fr auto auto; gap: 14px; align-items: center;
       padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px;
       transition: 0.12s; }
     .upcoming-row:hover { border-color: rgba(14,165,233,0.32); box-shadow: 0 6px 16px rgba(15,23,42,0.06); }
@@ -934,8 +934,17 @@
     @media (max-width: 540px) {
       .upcoming-row { grid-template-columns: 64px 1fr; gap: 10px; }
       .up-time { grid-column: 1 / -1; text-align: right; padding-top: 4px; border-top: 1px dashed var(--line); }
+      .upcoming-leave-btn { grid-column: 1 / -1; justify-self: flex-end; }
       .up-date .day { font-size: 18px; }
     }
+    .upcoming-leave-btn {
+      background: rgba(178,80,45,0.08); color: #b2502d; border: 1px solid rgba(178,80,45,0.32);
+      border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 12px; font-weight: 800;
+      cursor: pointer; font-family: inherit; transition: 0.12s; white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+    .upcoming-leave-btn:hover { background: rgba(178,80,45,0.16); border-color: #b2502d; transform: translateY(-1px); }
+    .upcoming-leave-btn:focus-visible { outline: 2px solid #b2502d; outline-offset: 2px; }
 
     /* Calendar view: month grid */
     .upcoming-view-toggle { display: inline-flex; gap: 2px; padding: 3px; background: #f1f5f9; border-radius: 999px; }
@@ -1997,6 +2006,7 @@
           upcomingWeekHeadFmt: "{start} – {end}",
           upcomingCountFmt: "共 {n} 节课",
           upcomingTodayTag: "今天",
+          upcomingLeaveBtn: "请假 / 改期",
           calNavToday: "回到今天",
           calNavPrev: "上个月",
           calNavNext: "下个月",
@@ -2338,6 +2348,7 @@
           upcomingWeekHeadFmt: "{start} – {end}",
           upcomingCountFmt: "{n} classes",
           upcomingTodayTag: "Today",
+          upcomingLeaveBtn: "Leave / Reschedule",
           calNavToday: "Today",
           calNavPrev: "Prev month",
           calNavNext: "Next month",
@@ -3153,6 +3164,7 @@
                   +   "<div class=\"meta\">" + metaParts.join("") + "</div>"
                   + "</div>"
                   + "<div class=\"up-time\">" + escHTML(sess.timeSlot || "—") + "</div>"
+                  + "<button type=\"button\" class=\"upcoming-leave-btn\">" + escHTML(t.upcomingLeaveBtn) + "</button>"
                   + "</div>";
               }).join("");
               return "<div class=\"week-group\">" + head + "<div class=\"upcoming-list\">" + rows + "</div></div>";
