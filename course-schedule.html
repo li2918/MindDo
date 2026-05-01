@@ -275,11 +275,27 @@
         if (!window.MindDoFlow.requireLogin("course-schedule.html", "enroll")) return;
       }
       var KEY = "minddo_course_enrollment";
-      var PLANS = {
-        weekly1: { price: 199, labelZh: "每周一节课", labelEn: "1 Class / Week", sessions: 1 },
-        weekly2: { price: 349, labelZh: "每周两节课", labelEn: "2 Classes / Week", sessions: 2 },
-        weekly3: { price: 469, labelZh: "每周三节课", labelEn: "3 Classes / Week", sessions: 3 }
-      };
+      // Carry both monthly + annual prices so the running summary reflects
+      // the cycle the parent chose on Step 1. Hydrated from the central
+      // catalog when available, otherwise falls back to the same numbers.
+      var PLANS = (function () {
+        if (window.MindDoFlow && window.MindDoFlow.getMembershipPlans) {
+          var out = {};
+          window.MindDoFlow.getMembershipPlans().forEach(function (p) {
+            out[p.id] = {
+              price: p.monthly, monthly: p.monthly, annual: p.annual,
+              labelZh: p.labelZh, labelEn: p.labelEn,
+              sessions: p.sessionsPerWeek
+            };
+          });
+          return out;
+        }
+        return {
+          weekly1: { price: 199, monthly: 199, annual: 1990, labelZh: "每周一节课", labelEn: "1 Class / Week", sessions: 1 },
+          weekly2: { price: 349, monthly: 349, annual: 3490, labelZh: "每周两节课", labelEn: "2 Classes / Week", sessions: 2 },
+          weekly3: { price: 469, monthly: 469, annual: 4690, labelZh: "每周三节课", labelEn: "3 Classes / Week", sessions: 3 }
+        };
+      })();
       var ALL_OFFERINGS = (window.MindDoFlow && window.MindDoFlow.getClassOfferings)
         ? window.MindDoFlow.getClassOfferings()
         : [];
@@ -317,6 +333,7 @@
         setTimeout(function () { window.location.replace("course-selection.html"); }, 1600);
         return;
       }
+      if (state.cycle !== "annual" && state.cycle !== "monthly") state.cycle = "monthly";
 
       var need = PLANS[state.plan].sessions;
 
@@ -472,7 +489,16 @@
       function renderSummary() {
         var p = PLANS[state.plan];
         var planLabel = k() === "zh" ? p.labelZh : p.labelEn;
-        var rows = [{ l: (k() === "zh" ? "Membership 方案" : "Membership"), v: planLabel + " · " + money(p.price) + "/mo" }];
+        var isAnnual = state.cycle === "annual";
+        var planPrice = isAnnual ? p.annual : p.monthly;
+        var unit = isAnnual ? (k() === "zh" ? "/年" : "/yr") : (k() === "zh" ? "/月" : "/mo");
+        var cycleLabel = isAnnual
+          ? (k() === "zh" ? "年付（省 17%）" : "Annual (save 17%)")
+          : (k() === "zh" ? "按月付" : "Monthly");
+        var rows = [
+          { l: (k() === "zh" ? "Membership 方案" : "Membership"), v: planLabel + " · " + money(planPrice) + unit },
+          { l: (k() === "zh" ? "计费周期" : "Billing Cycle"), v: cycleLabel }
+        ];
         state.sessions.forEach(function (sess, i) {
           var label = (k() === "zh" ? ("第 " + (i + 1) + " 节") : ("Class " + (i + 1)));
           if (!sess || !sess.offeringId) {
@@ -488,7 +514,7 @@
         document.getElementById("summary").innerHTML = rows.map(function (r) {
           return "<div><span>" + r.l + "</span><strong>" + r.v + "</strong></div>";
         }).join("");
-        document.getElementById("total").textContent = money(p.price);
+        document.getElementById("total").textContent = money(planPrice);
       }
 
       function setLang(lang) {

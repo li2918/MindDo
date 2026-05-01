@@ -80,6 +80,15 @@
     .panel h2 { margin:0 0 14px; font-size:19px; color:var(--clay); font-weight:800; }
     .panel .desc { font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:14px; }
 
+    /* Monthly / Annual cycle toggle — same visual language as the
+       parent-side Membership tab so the funnel and the upgrade flow
+       look like the same product. */
+    .cycle-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin:8px 0 14px; }
+    .cycle-toggle { display:inline-flex; gap:2px; padding:3px; background:#eef3f9; border:1px solid var(--line); border-radius:999px; }
+    .cycle-toggle button { all:unset; cursor:pointer; padding:6px 14px; font-size:12px; font-weight:700; color:var(--muted); border-radius:999px; transition:0.15s; line-height:1.2; }
+    .cycle-toggle button.active { background:#fff; color:var(--clay); box-shadow:0 1px 4px rgba(15,23,42,0.08); }
+    .cycle-hint { font-size:11.5px; color:var(--muted); }
+
     .membership-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
     .membership { position:relative; padding:18px; border-radius:18px; border:1px solid var(--line); background:rgba(240,249,255,0.9); cursor:pointer; transition:0.2s; display:block; }
     .membership:hover { transform:translateY(-2px); border-color:rgba(2,132,199,0.45); }
@@ -195,14 +204,22 @@
             <span data-lang="en">✓ 7-day no-questions refund &nbsp;·&nbsp; 10% sibling discount &nbsp;·&nbsp; Save 17% on annual</span>
           </p>
 
+          <div class="cycle-row">
+            <div class="cycle-toggle" id="cycleToggle" role="group" aria-label="Billing cycle">
+              <button type="button" data-cycle="monthly" class="active"><span data-lang="zh">按月付</span><span data-lang="en">Monthly</span></button>
+              <button type="button" data-cycle="annual"><span data-lang="zh">年付 省 17%</span><span data-lang="en">Annual save 17%</span></button>
+            </div>
+            <span class="cycle-hint" id="cycleHint"></span>
+          </div>
+
           <div class="membership-grid" id="membershipGrid">
             <label class="membership" data-plan="weekly1">
               <input type="radio" name="membership" value="weekly1" />
               <span class="check-mark">✓</span>
               <span class="badge"><span data-lang="zh">基础方案</span><span data-lang="en">Foundation</span></span>
               <h3><span data-lang="zh">每周一节课</span><span data-lang="en">1 Class / Week</span></h3>
-              <div class="price">$199</div>
-              <div class="sub"><span data-lang="zh">每月（4 课时） · 约 $50 / 节</span><span data-lang="en">Monthly (4 classes) · ≈ $50/class</span></div>
+              <div class="price" data-price-slot></div>
+              <div class="sub" data-sub-slot></div>
               <ul class="features">
                 <li><span data-lang="zh">建立稳定学习节奏</span><span data-lang="en">Build steady routine</span></li>
                 <li><span data-lang="zh">每周课堂反馈</span><span data-lang="en">Weekly feedback</span></li>
@@ -214,8 +231,8 @@
               <span class="check-mark">✓</span>
               <span class="badge"><span data-lang="zh">★ 性价比之选</span><span data-lang="en">★ Most Popular</span></span>
               <h3><span data-lang="zh">每周两节课</span><span data-lang="en">2 Classes / Week</span></h3>
-              <div class="price">$349</div>
-              <div class="sub"><span data-lang="zh">每月（8 课时） · 约 $44 / 节 · 比基础便宜 12%</span><span data-lang="en">Monthly (8 classes) · ≈ $44/class · 12% off Foundation</span></div>
+              <div class="price" data-price-slot></div>
+              <div class="sub" data-sub-slot></div>
               <ul class="features">
                 <li><span data-lang="zh">知识输入 + 项目训练</span><span data-lang="en">Balanced learning + projects</span></li>
                 <li><span data-lang="zh">双周成长评估</span><span data-lang="en">Bi-weekly reviews</span></li>
@@ -227,8 +244,8 @@
               <span class="check-mark">✓</span>
               <span class="badge"><span data-lang="zh">进阶方案</span><span data-lang="en">Advanced</span></span>
               <h3><span data-lang="zh">每周三节课</span><span data-lang="en">3 Classes / Week</span></h3>
-              <div class="price">$469</div>
-              <div class="sub"><span data-lang="zh">每月（12 课时） · 约 $39 / 节 · 比基础便宜 21%</span><span data-lang="en">Monthly (12 classes) · ≈ $39/class · 21% off Foundation</span></div>
+              <div class="price" data-price-slot></div>
+              <div class="sub" data-sub-slot></div>
               <ul class="features">
                 <li><span data-lang="zh">竞赛 / 作品集冲刺</span><span data-lang="en">Competition / portfolio</span></li>
                 <li><span data-lang="zh">每周导师复盘</span><span data-lang="en">Weekly mentor review</span></li>
@@ -309,27 +326,44 @@
       } catch (_) {}
       var KEY = "minddo_course_enrollment";
       // PLANS prefer flow.getMembershipPlans() (single source of truth);
-      // fallback hardcoded map for offline / pre-flow renders.
+      // fallback hardcoded map for offline / pre-flow renders. Carries
+      // both monthly + annual prices so the cycle toggle has somewhere
+      // to read from.
       var PLANS = (function () {
         if (window.MindDoFlow && window.MindDoFlow.getMembershipPlans) {
           var out = {};
           window.MindDoFlow.getMembershipPlans().forEach(function (p) {
-            out[p.id] = { price: p.monthly, labelZh: p.labelZh, labelEn: p.labelEn };
+            out[p.id] = {
+              monthly: p.monthly, annual: p.annual,
+              sessionsPerWeek: p.sessionsPerWeek,
+              labelZh: p.labelZh, labelEn: p.labelEn
+            };
           });
           return out;
         }
         return {
-          weekly1: { price: 199, labelZh: "每周一节课", labelEn: "1 Class / Week" },
-          weekly2: { price: 349, labelZh: "每周两节课", labelEn: "2 Classes / Week" },
-          weekly3: { price: 469, labelZh: "每周三节课", labelEn: "3 Classes / Week" }
+          weekly1: { monthly: 199, annual: 1990, sessionsPerWeek: 1, labelZh: "每周一节课", labelEn: "1 Class / Week" },
+          weekly2: { monthly: 349, annual: 3490, sessionsPerWeek: 2, labelZh: "每周两节课", labelEn: "2 Classes / Week" },
+          weekly3: { monthly: 469, annual: 4690, sessionsPerWeek: 3, labelZh: "每周三节课", labelEn: "3 Classes / Week" }
         };
       })();
       var html = document.documentElement;
       var langButtons = document.querySelectorAll("[data-set-lang]");
+      var cycleBar = document.getElementById("cycleToggle");
+      var cycleHintEl = document.getElementById("cycleHint");
 
       function langOf() { return html.getAttribute("lang") === "en" ? "en" : "zh-CN"; }
       function k() { return langOf() === "en" ? "en" : "zh"; }
       function money(n) { return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 2 }); }
+      function priceFor(plan) {
+        return state.cycle === "annual" ? plan.annual : plan.monthly;
+      }
+      function perClass(plan) {
+        if (!plan || !plan.sessionsPerWeek) return 0;
+        return state.cycle === "annual"
+          ? plan.annual / (plan.sessionsPerWeek * 4 * 12)
+          : plan.monthly / (plan.sessionsPerWeek * 4);
+      }
 
       function loadState() {
         try { return JSON.parse(sessionStorage.getItem(KEY) || "{}"); } catch (_) { return {}; }
@@ -338,12 +372,77 @@
 
       var state = loadState();
       if (!state.plan) state.plan = "";
+      // Seed plan + cycle from URL on first arrival (Membership tab deep-
+      // links here with ?upgradeTo=weekly2&cycle=annual when the parent
+      // already picked a tier + cycle).
+      try {
+        var qs = new URLSearchParams(window.location.search);
+        var cycleParam = qs.get("cycle");
+        if (cycleParam === "annual" || cycleParam === "monthly") state.cycle = cycleParam;
+        var planParam = qs.get("upgradeTo");
+        if (planParam && PLANS[planParam]) state.plan = planParam;
+      } catch (_) {}
+      if (state.cycle !== "annual" && state.cycle !== "monthly") state.cycle = "monthly";
+      saveState(state);
 
       function renderSelection() {
         document.querySelectorAll(".membership").forEach(function (el) {
           el.classList.toggle("selected", el.getAttribute("data-plan") === state.plan);
         });
         document.getElementById("toStep2").disabled = !state.plan;
+      }
+
+      function renderCards() {
+        if (cycleBar) {
+          cycleBar.querySelectorAll("[data-cycle]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-cycle") === state.cycle);
+          });
+        }
+        var starter = PLANS.weekly1;
+        var starterPerClass = starter ? (starter.monthly / 4) : 0;
+        document.querySelectorAll(".membership[data-plan]").forEach(function (card) {
+          var p = PLANS[card.getAttribute("data-plan")];
+          if (!p) return;
+          var priceEl = card.querySelector("[data-price-slot]");
+          var subEl = card.querySelector("[data-sub-slot]");
+          var n = priceFor(p);
+          if (priceEl) {
+            priceEl.textContent = state.cycle === "annual"
+              ? money(n) + (k() === "zh" ? " / 年" : " / yr")
+              : money(n);
+          }
+          if (subEl) {
+            var pc = perClass(p);
+            var classesPerMonth = p.sessionsPerWeek * 4;
+            var total = classesPerMonth * (state.cycle === "annual" ? 12 : 1);
+            var pcText = (k() === "zh" ? "约 $" : "≈ $") + Math.round(pc) + (k() === "zh" ? " / 节" : " / class");
+            var basis = state.cycle === "annual"
+              ? (k() === "zh" ? "年付（共 " + total + " 课时）" : "Annual (" + total + " classes)")
+              : (k() === "zh" ? "每月（" + classesPerMonth + " 课时）" : "Monthly (" + classesPerMonth + " classes)");
+            var sub = basis + " · " + pcText;
+            // Higher tiers: append per-class savings vs Starter.
+            if (starterPerClass > 0 && card.getAttribute("data-plan") !== "weekly1") {
+              var pct = Math.round((1 - pc / starterPerClass) * 100);
+              if (pct > 0) {
+                sub += " · " + (k() === "zh"
+                  ? "比基础便宜 " + pct + "%"
+                  : pct + "% off Foundation");
+              }
+            }
+            subEl.textContent = sub;
+          }
+        });
+        if (cycleHintEl) {
+          if (state.cycle === "annual") {
+            cycleHintEl.textContent = k() === "zh"
+              ? "等同月付的 10 个月 · 7 天可全额退款"
+              : "Same as 10 months at the monthly rate · 7-day full refund";
+          } else {
+            cycleHintEl.textContent = k() === "zh"
+              ? "改年付立省 17% · 7 天可全额退款"
+              : "Switch to annual to save 17% · 7-day full refund";
+          }
+        }
       }
 
       function renderSummary() {
@@ -356,9 +455,17 @@
         }
         var p = PLANS[state.plan];
         var label = k() === "zh" ? p.labelZh : p.labelEn;
-        el.innerHTML = "<div><span>" + (k() === "zh" ? "Membership 方案" : "Membership") + "</span><strong>" + label + "</strong></div>" +
-          "<div><span>" + (k() === "zh" ? "月费" : "Monthly") + "</span><strong>" + money(p.price) + "</strong></div>";
-        total.textContent = money(p.price);
+        var priceLine = state.cycle === "annual"
+          ? money(p.annual) + (k() === "zh" ? " / 年" : " / yr")
+          : money(p.monthly) + (k() === "zh" ? " / 月" : " / mo");
+        var cycleLabel = state.cycle === "annual"
+          ? (k() === "zh" ? "年付（省 17%）" : "Annual (save 17%)")
+          : (k() === "zh" ? "按月付" : "Monthly");
+        el.innerHTML =
+          "<div><span>" + (k() === "zh" ? "Membership 方案" : "Membership") + "</span><strong>" + label + "</strong></div>" +
+          "<div><span>" + (k() === "zh" ? "计费周期" : "Billing Cycle") + "</span><strong>" + cycleLabel + "</strong></div>" +
+          "<div><span>" + (k() === "zh" ? "套餐价格" : "Plan Price") + "</span><strong>" + priceLine + "</strong></div>";
+        total.textContent = money(priceFor(p));
       }
 
       function setLang(lang) {
@@ -366,6 +473,7 @@
         localStorage.setItem("minddo_lang", lang);
         document.title = (lang === "en" ? "Enrollment · Step 1: Plan" : "选课 · 第 1 步：选择方案") + " | MindDo";
         langButtons.forEach(function (btn) { btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang); });
+        renderCards();
         renderSummary();
         populateMeta();
       }
@@ -400,6 +508,16 @@
       renderSelection();
 
       langButtons.forEach(function (btn) { btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); }); });
+      if (cycleBar) {
+        cycleBar.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-cycle]");
+          if (!b) return;
+          state.cycle = b.getAttribute("data-cycle") === "annual" ? "annual" : "monthly";
+          saveState(state);
+          renderCards();
+          renderSummary();
+        });
+      }
       document.getElementById("membershipGrid").addEventListener("click", function (e) {
         var label = e.target.closest(".membership");
         if (!label) return;
