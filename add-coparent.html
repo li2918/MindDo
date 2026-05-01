@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="邀请副家长加入家庭账户 · Invite a co-parent to your MindDo family account." />
+  <meta name="theme-color" content="#1e3a5f" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="add-coparent.html" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <title>邀请副家长 | Invite Co-parent</title>
+  <style>
+    .skip-link { position:absolute; left:-9999px; top:0; background:#1e3a5f; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #0ea5e9; outline-offset:2px; }
+    :root {
+      --bg:#f6f8fb; --sand:#e8eef5; --card:rgba(240,249,255,0.94);
+      --line:rgba(30,58,95,0.14); --text:#0f172a; --muted:#5a6b81;
+      --gold:#0ea5e9; --gold-deep:#0284c7; --clay:#1e3a5f; --brown:#14294a;
+      --ok:#6f8f57; --warn:#d89c36; --danger:#c46a4d;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
+    a { color:inherit; text-decoration:none; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+
+    .navbar { position:sticky; top:0; z-index:100; background:rgba(240,249,255,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:44px; height:44px; object-fit:contain; }
+    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .btn-primary { background:linear-gradient(135deg,#bae6fd,var(--gold)); color:#0b2540; border:none; border-radius:999px; padding:11px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(14,165,233,0.28); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-primary:hover { transform:translateY(-2px); }
+    .btn-primary:disabled { opacity:0.55; cursor:not-allowed; transform:none; box-shadow:none; }
+    .btn-secondary { background:rgba(240,249,255,0.98); color:var(--clay); border:1px solid var(--line); border-radius:999px; padding:10px 20px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(14,165,233,0.38); }
+
+    .page-hero { background:linear-gradient(145deg,#0b1a2e 0%,#14294a 50%,#1e3a5f 100%); padding:52px 0 42px; }
+    .identity-chip { display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:999px; background:rgba(240,249,255,0.14); border:1px solid rgba(224,242,254,0.3); color:#f0f9ff; font-size:12px; font-weight:700; margin-bottom:14px; }
+    .identity-chip .dot { width:6px; height:6px; border-radius:999px; background:#0ea5e9; box-shadow:0 0 0 3px rgba(14,165,233,0.25); }
+    .identity-chip .role { text-transform:uppercase; letter-spacing:0.08em; font-size:11px; color:rgba(224,242,254,0.75); font-weight:800; }
+    .identity-chip .sep { color:rgba(224,242,254,0.35); }
+    .identity-chip .name { color:#f0f9ff; }
+    .page-hero-inner { max-width:720px; margin:0 auto; padding:0 48px; color:#f0f9ff; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(14,165,233,0.18); border:1px solid rgba(14,165,233,0.3); color:#bae6fd; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
+    .page-hero h1 { font-size:clamp(26px,3.2vw,38px); font-weight:900; letter-spacing:-0.02em; margin-bottom:10px; }
+    .page-hero p { font-size:14.5px; color:rgba(224,242,254,0.78); line-height:1.7; max-width:580px; }
+
+    .page-content { padding:40px 0 80px; }
+    .content-inner { max-width:720px; margin:0 auto; padding:0 48px; }
+    .panel { background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(30,58,95,0.08); padding:28px; margin-bottom:18px; }
+    .panel:last-child { margin-bottom:0; }
+    .panel h2 { font-size:18px; font-weight:800; color:var(--clay); margin-bottom:4px; }
+    .panel .desc { font-size:13px; color:var(--muted); line-height:1.65; margin-bottom:18px; }
+
+    .field { display:flex; flex-direction:column; margin-bottom:14px; }
+    .field label { font-size:12px; font-weight:800; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; }
+    .field input, .field select {
+      width:100%; border:1px solid var(--line); background:#f8fafc; color:var(--text);
+      padding:10px 12px; border-radius:12px; font:inherit; font-size:14px; outline:none; transition:0.15s;
+    }
+    .field input:focus, .field select:focus { border-color:var(--gold); box-shadow:0 0 0 2px rgba(14,165,233,0.15); }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; }
+    @media (max-width:640px) { .form-grid { grid-template-columns:1fr; } }
+    .actions { display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:6px; }
+
+    /* Existing guardian list — read-only summary so the inviter can see
+       what's already in place before sending another invite. */
+    .gd-list { display:flex; flex-direction:column; gap:8px; }
+    .gd-row { display:flex; justify-content:space-between; align-items:center; gap:12px;
+      padding:12px 14px; background:#fff; border:1px solid var(--line); border-radius:12px; }
+    .gd-name { font-size:14px; font-weight:800; color:var(--clay); letter-spacing:-0.01em; }
+    .gd-meta { font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+    .gd-pill { font-size:11px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;
+      padding:4px 10px; border-radius:999px; background:rgba(14,165,233,0.18); color:#0b4d70;
+      border:1px solid rgba(14,165,233,0.35); white-space:nowrap; }
+    .gd-pill.secondary { background:rgba(216,156,54,0.16); color:#7a4f0d; border-color:rgba(216,156,54,0.35); }
+    .gd-pill.pending { background:rgba(216,156,54,0.12); color:#7a4f0d; border-color:rgba(216,156,54,0.3); }
+    .gd-empty { padding:14px; background:rgba(248,250,252,0.7); border:1px dashed var(--line); border-radius:12px;
+      font-size:13px; color:var(--muted); text-align:center; }
+
+    .notice { padding:14px 16px; background:rgba(178,80,45,0.08); border:1px solid rgba(178,80,45,0.28); border-radius:14px; color:#8e3d21; font-size:13px; line-height:1.65; }
+
+    /* Activation-link share block — surfaced after a successful invite so
+       the primary guardian can directly hand the link to the co-parent
+       (the mock email already went out but a copyable link is faster). */
+    .share-block { margin-top:14px; padding:14px 16px; background:rgba(186,230,253,0.22);
+      border:1px solid rgba(14,165,233,0.32); border-radius:12px; }
+    .share-block strong { display:block; font-size:13px; color:var(--clay); margin-bottom:8px; }
+    .share-link { display:flex; gap:8px; align-items:center; }
+    .share-link input { flex:1; padding:9px 12px; border:1px solid var(--line); border-radius:10px;
+      font:inherit; font-size:12.5px; color:var(--clay); background:#fff; font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace; }
+    .share-link button { background:var(--clay); color:#f0f9ff; border:none; border-radius:10px;
+      padding:9px 14px; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; }
+    .share-link button:hover { background:var(--brown); }
+    .share-hint { margin-top:8px; font-size:12px; color:var(--muted); line-height:1.55; }
+
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--clay); color:#f0f9ff; padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:0 12px 28px rgba(30,58,95,0.3); opacity:0; transform:translateY(10px); transition:0.25s; pointer-events:none; z-index:2000; }
+    .toast.show { opacity:1; transform:translateY(0); }
+
+    .footer { background:var(--brown); color:rgba(240,249,255,0.78); padding:48px 48px 28px; }
+    .footer-inner { max-width:720px; margin:0 auto; font-size:13px; }
+    .footer-bottom { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(240,249,255,0.45); margin-top:22px; padding-top:20px; border-top:1px solid rgba(224,242,254,0.1); }
+
+    @media (max-width:900px) { .navbar { padding:0 24px; } .page-hero-inner, .content-inner { padding:0 24px; } }
+  </style>
+  <link rel="stylesheet" href="assets/minddo-theme.css" />
+  <link rel="stylesheet" href="assets/minddo-responsive.css" />
+</head>
+<body>
+  <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
+
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <div class="nav-right">
+      <div class="lang-switcher" data-lang-switcher>
+        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span class="lang-trigger-label">中文</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="lang-menu" role="listbox">
+          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
+          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+        </div>
+      </div>
+      <a class="btn-secondary" href="student-account.html"><span data-lang="zh">← 返回学员中心</span><span data-lang="en">← Back To My Account</span></a>
+    </div>
+  </nav>
+
+  <main id="main" class="page-hero">
+    <div class="page-hero-inner">
+      <span class="identity-chip" id="identityChip" style="display:none;">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="role" id="identityChipRole"></span>
+        <span class="sep" aria-hidden="true">·</span>
+        <span class="name" id="identityChipName"></span>
+      </span>
+      <div class="page-tag"><span data-lang="zh">邀请副家长</span><span data-lang="en">Invite Co-parent</span></div>
+      <h1><span data-lang="zh">邀请副家长加入家庭</span><span data-lang="en">Invite a Co-parent to the Family</span></h1>
+      <p><span data-lang="zh">填写另一位家长的邮箱，我们会发送激活邀请。激活后，TA 可以查看课表、反馈与成长记录，但不能修改账单与学员档案。</span><span data-lang="en">Send an activation invite to another guardian. Once activated, they can view schedules, feedback, and progress — but they can't change billing or student profiles.</span></p>
+    </div>
+  </main>
+
+  <section class="page-content">
+    <div class="content-inner">
+
+      <article class="panel" id="permissionNotice" style="display:none;">
+        <div class="notice" id="permissionNoticeText"></div>
+      </article>
+
+      <article class="panel" id="guardiansPanel">
+        <h2 data-lang="zh">家庭中已有的家长</h2>
+        <h2 data-lang="en">Guardians Already in the Family</h2>
+        <p class="desc" data-lang="zh">当前家庭账户下已存在的家长会显示在下方。同一个邮箱无法重复邀请。</p>
+        <p class="desc" data-lang="en">Existing guardians on this family account are listed below. The same email can't be invited twice.</p>
+        <div class="gd-list" id="guardianList"></div>
+      </article>
+
+      <article class="panel" id="invitePanel">
+        <h2 id="formTitle"></h2>
+        <p class="desc" id="formDesc"></p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="cpEmail"><span data-lang="zh">邮箱</span><span data-lang="en">Email</span></label>
+            <input id="cpEmail" type="email" autocomplete="email" required />
+          </div>
+          <div class="field">
+            <label for="cpName"><span data-lang="zh">姓名（可选）</span><span data-lang="en">Name (optional)</span></label>
+            <input id="cpName" type="text" autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="cpRelation"><span data-lang="zh">与学员关系</span><span data-lang="en">Relationship</span></label>
+            <select id="cpRelation">
+              <option value="" data-zh="请选择" data-en="Select"></option>
+              <option value="mother" data-zh="母亲" data-en="Mother"></option>
+              <option value="father" data-zh="父亲" data-en="Father"></option>
+              <option value="guardian" data-zh="监护人" data-en="Guardian"></option>
+              <option value="other" data-zh="其他" data-en="Other"></option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="cpPhone"><span data-lang="zh">电话（可选）</span><span data-lang="en">Phone (optional)</span></label>
+            <input id="cpPhone" type="tel" autocomplete="tel" />
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn-secondary" href="student-account.html"><span data-lang="zh">取消</span><span data-lang="en">Cancel</span></a>
+          <button type="button" class="btn-primary" id="cpInviteBtn"><span data-lang="zh">发送邀请</span><span data-lang="en">Send Invite</span></button>
+        </div>
+        <div id="coparentShare" class="share-block" style="display:none;">
+          <strong id="coparentShareTitle"></strong>
+          <div class="share-link">
+            <input id="coparentShareUrl" type="text" readonly />
+            <button type="button" id="coparentShareCopy"></button>
+          </div>
+          <div class="share-hint" id="coparentShareHint"></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <span>© 2025 MindDo Learning Center · <span data-lang="zh">保留所有权利</span><span data-lang="en">All rights reserved</span></span>
+        <span><a href="privacy.html" style="color:inherit;"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy</span></a> · <a href="terms.html" style="color:inherit;"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/minddo-flow.js"></script>
+  <script>
+    (function () {
+      var I18N = {
+        "zh-CN": {
+          pageTitle: "邀请副家长",
+          formTitle: "副家长信息",
+          formDesc: "填写副家长的邮箱后我们会发送激活邀请；激活后 TA 可以查看课表、反馈与成长记录。",
+          roleLabels: { guardian_primary: "主家长", guardian_secondary: "副家长", student: "学员" },
+          permissionNotPrimary: "只有主家长可以邀请副家长。请联系主家长操作。",
+          permissionNoAccount: "未检测到登录账号，请先登录后再邀请。",
+          missingEmail: "请填写邮箱后再邀请。",
+          inviteExisted: "该邮箱已经是家庭成员，无法重复邀请。",
+          inviteSent: "邀请已发送到 {email}",
+          shareTitle: "副家长激活链接（如邮件未送达可直接转发）",
+          shareCopy: "复制链接",
+          shareHint: "有效期 14 天。副家长点击后可设置密码并完成登录。",
+          copyHint: "复制成功",
+          copyFail: "复制失败，请手动复制。",
+          guardianListEmpty: "当前还未读取到家庭信息。",
+          guardianPrimary: "主家长",
+          guardianSecondary: "副家长",
+          statusActive: "已激活",
+          statusPending: "待激活"
+        },
+        en: {
+          pageTitle: "Invite Co-parent",
+          formTitle: "Co-parent Info",
+          formDesc: "Once you send the invite, the co-parent will receive an activation link; after activation they can view schedules, feedback, and progress.",
+          roleLabels: { guardian_primary: "Primary", guardian_secondary: "Co-parent", student: "Student" },
+          permissionNotPrimary: "Only the primary guardian can invite a co-parent. Please ask the primary guardian to do this.",
+          permissionNoAccount: "No active account detected. Please sign in before sending an invite.",
+          missingEmail: "Please enter an email first.",
+          inviteExisted: "That email is already on this family — can't re-invite.",
+          inviteSent: "Invite sent to {email}",
+          shareTitle: "Co-parent activation link (forward it if the email didn't arrive)",
+          shareCopy: "Copy link",
+          shareHint: "Valid 14 days. After clicking, the co-parent sets a password to finish activation.",
+          copyHint: "Copied to clipboard",
+          copyFail: "Copy failed — please copy manually.",
+          guardianListEmpty: "No family info loaded yet.",
+          guardianPrimary: "Primary",
+          guardianSecondary: "Co-parent",
+          statusActive: "Active",
+          statusPending: "Pending"
+        }
+      };
+
+      var html = document.documentElement;
+      var lang = localStorage.getItem("minddo_lang") === "en" ? "en" : "zh-CN";
+      var langButtons = document.querySelectorAll("[data-set-lang]");
+      var flow = window.MindDoFlow;
+
+      var invitePanel = document.getElementById("invitePanel");
+      var permissionNotice = document.getElementById("permissionNotice");
+      var permissionNoticeText = document.getElementById("permissionNoticeText");
+      var guardianList = document.getElementById("guardianList");
+      var cpInviteBtn = document.getElementById("cpInviteBtn");
+      var coparentShare = document.getElementById("coparentShare");
+      var coparentShareUrl = document.getElementById("coparentShareUrl");
+      var coparentShareCopy = document.getElementById("coparentShareCopy");
+      var coparentShareTitle = document.getElementById("coparentShareTitle");
+      var coparentShareHint = document.getElementById("coparentShareHint");
+      var toastEl = document.getElementById("toast");
+
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
+        setTimeout(function () { toastEl.classList.remove("show"); }, 2400);
+      }
+
+      function escHTML(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return fallbackCopy(text); });
+        }
+        return Promise.resolve(fallbackCopy(text));
+      }
+      function fallbackCopy(text) {
+        try {
+          var ta = document.createElement("textarea");
+          ta.value = text; ta.setAttribute("readonly", "");
+          ta.style.position = "fixed"; ta.style.left = "-9999px";
+          document.body.appendChild(ta); ta.select();
+          var ok = document.execCommand && document.execCommand("copy");
+          document.body.removeChild(ta); return !!ok;
+        } catch (_) { return false; }
+      }
+
+      function applyLang(l) {
+        lang = l;
+        html.setAttribute("lang", l);
+        localStorage.setItem("minddo_lang", l);
+        var t = I18N[l];
+        document.title = t.pageTitle + " | MindDo";
+        document.getElementById("formTitle").textContent = t.formTitle;
+        document.getElementById("formDesc").textContent = t.formDesc;
+        coparentShareTitle.textContent = t.shareTitle;
+        coparentShareCopy.textContent = t.shareCopy;
+        coparentShareHint.textContent = t.shareHint;
+        // Re-render dropdown labels
+        document.querySelectorAll("option[data-zh][data-en]").forEach(function (opt) {
+          opt.textContent = opt.getAttribute(l === "en" ? "data-en" : "data-zh");
+        });
+        langButtons.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-set-lang") === l);
+        });
+        renderIdentity();
+        renderPermission();
+        renderGuardianList();
+      }
+
+      function renderIdentity() {
+        var t = I18N[lang];
+        var chip = document.getElementById("identityChip");
+        var account = (flow && flow.getCurrentAccount) ? flow.getCurrentAccount() : null;
+        if (!account) { chip.style.display = "none"; return; }
+        var name = "";
+        if (flow.findGuardianById && account.linkedEntityId) {
+          var g = flow.findGuardianById(account.linkedEntityId);
+          if (g) name = g.name || g.email || "";
+        }
+        document.getElementById("identityChipRole").textContent = t.roleLabels[account.role] || account.role;
+        document.getElementById("identityChipName").textContent = name || account.email || "—";
+        chip.style.display = "inline-flex";
+      }
+
+      function renderPermission() {
+        var t = I18N[lang];
+        var account = (flow && flow.getCurrentAccount) ? flow.getCurrentAccount() : null;
+        if (!account) {
+          permissionNoticeText.textContent = t.permissionNoAccount;
+          permissionNotice.style.display = "block";
+          invitePanel.style.display = "none";
+          return;
+        }
+        var isPrimary = account.role === flow.ROLES.guardianPrimary;
+        if (!isPrimary) {
+          permissionNoticeText.textContent = t.permissionNotPrimary;
+          permissionNotice.style.display = "block";
+          invitePanel.style.display = "none";
+          return;
+        }
+        permissionNotice.style.display = "none";
+        invitePanel.style.display = "block";
+      }
+
+      function renderGuardianList() {
+        var t = I18N[lang];
+        var account = (flow && flow.getCurrentAccount) ? flow.getCurrentAccount() : null;
+        if (!account || !account.familyId || !flow.listFamilyGuardians) {
+          guardianList.innerHTML = "<div class='gd-empty'>" + escHTML(t.guardianListEmpty) + "</div>";
+          return;
+        }
+        var guardians = flow.listFamilyGuardians(account.familyId) || [];
+        if (!guardians.length) {
+          guardianList.innerHTML = "<div class='gd-empty'>" + escHTML(t.guardianListEmpty) + "</div>";
+          return;
+        }
+        guardianList.innerHTML = guardians.map(function (g) {
+          var acct = flow.findAccountById ? flow.findAccountById(g.accountId) : null;
+          var roleLabel = g.isPrimary ? t.guardianPrimary : t.guardianSecondary;
+          var rolePillClass = g.isPrimary ? "" : "secondary";
+          var statusLabel = (acct && acct.status === "active") ? t.statusActive : t.statusPending;
+          var statusPillClass = (acct && acct.status === "active") ? "" : "pending";
+          var statusPillHtml = (acct && acct.status !== "active")
+            ? "<span class='gd-pill " + statusPillClass + "'>" + escHTML(statusLabel) + "</span>"
+            : "";
+          return "<div class='gd-row'>"
+            + "<div>"
+            +   "<div class='gd-name'>" + escHTML(g.name || g.email || "—") + "</div>"
+            +   "<div class='gd-meta'>" + escHTML(g.email || "") + (g.phone ? " · " + escHTML(g.phone) : "") + "</div>"
+            + "</div>"
+            + "<div style='display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;'>"
+            +   "<span class='gd-pill " + rolePillClass + "'>" + escHTML(roleLabel) + "</span>"
+            +   statusPillHtml
+            + "</div>"
+            + "</div>";
+        }).join("");
+      }
+
+      langButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () { applyLang(btn.getAttribute("data-set-lang")); });
+      });
+
+      cpInviteBtn.addEventListener("click", function () {
+        var t = I18N[lang];
+        var email = document.getElementById("cpEmail").value.trim();
+        if (!email) { showToast(t.missingEmail); return; }
+        var account = (flow && flow.getCurrentAccount) ? flow.getCurrentAccount() : null;
+        if (!account || !flow.inviteCoParent) return;
+        var result = flow.inviteCoParent(account.familyId, {
+          email: email,
+          name: document.getElementById("cpName").value.trim(),
+          relation: document.getElementById("cpRelation").value,
+          phone: document.getElementById("cpPhone").value.trim(),
+          issuedBy: account.accountId
+        });
+        if (!result) return;
+        if (result.existed) { showToast(t.inviteExisted); return; }
+        showToast(t.inviteSent.replace("{email}", email));
+        if (result.claimUrl) {
+          coparentShare.style.display = "block";
+          coparentShareUrl.value = result.claimUrl;
+        }
+        document.getElementById("cpEmail").value = "";
+        document.getElementById("cpName").value = "";
+        document.getElementById("cpRelation").value = "";
+        document.getElementById("cpPhone").value = "";
+        renderGuardianList();
+      });
+
+      coparentShareCopy.addEventListener("click", function () {
+        if (!coparentShareUrl.value) return;
+        copyToClipboard(coparentShareUrl.value).then(function (ok) {
+          showToast(ok ? I18N[lang].copyHint : I18N[lang].copyFail);
+        });
+      });
+
+      applyLang(lang);
+    })();
+  </script>
+  <script src="assets/lang-switcher.js" defer></script>
+  <script src="assets/minddo-nav.js" defer></script>
+  <script src="assets/consent.js" defer></script>
+  <script src="assets/customer-service.js" defer></script>
+</body>
+</html>
