@@ -2342,9 +2342,14 @@
           memberCurrentEmpty: "当前学员还没有正式会员方案。下方选择适合的会员等级即可开通。",
           memberCurrentRowPlan: "会员等级",
           memberCurrentRowSessions: "每周课时",
+          memberCurrentRowCycle: "计费周期",
           memberCurrentRowSchedule: "上课时段",
           memberCurrentRowAmount: "本月费用",
+          memberCurrentRowAmountAnnual: "本年费用",
+          memberCurrentRowAddons: "已加购",
           memberCurrentRowOrderId: "订单编号",
+          memberCycleMonthlyShort: "按月付",
+          memberCycleAnnualShort: "年付（省 17%）",
           memberUpgradeTitle: "升级到更高等级",
           memberUpgradeSubBase: "升级后下个账期开始按新方案扣费，已排课时会自动延续。",
           memberUpgradeTopTier: "你已经在最高会员等级。如需特殊安排请联系客服。",
@@ -2772,9 +2777,14 @@
           memberCurrentEmpty: "No active membership yet. Pick a tier below to get started.",
           memberCurrentRowPlan: "Tier",
           memberCurrentRowSessions: "Sessions / Week",
+          memberCurrentRowCycle: "Billing Cycle",
           memberCurrentRowSchedule: "Weekly Slot",
           memberCurrentRowAmount: "Monthly Cost",
+          memberCurrentRowAmountAnnual: "Annual Cost",
+          memberCurrentRowAddons: "Add-ons",
           memberCurrentRowOrderId: "Order ID",
+          memberCycleMonthlyShort: "Monthly",
+          memberCycleAnnualShort: "Annual (save 17%)",
           memberUpgradeTitle: "Upgrade to a Higher Tier",
           memberUpgradeSubBase: "Upgrades take effect on the next billing cycle. Already-scheduled classes continue without disruption.",
           memberUpgradeTopTier: "You're on the top tier. Reach out to support for any special arrangements.",
@@ -3125,12 +3135,22 @@
       function formatAddons(addons, lang) {
         var list = Array.isArray(addons) ? addons : [];
         if (!list.length) return "";
-        var map = {
+        // Pull the live add-on catalog so labels stay in sync with the
+        // membership pricing overhaul; fall back to the legacy map for
+        // older localStorage records that still use {mentor,project,report}.
+        var catalog = (window.MindDoFlow && window.MindDoFlow.getMembershipAddOns)
+          ? window.MindDoFlow.getMembershipAddOns()
+          : [];
+        var lookup = {};
+        catalog.forEach(function (a) {
+          lookup[a.id] = lang === "en" ? a.titleEn : a.titleZh;
+        });
+        var legacy = {
           mentor: lang === "en" ? "Mentor Coaching" : "学业导师加餐",
           project: lang === "en" ? "Project Studio" : "项目工坊",
           report: lang === "en" ? "Parent Deep Report" : "家长深度报告"
         };
-        return list.map(function (item) { return map[item] || item; }).join(", ");
+        return list.map(function (item) { return lookup[item] || legacy[item] || item; }).join(", ");
       }
 
       function formatClassMode(mode, lang) {
@@ -3515,25 +3535,46 @@
           }
           var hasMembership = !!(m && m.plan);
 
-          // Current-tier panel
+          // Current-tier panel — resolves the price from the live catalog
+          // when possible so legacy localStorage records (seeded with the
+          // pre-overhaul $369 price) reflect the new $349/$199/$469 ladder.
           if (!hasMembership) {
             body.innerHTML = "<div class=\"fb-empty\">" + escHTML(t.memberCurrentEmpty) + "</div>";
           } else {
-            var planLabel = m.planLabel || formatPlan(m.plan, lang) || m.plan;
+            var catalogTier = (flow && flow.findMembershipPlan) ? flow.findMembershipPlan(m.plan) : null;
+            var cycleKey = m.billingCycle === "annual" ? "annual" : "monthly";
+            var planLabel = catalogTier
+              ? (lang === "en" ? catalogTier.labelEn : catalogTier.labelZh)
+              : (m.planLabel || formatPlan(m.plan, lang) || m.plan);
             var sessions = Array.isArray(m.sessions) ? m.sessions : [];
-            var sessionCount = sessions.length || (m.weekday ? 1 : 0);
+            var sessionCount = sessions.length
+              || (catalogTier ? catalogTier.sessionsPerWeek : 0)
+              || (m.weekday ? 1 : 0);
             var scheduleText = sessions.length
               ? sessions.map(function (s) { return (s.weekday || "—") + " " + (s.timeSlot || ""); }).join(" / ")
               : ((m.weekday || "—") + (m.timeSlot ? " " + m.timeSlot : ""));
-            var amount = (typeof m.totalMonthly === "string" && m.totalMonthly) ||
-              (m.totalAmount ? "$" + Number(m.totalAmount).toFixed(2) : "—");
+            var amount;
+            if (catalogTier) {
+              amount = "$" + fmtMoney(cycleKey === "annual" ? catalogTier.annual : catalogTier.monthly);
+            } else if (typeof m.totalMonthly === "string" && m.totalMonthly) {
+              amount = m.totalMonthly;
+            } else if (m.totalAmount) {
+              amount = "$" + Number(m.totalAmount).toFixed(2);
+            } else {
+              amount = "—";
+            }
+            var amountLabel = cycleKey === "annual" ? t.memberCurrentRowAmountAnnual : t.memberCurrentRowAmount;
+            var addonsLabel = formatAddons(m.addons, lang);
+            var cycleLabel = cycleKey === "annual" ? t.memberCycleAnnualShort : t.memberCycleMonthlyShort;
             var rows = [
               { k: t.memberCurrentRowPlan, v: escHTML(planLabel) },
               { k: t.memberCurrentRowSessions, v: sessionCount ? String(sessionCount) : "—" },
+              { k: t.memberCurrentRowCycle, v: escHTML(cycleLabel || "—") },
               { k: t.memberCurrentRowSchedule, v: escHTML(scheduleText || "—") },
-              { k: t.memberCurrentRowAmount, v: escHTML(amount) },
-              { k: t.memberCurrentRowOrderId, v: escHTML(m.orderId || "—") }
+              { k: amountLabel, v: escHTML(amount) }
             ];
+            if (addonsLabel) rows.push({ k: t.memberCurrentRowAddons, v: escHTML(addonsLabel) });
+            rows.push({ k: t.memberCurrentRowOrderId, v: escHTML(m.orderId || "—") });
             body.innerHTML = "<div class=\"fb-latest\">" + rows.map(function (r) {
               return "<div class=\"fb-row\"><span class=\"fb-k\">" + escHTML(r.k) + "</span><span class=\"fb-v\">" + r.v + "</span></div>";
             }).join("") + "</div>";

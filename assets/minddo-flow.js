@@ -802,7 +802,7 @@
     if (!current || !current.email) return false;
     savePayment({
       email: current.email,
-      amount: 369,
+      amount: 349,
       source: current.provider || "email",
       createdAt: new Date().toISOString()
     });
@@ -1424,7 +1424,7 @@
 
     writeJson(KEYS.payments, [{
       email: student.email,
-      amount: 369,
+      amount: 349,
       source: "email",
       studentId: student.studentId,
       createdAt: daysAgo(2)
@@ -1435,7 +1435,7 @@
       studentName: student.studentName,
       studentId: student.studentId,
       plan: "weekly2",
-      addons: ["mentor"],
+      addons: ["addon-1on1"],
       classMode: "1v1",
       billingCycle: "monthly",
       sessions: [
@@ -1444,7 +1444,7 @@
       ],
       weekday: "周一",
       timeSlot: "16:00 – 17:00",
-      totalMonthly: "$369.00",
+      totalMonthly: "$349.00",
       createdAt: daysAgo(2)
     }]);
 
