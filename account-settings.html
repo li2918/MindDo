@@ -176,9 +176,9 @@
         <span class="sep" aria-hidden="true">·</span>
         <span class="name" id="identityChipName"></span>
       </span>
-      <div class="page-tag"><span data-lang="zh">账户设置</span><span data-lang="en">Account Settings</span></div>
-      <h1><span data-lang="zh">家庭账户设置</span><span data-lang="en">Family Account Settings</span></h1>
-      <p><span data-lang="zh">在这里管理家庭下的所有账号 —— 学员独立登录学习系统，邀请另一位家长共同管理。只有主家长可以执行这些操作。</span><span data-lang="en">Manage every login under this family — give the student their own learning-system account and invite a co-parent. Only the primary guardian can make these changes.</span></p>
+      <div class="page-tag"><span data-lang="zh">学生账户</span><span data-lang="en">Student Accounts</span></div>
+      <h1><span data-lang="zh">学生账户信息</span><span data-lang="en">Student Account Info</span></h1>
+      <p><span data-lang="zh">查看与管理每位学员的登录信息、个人资料与课程入口。只有主家长可以执行修改操作。</span><span data-lang="en">View and manage each student's login, profile, and class actions. Only the primary guardian can make changes.</span></p>
     </div>
   </main>
 
@@ -190,15 +190,8 @@
         <p class="desc" id="permissionDesc"></p>
       </article>
 
-      <article class="panel" id="overviewPanel">
-        <span class="panel-tag"><span data-lang="zh">概览</span><span data-lang="en">Overview</span></span>
-        <h2 id="overviewTitle"></h2>
-        <p class="desc" id="overviewDesc"></p>
-        <div id="overviewMeta" class="member-list"></div>
-      </article>
-
       <article class="panel" id="studentsPanel">
-        <span class="panel-tag"><span data-lang="zh">学员账号</span><span data-lang="en">Student Logins</span></span>
+        <span class="panel-tag"><span data-lang="zh">学员账户</span><span data-lang="en">Student Accounts</span></span>
         <h2 id="studentsTitle"></h2>
         <p class="desc" id="studentsDesc"></p>
         <div id="studentList" class="member-list"></div>
@@ -209,99 +202,6 @@
             <button type="button" id="studentShareCopy"></button>
           </div>
           <div class="share-hint" id="studentShareHint"></div>
-        </div>
-
-        <div id="addChildForm" style="margin-top:18px;padding:16px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;">
-          <strong style="display:block;color:var(--clay);font-size:14px;margin-bottom:4px;"><span data-lang="zh">添加另一位孩子</span><span data-lang="en">Add Another Child</span></strong>
-          <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.6;"><span data-lang="zh">填写孩子基本信息后，可以单独为 TA 预约试课、生成学员登录。</span><span data-lang="en">Once added, you can book a trial or generate a login just for this child.</span></p>
-          <div class="form-grid">
-            <div class="field">
-              <label for="childName"><span data-lang="zh">学员姓名</span><span data-lang="en">Student Name</span></label>
-              <input id="childName" type="text" autocomplete="name" />
-            </div>
-            <div class="field">
-              <label for="childGrade"><span data-lang="zh">年级</span><span data-lang="en">Grade</span></label>
-              <select id="childGrade">
-                <option value="" data-zh="请选择" data-en="Select"></option>
-                <option value="K">K</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="childBirthday"><span data-lang="zh">出生日期</span><span data-lang="en">Birthday</span></label>
-              <input id="childBirthday" type="date" />
-            </div>
-            <div class="field">
-              <label for="childGender"><span data-lang="zh">性别</span><span data-lang="en">Gender</span></label>
-              <select id="childGender">
-                <option value="" data-zh="不填" data-en="Prefer not to say"></option>
-                <option value="female" data-zh="女" data-en="Female"></option>
-                <option value="male" data-zh="男" data-en="Male"></option>
-                <option value="other" data-zh="其他" data-en="Other"></option>
-              </select>
-            </div>
-          </div>
-          <div class="actions">
-            <button type="button" class="btn-primary" id="addChildBtn"><span data-lang="zh">添加孩子</span><span data-lang="en">Add Child</span></button>
-          </div>
-        </div>
-      </article>
-
-      <article class="panel" id="guardiansPanel">
-        <span class="panel-tag"><span data-lang="zh">家长账号</span><span data-lang="en">Guardian Logins</span></span>
-        <h2 id="guardiansTitle"></h2>
-        <p class="desc" id="guardiansDesc"></p>
-        <div id="guardianList" class="member-list"></div>
-
-        <div id="coparentForm" style="margin-top:16px;padding:16px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;">
-          <strong style="display:block;color:var(--clay);font-size:14px;margin-bottom:4px;"><span data-lang="zh">邀请副家长</span><span data-lang="en">Invite Co-parent</span></strong>
-          <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.6;"><span data-lang="zh">可以在注册后任何时候邀请。副家长激活后可以查看课表、反馈，但无法修改学员档案或账单。</span><span data-lang="en">You can send this invite any time — now or later. A co-parent can view schedules and feedback but can't change student profiles or billing.</span></p>
-          <div class="form-grid">
-            <div class="field">
-              <label for="cpEmail"><span data-lang="zh">邮箱</span><span data-lang="en">Email</span></label>
-              <input id="cpEmail" type="email" autocomplete="email" />
-            </div>
-            <div class="field">
-              <label for="cpName"><span data-lang="zh">姓名（可选）</span><span data-lang="en">Name (optional)</span></label>
-              <input id="cpName" type="text" autocomplete="name" />
-            </div>
-            <div class="field">
-              <label for="cpRelation"><span data-lang="zh">与学员关系</span><span data-lang="en">Relationship</span></label>
-              <select id="cpRelation">
-                <option value="" data-zh="请选择" data-en="Select"></option>
-                <option value="mother" data-zh="母亲" data-en="Mother"></option>
-                <option value="father" data-zh="父亲" data-en="Father"></option>
-                <option value="guardian" data-zh="监护人" data-en="Guardian"></option>
-                <option value="other" data-zh="其他" data-en="Other"></option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="cpPhone"><span data-lang="zh">电话（可选）</span><span data-lang="en">Phone (optional)</span></label>
-              <input id="cpPhone" type="tel" autocomplete="tel" />
-            </div>
-          </div>
-          <div class="actions">
-            <button type="button" class="btn-primary" id="cpInviteBtn"><span data-lang="zh">发送邀请</span><span data-lang="en">Send Invite</span></button>
-          </div>
-          <div id="coparentShare" class="share-block" style="display:none;">
-            <strong id="coparentShareTitle"></strong>
-            <div class="share-link">
-              <input id="coparentShareUrl" type="text" readonly />
-              <button type="button" id="coparentShareCopy"></button>
-            </div>
-            <div class="share-hint" id="coparentShareHint"></div>
-          </div>
         </div>
       </article>
 
@@ -341,14 +241,10 @@
     (function () {
       var I18N = {
         "zh-CN": {
-          pageTitle: "家庭账户设置",
-          permissionDesc: "当前账户不是主家长，只能查看本页信息，无法生成学员登录或邀请副家长。",
-          overviewTitle: "家庭信息",
-          overviewDesc: "下面是本家庭下所有成员与登录账号。",
-          studentsTitle: "学员登录",
-          studentsDesc: "为学员生成独立登录账号，他们可以进入学习系统查看课程、作业与反馈。",
-          generateLogin: "生成学员登录",
-          regenerateLogin: "重新生成登录链接",
+          pageTitle: "学生账户信息",
+          permissionDesc: "当前账户不是主家长，只能查看本页信息，无法修改学员资料或重置登录。",
+          studentsTitle: "学员账户",
+          studentsDesc: "查看每位学员的资料、登录信息与课程入口；可重置密码、复制登录信息或将其从家庭中移除。",
           credsEmail: "登录邮箱",
           credsPassword: "密码",
           credsReveal: "显示",
@@ -359,33 +255,24 @@
           credsNoPassword: "——",
           credsResetConfirm: "重置 {name} 的登录密码？新密码会覆盖当前密码。",
           credsResetDone: "{name} 的密码已重置",
-          navigatingToTrial: "已添加 {name}，跳转到试课预约……",
           studentLoginActive: "已激活，邮箱：{email}",
           studentLoginPending: "待激活 · 链接已发送",
           studentShareTitle: "学员激活链接（请分享给学员）",
           studentShareCopy: "复制链接",
           studentShareCopied: "已复制",
           studentShareHint: "有效期 14 天。学员点击后可设置密码并完成登录。",
-          guardiansTitle: "家长登录",
-          guardiansDesc: "主家长负责账户管理与付费；副家长享有读/写（部分）权限，可查看学员情况。",
           primaryRole: "主家长",
           secondaryRole: "副家长",
           studentRole: "学员",
           pendingStatus: "待激活",
           activeStatus: "已激活",
-          coparentInviteBtn: "发送邀请",
-          coparentInviteSent: "邀请已发送到 {email}",
-          coparentInviteExisted: "该邮箱已有账号，无法重复邀请。",
-          coparentMissingEmail: "请填写邮箱后再邀请。",
-          coparentShareTitle: "副家长激活链接（如邮件未送达可直接转发）",
-          noStudentsYet: "家庭下暂无学员。完成试课报名后会自动建立。",
+          noStudentsYet: "家庭下暂无学员。",
           noFamilyYet: "当前还未加入任何家庭账户，请先完成注册。",
+          addChildCta: "添加孩子 →",
           copyHint: "复制成功",
           copyFail: "复制失败，请手动复制。",
           bookTrial: "为此学员预约试课",
           startEnroll: "为此学员选课",
-          addChildMissingName: "请填写学员姓名再添加。",
-          addChildSuccess: "已添加 {name}，可为 TA 预约试课或生成学员登录。",
           removeStudent: "删除学员",
           removeStudentAria: "删除学员 {name}",
           deleteModalTitle: "删除学员账号？",
@@ -403,14 +290,10 @@
           deleteFailed: "删除失败，请稍后再试。"
         },
         en: {
-          pageTitle: "Family Account Settings",
-          permissionDesc: "You're not the primary guardian — you can view everything here but cannot generate logins or invite co-parents.",
-          overviewTitle: "Family Info",
-          overviewDesc: "Everyone and every login under this family.",
-          studentsTitle: "Student Logins",
-          studentsDesc: "Create a learning-system login for the student. They can sign in to see classes, homework, and feedback.",
-          generateLogin: "Generate Student Login",
-          regenerateLogin: "Regenerate link",
+          pageTitle: "Student Account Info",
+          permissionDesc: "You're not the primary guardian — you can view everything here but cannot edit student profiles or reset logins.",
+          studentsTitle: "Student Accounts",
+          studentsDesc: "Review each student's profile, login, and class actions. You can reset passwords, copy credentials, or remove a student from the family.",
           credsEmail: "Login email",
           credsPassword: "Password",
           credsReveal: "Show",
@@ -421,33 +304,24 @@
           credsNoPassword: "—",
           credsResetConfirm: "Reset {name}'s password? The new one will replace the current one.",
           credsResetDone: "{name}'s password was reset",
-          navigatingToTrial: "Added {name} — taking you to trial booking…",
           studentLoginActive: "Active · {email}",
           studentLoginPending: "Pending activation · link issued",
           studentShareTitle: "Share this activation link with the student",
           studentShareCopy: "Copy link",
           studentShareCopied: "Copied",
           studentShareHint: "Valid 14 days. Student sets a password on the linked page to finish activation.",
-          guardiansTitle: "Guardian Logins",
-          guardiansDesc: "The primary guardian manages the account and billing; the co-parent has read / limited write access for schedules and updates.",
           primaryRole: "Primary",
           secondaryRole: "Co-parent",
           studentRole: "Student",
           pendingStatus: "Pending",
           activeStatus: "Active",
-          coparentInviteBtn: "Send Invite",
-          coparentInviteSent: "Invite sent to {email}",
-          coparentInviteExisted: "That email already has an account — can't re-invite.",
-          coparentMissingEmail: "Please enter an email first.",
-          coparentShareTitle: "Co-parent activation link (forward it if the email didn't arrive)",
-          noStudentsYet: "No students yet — they'll appear here once trial registration completes.",
+          noStudentsYet: "No students yet.",
           noFamilyYet: "You're not part of a family account yet — please register first.",
+          addChildCta: "Add a child →",
           copyHint: "Copied to clipboard",
           copyFail: "Copy failed — please copy manually.",
           bookTrial: "Book a trial",
           startEnroll: "Enroll in a course",
-          addChildMissingName: "Please enter a student name first.",
-          addChildSuccess: "Added {name} — you can book a trial or generate a login now.",
           removeStudent: "Remove",
           removeStudentAria: "Remove student {name}",
           deleteModalTitle: "Delete this student?",
@@ -475,16 +349,11 @@
         if (!flow.requireLogin("account-settings.html", "account_settings")) return;
       }
 
-      var overviewMeta = document.getElementById("overviewMeta");
       var studentList = document.getElementById("studentList");
-      var guardianList = document.getElementById("guardianList");
       var permissionNotice = document.getElementById("permissionNotice");
       var studentShare = document.getElementById("studentShare");
       var studentShareUrl = document.getElementById("studentShareUrl");
-      var coparentShare = document.getElementById("coparentShare");
-      var coparentShareUrl = document.getElementById("coparentShareUrl");
       var toast = document.getElementById("toast");
-      var cpInviteBtn = document.getElementById("cpInviteBtn");
 
       function showToast(msg) {
         toast.textContent = msg;
@@ -527,18 +396,11 @@
         });
         localizedSelect();
 
-        document.getElementById("overviewTitle").textContent = t.overviewTitle;
-        document.getElementById("overviewDesc").textContent = t.overviewDesc;
         document.getElementById("studentsTitle").textContent = t.studentsTitle;
         document.getElementById("studentsDesc").textContent = t.studentsDesc;
-        document.getElementById("guardiansTitle").textContent = t.guardiansTitle;
-        document.getElementById("guardiansDesc").textContent = t.guardiansDesc;
         document.getElementById("studentShareTitle").textContent = t.studentShareTitle;
         document.getElementById("studentShareCopy").textContent = t.studentShareCopy;
         document.getElementById("studentShareHint").textContent = t.studentShareHint;
-        document.getElementById("coparentShareTitle").textContent = t.coparentShareTitle;
-        document.getElementById("coparentShareCopy").textContent = t.studentShareCopy;
-        document.getElementById("coparentShareHint").textContent = t.studentShareHint;
         document.getElementById("permissionDesc").textContent = t.permissionDesc;
 
         var account = flow && flow.getCurrentAccount ? flow.getCurrentAccount() : null;
@@ -566,34 +428,21 @@
         }
 
         if (!family) {
-          overviewMeta.innerHTML = "<div class='empty'>" + escapeHtml(t.noFamilyYet) + "</div>";
-          studentList.innerHTML = "";
-          guardianList.innerHTML = "";
-          document.getElementById("coparentForm").style.display = "none";
+          studentList.innerHTML = "<div class='empty'>" + escapeHtml(t.noFamilyYet) + "</div>";
           return;
         }
 
-        // Overview
-        var primaryGuardian = flow.findGuardianById(family.primaryGuardianId);
-        overviewMeta.innerHTML = [
-          "<div class='member'>",
-          "<div>",
-          "<div class='mname'>" + escapeHtml(primaryGuardian ? (primaryGuardian.name || primaryGuardian.email || "—") : "—") + "</div>",
-          "<div class='mmeta'>Family ID · " + escapeHtml(family.familyId) + "</div>",
-          "</div>",
-          "<div class='mactions'><span class='role-pill primary'>" + escapeHtml(t.primaryRole) + "</span></div>",
-          "</div>"
-        ].join("");
-
         var isPrimary = account && account.role === flow.ROLES.guardianPrimary;
         permissionNotice.style.display = isPrimary ? "none" : "block";
-        document.getElementById("coparentForm").style.display = isPrimary ? "block" : "none";
-        document.getElementById("addChildForm").style.display = isPrimary ? "block" : "none";
 
-        // Students
+        // Students — primary content of this page. The "add child" flow
+        // lives on add-child.html; this surface is purely for editing
+        // info on existing children.
         var students = flow.listFamilyStudents(family.familyId);
         if (!students.length) {
-          studentList.innerHTML = "<div class='empty'>" + escapeHtml(t.noStudentsYet) + "</div>";
+          studentList.innerHTML = "<div class='empty'>" + escapeHtml(t.noStudentsYet)
+            + " <a class='btn-secondary' style='margin-left:10px;' href='add-child.html'>" + escapeHtml(t.addChildCta) + "</a>"
+            + "</div>";
         } else {
           var accounts = flow.listFamilyAccounts(family.familyId);
           studentList.innerHTML = students.map(function (s) {
@@ -642,26 +491,6 @@
             "</div>";
           }).join("");
         }
-
-        // Guardians
-        var guardians = flow.listFamilyGuardians(family.familyId);
-        guardianList.innerHTML = guardians.map(function (g) {
-          var acct = flow.findAccountById(g.accountId);
-          var roleLabel = g.isPrimary ? t.primaryRole : t.secondaryRole;
-          var roleClass = g.isPrimary ? "primary" : "secondary";
-          var statusLabel = acct && acct.status === "active" ? t.activeStatus : t.pendingStatus;
-          var statusClass = acct && acct.status === "active" ? "" : "pending";
-          return "<div class='member'>" +
-            "<div>" +
-              "<div class='mname'>" + escapeHtml(g.name || g.email || "—") + "</div>" +
-              "<div class='mmeta'>" + escapeHtml(g.email || "") + (g.phone ? " · " + escapeHtml(g.phone) : "") + "</div>" +
-            "</div>" +
-            "<div class='mactions'>" +
-              "<span class='role-pill " + roleClass + "'>" + escapeHtml(roleLabel) + "</span>" +
-              (acct && acct.status !== "active" ? "<span class='role-pill " + statusClass + "'>" + escapeHtml(statusLabel) + "</span>" : "") +
-            "</div>" +
-          "</div>";
-        }).join("");
       }
 
       studentList.addEventListener("click", function (e) {
@@ -786,91 +615,17 @@
         closeDeleteModal();
         render();
 
-        // If this was the last student in the family, give the parent an
-        // explicit nudge toward the Add Child form so they don't get stuck
-        // with an empty family.
         var remaining = flow.listFamilyStudents ? (flow.listFamilyStudents(account.familyId) || []) : [];
         if (remaining.length === 0) {
           showToast(t.deleteSuccessEmpty.replace("{name}", name));
-          var addForm = document.getElementById("addChildForm");
-          var nameInput = document.getElementById("childName");
-          if (addForm) {
-            try { addForm.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
-            setTimeout(function () { if (nameInput) nameInput.focus(); }, 280);
-          }
         } else {
           showToast(t.deleteSuccess.replace("{name}", name));
         }
       });
 
-      document.getElementById("addChildBtn").addEventListener("click", function () {
-        var t = I18N[lang];
-        var name = document.getElementById("childName").value.trim();
-        if (!name) { showToast(t.addChildMissingName); return; }
-        var account = flow && flow.getCurrentAccount ? flow.getCurrentAccount() : null;
-        if (!account || !flow.addChildToFamily) return;
-        var student = flow.addChildToFamily(account.familyId, {
-          name: name,
-          grade: document.getElementById("childGrade").value,
-          birthday: document.getElementById("childBirthday").value,
-          gender: document.getElementById("childGender").value
-        });
-        if (!student) return;
-
-        // Clear the form immediately so if the user navigates back it's fresh.
-        document.getElementById("childName").value = "";
-        document.getElementById("childGrade").value = "";
-        document.getElementById("childBirthday").value = "";
-        document.getElementById("childGender").value = "";
-
-        // Every new child must go through a trial before enrolling — route
-        // the primary guardian into the booking flow directly, scoped to
-        // the freshly minted studentId. The student's learning login was
-        // already auto-provisioned inside addChildToFamily and is visible
-        // on this page on return.
-        showToast(t.navigatingToTrial.replace("{name}", student.name || ""));
-        setTimeout(function () {
-          window.location.href = "trial.html?sid=" + encodeURIComponent(student.studentId);
-        }, 700);
-      });
-
       document.getElementById("studentShareCopy").addEventListener("click", function () {
         if (!studentShareUrl.value) return;
         copyToClipboard(studentShareUrl.value).then(function (ok) {
-          showToast(ok ? I18N[lang].copyHint : I18N[lang].copyFail);
-        });
-      });
-
-      cpInviteBtn.addEventListener("click", function () {
-        var t = I18N[lang];
-        var email = document.getElementById("cpEmail").value.trim();
-        if (!email) { showToast(t.coparentMissingEmail); return; }
-        var account = flow && flow.getCurrentAccount ? flow.getCurrentAccount() : null;
-        if (!account || !flow.inviteCoParent) return;
-        var result = flow.inviteCoParent(account.familyId, {
-          email: email,
-          name: document.getElementById("cpName").value.trim(),
-          relation: document.getElementById("cpRelation").value,
-          phone: document.getElementById("cpPhone").value.trim(),
-          issuedBy: account.accountId
-        });
-        if (!result) return;
-        if (result.existed) { showToast(t.coparentInviteExisted); return; }
-        showToast(t.coparentInviteSent.replace("{email}", email));
-        if (result.claimUrl) {
-          coparentShare.style.display = "block";
-          coparentShareUrl.value = result.claimUrl;
-        }
-        document.getElementById("cpEmail").value = "";
-        document.getElementById("cpName").value = "";
-        document.getElementById("cpRelation").value = "";
-        document.getElementById("cpPhone").value = "";
-        render();
-      });
-
-      document.getElementById("coparentShareCopy").addEventListener("click", function () {
-        if (!coparentShareUrl.value) return;
-        copyToClipboard(coparentShareUrl.value).then(function (ok) {
           showToast(ok ? I18N[lang].copyHint : I18N[lang].copyFail);
         });
       });
