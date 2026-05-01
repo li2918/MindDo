@@ -1109,12 +1109,6 @@
       font-family: inherit; cursor: pointer; transition: 0.12s; }
     .billing-select:hover { border-color: var(--gold); }
     .billing-select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(14,165,233,0.15); }
-    .billing-export-btn { background: linear-gradient(135deg,#bae6fd,var(--gold)); color: #0b2540;
-      border: 1px solid rgba(14,165,233,0.4); border-radius: 999px; padding: 7px 16px;
-      font: inherit; font-size: 12.5px; font-weight: 800; cursor: pointer;
-      font-family: inherit; transition: 0.12s; box-shadow: 0 4px 10px rgba(14,165,233,0.18); }
-    .billing-export-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(14,165,233,0.28); }
-    .billing-export-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
     .billing-empty-filter { padding: 24px 16px; text-align: center; color: var(--muted);
       font-size: 13px; line-height: 1.6; background: rgba(240,249,255,0.6);
       border: 1px dashed rgba(30,58,95,0.18); border-radius: 12px; }
@@ -1610,7 +1604,6 @@
               <div class="billing-filter-secondary">
                 <select id="billingStatusFilter" class="billing-select"></select>
                 <select id="billingMethodFilter" class="billing-select"></select>
-                <button type="button" class="billing-export-btn" id="billingExportBtn" data-i18n="billingExport"></button>
               </div>
             </div>
 
@@ -2258,7 +2251,6 @@
           billingStatusFilterPaid: "仅已完成",
           billingStatusFilterPending: "仅处理中",
           billingMethodAll: "所有支付方式",
-          billingExport: "导出 CSV",
           billingFilterEmpty: "当前筛选条件下没有付费记录。",
           billingTotalFilteredFmt: "筛选后 {n} 条 · 已支付 ${total}",
           tabSchedule: "课程安排",
@@ -2693,7 +2685,6 @@
           billingStatusFilterPaid: "Paid Only",
           billingStatusFilterPending: "Processing Only",
           billingMethodAll: "All Methods",
-          billingExport: "Export CSV",
           billingFilterEmpty: "No payments match the current filters.",
           billingTotalFilteredFmt: "{n} filtered · ${total} paid",
           tabSchedule: "Schedule",
@@ -4082,7 +4073,6 @@
           var rangeBar = document.getElementById("billingRangeFilter");
           var statusSel = document.getElementById("billingStatusFilter");
           var methodSel = document.getElementById("billingMethodFilter");
-          var exportBtn = document.getElementById("billingExportBtn");
           if (!bbody) return;
 
           function fmtDateTime(iso) {
@@ -4184,8 +4174,6 @@
                 totalChip.hidden = true;
               }
             }
-
-            if (exportBtn) exportBtn.disabled = filtered.length === 0;
 
             if (!allPayments.length) {
               bbody.innerHTML = "<div class=\"portfolio-empty\">" + escHTML(t.billingEmpty) + "</div>";
@@ -5110,14 +5098,13 @@
           .replace(/"/g, "&quot;");
       }
 
-      // Billing tab handlers — filter pills, status / method dropdowns,
-      // CSV export. Bound once at script load; render block re-runs on
-      // each interaction via window.__minddoBillingPay.renderTable().
+      // Billing tab handlers — filter pills + status / method dropdowns.
+      // Per-row "Download Invoice" handles the export side; no page-level
+      // CSV export — invoices are the document of record.
       (function () {
         var rangeBar = document.getElementById("billingRangeFilter");
         var statusSel = document.getElementById("billingStatusFilter");
         var methodSel = document.getElementById("billingMethodFilter");
-        var exportBtn = document.getElementById("billingExportBtn");
         function applyAndRerender() {
           var s = window.__minddoBillingPay;
           if (s && typeof s.renderTable === "function") s.renderTable();
@@ -5146,49 +5133,6 @@
             window.__minddoBillingState = window.__minddoBillingState || {};
             window.__minddoBillingState.method = methodSel.value;
             applyAndRerender();
-          });
-        }
-        if (exportBtn) {
-          exportBtn.addEventListener("click", function () {
-            var s = window.__minddoBillingPay;
-            if (!s) return;
-            var rows = s.applyFilters(s.all);
-            if (!rows.length) return;
-            // Build CSV. Minimal escape-quotes pass to handle commas /
-            // newlines / quotes inside fields.
-            function csvCell(v) {
-              if (v == null) return "";
-              var str = String(v);
-              if (/[",\r\n]/.test(str)) return "\"" + str.replace(/"/g, "\"\"") + "\"";
-              return str;
-            }
-            var headers = [s.t.billingColDate, s.t.billingColPlan, s.t.billingColAmount, s.t.billingColMethod, s.t.billingColStatus, "Order ID"];
-            var body = rows.map(function (p) {
-              var member = (p.orderId && s.memberMap[p.orderId]) || null;
-              var planText = member && (member.planLabel || formatPlan(member.plan, s.lang)) || "";
-              var amount = (typeof p.amount === "number") ? Number(p.amount).toFixed(2) : (p.amount || "");
-              var statusKey = (p.status === "pending") ? "pending" : "paid";
-              var statusText = statusKey === "pending" ? s.t.billingStatusPending : s.t.billingStatusPaid;
-              return [
-                s.fmtDateTime(p.createdAt || p.paidAt),
-                planText,
-                amount,
-                s.methodLabel(p.method || p.source),
-                statusText,
-                p.orderId || ""
-              ].map(csvCell).join(",");
-            }).join("\r\n");
-            // BOM keeps Excel happy with the Chinese cells.
-            var csv = "﻿" + headers.map(csvCell).join(",") + "\r\n" + body;
-            var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement("a");
-            a.href = url;
-            a.download = "minddo-billing-" + new Date().toISOString().slice(0, 10) + ".csv";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
           });
         }
       })();

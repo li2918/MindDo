@@ -9,8 +9,11 @@
   <title>付费发票 | MindDo Invoice</title>
   <style>
     :root {
-      --bg:#f6f8fb; --line:rgba(30,58,95,0.16); --text:#0f172a; --muted:#5a6b81;
-      --clay:#1e3a5f; --gold:#0ea5e9; --gold-deep:#0284c7;
+      --bg:#eef2f8; --paper:#ffffff; --line:rgba(30,58,95,0.18);
+      --line-soft:rgba(30,58,95,0.08);
+      --text:#0f172a; --muted:#5a6b81; --clay:#1e3a5f; --brown:#14294a;
+      --gold:#d89c36; --gold-soft:#f3d99a; --sky:#0ea5e9; --sky-deep:#0284c7;
+      --sand:#f8f3e6;
     }
     *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
     body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;
@@ -18,12 +21,13 @@
     [data-lang] { display:none; }
     html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
 
-    .toolbar { max-width:760px; margin:0 auto 16px; display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    /* Toolbar — print-only chrome, hidden on print */
+    .toolbar { max-width:820px; margin:0 auto 16px; display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
     .btn { background:#fff; color:var(--clay); border:1px solid var(--line); border-radius:999px;
       padding:9px 18px; font:inherit; font-size:13px; font-weight:700; cursor:pointer; text-decoration:none;
       display:inline-flex; align-items:center; gap:6px; transition:0.15s; }
-    .btn:hover { transform:translateY(-1px); border-color:var(--gold); }
-    .btn.primary { background:linear-gradient(135deg,#bae6fd,var(--gold)); color:#0b2540;
+    .btn:hover { transform:translateY(-1px); border-color:var(--sky); }
+    .btn.primary { background:linear-gradient(135deg,#bae6fd,var(--sky)); color:#0b2540;
       border-color:rgba(14,165,233,0.4); box-shadow:0 4px 12px rgba(14,165,233,0.22); }
     .btn.primary:hover { box-shadow:0 8px 20px rgba(14,165,233,0.3); }
     .lang-toggle { background:#fff; border:1px solid var(--line); border-radius:999px; padding:3px;
@@ -32,52 +36,139 @@
       color:var(--muted); cursor:pointer; font-family:inherit; }
     .lang-toggle button.active { background:var(--clay); color:#fff; }
 
+    /* Invoice paper — A4 proportions, gold accent bar, watermark logo */
     .invoice {
-      max-width:760px; margin:0 auto; background:#fff; border:1px solid var(--line);
-      border-radius:18px; box-shadow:0 18px 44px rgba(15,23,42,0.08);
-      padding:42px 48px; position:relative;
+      max-width:820px; margin:0 auto; background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:6px;
+      box-shadow:0 22px 48px rgba(15,23,42,0.10);
+      padding:0;
+      position:relative;
+      overflow:hidden;
     }
-    .inv-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px;
-      flex-wrap:wrap; padding-bottom:24px; border-bottom:1px solid var(--line); margin-bottom:24px; }
-    .inv-brand { display:flex; gap:12px; align-items:center; }
-    .inv-brand img { width:44px; height:44px; object-fit:contain; }
-    .inv-brand-name { font-size:20px; font-weight:900; color:var(--clay); letter-spacing:-0.01em; }
-    .inv-brand-tag { font-size:11.5px; color:var(--muted); margin-top:2px; line-height:1.5; }
-    .inv-stamp { text-align:right; }
-    .inv-stamp .label { font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase;
-      color:var(--muted); }
-    .inv-stamp .num { font-size:18px; font-weight:900; color:var(--clay); margin-top:4px;
-      font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace; }
-    .inv-stamp .date { font-size:12px; color:var(--muted); margin-top:4px; }
-    .inv-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:28px; }
-    .inv-block .k { font-size:10.5px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase;
-      color:var(--muted); margin-bottom:6px; }
-    .inv-block .v { font-size:13.5px; color:var(--clay); line-height:1.6; }
-    .inv-block .v strong { font-weight:800; }
-    table.inv-items { width:100%; border-collapse:collapse; margin-bottom:24px; }
-    .inv-items th, .inv-items td { padding:10px 12px; text-align:left; font-size:13px; }
-    .inv-items th { background:rgba(186,230,253,0.18); color:var(--clay); font-weight:800;
-      font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
-      border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
-    .inv-items td { border-bottom:1px solid rgba(30,58,95,0.08); }
-    .inv-items td:last-child, .inv-items th:last-child { text-align:right; }
-    .inv-totals { display:grid; grid-template-columns:1fr auto; gap:6px 28px;
-      max-width:340px; margin-left:auto; font-size:13px; }
-    .inv-totals .label { color:var(--muted); }
-    .inv-totals .value { color:var(--clay); font-weight:700; text-align:right; }
-    .inv-totals .grand-label { color:var(--clay); font-weight:800; padding-top:10px;
-      border-top:1px solid var(--line); margin-top:4px; }
-    .inv-totals .grand-value { color:var(--clay); font-weight:900; font-size:18px; padding-top:10px;
-      border-top:1px solid var(--line); margin-top:4px; text-align:right; }
-    .inv-foot { margin-top:28px; padding-top:18px; border-top:1px solid var(--line);
-      font-size:11.5px; color:var(--muted); line-height:1.7; }
-    .inv-foot strong { color:var(--clay); }
-    .stamp { position:absolute; top:120px; right:48px; transform:rotate(-12deg);
-      font-size:34px; font-weight:900; letter-spacing:0.05em; color:rgba(110,143,87,0.25);
-      border:5px solid rgba(110,143,87,0.25); padding:8px 18px; border-radius:8px;
-      pointer-events:none; user-select:none; }
-    .stamp.pending { color:rgba(216,156,54,0.3); border-color:rgba(216,156,54,0.3); }
+    /* Top gold accent bar — subtle "official document" cue */
+    .invoice::before {
+      content:""; position:absolute; top:0; left:0; right:0; height:6px;
+      background:linear-gradient(90deg,var(--gold) 0%,var(--gold-soft) 50%,var(--gold) 100%);
+    }
+    /* Watermark logo behind the body */
+    .inv-watermark {
+      position:absolute; right:-40px; bottom:-40px; width:340px; height:340px;
+      opacity:0.04; pointer-events:none; user-select:none;
+      background:url("assets/logo.png") center/contain no-repeat;
+    }
+    .inv-body { position:relative; padding:48px 56px 36px; }
 
+    /* Masthead */
+    .inv-head { display:flex; justify-content:space-between; align-items:flex-start; gap:24px;
+      flex-wrap:wrap; padding-bottom:24px; border-bottom:2px solid var(--clay); margin-bottom:24px; }
+    .inv-brand { display:flex; gap:14px; align-items:flex-start; }
+    .inv-brand img { width:54px; height:54px; object-fit:contain; flex:none; }
+    .inv-brand-name { font-size:24px; font-weight:900; color:var(--clay); letter-spacing:-0.02em; line-height:1.1; }
+    .inv-brand-tag { font-size:11.5px; color:var(--muted); margin-top:4px; line-height:1.55; }
+    .inv-brand-co { font-size:11px; color:var(--muted); margin-top:6px; line-height:1.6; max-width:280px; }
+    .inv-brand-co .row { display:flex; gap:6px; }
+    .inv-brand-co .lbl { color:var(--clay); font-weight:700; min-width:34px; }
+
+    .inv-meta { text-align:right; min-width:200px; }
+    .inv-meta .doc-title { font-size:24px; font-weight:900; color:var(--clay);
+      letter-spacing:0.04em; text-transform:uppercase; line-height:1.05; margin-bottom:10px; }
+    .inv-meta .doc-sub { font-size:10.5px; font-weight:700; letter-spacing:0.16em;
+      text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+    .inv-meta .meta-row { font-size:12px; color:var(--muted); margin-top:5px; line-height:1.5;
+      display:flex; justify-content:flex-end; gap:6px; }
+    .inv-meta .meta-row .lbl { color:var(--muted); font-weight:700;
+      letter-spacing:0.06em; text-transform:uppercase; font-size:10px; align-self:center; }
+    .inv-meta .meta-row .val { color:var(--clay); font-weight:800; font-size:13px;
+      font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace; }
+    .inv-meta .meta-row.id .val { font-size:14px; }
+
+    /* Bill-to / payment grid */
+    .inv-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:30px; }
+    .inv-block { background:rgba(248,243,230,0.5);
+      border:1px solid var(--line-soft); border-radius:8px; padding:14px 16px; }
+    .inv-block .k { font-size:10px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase;
+      color:var(--gold); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--line-soft); }
+    .inv-block .v { font-size:13px; color:var(--clay); line-height:1.7; }
+    .inv-block .v strong { font-weight:800; color:var(--brown); }
+    .inv-block .v .pill { font-size:11px; color:var(--muted); }
+
+    /* Itemized table */
+    table.inv-items { width:100%; border-collapse:collapse; margin-bottom:24px; }
+    .inv-items th, .inv-items td { padding:12px 14px; text-align:left; font-size:13px; vertical-align:top; }
+    .inv-items th { background:var(--clay); color:#f0f9ff; font-weight:800;
+      font-size:11px; letter-spacing:0.08em; text-transform:uppercase; }
+    .inv-items th:first-child { border-radius:6px 0 0 6px; }
+    .inv-items th:last-child { border-radius:0 6px 6px 0; }
+    .inv-items td { border-bottom:1px solid var(--line-soft); }
+    .inv-items tr:last-child td { border-bottom:none; }
+    .inv-items td:nth-child(2),
+    .inv-items th:nth-child(2),
+    .inv-items td:nth-child(3),
+    .inv-items th:nth-child(3),
+    .inv-items td:last-child,
+    .inv-items th:last-child { text-align:right; white-space:nowrap; }
+    .inv-items .item-name { font-weight:800; color:var(--clay); }
+    .inv-items .item-detail { font-size:11.5px; color:var(--muted); margin-top:3px; line-height:1.55; }
+
+    /* Totals — right-aligned ladder */
+    .inv-totals-wrap { display:flex; justify-content:flex-end; margin-bottom:32px; }
+    .inv-totals { display:grid; grid-template-columns:auto auto; gap:8px 36px;
+      min-width:300px; font-size:13px; }
+    .inv-totals .label { color:var(--muted); text-align:right; }
+    .inv-totals .value { color:var(--clay); font-weight:700; text-align:right;
+      font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace; }
+    .inv-totals .grand-row {
+      grid-column:1 / -1; display:grid; grid-template-columns:auto auto; gap:36px;
+      padding-top:12px; margin-top:6px; border-top:2px solid var(--clay);
+    }
+    .inv-totals .grand-row .label { color:var(--clay); font-weight:900;
+      font-size:14px; letter-spacing:0.04em; text-transform:uppercase; align-self:center; }
+    .inv-totals .grand-row .value { color:var(--clay); font-weight:900; font-size:24px;
+      font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace; }
+
+    /* Status stamp — diagonal, parchment-like */
+    .stamp { position:absolute; top:160px; right:60px; transform:rotate(-14deg);
+      font-size:38px; font-weight:900; letter-spacing:0.06em;
+      color:rgba(110,143,87,0.32);
+      border:5px solid rgba(110,143,87,0.32);
+      padding:10px 22px; border-radius:10px;
+      pointer-events:none; user-select:none;
+      font-family:"Helvetica Neue","PingFang SC",sans-serif;
+    }
+    .stamp.pending { color:rgba(216,156,54,0.4); border-color:rgba(216,156,54,0.4); }
+
+    /* Footer block — terms + signature line */
+    .inv-foot { padding-top:18px; border-top:1px solid var(--line-soft); }
+    .inv-foot .terms { font-size:11px; color:var(--muted); line-height:1.7; margin-bottom:18px; }
+    .inv-foot .terms strong { color:var(--clay); }
+    .inv-foot .terms ul { margin:6px 0 0 16px; padding:0; }
+    .inv-foot .terms li { margin-bottom:2px; }
+    .inv-sig {
+      display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-top:18px;
+      padding-top:14px;
+    }
+    .inv-sig .col { font-size:10.5px; color:var(--muted); }
+    .inv-sig .col .line { display:block; height:38px; border-bottom:1px solid var(--clay);
+      margin-bottom:6px; position:relative; }
+    .inv-sig .col .line::before {
+      content:""; position:absolute; bottom:6px; left:0; right:0; height:auto;
+    }
+    .inv-sig .col.signed .line {
+      background:url("assets/logo.png") left bottom/auto 32px no-repeat;
+      background-position:8px 4px;
+    }
+    .inv-sig .col .role { font-weight:800; letter-spacing:0.1em; text-transform:uppercase;
+      color:var(--clay); }
+
+    .inv-tagline {
+      text-align:center; margin-top:22px; padding-top:14px;
+      border-top:1px dashed var(--line-soft);
+      font-size:10.5px; color:var(--muted); letter-spacing:0.04em; line-height:1.7;
+    }
+    .inv-tagline strong { color:var(--clay); font-weight:800; }
+
+    /* Error fallback */
     .err { max-width:760px; margin:0 auto; padding:32px; background:#fff;
       border:1px dashed var(--line); border-radius:16px; text-align:center; color:var(--muted); }
     .err strong { display:block; color:var(--clay); font-size:16px; margin-bottom:6px; }
@@ -85,12 +176,20 @@
     @media print {
       body { background:#fff; padding:0; }
       .toolbar { display:none; }
-      .invoice { box-shadow:none; border:none; border-radius:0; padding:24px 32px; }
+      .invoice { box-shadow:none; border:none; border-radius:0; max-width:none; }
+      .invoice::before { height:8px; }
+      .inv-body { padding:32px 40px; }
+      @page { margin: 14mm; size: A4; }
     }
-    @media (max-width: 640px) {
-      .invoice { padding:28px 22px; }
+    @media (max-width: 720px) {
+      .inv-body { padding:32px 24px 24px; }
+      .inv-head { gap:14px; }
+      .inv-meta { text-align:left; }
+      .inv-meta .meta-row { justify-content:flex-start; }
       .inv-grid { grid-template-columns:1fr; }
-      .stamp { right:22px; top:100px; font-size:26px; }
+      .stamp { right:24px; top:120px; font-size:28px; padding:8px 16px; }
+      .inv-sig { grid-template-columns:1fr; gap:18px; }
+      .inv-totals { min-width:0; width:100%; }
     }
   </style>
   <link rel="stylesheet" href="assets/minddo-responsive.css" />
@@ -105,7 +204,7 @@
       <span data-lang="zh">关闭</span><span data-lang="en">Close</span>
     </button>
     <button type="button" class="btn primary" id="printBtn">
-      <span data-lang="zh">打印 / 保存为 PDF</span><span data-lang="en">Print / Save as PDF</span>
+      <span data-lang="zh">下载 PDF / 打印</span><span data-lang="en">Download PDF / Print</span>
     </button>
   </div>
 
@@ -114,70 +213,135 @@
   <script src="assets/minddo-flow.js"></script>
   <script>
     (function () {
+      // Bilingual i18n table for the invoice surface. Kept in-file because
+      // this page is intentionally standalone (parents may save the HTML
+      // for their records, so it shouldn't depend on async resources).
       var I18N = {
         "zh-CN": {
+          docTitle: "Invoice",
+          docSub: "MindDo 付费凭证",
           tag: "MindDo · AI Learning Center",
-          stampPaid: "已支付",
-          stampPending: "处理中",
+          companyAddr: [
+            "美国加州尔湾校区",
+            "17875 Von Karman Ave, Suite 250",
+            "Irvine, CA 92614, USA"
+          ],
+          companyContact: [
+            { lbl: "电话", val: "+1 (949) 555-0188" },
+            { lbl: "邮箱", val: "support@minddo.ai" },
+            { lbl: "网址", val: "minddo.ai" }
+          ],
+          companyTaxLine: "Tax ID · 88-1234567 · CA Reg. C0234567",
+          stampPaid: "PAID 已支付",
+          stampPending: "PROCESSING 处理中",
           invNumLabel: "发票编号",
           dateLabel: "开票日期",
-          billToLabel: "客户信息",
+          dueLabel: "付款日期",
+          billToLabel: "客户信息 · BILL TO",
           billToName: "学员",
-          billToParent: "家长",
+          billToParent: "家长 / 监护人",
           billToEmail: "邮箱",
           billToFamily: "家庭编号",
           billToStudentId: "学员号",
-          paymentLabel: "支付信息",
+          paymentLabel: "支付信息 · PAYMENT",
           paymentMethodLabel: "支付方式",
           paymentDateLabel: "付款时间",
           paymentOrderLabel: "订单编号",
-          paymentMethodMap: { alipay: "支付宝", wechat: "微信支付", card: "信用卡", email: "邮箱代收" },
-          colDesc: "项目描述",
-          colQty: "数量",
-          colUnit: "单价",
-          colTotal: "金额",
-          itemPlanFmt: "{plan} · 月度会员",
-          itemPlanGeneric: "MindDo 月度会员",
-          unitPerMonth: "1 个月",
-          subtotal: "小计",
-          tax: "税费",
-          grand: "应付总额",
-          footHeader: "感谢你选择 MindDo。",
-          footBody: "本发票由系统自动生成，如有疑问可通过家长账户内的客服面板联系我们。原件可在「付费记录」页面随时重新下载。",
+          paymentCycleLabel: "计费周期",
+          paymentMethodMap: { alipay: "支付宝", wechat: "微信支付", card: "信用卡 (Visa/Master)", email: "邮箱代收" },
+          colDesc: "项目描述 / Description",
+          colQty: "数量 / Qty",
+          colUnit: "单价 / Unit",
+          colTotal: "金额 / Amount",
+          itemPlanFmt: "{plan} · MindDo 会员服务",
+          itemPlanGeneric: "MindDo 会员服务",
+          itemDetailMonthly: "{sessions} 节 / 周 · 计费周期 1 个月",
+          itemDetailAnnual: "{sessions} 节 / 周 · 计费周期 12 个月（年付立减 17%）",
+          itemDetailGeneric: "MindDo 学习会员",
+          unitMonth: "1 月",
+          unitYear: "1 年",
+          cycleMonthly: "按月付",
+          cycleAnnual: "年付（省 17%）",
+          subtotal: "小计 Subtotal",
+          discount: "优惠折扣 Discount",
+          tax: "税费 Tax",
+          grand: "应付总额 Total Due",
+          currencyNote: "金额单位：美元 (USD)",
+          termsTitle: "条款 · Terms",
+          termsBullets: [
+            "下单 7 天内可申请无理由全额退款。",
+            "已上完的课时按比例从应退款额中扣除。",
+            "本发票由 MindDo 系统自动生成，无须签章即具效力。"
+          ],
+          sigStudent: "客户签收",
+          sigCompany: "MindDo 授权代表",
+          tagline: "感谢你选择 MindDo，让 AI 成为孩子的伙伴而非工具。",
+          taglineSub: "本发票可在家长账户「付费记录」页面随时重新下载。",
           notFound: "未找到对应订单。",
           notFoundDesc: "链接可能已过期，或对应支付记录尚未生成。请回到付费记录页面重新打开。",
           backToBilling: "返回付费记录",
           documentTitle: "MindDo · 付费发票"
         },
         "en": {
+          docTitle: "Invoice",
+          docSub: "MindDo Payment Receipt",
           tag: "MindDo · AI Learning Center",
+          companyAddr: [
+            "Irvine Campus",
+            "17875 Von Karman Ave, Suite 250",
+            "Irvine, CA 92614, USA"
+          ],
+          companyContact: [
+            { lbl: "Tel", val: "+1 (949) 555-0188" },
+            { lbl: "Mail", val: "support@minddo.ai" },
+            { lbl: "Web", val: "minddo.ai" }
+          ],
+          companyTaxLine: "Tax ID · 88-1234567 · CA Reg. C0234567",
           stampPaid: "PAID",
           stampPending: "PROCESSING",
           invNumLabel: "Invoice #",
           dateLabel: "Issue Date",
-          billToLabel: "Bill To",
+          dueLabel: "Paid On",
+          billToLabel: "BILL TO",
           billToName: "Student",
           billToParent: "Guardian",
           billToEmail: "Email",
           billToFamily: "Family ID",
           billToStudentId: "Student ID",
-          paymentLabel: "Payment Info",
+          paymentLabel: "PAYMENT",
           paymentMethodLabel: "Method",
           paymentDateLabel: "Paid At",
           paymentOrderLabel: "Order ID",
-          paymentMethodMap: { alipay: "Alipay", wechat: "WeChat Pay", card: "Credit Card", email: "Email Pay" },
+          paymentCycleLabel: "Billing Cycle",
+          paymentMethodMap: { alipay: "Alipay", wechat: "WeChat Pay", card: "Credit Card (Visa/Master)", email: "Email Pay" },
           colDesc: "Description",
           colQty: "Qty",
           colUnit: "Unit Price",
           colTotal: "Amount",
-          itemPlanFmt: "{plan} · Monthly Membership",
-          itemPlanGeneric: "MindDo Monthly Membership",
-          unitPerMonth: "1 month",
+          itemPlanFmt: "{plan} · MindDo Membership",
+          itemPlanGeneric: "MindDo Membership",
+          itemDetailMonthly: "{sessions} class/week · 1-month billing cycle",
+          itemDetailAnnual: "{sessions} class/week · 12-month cycle (Annual saves 17%)",
+          itemDetailGeneric: "MindDo Learning Membership",
+          unitMonth: "1 month",
+          unitYear: "1 year",
+          cycleMonthly: "Monthly",
+          cycleAnnual: "Annual (save 17%)",
           subtotal: "Subtotal",
+          discount: "Discount",
           tax: "Tax",
           grand: "Total Due",
-          footHeader: "Thank you for choosing MindDo.",
-          footBody: "This invoice is generated automatically. If you have any question, reach our support team via the floating support panel inside your parent account. You can re-download this invoice anytime from the Billing page.",
+          currencyNote: "Amounts in USD",
+          termsTitle: "Terms",
+          termsBullets: [
+            "Full refund available within 7 days of purchase, no questions asked.",
+            "Completed classes are deducted pro-rata from any refund issued.",
+            "This invoice is system-generated by MindDo and is valid without a manual signature."
+          ],
+          sigStudent: "Customer",
+          sigCompany: "MindDo Authorized Rep",
+          tagline: "Thank you for choosing MindDo — making AI a partner for the next generation.",
+          taglineSub: "This invoice can be re-downloaded anytime from the Billing tab in your parent account.",
           notFound: "Invoice not found.",
           notFoundDesc: "The link may have expired, or the matching payment record hasn't been generated yet. Please reopen it from the Billing page.",
           backToBilling: "Back to Billing",
@@ -202,16 +366,19 @@
       function moneyFmt(amount) {
         var n = Number(amount);
         if (!isFinite(n)) return "—";
-        return "$" + n.toFixed(2);
+        // Comma-separated, two decimals — same shape on either lang.
+        return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }
-      function fmtDate(iso) {
+      function fmtDate(iso, opts) {
         if (!iso) return "—";
         try {
           var d = new Date(iso);
-          return d.toLocaleString(lang === "en" ? "en-US" : "zh-CN", {
-            year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
-          });
+          var o = opts || { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
+          return d.toLocaleString(lang === "en" ? "en-US" : "zh-CN", o);
         } catch (_) { return iso; }
+      }
+      function fmtDateOnly(iso) {
+        return fmtDate(iso, { year: "numeric", month: "short", day: "numeric" });
       }
       function methodLabel(code) {
         var dict = (t().paymentMethodMap || {});
@@ -264,14 +431,38 @@
         };
       }
 
+      function planSessions(planId) {
+        // Pull the per-week sessions from the central catalog so item
+        // detail strings like "2 class/week · 1-month cycle" stay
+        // accurate when the pricing catalog moves.
+        var flow = window.MindDoFlow;
+        if (!flow || !flow.findMembershipPlan) return 0;
+        var p = flow.findMembershipPlan(planId);
+        return (p && p.sessionsPerWeek) || 0;
+      }
+
       function renderInvoice(record) {
         var pay = record.payment || {};
         var mem = record.membership || {};
         var amount = (typeof pay.amount === "number" && pay.amount) || mem.totalAmount || 0;
         var planText = mem.planLabel || (mem.plan ? mem.plan : "");
+        var cycle = mem.billingCycle === "annual" ? "annual" : "monthly";
+        var sessionsPerWeek = planSessions(mem.plan);
+
         var itemDesc = planText
           ? (t().itemPlanFmt || "{plan}").replace("{plan}", planText)
           : t().itemPlanGeneric;
+        var itemDetail;
+        if (!sessionsPerWeek) {
+          itemDetail = t().itemDetailGeneric;
+        } else if (cycle === "annual") {
+          itemDetail = t().itemDetailAnnual.replace("{sessions}", sessionsPerWeek);
+        } else {
+          itemDetail = t().itemDetailMonthly.replace("{sessions}", sessionsPerWeek);
+        }
+        var unitLabel = cycle === "annual" ? t().unitYear : t().unitMonth;
+        var cycleLabel = cycle === "annual" ? t().cycleAnnual : t().cycleMonthly;
+
         var ident = findIdentity({ email: pay.email || mem.email, studentId: mem.studentId || pay.studentId });
         var paid = (pay.status !== "pending");
         var paidDate = pay.paidAt || pay.createdAt || mem.createdAt;
@@ -280,73 +471,123 @@
 
         document.title = t().documentTitle + " · " + (orderId || "");
 
+        var co = t();
+        var addrHtml = co.companyAddr.map(function (line) {
+          return escHTML(line);
+        }).join("<br />");
+        var contactHtml = co.companyContact.map(function (row) {
+          return "<div class=\"row\"><span class=\"lbl\">" + escHTML(row.lbl) + "</span><span>" + escHTML(row.val) + "</span></div>";
+        }).join("");
+
+        var termsHtml = (co.termsBullets || []).map(function (b) {
+          return "<li>" + escHTML(b) + "</li>";
+        }).join("");
+
         document.getElementById("invoiceBody").innerHTML = ""
           + "<article class=\"invoice\">"
-          +   "<div class=\"stamp" + stampClass + "\">" + escHTML(stampText) + "</div>"
-          +   "<div class=\"inv-head\">"
-          +     "<div class=\"inv-brand\">"
-          +       "<img src=\"assets/logo.png\" alt=\"MindDo\" />"
-          +       "<div>"
-          +         "<div class=\"inv-brand-name\">MindDo</div>"
-          +         "<div class=\"inv-brand-tag\">" + escHTML(t().tag) + "</div>"
+          +   "<div class=\"inv-watermark\" aria-hidden=\"true\"></div>"
+          +   "<div class=\"inv-body\">"
+          +     "<div class=\"stamp" + stampClass + "\">" + escHTML(stampText) + "</div>"
+
+          +     "<div class=\"inv-head\">"
+          +       "<div class=\"inv-brand\">"
+          +         "<img src=\"assets/logo.png\" alt=\"MindDo\" />"
+          +         "<div>"
+          +           "<div class=\"inv-brand-name\">MindDo</div>"
+          +           "<div class=\"inv-brand-tag\">" + escHTML(co.tag) + "</div>"
+          +           "<div class=\"inv-brand-co\">"
+          +             "<div style=\"margin-bottom:4px;\">" + addrHtml + "</div>"
+          +             contactHtml
+          +             "<div style=\"margin-top:6px;font-size:10.5px;color:var(--muted);\">" + escHTML(co.companyTaxLine) + "</div>"
+          +           "</div>"
+          +         "</div>"
+          +       "</div>"
+          +       "<div class=\"inv-meta\">"
+          +         "<div class=\"doc-sub\">" + escHTML(co.docSub) + "</div>"
+          +         "<div class=\"doc-title\">" + escHTML(co.docTitle) + "</div>"
+          +         "<div class=\"meta-row id\"><span class=\"lbl\">" + escHTML(co.invNumLabel) + "</span><span class=\"val\">" + escHTML(orderId || "—") + "</span></div>"
+          +         "<div class=\"meta-row\"><span class=\"lbl\">" + escHTML(co.dateLabel) + "</span><span class=\"val\">" + escHTML(fmtDateOnly(paidDate)) + "</span></div>"
           +       "</div>"
           +     "</div>"
-          +     "<div class=\"inv-stamp\">"
-          +       "<div class=\"label\">" + escHTML(t().invNumLabel) + "</div>"
-          +       "<div class=\"num\">" + escHTML(orderId) + "</div>"
-          +       "<div class=\"date\">" + escHTML(t().dateLabel) + " · " + escHTML(fmtDate(paidDate)) + "</div>"
-          +     "</div>"
-          +   "</div>"
 
-          +   "<div class=\"inv-grid\">"
-          +     "<div class=\"inv-block\">"
-          +       "<div class=\"k\">" + escHTML(t().billToLabel) + "</div>"
-          +       "<div class=\"v\">"
-          +         "<strong>" + escHTML(ident.student.name || mem.studentName || "—") + "</strong> "
-          +         "<span style=\"color:var(--muted)\">(" + escHTML(t().billToName) + ")</span><br />"
-          +         (ident.guardian.name ? (escHTML(ident.guardian.name) + " <span style=\"color:var(--muted)\">(" + escHTML(t().billToParent) + ")</span><br />") : "")
-          +         escHTML(t().billToEmail) + ": " + escHTML(pay.email || ident.account.email || mem.email || "—") + "<br />"
-          +         escHTML(t().billToStudentId) + ": " + escHTML(mem.studentId || ident.student.studentId || "—") + "<br />"
-          +         (ident.account.familyId ? (escHTML(t().billToFamily) + ": " + escHTML(ident.account.familyId)) : "")
+          +     "<div class=\"inv-grid\">"
+          +       "<div class=\"inv-block\">"
+          +         "<div class=\"k\">" + escHTML(co.billToLabel) + "</div>"
+          +         "<div class=\"v\">"
+          +           "<strong>" + escHTML(ident.student.name || mem.studentName || "—") + "</strong> "
+          +           "<span class=\"pill\">(" + escHTML(co.billToName) + ")</span><br />"
+          +           (ident.guardian.name ? (escHTML(ident.guardian.name) + " <span class=\"pill\">(" + escHTML(co.billToParent) + ")</span><br />") : "")
+          +           "<span class=\"pill\">" + escHTML(co.billToEmail) + ":</span> " + escHTML(pay.email || ident.account.email || mem.email || "—") + "<br />"
+          +           "<span class=\"pill\">" + escHTML(co.billToStudentId) + ":</span> " + escHTML(mem.studentId || ident.student.studentId || "—")
+          +           (ident.account.familyId ? ("<br /><span class=\"pill\">" + escHTML(co.billToFamily) + ":</span> " + escHTML(ident.account.familyId)) : "")
+          +         "</div>"
+          +       "</div>"
+          +       "<div class=\"inv-block\">"
+          +         "<div class=\"k\">" + escHTML(co.paymentLabel) + "</div>"
+          +         "<div class=\"v\">"
+          +           "<span class=\"pill\">" + escHTML(co.paymentMethodLabel) + ":</span> <strong>" + escHTML(methodLabel(pay.method || pay.source)) + "</strong><br />"
+          +           "<span class=\"pill\">" + escHTML(co.paymentDateLabel) + ":</span> " + escHTML(fmtDate(paidDate)) + "<br />"
+          +           "<span class=\"pill\">" + escHTML(co.paymentCycleLabel) + ":</span> <strong>" + escHTML(cycleLabel) + "</strong><br />"
+          +           "<span class=\"pill\">" + escHTML(co.paymentOrderLabel) + ":</span> <strong>" + escHTML(orderId || "—") + "</strong>"
+          +         "</div>"
           +       "</div>"
           +     "</div>"
-          +     "<div class=\"inv-block\">"
-          +       "<div class=\"k\">" + escHTML(t().paymentLabel) + "</div>"
-          +       "<div class=\"v\">"
-          +         escHTML(t().paymentMethodLabel) + ": <strong>" + escHTML(methodLabel(pay.method || pay.source)) + "</strong><br />"
-          +         escHTML(t().paymentDateLabel) + ": " + escHTML(fmtDate(paidDate)) + "<br />"
-          +         escHTML(t().paymentOrderLabel) + ": <strong>" + escHTML(orderId) + "</strong>"
+
+          +     "<table class=\"inv-items\">"
+          +       "<thead><tr>"
+          +         "<th>" + escHTML(co.colDesc) + "</th>"
+          +         "<th>" + escHTML(co.colQty) + "</th>"
+          +         "<th>" + escHTML(co.colUnit) + "</th>"
+          +         "<th>" + escHTML(co.colTotal) + "</th>"
+          +       "</tr></thead>"
+          +       "<tbody><tr>"
+          +         "<td>"
+          +           "<div class=\"item-name\">" + escHTML(itemDesc) + "</div>"
+          +           "<div class=\"item-detail\">" + escHTML(itemDetail) + "</div>"
+          +         "</td>"
+          +         "<td>" + escHTML(unitLabel) + "</td>"
+          +         "<td>" + escHTML(moneyFmt(amount)) + "</td>"
+          +         "<td>" + escHTML(moneyFmt(amount)) + "</td>"
+          +       "</tr></tbody>"
+          +     "</table>"
+
+          +     "<div class=\"inv-totals-wrap\">"
+          +       "<div class=\"inv-totals\">"
+          +         "<span class=\"label\">" + escHTML(co.subtotal) + "</span>"
+          +         "<span class=\"value\">" + escHTML(moneyFmt(amount)) + "</span>"
+          +         "<span class=\"label\">" + escHTML(co.discount) + "</span>"
+          +         "<span class=\"value\">" + escHTML(moneyFmt(0)) + "</span>"
+          +         "<span class=\"label\">" + escHTML(co.tax) + "</span>"
+          +         "<span class=\"value\">" + escHTML(moneyFmt(0)) + "</span>"
+          +         "<div class=\"grand-row\">"
+          +           "<span class=\"label\">" + escHTML(co.grand) + "</span>"
+          +           "<span class=\"value\">" + escHTML(moneyFmt(amount)) + "</span>"
+          +         "</div>"
           +       "</div>"
           +     "</div>"
-          +   "</div>"
 
-          +   "<table class=\"inv-items\">"
-          +     "<thead><tr>"
-          +       "<th>" + escHTML(t().colDesc) + "</th>"
-          +       "<th>" + escHTML(t().colQty) + "</th>"
-          +       "<th>" + escHTML(t().colUnit) + "</th>"
-          +       "<th>" + escHTML(t().colTotal) + "</th>"
-          +     "</tr></thead>"
-          +     "<tbody><tr>"
-          +       "<td>" + escHTML(itemDesc) + "</td>"
-          +       "<td>" + escHTML(t().unitPerMonth) + "</td>"
-          +       "<td>" + escHTML(moneyFmt(amount)) + "</td>"
-          +       "<td>" + escHTML(moneyFmt(amount)) + "</td>"
-          +     "</tr></tbody>"
-          +   "</table>"
+          +     "<div class=\"inv-foot\">"
+          +       "<div class=\"terms\">"
+          +         "<strong>" + escHTML(co.termsTitle) + " · " + escHTML(co.currencyNote) + "</strong>"
+          +         "<ul>" + termsHtml + "</ul>"
+          +       "</div>"
+          +       "<div class=\"inv-sig\">"
+          +         "<div class=\"col\">"
+          +           "<span class=\"line\"></span>"
+          +           "<span class=\"role\">" + escHTML(co.sigStudent) + "</span>"
+          +         "</div>"
+          +         "<div class=\"col signed\">"
+          +           "<span class=\"line\"></span>"
+          +           "<span class=\"role\">" + escHTML(co.sigCompany) + "</span>"
+          +         "</div>"
+          +       "</div>"
+          +       "<div class=\"inv-tagline\">"
+          +         "<strong>" + escHTML(co.tagline) + "</strong><br />"
+          +         escHTML(co.taglineSub)
+          +       "</div>"
+          +     "</div>"
 
-          +   "<div class=\"inv-totals\">"
-          +     "<span class=\"label\">" + escHTML(t().subtotal) + "</span>"
-          +     "<span class=\"value\">" + escHTML(moneyFmt(amount)) + "</span>"
-          +     "<span class=\"label\">" + escHTML(t().tax) + "</span>"
-          +     "<span class=\"value\">" + escHTML(moneyFmt(0)) + "</span>"
-          +     "<span class=\"grand-label\">" + escHTML(t().grand) + "</span>"
-          +     "<span class=\"grand-value\">" + escHTML(moneyFmt(amount)) + "</span>"
-          +   "</div>"
-
-          +   "<div class=\"inv-foot\">"
-          +     "<strong>" + escHTML(t().footHeader) + "</strong> " + escHTML(t().footBody)
-          +   "</div>"
+          +   "</div>" // .inv-body
           + "</article>";
       }
 
