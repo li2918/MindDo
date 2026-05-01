@@ -31,6 +31,126 @@
     { count: 5, bonus: 200, key: "tier5" }
   ];
 
+  // -----------------------------------------------------------------
+  // Membership pricing — single source of truth so course-selection
+  // (the new-signup funnel) and student-account's Membership tab
+  // (the upgrade surface) read the same numbers. Designed around:
+  //   • Asymmetric dominance — Pro priced so Family Favorite (mid)
+  //     looks like obvious value; mid is flagged "recommended".
+  //   • Steeper per-class discount on Pro (-21% vs Starter) so the
+  //     decoy actually pulls upgraders.
+  //   • Monthly + annual options; annual = 10 months' price (≈17% off,
+  //     "2 months free") expressed as save-loss-aversion copy.
+  // -----------------------------------------------------------------
+  var MEMBERSHIP_PLANS = [
+    {
+      id: "weekly1",
+      sessionsPerWeek: 1,
+      monthly: 199,
+      annual: 1990,
+      labelZh: "每周一节课",
+      labelEn: "1 Class / Week",
+      taglineZh: "每周一节，节奏轻盈",
+      taglineEn: "1 class a week, easy pace",
+      recommended: false
+    },
+    {
+      id: "weekly2",
+      sessionsPerWeek: 2,
+      monthly: 349,
+      annual: 3490,
+      labelZh: "每周两节课",
+      labelEn: "2 Classes / Week",
+      taglineZh: "性价比之选",
+      taglineEn: "Best value",
+      recommended: true
+    },
+    {
+      id: "weekly3",
+      sessionsPerWeek: 3,
+      monthly: 469,
+      annual: 4690,
+      labelZh: "每周三节课",
+      labelEn: "3 Classes / Week",
+      taglineZh: "高强度成长",
+      taglineEn: "High-intensity growth",
+      recommended: false
+    }
+  ];
+  // 4 weeks/month is the sessions-per-month convention (12-month flat).
+  // Per-session math is exposed for UI helpers to render consistently.
+  function planPerSession(plan, cycle) {
+    if (!plan) return 0;
+    var totalSessions = plan.sessionsPerWeek * 4;
+    if (cycle === "annual") {
+      return plan.annual / (totalSessions * 12);
+    }
+    return plan.monthly / totalSessions;
+  }
+  function planMonthlyEquivalent(plan, cycle) {
+    if (!plan) return 0;
+    return cycle === "annual" ? plan.annual / 12 : plan.monthly;
+  }
+  function planAnnualSaving(plan) {
+    if (!plan) return 0;
+    return Math.max(0, plan.monthly * 12 - plan.annual);
+  }
+  function getMembershipPlans() { return MEMBERSHIP_PLANS.slice(); }
+  function findMembershipPlan(id) {
+    return MEMBERSHIP_PLANS.filter(function (p) { return p.id === id; })[0] || null;
+  }
+
+  // A-la-carte add-ons — sit beside the main tiers, anchor at higher
+  // price points so the inclusive plans look like the better deal.
+  var MEMBERSHIP_ADDONS = [
+    {
+      id: "addon-1on1",
+      titleZh: "1 对 1 学习教练",
+      titleEn: "1-on-1 Learning Coach",
+      summaryZh: "60 分钟一对一深度辅导，按需预约。",
+      summaryEn: "60-min one-on-one tutoring, book on demand.",
+      price: 99,
+      unit: "session"
+    },
+    {
+      id: "addon-camp",
+      titleZh: "项目营周末班",
+      titleEn: "Project Camp Weekend",
+      summaryZh: "4 小时强化营 + 项目展示，适合假期补充。",
+      summaryEn: "4-hour weekend intensive with showcase, perfect for breaks.",
+      price: 199,
+      unit: "session"
+    },
+    {
+      id: "addon-comp-prep",
+      titleZh: "竞赛冲刺包",
+      titleEn: "Competition Prep Pack",
+      summaryZh: "4 周针对性集训 + 模拟考评，覆盖热门赛事。",
+      summaryEn: "4-week targeted prep + mock evaluation for popular contests.",
+      price: 399,
+      unit: "pack"
+    },
+    {
+      id: "addon-makeup",
+      titleZh: "加课券",
+      titleEn: "Make-up Class Ticket",
+      summaryZh: "已用完每月课时？单节加购 $59。",
+      summaryEn: "Out of weekly slots? Drop in for $59 per session.",
+      price: 59,
+      unit: "session"
+    }
+  ];
+  function getMembershipAddOns() { return MEMBERSHIP_ADDONS.slice(); }
+
+  // Policy constants — referenced from copy on the membership / payment
+  // surfaces so changing them once flows everywhere.
+  var MEMBERSHIP_POLICY = {
+    refundDays: 7,         // 7-day no-questions-asked refund window
+    siblingDiscountPct: 10, // -10% recurring on the second child
+    annualSavingMonths: 2  // marketing claim: "2 months free on annual"
+  };
+  function getMembershipPolicy() { return Object.assign({}, MEMBERSHIP_POLICY); }
+
   // Role constants for the new multi-account model. A single family has one
   // primary guardian (the one that registered), optionally a second guardian,
   // and 1..N students each with their own learning-system login.
@@ -2125,6 +2245,13 @@
     getClassOfferings: getClassOfferings,
     getCompetitions: getCompetitions,
     getCompetitionsForStudent: getCompetitionsForStudent,
+    getMembershipPlans: getMembershipPlans,
+    findMembershipPlan: findMembershipPlan,
+    getMembershipAddOns: getMembershipAddOns,
+    getMembershipPolicy: getMembershipPolicy,
+    planPerSession: planPerSession,
+    planMonthlyEquivalent: planMonthlyEquivalent,
+    planAnnualSaving: planAnnualSaving,
     saveClassOfferings: saveClassOfferings,
     resetClassOfferings: resetClassOfferings,
     getDefaultClassOfferings: getDefaultClassOfferings,

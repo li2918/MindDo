@@ -1032,6 +1032,46 @@
       text-decoration: none; text-align: center; transition: 0.15s; margin-top: 4px; }
     .upgrade-cta:hover { transform: translateY(-1px); }
 
+    /* Membership upgraded UX — cycle toggle + Most Popular ribbon +
+       per-session math + policy note. Mirrors the pricing-science
+       proposal: middle tier highlighted as recommended, Pro as anchor. */
+    .member-cycle-toggle { display: inline-flex; gap: 2px; padding: 3px;
+      background: #f1f5f9; border-radius: 999px; }
+    .member-cycle-toggle button { all: unset; cursor: pointer; padding: 6px 14px;
+      border-radius: 999px; font-size: 12px; font-weight: 700; color: var(--muted);
+      transition: 0.12s; font-family: inherit; }
+    .member-cycle-toggle button.active { background: #fff; color: var(--clay); box-shadow: 0 1px 4px rgba(15,23,42,0.08); }
+    .member-cycle-toggle button .save-tag { font-size: 10px; font-weight: 800;
+      letter-spacing: 0.04em; padding: 1px 6px; border-radius: 999px;
+      background: rgba(110,143,87,0.18); color: #4f6f38; margin-left: 4px; }
+    .member-policy-note { font-size: 12px; color: var(--muted); line-height: 1.6;
+      padding: 8px 12px; background: rgba(186,230,253,0.18);
+      border: 1px solid rgba(14,165,233,0.22); border-radius: 10px;
+      margin: 0 0 16px; }
+
+    .upgrade-card.recommended { padding-top: 30px; }
+    .upgrade-card .upgrade-ribbon { position: absolute; top: -1px; left: 50%;
+      transform: translateX(-50%); padding: 4px 14px;
+      border-radius: 0 0 10px 10px; font-size: 10.5px; font-weight: 800;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: linear-gradient(135deg,#f59e0b,#d89c36); color: #fff;
+      box-shadow: 0 4px 10px rgba(216,156,54,0.35); white-space: nowrap; }
+    .upgrade-per-session { font-size: 11.5px; color: var(--muted); font-weight: 700; }
+    .upgrade-saving { font-size: 11.5px; font-weight: 800; color: #4f6f38;
+      background: rgba(110,143,87,0.16); border: 1px solid rgba(111,143,87,0.32);
+      padding: 2px 8px; border-radius: 999px; align-self: flex-start; }
+    .upgrade-cycle-hint { font-size: 11.5px; color: var(--muted); }
+
+    .addon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .addon-card { background: #fff; border: 1px solid var(--line); border-radius: 14px;
+      padding: 16px 18px; display: grid; gap: 8px;
+      box-shadow: 0 4px 14px rgba(15,23,42,0.04); transition: 0.15s; }
+    .addon-card:hover { transform: translateY(-1px); border-color: rgba(14,165,233,0.32); }
+    .addon-card .addon-title { font-size: 14px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .addon-card .addon-summary { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+    .addon-card .addon-price { font-size: 16px; font-weight: 900; color: var(--gold-deep); }
+    .addon-card .addon-price small { font-size: 11px; color: var(--muted); font-weight: 700; margin-left: 4px; }
+
     /* Billing tab — payment history table + download-invoice action */
     .billing-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
     .billing-table { width: 100%; border-collapse: collapse; min-width: 720px; }
@@ -1520,7 +1560,7 @@
           </div>
         </section>
 
-        <!-- 1.5. MEMBERSHIP — current tier + upgrade options -->
+        <!-- 1.5. MEMBERSHIP — current tier + tier picker + add-ons -->
         <section class="dash-section" data-tab-panel="enroll" role="tabpanel" aria-label="Membership">
           <article class="panel" id="memberCurrentPanel">
             <h2 data-i18n="memberCurrentTitle"></h2>
@@ -1528,9 +1568,24 @@
           </article>
 
           <article class="panel" id="memberUpgradePanel">
-            <h2 data-i18n="memberUpgradeTitle"></h2>
-            <p class="muted" id="memberUpgradeSub" style="margin-bottom:14px;"></p>
+            <div class="panel-head-row">
+              <div>
+                <h2 data-i18n="memberUpgradeTitle"></h2>
+                <p class="muted" id="memberUpgradeSub" style="margin-top:4px;"></p>
+              </div>
+              <div class="member-cycle-toggle" id="memberCycleToggle" role="group" aria-label="Billing cycle">
+                <button type="button" data-cycle="monthly" class="active" data-i18n="memberCycleMonthly"></button>
+                <button type="button" data-cycle="annual" data-i18n="memberCycleAnnual"></button>
+              </div>
+            </div>
+            <p class="member-policy-note" id="memberPolicyNote"></p>
             <div class="upgrade-grid" id="memberUpgradeGrid"></div>
+          </article>
+
+          <article class="panel" id="memberAddOnsPanel">
+            <h2 data-i18n="memberAddOnsTitle"></h2>
+            <p class="muted" data-i18n="memberAddOnsSub" style="margin-top:4px;margin-bottom:14px;"></p>
+            <div class="addon-grid" id="memberAddOnsGrid"></div>
           </article>
         </section>
 
@@ -2300,6 +2355,20 @@
           memberCurrentBadge: "当前方案",
           memberUpgradeCta: "升级到这个方案 →",
           memberStartCta: "开通这个方案 →",
+          memberCycleMonthly: "按月付",
+          memberCycleAnnual: "年付 省 17%",
+          memberMonthlyFmt: "${price}",
+          memberAnnualFmt: "${price} / 年",
+          memberAnnualEqFmt: "≈ ${price} / 月",
+          memberPerSessionFmt: "≈ ${price} / 节",
+          memberSavingFmt: "省 ${amount} / 年",
+          memberSavingVsStarterFmt: "比 Starter 单课省 {pct}%",
+          memberRibbonRecommended: "性价比之选",
+          memberPolicyNote: "全部方案享 7 天无理由退款；多孩家庭老二再享 -10% 终身折扣。",
+          memberAddOnsTitle: "加购包",
+          memberAddOnsSub: "按需加购，灵活补充会员主套餐外的内容。",
+          memberAddOnUnitSession: "/ 节",
+          memberAddOnUnitPack: "/ 包",
           feedbackEyebrow: "课堂反馈",
           feedbackTitle: "老师课后反馈",
           feedbackSub: "每节课后老师会针对孩子的表现给出评价与下一步建议，本页只展示老师发布的内容，不需要你填写。",
@@ -2716,6 +2785,20 @@
           memberCurrentBadge: "Current",
           memberUpgradeCta: "Upgrade to this tier →",
           memberStartCta: "Start with this tier →",
+          memberCycleMonthly: "Monthly",
+          memberCycleAnnual: "Annual save 17%",
+          memberMonthlyFmt: "${price}",
+          memberAnnualFmt: "${price} / yr",
+          memberAnnualEqFmt: "≈ ${price} / mo",
+          memberPerSessionFmt: "≈ ${price} / class",
+          memberSavingFmt: "Save ${amount} / yr",
+          memberSavingVsStarterFmt: "{pct}% off Starter per class",
+          memberRibbonRecommended: "Most Popular",
+          memberPolicyNote: "All plans include a 7-day no-questions-asked refund. Second child gets a recurring 10% sibling discount.",
+          memberAddOnsTitle: "Add-ons",
+          memberAddOnsSub: "Pick à la carte items to top up beyond the core membership plans.",
+          memberAddOnUnitSession: "/ session",
+          memberAddOnUnitPack: "/ pack",
           feedbackEyebrow: "Class Feedback",
           feedbackTitle: "Teacher's Class Notes",
           feedbackSub: "Read the rating, highlights, and next-step recommendations the teacher posted after each class. This page is read-only — no need to fill anything in.",
@@ -3378,26 +3461,52 @@
           }
         }
 
-        // Membership tab — current tier panel + upgrade options grid.
+        // Membership tab — current tier panel + tier picker (with cycle
+        // toggle, per-session math, Most Popular ribbon, savings labels)
+        // + add-ons grid. Plans pulled from flow so course-selection and
+        // this surface stay in sync.
         (function () {
           var body = document.getElementById("memberCurrentBody");
           var grid = document.getElementById("memberUpgradeGrid");
           var subEl = document.getElementById("memberUpgradeSub");
+          var policyNoteEl = document.getElementById("memberPolicyNote");
+          var addOnsGrid = document.getElementById("memberAddOnsGrid");
+          var cycleBar = document.getElementById("memberCycleToggle");
           if (!body || !grid) return;
 
-          // Mirror the price + label catalog from course-selection.html so
-          // the membership tab renders without the user navigating there.
-          var TIERS = [
-            { id: "weekly1", price: 199, sessionsPerWeek: 1,
-              labelZh: "每周一节", labelEn: "1 Class / Week" },
-            { id: "weekly2", price: 369, sessionsPerWeek: 2,
-              labelZh: "每周两节", labelEn: "2 Classes / Week" },
-            { id: "weekly3", price: 519, sessionsPerWeek: 3,
-              labelZh: "每周三节", labelEn: "3 Classes / Week" }
-          ];
+          var TIERS = (flow && flow.getMembershipPlans) ? flow.getMembershipPlans() : [];
+          var ADD_ONS = (flow && flow.getMembershipAddOns) ? flow.getMembershipAddOns() : [];
           function tierLabel(tier) {
             return lang === "en" ? tier.labelEn : tier.labelZh;
           }
+          function tierTagline(tier) {
+            return lang === "en" ? (tier.taglineEn || "") : (tier.taglineZh || "");
+          }
+          function fmtMoney(n) {
+            var rounded = Math.round(n * 100) / 100;
+            // Drop trailing .00 / .X0 for tidier prices.
+            if (rounded === Math.round(rounded)) return String(Math.round(rounded));
+            if (rounded * 10 === Math.round(rounded * 10)) return rounded.toFixed(1);
+            return rounded.toFixed(2);
+          }
+
+          // Cycle state — sticky on window so language switch / kid switch
+          // reuses the parent's choice.
+          window.__minddoMemberState = window.__minddoMemberState || { cycle: "monthly" };
+          var cycle = window.__minddoMemberState.cycle === "annual" ? "annual" : "monthly";
+          if (cycleBar) {
+            cycleBar.querySelectorAll("[data-cycle]").forEach(function (b) {
+              b.classList.toggle("active", b.getAttribute("data-cycle") === cycle);
+            });
+            // Annual button shows the savings tag inline.
+            var annualBtn = cycleBar.querySelector("[data-cycle=\"annual\"]");
+            if (annualBtn && annualBtn.textContent.indexOf("17%") === -1) {
+              // Already includes the percentage in the label string;
+              // skip — kept for future tweaks.
+            }
+          }
+
+          if (policyNoteEl) policyNoteEl.textContent = t.memberPolicyNote || "";
 
           var m = latestMembership;
           var currentTierIdx = -1;
@@ -3437,39 +3546,109 @@
             else subEl.textContent = t.memberUpgradeSubBase;
           }
 
-          // Render only the current + higher tiers. If no membership, render
-          // every tier so the parent can pick one to start with.
+          // Show current + all higher tiers if subscribed; otherwise all tiers.
           var visible = hasMembership
             ? TIERS.slice(Math.max(0, currentTierIdx))
             : TIERS.slice();
-          var currentPrice = (currentTierIdx >= 0) ? TIERS[currentTierIdx].price : 0;
+          // Per-class baseline = Starter monthly per session, used to label
+          // higher-tier savings ("21% off Starter per class").
+          var starter = TIERS[0];
+          var starterPerSession = starter ? (starter.monthly / (starter.sessionsPerWeek * 4)) : 0;
 
-          grid.innerHTML = visible.map(function (tier, idx) {
+          grid.innerHTML = visible.map(function (tier) {
             var isCurrent = hasMembership && tier.id === m.plan;
-            var isRecommended = !isCurrent && idx === 1; // middle option of the visible set
-            var diff = tier.price - currentPrice;
-            var ctaHref = "course-selection.html?upgradeTo=" + encodeURIComponent(tier.id);
+            var isRecommended = !isCurrent && tier.recommended;
+            var ctaHref = "course-selection.html?upgradeTo=" + encodeURIComponent(tier.id) + "&cycle=" + cycle;
             var classes = "upgrade-card" + (isCurrent ? " current" : "") + (isRecommended ? " recommended" : "");
+
+            // Headline price + sub-price
+            var headlinePrice, subPrice;
+            if (cycle === "annual") {
+              headlinePrice = (t.memberAnnualFmt || "${price}").replace("{price}", fmtMoney(tier.annual));
+              subPrice = (t.memberAnnualEqFmt || "≈ ${price}").replace("{price}", fmtMoney(tier.annual / 12));
+            } else {
+              headlinePrice = (t.memberMonthlyFmt || "${price}").replace("{price}", fmtMoney(tier.monthly));
+              subPrice = "";
+            }
+            // Per-session
+            var perSession = tier.monthly / (tier.sessionsPerWeek * 4);
+            if (cycle === "annual") perSession = tier.annual / (tier.sessionsPerWeek * 4 * 12);
+            var perSessionLine = (t.memberPerSessionFmt || "≈ ${price}").replace("{price}", fmtMoney(perSession));
+            // Savings vs Starter
+            var savingsLine = "";
+            if (tier.id !== starter.id && starterPerSession > 0) {
+              var pct = Math.round((1 - perSession / starterPerSession) * 100);
+              if (pct > 0) {
+                savingsLine = "<span class=\"upgrade-saving\">"
+                  + escHTML((t.memberSavingVsStarterFmt || "{pct}% off").replace("{pct}", pct))
+                  + "</span>";
+              }
+            }
+            // Annual saving banner
+            var annualSavingLine = "";
+            if (cycle === "annual") {
+              var saving = Math.max(0, tier.monthly * 12 - tier.annual);
+              if (saving > 0) {
+                annualSavingLine = "<span class=\"upgrade-cycle-hint\">"
+                  + escHTML((t.memberSavingFmt || "Save ${amount}").replace("{amount}", fmtMoney(saving)))
+                  + "</span>";
+              }
+            }
+            // Sessions cadence
             var sessionsLine = (t.memberSessionsPerWeek || "{n} / week").replace("{n}", tier.sessionsPerWeek);
-            var priceLine = (t.memberPriceFmt || "${price}").replace("{price}", tier.price);
-            var diffLine = (!isCurrent && hasMembership && diff > 0)
-              ? "<span class=\"upgrade-diff\">" + escHTML((t.memberDiffFmt || "+${diff}").replace("{diff}", diff)) + "</span>"
-              : "";
+            // CTAs
             var ctaLabel = !hasMembership ? t.memberStartCta : t.memberUpgradeCta;
             var ctaHtml = isCurrent ? "" :
               "<a class=\"upgrade-cta\" href=\"" + ctaHref + "\">" + escHTML(ctaLabel) + "</a>";
-            var headerHtml = isCurrent
+            // Header chrome
+            var headerHtml = "";
+            if (isRecommended) {
+              headerHtml += "<span class=\"upgrade-ribbon\">★ " + escHTML(t.memberRibbonRecommended) + "</span>";
+            }
+            headerHtml += isCurrent
               ? "<span class=\"upgrade-current-badge\">" + escHTML(t.memberCurrentBadge) + "</span>"
               : "<span class=\"upgrade-tier-label\">" + escHTML(tierLabel(tier).toUpperCase()) + "</span>";
-            return "<article class=\"" + classes + "\">"
+
+            return "<article class=\"" + classes + "\" style=\"position:relative;\">"
               + headerHtml
               + "<div class=\"upgrade-name\">" + escHTML(tierLabel(tier)) + "</div>"
-              + "<div class=\"upgrade-price\">" + escHTML(priceLine) + "</div>"
-              + diffLine
-              + "<div class=\"upgrade-cadence\">" + escHTML(sessionsLine) + "</div>"
+              + (tierTagline(tier) ? "<div class=\"upgrade-cadence\">" + escHTML(tierTagline(tier)) + "</div>" : "")
+              + "<div class=\"upgrade-price\">" + escHTML(headlinePrice) + "</div>"
+              + (subPrice ? "<div class=\"upgrade-per-session\">" + escHTML(subPrice) + "</div>" : "")
+              + "<div class=\"upgrade-per-session\">" + escHTML(perSessionLine) + " · " + escHTML(sessionsLine) + "</div>"
+              + savingsLine
+              + annualSavingLine
               + ctaHtml
               + "</article>";
           }).join("");
+
+          // Add-ons grid — render once (independent of current membership)
+          if (addOnsGrid) {
+            addOnsGrid.innerHTML = ADD_ONS.map(function (a) {
+              var title = lang === "en" ? a.titleEn : a.titleZh;
+              var summary = lang === "en" ? a.summaryEn : a.summaryZh;
+              var unit = a.unit === "pack" ? t.memberAddOnUnitPack : t.memberAddOnUnitSession;
+              return "<article class=\"addon-card\">"
+                + "<div class=\"addon-title\">" + escHTML(title) + "</div>"
+                + "<div class=\"addon-summary\">" + escHTML(summary) + "</div>"
+                + "<div class=\"addon-price\">$" + fmtMoney(a.price) + "<small>" + escHTML(unit) + "</small></div>"
+                + "</article>";
+            }).join("");
+          }
+
+          // Wire the cycle toggle once per render — re-running this IIFE on
+          // each render means the listener gets reattached, which is fine
+          // because we replace the bar's child elements via classList only
+          // (no removeListener leak risk in this scope).
+          if (cycleBar && !cycleBar.__minddoBound) {
+            cycleBar.addEventListener("click", function (e) {
+              var b = e.target.closest("[data-cycle]");
+              if (!b) return;
+              window.__minddoMemberState.cycle = b.getAttribute("data-cycle");
+              render(lang);
+            });
+            cycleBar.__minddoBound = true;
+          }
         })();
 
         // Sidebar badge counts — recompute on every render so adding new

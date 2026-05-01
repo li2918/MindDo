@@ -87,6 +87,11 @@
     .membership.selected { border-color:var(--gold); background:linear-gradient(180deg,rgba(224,242,254,0.92),rgba(240,249,255,0.94)); box-shadow:0 14px 32px rgba(2,132,199,0.18); }
     .membership .badge { display:inline-flex; padding:4px 10px; border-radius:999px; background:rgba(14,165,233,0.2); border:1px solid rgba(2,132,199,0.28); color:var(--clay); font-size:10px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
     .membership.selected .badge { background:linear-gradient(135deg,#e0f2fe,#7dd3fc); }
+    /* Highlight the recommended (Most Popular) tier with gold accents
+       so the asymmetric-dominance pricing logic actually communicates. */
+    .membership[data-plan="weekly2"] { border-color:rgba(216,156,54,0.5); }
+    .membership[data-plan="weekly2"] .badge { background:linear-gradient(135deg,#f59e0b,#d89c36); color:#fff; border-color:rgba(216,156,54,0.6); box-shadow:0 4px 10px rgba(216,156,54,0.28); }
+    .membership[data-plan="weekly2"]::before { content:""; position:absolute; top:-3px; left:0; right:0; height:3px; border-radius:18px 18px 0 0; background:linear-gradient(90deg,#f59e0b,#d89c36); }
     .membership h3 { margin:0 0 8px; font-size:16px; color:var(--clay); font-weight:800; }
     .membership .price { font-size:26px; font-weight:900; color:var(--clay); line-height:1; margin-bottom:4px; }
     .membership .sub { font-size:12px; color:var(--muted); margin-bottom:12px; }
@@ -185,6 +190,10 @@
         <article class="panel">
           <h2><span data-lang="zh">可选方案</span><span data-lang="en">Available Plans</span></h2>
           <p class="desc"><span data-lang="zh">根据学员学习节奏和目标选择合适的课时方案。</span><span data-lang="en">Pick the plan that matches your learning pace and goals.</span></p>
+          <p class="desc" style="background:rgba(186,230,253,0.22);border:1px solid rgba(14,165,233,0.32);border-radius:10px;padding:8px 12px;font-size:13px;">
+            <span data-lang="zh">✓ 7 天无理由退款 &nbsp;·&nbsp; 多孩家庭老二 -10% 终身 &nbsp;·&nbsp; 年付立省 17%</span>
+            <span data-lang="en">✓ 7-day no-questions refund &nbsp;·&nbsp; 10% sibling discount &nbsp;·&nbsp; Save 17% on annual</span>
+          </p>
 
           <div class="membership-grid" id="membershipGrid">
             <label class="membership" data-plan="weekly1">
@@ -193,7 +202,7 @@
               <span class="badge"><span data-lang="zh">基础方案</span><span data-lang="en">Foundation</span></span>
               <h3><span data-lang="zh">每周一节课</span><span data-lang="en">1 Class / Week</span></h3>
               <div class="price">$199</div>
-              <div class="sub"><span data-lang="zh">每月（4 课时）</span><span data-lang="en">Monthly (4 classes)</span></div>
+              <div class="sub"><span data-lang="zh">每月（4 课时） · 约 $50 / 节</span><span data-lang="en">Monthly (4 classes) · ≈ $50/class</span></div>
               <ul class="features">
                 <li><span data-lang="zh">建立稳定学习节奏</span><span data-lang="en">Build steady routine</span></li>
                 <li><span data-lang="zh">每周课堂反馈</span><span data-lang="en">Weekly feedback</span></li>
@@ -203,10 +212,10 @@
             <label class="membership" data-plan="weekly2">
               <input type="radio" name="membership" value="weekly2" />
               <span class="check-mark">✓</span>
-              <span class="badge"><span data-lang="zh">推荐方案</span><span data-lang="en">Recommended</span></span>
+              <span class="badge"><span data-lang="zh">★ 性价比之选</span><span data-lang="en">★ Most Popular</span></span>
               <h3><span data-lang="zh">每周两节课</span><span data-lang="en">2 Classes / Week</span></h3>
-              <div class="price">$369</div>
-              <div class="sub"><span data-lang="zh">每月（8 课时）</span><span data-lang="en">Monthly (8 classes)</span></div>
+              <div class="price">$349</div>
+              <div class="sub"><span data-lang="zh">每月（8 课时） · 约 $44 / 节 · 比基础便宜 12%</span><span data-lang="en">Monthly (8 classes) · ≈ $44/class · 12% off Foundation</span></div>
               <ul class="features">
                 <li><span data-lang="zh">知识输入 + 项目训练</span><span data-lang="en">Balanced learning + projects</span></li>
                 <li><span data-lang="zh">双周成长评估</span><span data-lang="en">Bi-weekly reviews</span></li>
@@ -218,8 +227,8 @@
               <span class="check-mark">✓</span>
               <span class="badge"><span data-lang="zh">进阶方案</span><span data-lang="en">Advanced</span></span>
               <h3><span data-lang="zh">每周三节课</span><span data-lang="en">3 Classes / Week</span></h3>
-              <div class="price">$519</div>
-              <div class="sub"><span data-lang="zh">每月（12 课时）</span><span data-lang="en">Monthly (12 classes)</span></div>
+              <div class="price">$469</div>
+              <div class="sub"><span data-lang="zh">每月（12 课时） · 约 $39 / 节 · 比基础便宜 21%</span><span data-lang="en">Monthly (12 classes) · ≈ $39/class · 21% off Foundation</span></div>
               <ul class="features">
                 <li><span data-lang="zh">竞赛 / 作品集冲刺</span><span data-lang="en">Competition / portfolio</span></li>
                 <li><span data-lang="zh">每周导师复盘</span><span data-lang="en">Weekly mentor review</span></li>
@@ -299,11 +308,22 @@
         }
       } catch (_) {}
       var KEY = "minddo_course_enrollment";
-      var PLANS = {
-        weekly1: { price: 199, labelZh: "每周一节课", labelEn: "1 Class / Week" },
-        weekly2: { price: 369, labelZh: "每周两节课", labelEn: "2 Classes / Week" },
-        weekly3: { price: 519, labelZh: "每周三节课", labelEn: "3 Classes / Week" }
-      };
+      // PLANS prefer flow.getMembershipPlans() (single source of truth);
+      // fallback hardcoded map for offline / pre-flow renders.
+      var PLANS = (function () {
+        if (window.MindDoFlow && window.MindDoFlow.getMembershipPlans) {
+          var out = {};
+          window.MindDoFlow.getMembershipPlans().forEach(function (p) {
+            out[p.id] = { price: p.monthly, labelZh: p.labelZh, labelEn: p.labelEn };
+          });
+          return out;
+        }
+        return {
+          weekly1: { price: 199, labelZh: "每周一节课", labelEn: "1 Class / Week" },
+          weekly2: { price: 349, labelZh: "每周两节课", labelEn: "2 Classes / Week" },
+          weekly3: { price: 469, labelZh: "每周三节课", labelEn: "3 Classes / Week" }
+        };
+      })();
       var html = document.documentElement;
       var langButtons = document.querySelectorAll("[data-set-lang]");
 
