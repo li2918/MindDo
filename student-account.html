@@ -3153,6 +3153,24 @@
         return list.map(function (item) { return lookup[item] || legacy[item] || item; }).join(", ");
       }
 
+      // Strip the trailing "年级" and convert Chinese numerals to Arabic
+      // digits so the family-card grade chip reads "6 年级" / "Grade 6"
+      // instead of "六 年级" / "Grade 六".
+      function gradeNumber(grade) {
+        if (grade === undefined || grade === null) return "";
+        var raw = String(grade).replace(/年级$/, "").trim();
+        if (!raw) return "";
+        var map = {
+          "零": "0", "一": "1", "二": "2", "两": "2", "三": "3", "四": "4",
+          "五": "5", "六": "6", "七": "7", "八": "8", "九": "9", "十": "10"
+        };
+        if (map[raw]) return map[raw];
+        // 十一 / 十二 — only sensible up to grade 12.
+        var m = raw.match(/^十([一二三四五六七八九])$/);
+        if (m) return String(10 + Number(map[m[1]]));
+        return raw; // already digits or "K" / "Pre-K" etc — pass through
+      }
+
       function formatClassMode(mode, lang) {
         if (!mode) return "";
         if (mode === "1v1") return "1v1";
@@ -3405,7 +3423,7 @@
           document.title = (t.guardianPageTag || t.title) + " | MindDo";
           if (heroViewing) {
             if (current.studentId && (current.studentName || current.name)) {
-              var gradeBit = current.grade ? " · " + t.familyGradeLabel.replace("{grade}", String(current.grade).replace(/年级$/, "")) : "";
+              var gradeBit = current.grade ? " · " + t.familyGradeLabel.replace("{grade}", gradeNumber(current.grade)) : "";
               var tmpl = kids.length > 1 ? t.guardianViewingMulti : t.guardianViewingSingle;
               heroViewing.innerHTML = tmpl
                 .replace("{child}", escHTML(current.studentName || current.name))
@@ -3448,7 +3466,7 @@
               } else {
                 lastLine = t.familyNoActivity;
               }
-              var gradeTxt = k.grade ? (t.familyGradeLabel || "Grade {grade}").replace("{grade}", String(k.grade).replace(/年级$/, "")) : "";
+              var gradeTxt = k.grade ? (t.familyGradeLabel || "Grade {grade}").replace("{grade}", gradeNumber(k.grade)) : "";
               return "<button type=\"button\" class=\"kid-card" + (isActive ? " active" : "") + "\" data-switch-sid=\"" + escHTML(k.studentId) + "\">"
                 + "<div class=\"kid-top\">"
                 +   "<span class=\"kid-name\">" + escHTML(k.name || k.studentId) + "</span>"
@@ -4678,7 +4696,7 @@
           stack.innerHTML = rosterIds.map(function (sid) {
             var stu = (flow && flow.findStudentById) ? (flow.findStudentById(sid) || {}) : {};
             var displayName = stu.name || (sid === current.studentId ? (current.studentName || current.name) : sid);
-            var gradeBit = stu.grade ? (t.familyGradeLabel || "{grade} 年级").replace("{grade}", String(stu.grade).replace(/年级$/, "")) : "";
+            var gradeBit = stu.grade ? (t.familyGradeLabel || "{grade} 年级").replace("{grade}", gradeNumber(stu.grade)) : "";
 
             var kidMems = allMemberships.filter(function (m) {
               return String(m && m.studentId || "") === String(sid);
