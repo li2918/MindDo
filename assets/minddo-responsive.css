@@ -17,7 +17,7 @@ body { overflow-x: hidden; }
    independent of the shadow layer and survives those overrides. */
 :where(a, button, [role="button"], input, select, textarea, summary,
        [tabindex]:not([tabindex="-1"])):focus-visible {
-  outline: 3px solid var(--gold, #0ea5e9);
+  outline: 3px solid var(--gold, #f59e0b);
   outline-offset: var(--focus-ring-offset, 2px);
   border-radius: inherit;
 }
@@ -33,7 +33,7 @@ body { overflow-x: hidden; }
   position: absolute;
   top: -40px;
   left: 12px;
-  background: var(--clay, #1e3a5f);
+  background: var(--clay, #7c2d12);
   color: #fff;
   padding: 8px 14px;
   border-radius: var(--r-sm, 8px);
@@ -68,7 +68,7 @@ body { overflow-x: hidden; }
 }
 
 /* Placeholder tone — readable without dominating */
-::placeholder { color: var(--muted-soft, #8695aa); opacity: 1; }
+::placeholder { color: var(--muted-soft, #a98060); opacity: 1; }
 
 /* Disabled controls — uniform affordance */
 :where(button, input, select, textarea)[disabled],
@@ -95,16 +95,16 @@ input.invalid, select.invalid, textarea.invalid,
   align-items: center;
   justify-content: center;
   background: none;
-  border: 1px solid var(--line, #cfd8e3);
+  border: 1px solid var(--line, #e8d2b0);
   border-radius: 8px;
   padding: 6px 8px;
   cursor: pointer;
-  color: var(--clay, #1e3a5f);
+  color: var(--clay, #7c2d12);
   font-family: inherit;
   line-height: 1;
   transition: 0.15s;
 }
-.minddo-hamburger:hover { background: var(--sand, #e8eef5); border-color: var(--gold, #0284c7); }
+.minddo-hamburger:hover { background: var(--sand, #fde9c5); border-color: var(--gold, #d97706); }
 .minddo-hamburger svg { display: block; }
 
 /* ============ max-width: 900px ============ */
@@ -126,8 +126,8 @@ input.invalid, select.invalid, textarea.invalid,
     right: 0;
     background: #fff;
     padding: 10px 18px 14px;
-    border-bottom: 1px solid var(--line, #cfd8e3);
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    border-bottom: 1px solid var(--line, #e8d2b0);
+    box-shadow: 0 10px 24px rgba(42, 20, 8, 0.08);
     z-index: 90;
   }
   nav.navbar.nav-open .nav-menu li { width: 100%; list-style: none; }
@@ -232,7 +232,7 @@ img { max-width: 100%; height: auto; }
   /* Sidebar collapsed to horizontal scrolling strip — make scroll smoother */
   .sidebar { -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
   .sidebar::-webkit-scrollbar { height: 4px; }
-  .sidebar::-webkit-scrollbar-thumb { background: rgba(30,58,95,0.18); border-radius: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: rgba(122,48,16,0.18); border-radius: 4px; }
 
   .portal-main { padding: 18px 14px 60px !important; }
 }

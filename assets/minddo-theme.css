@@ -4,20 +4,21 @@
 
 :root {
   /* ---------- Colour ---------- */
-  --bg: #f6f8fb;                                 /* page background */
-  --sand: #e8eef5;                               /* cool surface panel */
+  /* Logo-aligned palette — warm amber/clay to match the 馒头AI mark. */
+  --bg: #fff8ee;                                 /* page background — warm cream */
+  --sand: #fde9c5;                               /* warm surface panel */
   --card: rgba(255, 255, 255, 0.96);             /* card background */
-  --line: rgba(30, 58, 95, 0.12);                /* cool border */
-  --line-strong: rgba(30, 58, 95, 0.22);         /* emphasised border */
-  --text: #0f172a;                               /* near-black navy */
-  --muted: #5a6b81;                              /* slate muted */
-  --muted-soft: #8695aa;                         /* even softer body text */
-  --gold: #0ea5e9;                               /* sky-500 accent */
-  --gold-deep: #0284c7;                          /* sky-600 deeper accent */
-  --gold-soft: #bae6fd;                          /* sky-200 tint */
-  --clay: #1e3a5f;                               /* navy primary */
-  --clay-deep: #162d49;                          /* navy hover/active */
-  --brown: #14294a;                              /* deep navy surface */
+  --line: rgba(122, 48, 16, 0.12);               /* warm border */
+  --line-strong: rgba(122, 48, 16, 0.22);        /* emphasised border */
+  --text: #1c1208;                               /* near-black, warm-tinted */
+  --muted: #8a6240;                              /* warm muted */
+  --muted-soft: #a98060;                         /* even softer body text */
+  --gold: #f59e0b;                               /* amber-500 primary accent */
+  --gold-deep: #d97706;                          /* amber-600 deeper accent */
+  --gold-soft: #fde68a;                          /* amber-200 tint */
+  --clay: #7c2d12;                               /* warm-brown primary brand */
+  --clay-deep: #5a200a;                          /* clay hover / active */
+  --brown: #3a1808;                              /* deep brown surface (footer / dark hero) */
 
   /* Semantic */
   --success: #2f855a;                            /* AA-compliant green */
@@ -27,10 +28,10 @@
   --warn: #b7791f;                               /* AA-compliant amber */
   --warn-soft: #fbf3e0;
   --info: var(--gold-deep);
-  --info-soft: #e0f2fe;
+  --info-soft: #fef3c7;
 
   /* Focus ring — visible on both light & dark surfaces */
-  --focus-ring: 0 0 0 3px rgba(14, 165, 233, 0.35);
+  --focus-ring: 0 0 0 3px rgba(245, 158, 11, 0.35);
   --focus-ring-offset: 2px;
 
   /* ---------- Radii ---------- */
@@ -87,12 +88,12 @@
   --fw-black: 800;
 
   /* ---------- Shadows ---------- */
-  --shadow: 0 24px 60px rgba(15, 23, 42, 0.10);          /* legacy alias */
-  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 12px 28px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.10);
-  --shadow-xl: 0 40px 90px rgba(15, 23, 42, 0.14);
+  --shadow: 0 24px 60px rgba(42, 20, 8, 0.10);          /* legacy alias */
+  --shadow-xs: 0 1px 2px rgba(42, 20, 8, 0.06);
+  --shadow-sm: 0 4px 12px rgba(42, 20, 8, 0.06);
+  --shadow-md: 0 12px 28px rgba(42, 20, 8, 0.08);
+  --shadow-lg: 0 24px 60px rgba(42, 20, 8, 0.10);
+  --shadow-xl: 0 40px 90px rgba(42, 20, 8, 0.14);
   --shadow-ring: 0 0 0 1px var(--line);
 
   /* ---------- Motion ---------- */
