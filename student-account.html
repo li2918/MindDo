@@ -1301,6 +1301,78 @@
     /* DASHBOARD REDESIGN */
     .dash-stack { display: grid; gap: 28px; }
     .dash-section { display: grid; gap: 18px; }
+
+    /* Parent dashboard — metric tiles + growth chart + skill bars.
+       Sits at the top of the Overview tab; everything below it is the
+       existing per-kid schedule stack. */
+    #dashPanel { padding: 22px 24px 22px; }
+    .dash-student-chip { display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 12px; border-radius: 999px; background: rgba(186,230,253,0.42);
+      border: 1px solid rgba(2,132,199,0.32); color: var(--clay);
+      font-size: 11.5px; font-weight: 800; letter-spacing: 0.04em; }
+    .dash-student-chip::before { content: ""; width: 6px; height: 6px; border-radius: 999px;
+      background: var(--gold-deep); box-shadow: 0 0 0 3px rgba(14,165,233,0.18); }
+    .dash-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .dash-tile { background: linear-gradient(180deg,#fff,rgba(248,250,252,0.96));
+      border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 4px; transition: 0.15s; }
+    .dash-tile:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(15,23,42,0.06); border-color: rgba(14,165,233,0.32); }
+    .dash-tile-label { font-size: 10.5px; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .dash-tile-label .ic { font-size: 13px; line-height: 1; }
+    .dash-tile-value { font-size: 24px; font-weight: 900; color: var(--clay); letter-spacing: -0.02em; line-height: 1.05; }
+    .dash-tile-value .unit { font-size: 12.5px; font-weight: 700; color: var(--muted); margin-left: 4px; }
+    .dash-tile-foot { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+    .dash-tile-foot.up { color: #4f6f38; font-weight: 700; }
+
+    .dash-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+      gap: 14px; margin-top: 16px; }
+    .dash-chart-card, .dash-skills-card { background: linear-gradient(180deg,#fff,rgba(248,250,252,0.96));
+      border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
+    .dash-card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+    .dash-card-head h3 { font-size: 14px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; margin: 0; }
+    .dash-card-meta { font-size: 11.5px; }
+
+    /* Line chart — pure inline SVG. The path + area-fill are computed in
+       JS off the growth records; ticks come from the same axis maths. */
+    .dash-chart-svg { width: 100%; height: 220px; display: block; }
+    .dash-chart-svg .grid-line { stroke: rgba(30,58,95,0.08); stroke-width: 1; stroke-dasharray: 3 4; }
+    .dash-chart-svg .axis-label { font-size: 10.5px; fill: var(--muted); font-weight: 700; letter-spacing: 0.04em; }
+    .dash-chart-svg .area-fill { fill: url(#dashAreaGrad); }
+    .dash-chart-svg .line-path { fill: none; stroke: var(--gold-deep); stroke-width: 2.4;
+      stroke-linecap: round; stroke-linejoin: round; }
+    .dash-chart-svg .point { fill: #fff; stroke: var(--gold-deep); stroke-width: 2; }
+    .dash-chart-svg .point-label { font-size: 10.5px; fill: var(--clay); font-weight: 800; }
+    .dash-chart-empty { padding: 32px 16px; text-align: center; color: var(--muted);
+      background: rgba(248,250,252,0.7); border: 1px dashed var(--line); border-radius: 12px;
+      font-size: 13px; line-height: 1.6; }
+
+    /* Per-skill horizontal bars with mom delta chip. */
+    .dash-skill-row { display: grid; grid-template-columns: 1fr auto; row-gap: 4px;
+      column-gap: 12px; align-items: center; padding: 10px 0;
+      border-bottom: 1px dashed rgba(30,58,95,0.08); }
+    .dash-skill-row:last-child { border-bottom: none; }
+    .dash-skill-name { font-size: 12.5px; font-weight: 800; color: var(--clay); }
+    .dash-skill-score { font-size: 13px; font-weight: 900; color: var(--clay); font-variant-numeric: tabular-nums; }
+    .dash-skill-bar { grid-column: 1 / -1; height: 8px; border-radius: 999px;
+      background: rgba(30,58,95,0.07); overflow: hidden; position: relative; }
+    .dash-skill-bar-fill { position: absolute; left: 0; top: 0; bottom: 0;
+      background: linear-gradient(90deg,#bae6fd,var(--gold-deep)); border-radius: 999px; transition: width 0.4s; }
+    .dash-skill-delta { font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px;
+      letter-spacing: 0.04em; white-space: nowrap; justify-self: end; }
+    .dash-skill-delta.up { color: #4f6f38; background: rgba(110,143,87,0.14); border: 1px solid rgba(110,143,87,0.28); }
+    .dash-skill-delta.flat { color: var(--muted); background: rgba(30,58,95,0.06); border: 1px solid rgba(30,58,95,0.14); }
+    .dash-skill-delta.down { color: #8e3d21; background: rgba(196,106,77,0.12); border: 1px solid rgba(196,106,77,0.28); }
+
+    @media (max-width: 1100px) {
+      .dash-grid { grid-template-columns: 1fr; }
+      .dash-tiles { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      #dashPanel { padding: 18px 18px 20px; }
+      .dash-tile-value { font-size: 22px; }
+      .dash-chart-svg { height: 200px; }
+    }
     /* Tab-panel visibility — sections marked as panels hide unless active.
        Active state preserves the grid layout from .dash-section. */
     .dash-section[data-tab-panel] { display: none; }
@@ -1541,8 +1613,43 @@
 
       <div class="dash-stack">
 
-        <!-- 1. AT-A-GLANCE -->
+        <!-- 1. AT-A-GLANCE — parent dashboard. Surfaces per-student
+             learning data (metric tiles, growth-score line chart, per-
+             skill bars) above the existing per-kid schedule cards. -->
         <section class="dash-section active" data-tab-panel="overview" role="tabpanel" aria-label="Overview">
+          <article class="panel" id="dashPanel">
+            <div class="panel-head-row">
+              <div>
+                <h2 data-i18n="dashTitle"></h2>
+                <p class="panel-sub muted" data-i18n="dashSub" id="dashSub" style="margin-top:4px;"></p>
+              </div>
+              <span class="dash-student-chip" id="dashStudentChip" hidden></span>
+            </div>
+
+            <!-- Metric tiles — derived from existing tables (memberships,
+                 portfolio, feedback). No extra seeding required. -->
+            <div class="dash-tiles" id="dashTiles"></div>
+
+            <!-- Growth chart + skill bars side-by-side at desktop, stacked
+                 on tablet/mobile. -->
+            <div class="dash-grid">
+              <div class="dash-chart-card">
+                <div class="dash-card-head">
+                  <h3 data-i18n="dashChartTitle"></h3>
+                  <span class="dash-card-meta muted" id="dashChartMeta"></span>
+                </div>
+                <div class="dash-chart-body" id="dashChartBody"></div>
+              </div>
+              <div class="dash-skills-card">
+                <div class="dash-card-head">
+                  <h3 data-i18n="dashSkillsTitle"></h3>
+                  <span class="dash-card-meta muted" id="dashSkillsMeta"></span>
+                </div>
+                <div class="dash-skills-body" id="dashSkillsBody"></div>
+              </div>
+            </div>
+          </article>
+
           <div class="kids-stack" id="kidsScheduleStack"></div>
 
           <!-- Legacy nodes kept hidden for back-compat with code paths that
@@ -2224,6 +2331,35 @@
           statusTitle: "流程进度",
           quickActionsTitle: "快捷入口",
           tabOverview: "概览",
+          dashTitle: "学习仪表盘",
+          dashSub: "孩子的学习进度、技能成长曲线与最近表现一览。",
+          dashStudentChipFmt: "{name} · {grade}",
+          dashStudentChipNoGrade: "{name}",
+          dashTileClassesLabel: "已完成课时",
+          dashTileClassesIcon: "📚",
+          dashTileHoursLabel: "学习时长",
+          dashTileHoursIcon: "⏱",
+          dashTileHoursUnit: "小时",
+          dashTileProjectsLabel: "项目作品",
+          dashTileProjectsIcon: "🛠",
+          dashTileRatingLabel: "课堂评分",
+          dashTileRatingIcon: "★",
+          dashTileFootClassesFmt: "近 30 天 +{n} 节",
+          dashTileFootClassesEmpty: "等待开课",
+          dashTileFootProjectsFmt: "已发布 {n} 件",
+          dashTileFootProjectsEmpty: "暂无作品",
+          dashTileFootRatingFmt: "基于 {n} 条反馈",
+          dashTileFootRatingEmpty: "暂无评分",
+          dashChartTitle: "成长曲线",
+          dashChartMetaFmt: "近 {n} 月 · 综合分 0–100",
+          dashChartEmpty: "暂无成长记录。完成首次能力评估后，数据会显示在这里。",
+          dashSkillsTitle: "能力雷达",
+          dashSkillsMetaFmt: "{period} 评估",
+          dashSkillsMetaEmpty: "首次评估后更新",
+          dashSkillsEmpty: "暂无技能评估。",
+          dashDeltaUp: "+{n}",
+          dashDeltaFlat: "持平",
+          dashDeltaDown: "{n}",
           tabEnroll: "会员管理",
           tabBilling: "付费记录",
           billingTitle: "付费记录",
@@ -2658,6 +2794,35 @@
           statusTitle: "Flow Progress",
           quickActionsTitle: "Quick Actions",
           tabOverview: "Overview",
+          dashTitle: "Learning Dashboard",
+          dashSub: "Your child's progress, skill growth curve, and recent performance at a glance.",
+          dashStudentChipFmt: "{name} · {grade}",
+          dashStudentChipNoGrade: "{name}",
+          dashTileClassesLabel: "Classes Done",
+          dashTileClassesIcon: "📚",
+          dashTileHoursLabel: "Hours Studied",
+          dashTileHoursIcon: "⏱",
+          dashTileHoursUnit: "hrs",
+          dashTileProjectsLabel: "Projects",
+          dashTileProjectsIcon: "🛠",
+          dashTileRatingLabel: "Avg Rating",
+          dashTileRatingIcon: "★",
+          dashTileFootClassesFmt: "+{n} in last 30 days",
+          dashTileFootClassesEmpty: "Awaiting first class",
+          dashTileFootProjectsFmt: "{n} shipped",
+          dashTileFootProjectsEmpty: "No projects yet",
+          dashTileFootRatingFmt: "From {n} reviews",
+          dashTileFootRatingEmpty: "No ratings yet",
+          dashChartTitle: "Growth Curve",
+          dashChartMetaFmt: "Last {n} months · composite 0–100",
+          dashChartEmpty: "No growth records yet — data will appear once the first evaluation is in.",
+          dashSkillsTitle: "Skill Snapshot",
+          dashSkillsMetaFmt: "{period} review",
+          dashSkillsMetaEmpty: "Updates after first review",
+          dashSkillsEmpty: "No skill scores yet.",
+          dashDeltaUp: "+{n}",
+          dashDeltaFlat: "—",
+          dashDeltaDown: "{n}",
           tabEnroll: "Membership",
           tabBilling: "Billing",
           billingTitle: "Billing & Invoices",
@@ -4661,6 +4826,223 @@
         if (window.MindDoFlow && window.MindDoFlow.getStudentLevel) {
           opsLevel = window.MindDoFlow.getStudentLevel(current.studentId) || "";
         }
+
+        // Parent dashboard — metric tiles + growth-curve line chart +
+        // per-skill bars. Renders for the *active* student so a guardian
+        // can flip kids on the family panel and see each child's data.
+        (function () {
+          var dashPanel = document.getElementById("dashPanel");
+          var tilesEl = document.getElementById("dashTiles");
+          var chartEl = document.getElementById("dashChartBody");
+          var chartMetaEl = document.getElementById("dashChartMeta");
+          var skillsEl = document.getElementById("dashSkillsBody");
+          var skillsMetaEl = document.getElementById("dashSkillsMeta");
+          var chipEl = document.getElementById("dashStudentChip");
+          if (!dashPanel || !tilesEl || !chartEl || !skillsEl) return;
+
+          var sid = current && current.studentId;
+          var stuName = (current && (current.studentName || current.name)) || "";
+          var stuGrade = current && current.grade ? gradeNumber(current.grade) : "";
+
+          // Active-student chip — only useful when there's more than one
+          // kid on the family roster, otherwise the name is redundant
+          // with the rest of the page.
+          if (chipEl) {
+            var hasMultipleKids = isGuardian && kids && kids.length > 1;
+            if (hasMultipleKids && stuName) {
+              var chipTpl = stuGrade
+                ? (t.dashStudentChipFmt || "{name} · {grade}")
+                : (t.dashStudentChipNoGrade || "{name}");
+              chipEl.textContent = chipTpl
+                .replace("{name}", stuName)
+                .replace("{grade}", (t.familyGradeLabel || "{grade}").replace("{grade}", stuGrade));
+              chipEl.hidden = false;
+            } else {
+              chipEl.hidden = true;
+            }
+          }
+
+          // ---- Metric tiles ----
+          var metrics = (flow && flow.getStudentMetrics) ? flow.getStudentMetrics(sid) :
+            { classesCompleted: 0, hoursStudied: 0, projectsCompleted: 0, avgRating: 0, feedbackCount: 0 };
+          // "Last 30 days" classes — count last 4 weeks at the membership's
+          // sessionsPerWeek for an accurate-enough recent pace.
+          var recentClasses = 0;
+          var allMemForRecent = (readJson("minddo_membership_orders") || []).filter(function (m) {
+            return String(m && m.studentId || "") === String(sid || "");
+          });
+          allMemForRecent.forEach(function (m) {
+            var sessionsPerWeek = (m.sessions && m.sessions.length) || 0;
+            if (sessionsPerWeek) recentClasses += sessionsPerWeek * 4;
+          });
+          recentClasses = Math.min(recentClasses, metrics.classesCompleted);
+
+          function tile(opts) {
+            var foot = opts.foot ? "<div class=\"dash-tile-foot " + (opts.footUp ? "up" : "") + "\">" + escHTML(opts.foot) + "</div>" : "";
+            var unit = opts.unit ? "<span class=\"unit\">" + escHTML(opts.unit) + "</span>" : "";
+            return "<div class=\"dash-tile\">"
+              + "<div class=\"dash-tile-label\"><span class=\"ic\">" + escHTML(opts.icon || "") + "</span>" + escHTML(opts.label) + "</div>"
+              + "<div class=\"dash-tile-value\">" + escHTML(opts.value) + unit + "</div>"
+              + foot
+              + "</div>";
+          }
+          tilesEl.innerHTML = [
+            tile({
+              icon: t.dashTileClassesIcon, label: t.dashTileClassesLabel,
+              value: String(metrics.classesCompleted),
+              foot: recentClasses
+                ? (t.dashTileFootClassesFmt || "+{n}").replace("{n}", recentClasses)
+                : t.dashTileFootClassesEmpty,
+              footUp: recentClasses > 0
+            }),
+            tile({
+              icon: t.dashTileHoursIcon, label: t.dashTileHoursLabel,
+              value: String(metrics.hoursStudied),
+              unit: t.dashTileHoursUnit
+            }),
+            tile({
+              icon: t.dashTileProjectsIcon, label: t.dashTileProjectsLabel,
+              value: String(metrics.projectsCompleted),
+              foot: metrics.projectsCompleted
+                ? (t.dashTileFootProjectsFmt || "{n}").replace("{n}", metrics.projectsCompleted)
+                : t.dashTileFootProjectsEmpty,
+              footUp: metrics.projectsCompleted > 0
+            }),
+            tile({
+              icon: t.dashTileRatingIcon, label: t.dashTileRatingLabel,
+              value: metrics.avgRating ? metrics.avgRating.toFixed(1) : "—",
+              foot: metrics.feedbackCount
+                ? (t.dashTileFootRatingFmt || "{n}").replace("{n}", metrics.feedbackCount)
+                : t.dashTileFootRatingEmpty,
+              footUp: metrics.feedbackCount > 0 && metrics.avgRating >= 4
+            })
+          ].join("");
+
+          // ---- Growth curve (SVG line chart) ----
+          var growth = (flow && flow.getStudentGrowth) ? flow.getStudentGrowth(sid) : [];
+          var composites = growth.map(function (r) { return flow.compositeGrowthScore(r); });
+          if (chartMetaEl) {
+            chartMetaEl.textContent = growth.length
+              ? (t.dashChartMetaFmt || "{n} mo").replace("{n}", growth.length)
+              : "";
+          }
+          if (!growth.length) {
+            chartEl.innerHTML = "<div class=\"dash-chart-empty\">" + escHTML(t.dashChartEmpty) + "</div>";
+          } else {
+            // Layout — viewBox 0..600 wide, 0..220 tall. Pad 36 left/right
+            // and 28 top, 32 bottom so labels have room.
+            var W = 600, H = 220, padL = 36, padR = 18, padT = 18, padB = 32;
+            var innerW = W - padL - padR, innerH = H - padT - padB;
+            var maxScore = 100, minScore = 0;
+            // X positions evenly spaced across the months we have.
+            var n = growth.length;
+            function xAt(i) {
+              if (n === 1) return padL + innerW / 2;
+              return padL + (innerW * i) / (n - 1);
+            }
+            function yAt(score) {
+              return padT + innerH * (1 - (score - minScore) / (maxScore - minScore));
+            }
+            // Build line + area paths.
+            var linePath = "";
+            var areaPath = "";
+            composites.forEach(function (v, i) {
+              var x = xAt(i), y = yAt(v);
+              linePath += (i === 0 ? "M" : "L") + x.toFixed(1) + "," + y.toFixed(1) + " ";
+            });
+            // Area: same as line, then drop down to baseline + close.
+            areaPath = linePath
+              + "L" + xAt(n - 1).toFixed(1) + "," + (padT + innerH).toFixed(1) + " "
+              + "L" + xAt(0).toFixed(1) + "," + (padT + innerH).toFixed(1) + " Z";
+            // Y-axis labels at 0/50/100.
+            var yTicks = [0, 50, 100];
+            var yTickLines = yTicks.map(function (v) {
+              var y = yAt(v).toFixed(1);
+              return "<line class=\"grid-line\" x1=\"" + padL + "\" x2=\"" + (W - padR) + "\" y1=\"" + y + "\" y2=\"" + y + "\" />"
+                + "<text class=\"axis-label\" x=\"" + (padL - 6) + "\" y=\"" + (Number(y) + 4) + "\" text-anchor=\"end\">" + v + "</text>";
+            }).join("");
+            // X-axis month labels — short form ("Apr", "5月").
+            var xLabels = growth.map(function (r, i) {
+              var d = new Date(r.createdAt);
+              var label;
+              if (lang === "en") {
+                label = d.toLocaleString("en-US", { month: "short" });
+              } else {
+                label = (d.getMonth() + 1) + "月";
+              }
+              var x = xAt(i).toFixed(1);
+              return "<text class=\"axis-label\" x=\"" + x + "\" y=\"" + (H - 8) + "\" text-anchor=\"middle\">" + escHTML(label) + "</text>";
+            }).join("");
+            // Points + value labels (last point gets a heavier callout).
+            var points = composites.map(function (v, i) {
+              var x = xAt(i).toFixed(1), y = yAt(v).toFixed(1);
+              var rPt = (i === n - 1) ? 5 : 3.5;
+              var dot = "<circle class=\"point\" cx=\"" + x + "\" cy=\"" + y + "\" r=\"" + rPt + "\" />";
+              var lbl = (i === n - 1)
+                ? "<text class=\"point-label\" x=\"" + x + "\" y=\"" + (Number(y) - 10) + "\" text-anchor=\"middle\">" + v + "</text>"
+                : "";
+              return dot + lbl;
+            }).join("");
+            chartEl.innerHTML =
+              "<svg class=\"dash-chart-svg\" viewBox=\"0 0 " + W + " " + H + "\" preserveAspectRatio=\"none\" role=\"img\" aria-label=\"Growth curve\">"
+              + "<defs><linearGradient id=\"dashAreaGrad\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">"
+              +   "<stop offset=\"0%\" stop-color=\"rgba(14,165,233,0.28)\" />"
+              +   "<stop offset=\"100%\" stop-color=\"rgba(14,165,233,0)\" />"
+              + "</linearGradient></defs>"
+              + yTickLines
+              + "<path class=\"area-fill\" d=\"" + areaPath + "\" />"
+              + "<path class=\"line-path\" d=\"" + linePath + "\" />"
+              + points
+              + xLabels
+              + "</svg>";
+          }
+
+          // ---- Skill snapshot bars ----
+          var skills = (flow && flow.getGrowthSkills) ? flow.getGrowthSkills() : [];
+          var latest = growth.length ? growth[growth.length - 1] : null;
+          var prev = growth.length > 1 ? growth[growth.length - 2] : null;
+          if (skillsMetaEl) {
+            if (latest) {
+              var d = new Date(latest.createdAt);
+              var label = lang === "en"
+                ? d.toLocaleString("en-US", { month: "short", year: "numeric" })
+                : (d.getFullYear() + " 年 " + (d.getMonth() + 1) + " 月");
+              skillsMetaEl.textContent = (t.dashSkillsMetaFmt || "{period}").replace("{period}", label);
+            } else {
+              skillsMetaEl.textContent = t.dashSkillsMetaEmpty || "";
+            }
+          }
+          if (!latest || !skills.length) {
+            skillsEl.innerHTML = "<div class=\"dash-chart-empty\">" + escHTML(t.dashSkillsEmpty) + "</div>";
+          } else {
+            skillsEl.innerHTML = skills.map(function (s) {
+              var v = Number((latest.scores || {})[s.id]);
+              if (!isFinite(v)) v = 0;
+              var pct = Math.max(0, Math.min(100, v));
+              var label = lang === "en" ? s.labelEn : s.labelZh;
+              var deltaHtml = "";
+              if (prev) {
+                var pv = Number((prev.scores || {})[s.id]);
+                if (isFinite(pv)) {
+                  var diff = v - pv;
+                  if (diff > 0) {
+                    deltaHtml = "<span class=\"dash-skill-delta up\">" + escHTML((t.dashDeltaUp || "+{n}").replace("{n}", diff)) + "</span>";
+                  } else if (diff < 0) {
+                    deltaHtml = "<span class=\"dash-skill-delta down\">" + escHTML((t.dashDeltaDown || "{n}").replace("{n}", diff)) + "</span>";
+                  } else {
+                    deltaHtml = "<span class=\"dash-skill-delta flat\">" + escHTML(t.dashDeltaFlat || "—") + "</span>";
+                  }
+                }
+              }
+              return "<div class=\"dash-skill-row\">"
+                + "<span class=\"dash-skill-name\">" + escHTML(label) + "</span>"
+                + "<span class=\"dash-skill-score\">" + v + "</span>"
+                + "<div class=\"dash-skill-bar\"><div class=\"dash-skill-bar-fill\" style=\"width:" + pct + "%\"></div></div>"
+                + deltaHtml
+                + "</div>";
+            }).join("");
+          }
+        })();
 
         // Per-kid schedule cards on Overview. Render one card per family
         // child (or just the active student for non-guardian accounts), so

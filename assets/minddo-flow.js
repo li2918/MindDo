@@ -20,8 +20,23 @@
     inviteTokens: "minddo_invite_tokens",
     trialSlots: "minddo_trial_slots",
     portfolio: "minddo_portfolio",
-    referrals: "minddo_referrals"
+    referrals: "minddo_referrals",
+    growth: "minddo_growth_records"
   };
+
+  // -----------------------------------------------------------------
+  // Growth tracking — five skill axes scored 0–100, captured monthly
+  // by the lead instructor. Surfaced on the parent-side Dashboard as
+  // a line chart (composite over time) + per-skill bars (latest
+  // snapshot with month-over-month delta).
+  // -----------------------------------------------------------------
+  var GROWTH_SKILLS = [
+    { id: "ai",      labelZh: "AI 概念",     labelEn: "AI Concepts" },
+    { id: "code",    labelZh: "编程能力",   labelEn: "Coding" },
+    { id: "logic",   labelZh: "逻辑思维",   labelEn: "Logic" },
+    { id: "create",  labelZh: "创造力",     labelEn: "Creativity" },
+    { id: "project", labelZh: "项目完成度", labelEn: "Project Delivery" }
+  ];
 
   // Reward economy. Real deployment would key these off a backend
   // promo config; demo just uses fixed amounts.
@@ -150,6 +165,80 @@
     annualSavingMonths: 2  // marketing claim: "2 months free on annual"
   };
   function getMembershipPolicy() { return Object.assign({}, MEMBERSHIP_POLICY); }
+
+  function getGrowthSkills() { return GROWTH_SKILLS.slice(); }
+
+  // Pull this student's growth snapshots, sorted oldest → newest. Each
+  // entry is `{ studentId, periodKey, createdAt, scores, ... }`.
+  function getStudentGrowth(studentId) {
+    if (!studentId) return [];
+    var all = readJson(KEYS.growth) || [];
+    return all
+      .filter(function (r) { return String(r && r.studentId || "") === String(studentId); })
+      .sort(function (a, b) { return new Date(a.createdAt || 0) - new Date(b.createdAt || 0); });
+  }
+
+  // Compose a "composite score" for the line chart — equal-weight mean of
+  // the five skill axes, so 0–100 stays the natural y-scale.
+  function compositeGrowthScore(record) {
+    if (!record || !record.scores) return 0;
+    var sum = 0, n = 0;
+    GROWTH_SKILLS.forEach(function (s) {
+      var v = Number(record.scores[s.id]);
+      if (isFinite(v)) { sum += v; n += 1; }
+    });
+    return n ? Math.round(sum / n) : 0;
+  }
+
+  // Aggregate metrics surfaced on the dashboard's tile strip. Reads from
+  // existing tables (memberships, feedback, portfolio, requests) so the
+  // tile values reflect actual demo state — no extra seeding needed.
+  function getStudentMetrics(studentId) {
+    if (!studentId) {
+      return { classesCompleted: 0, hoursStudied: 0, projectsCompleted: 0, avgRating: 0, feedbackCount: 0 };
+    }
+    var sid = String(studentId);
+    var feedback = (readJson(KEYS.feedback) || []).filter(function (f) {
+      return String(f && f.studentId || "") === sid;
+    });
+    var portfolio = (readJson(KEYS.portfolio) || []).filter(function (p) {
+      return String(p && p.studentId || "") === sid;
+    });
+    // "Classes completed" = sum of weekly sessions × weeks since the
+    // earliest membership createdAt for this student. One session = 1
+    // hour by demo convention. Bounded ≥ 0.
+    var memberships = (readJson(KEYS.memberships) || []).filter(function (m) {
+      return String(m && m.studentId || "") === sid;
+    });
+    var classesCompleted = 0;
+    if (memberships.length) {
+      memberships.forEach(function (m) {
+        var sessionsPerWeek = (m.sessions && m.sessions.length) || 0;
+        if (!sessionsPerWeek) return;
+        var startedAt = new Date(m.createdAt || 0).getTime();
+        var weeks = Math.max(0, Math.floor((Date.now() - startedAt) / (7 * 24 * 3600 * 1000)));
+        classesCompleted += sessionsPerWeek * weeks;
+      });
+    }
+    var ratings = feedback.map(function (f) {
+      // Ratings come in as either a number or "5 - Very Satisfied" — pull
+      // the leading integer either way.
+      var raw = f && f.rating;
+      if (typeof raw === "number") return raw;
+      var m = String(raw || "").match(/(\d+)/);
+      return m ? Number(m[1]) : NaN;
+    }).filter(function (n) { return isFinite(n); });
+    var avgRating = ratings.length
+      ? Math.round((ratings.reduce(function (a, b) { return a + b; }, 0) / ratings.length) * 10) / 10
+      : 0;
+    return {
+      classesCompleted: classesCompleted,
+      hoursStudied: classesCompleted, // 1 hr / class
+      projectsCompleted: portfolio.length,
+      avgRating: avgRating,
+      feedbackCount: feedback.length
+    };
+  }
 
   // Role constants for the new multi-account model. A single family has one
   // primary guardian (the one that registered), optionally a second guardian,
@@ -1556,6 +1645,50 @@
       }
     ]);
 
+    // Six monthly growth snapshots per kid. Both ramp up over time but
+    // start from different baselines and weight skills differently so
+    // the dashboard's per-skill bars + composite line look distinct
+    // when the parent flips between kids on the family panel.
+    function buildGrowthSeries(studentId, monthsBack, baselines, slope) {
+      var series = [];
+      for (var i = monthsBack - 1; i >= 0; i--) {
+        var d = new Date(now);
+        d.setMonth(d.getMonth() - i);
+        d.setDate(15); // mid-month so chart x-positions are stable
+        var scores = {};
+        var step = (monthsBack - 1 - i); // 0..monthsBack-1
+        GROWTH_SKILLS.forEach(function (s) {
+          var base = baselines[s.id] != null ? baselines[s.id] : 60;
+          var perStep = slope[s.id] != null ? slope[s.id] : 3;
+          // Tiny deterministic wobble keyed on step so the line isn't a
+          // perfectly straight ramp.
+          var wobble = ((step * 7 + s.id.length * 3) % 5) - 2;
+          var v = Math.max(0, Math.min(100, Math.round(base + perStep * step + wobble)));
+          scores[s.id] = v;
+        });
+        series.push({
+          studentId: studentId,
+          periodKey: d.toISOString().slice(0, 7),
+          createdAt: d.toISOString(),
+          scores: scores,
+          // Lightweight teacher note — surfaced on hover/tooltip later.
+          teacherNote: i === 0 ? "近月作品质量稳定，建议进入项目工坊。" : ""
+        });
+      }
+      return series;
+    }
+    var growthRecords = [].concat(
+      // 李若安 (older, more advanced) — strong AI/coding, steady growth.
+      buildGrowthSeries(student.studentId, 6,
+        { ai: 64, code: 60, logic: 68, create: 70, project: 58 },
+        { ai: 4,  code: 5,  logic: 3,  create: 3,  project: 5 }),
+      // 李若涵 (5th grade, newer) — lower start, steeper creativity slope.
+      buildGrowthSeries("MD2026-0418", 6,
+        { ai: 50, code: 46, logic: 58, create: 64, project: 48 },
+        { ai: 3,  code: 4,  logic: 3,  create: 5,  project: 4 })
+    );
+    writeJson(KEYS.growth, growthRecords);
+
     // Sample referrals: one paid (reward earned), one signed up (pending),
     // one still in "sent" status. Bound to the demo account provisioned
     // above so the parent hub can resolve them by accountId.
@@ -2249,6 +2382,10 @@
     findMembershipPlan: findMembershipPlan,
     getMembershipAddOns: getMembershipAddOns,
     getMembershipPolicy: getMembershipPolicy,
+    getGrowthSkills: getGrowthSkills,
+    getStudentGrowth: getStudentGrowth,
+    compositeGrowthScore: compositeGrowthScore,
+    getStudentMetrics: getStudentMetrics,
     planPerSession: planPerSession,
     planMonthlyEquivalent: planMonthlyEquivalent,
     planAnnualSaving: planAnnualSaving,
