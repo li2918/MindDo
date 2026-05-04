@@ -888,7 +888,11 @@
       function renderQuestions() {
         var k = langKey();
         var items = QUESTIONS.map(function (q, i) {
-          var catLabel = CATEGORY_LABELS[q.category][k];
+          // Each question is tagged with `skill` (one of the 5 axes —
+          // ai/code/logic/create/project). The pill on the card uses the
+          // same CATEGORY_LABELS lookup the result-page bars use, so the
+          // wording stays consistent across the test and the report.
+          var catLabel = (CATEGORY_LABELS[q.skill] && CATEGORY_LABELS[q.skill][k]) || "";
           var answered = state.answers[i] !== null;
           var opts = q.options.map(function (o, oi) {
             var checked = state.answers[i] === oi;
