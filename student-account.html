@@ -1850,8 +1850,21 @@
           </article>
         </section>
 
-        <!-- 1.6. BILLING — payment-method + subscription controls + history -->
+        <!-- 1.6. BILLING — sub-tabs split payment method (current card +
+             update form) from history (past payments + invoice download) -->
         <section class="dash-section" data-tab-panel="billing" role="tabpanel" aria-label="Billing">
+
+          <nav class="settings-subtabs" id="billingSubtabs" role="tablist" aria-label="Billing groups">
+            <button type="button" class="settings-subtab active" data-bill-subtab="payment" role="tab">
+              <span class="ss-icon" aria-hidden="true">💳</span><span data-i18n="bmSubtabPayment"></span>
+            </button>
+            <button type="button" class="settings-subtab" data-bill-subtab="history" role="tab">
+              <span class="ss-icon" aria-hidden="true">📋</span><span data-i18n="bmSubtabHistory"></span>
+            </button>
+          </nav>
+
+          <!-- Sub-tab 1: Payment method (current card + inline update form) -->
+          <div class="settings-subpanel active" data-bill-subpanel="payment" role="tabpanel">
 
           <!-- Payment method on file -->
           <article class="panel" id="bmPanel">
@@ -1907,6 +1920,11 @@
             </div>
           </article>
 
+          </div><!-- /sub-tab payment -->
+
+          <!-- Sub-tab 2: Past payments / history -->
+          <div class="settings-subpanel" data-bill-subpanel="history" role="tabpanel" hidden>
+
           <!-- History (existing) -->
           <article class="panel" id="billingPanel">
             <div class="panel-head-row">
@@ -1931,6 +1949,8 @@
 
             <div id="billingBody"></div>
           </article>
+
+          </div><!-- /sub-tab history -->
         </section>
 
         <!-- 2. SCHEDULE — forward-looking list of upcoming classes -->
@@ -2598,6 +2618,8 @@
           billingTitle: "付费记录",
           billingSub: "查看历史付款明细，每条记录可单独导出 PDF 发票（浏览器打印为 PDF 即可）。",
           billingEmpty: "暂无付费记录。开通会员或续费后，发票会自动出现在这里。",
+          bmSubtabPayment: "支付方式",
+          bmSubtabHistory: "付费记录",
           // Billing-management — payment-method panel
           bmTitle: "支付方式",
           bmSub: "用于每月自动续费的银行卡。更新后下一期账单立即按新卡扣款。",
@@ -3115,6 +3137,8 @@
           billingTitle: "Past Payments",
           billingSub: "Past payments. Each row can be exported as a PDF invoice — pick \"Save as PDF\" in the print dialog.",
           billingEmpty: "No payments yet. Invoices for new memberships and renewals will show up here automatically.",
+          bmSubtabPayment: "Payment Method",
+          bmSubtabHistory: "Past Payments",
           bmTitle: "Payment Method",
           bmSub: "The card we charge each month. Updates take effect on the next billing cycle.",
           bmEditCard: "Update card",
@@ -6754,6 +6778,37 @@
         if (!btn) return;
         btn.addEventListener("click", logout);
       });
+
+      // Billing sub-tabs — Payment Method / Past Payments. Same pattern
+      // as Settings sub-tabs but scoped via [data-bill-subtab] /
+      // [data-bill-subpanel] so the two handlers don't toggle each
+      // other's panels.
+      (function () {
+        var bar = document.getElementById("billingSubtabs");
+        if (!bar) return;
+        var KEY = "minddo_acct_billing_subtab";
+        var KNOWN = ["payment", "history"];
+        function applySub(key) {
+          if (KNOWN.indexOf(key) === -1) key = "payment";
+          bar.querySelectorAll("[data-bill-subtab]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-bill-subtab") === key);
+          });
+          document.querySelectorAll("[data-bill-subpanel]").forEach(function (p) {
+            var match = p.getAttribute("data-bill-subpanel") === key;
+            p.classList.toggle("active", match);
+            p.hidden = !match;
+          });
+          try { localStorage.setItem(KEY, key); } catch (_) {}
+        }
+        bar.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-bill-subtab]");
+          if (!b) return;
+          applySub(b.getAttribute("data-bill-subtab"));
+        });
+        var saved;
+        try { saved = localStorage.getItem(KEY); } catch (_) {}
+        applySub(saved || "payment");
+      })();
 
       // Settings sub-tabs — five focused groups (Account / Family / Security
       // / Preferences / Help). Active selection persists in localStorage so
