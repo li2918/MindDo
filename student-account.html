@@ -1141,13 +1141,20 @@
       background:rgba(254,243,199,0.32); border:1px dashed rgba(245,158,11,0.32);
       border-radius:12px; margin-top:14px; }
 
-    /* Update-card overlay — reuses the homework modal visual language. */
-    .bm-overlay { position: fixed; inset: 0; background: rgba(42,20,8,0.55); display: none;
-      align-items: center; justify-content: center; padding: 20px; z-index: 9000; }
-    .bm-overlay[aria-hidden="false"] { display: flex; }
-    .bm-modal-card { position:relative; background:#fff; border:1px solid var(--line);
-      border-radius:18px; max-width:520px; width:100%; padding:26px 26px 22px;
-      box-shadow:0 30px 70px rgba(42,20,8,0.32); }
+    /* Inline update-card form — toggled open by the Update-card button.
+       Sits below .bm-card-row inside the payment-method panel; on
+       collapse the entire form is hidden via [hidden]. */
+    .bm-card-form { margin-top: 16px; padding: 18px 18px 16px;
+      background: linear-gradient(180deg,#fff,rgba(254,243,199,0.32));
+      border: 1px solid var(--line); border-radius: 14px;
+      animation: bmCardFormEnter 0.18s ease-out; }
+    @keyframes bmCardFormEnter {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .bm-form-head { margin-bottom: 14px; }
+    .bm-form-head h3 { font-size: 15px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; margin-bottom: 4px; }
+    .bm-form-head p { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
     .bm-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
     .bm-field { display:flex; flex-direction:column; gap:5px; font-size:12.5px; }
     .bm-field-wide { grid-column:1 / -1; }
@@ -1156,6 +1163,7 @@
       padding:10px 12px; border-radius:10px; font:inherit; font-size:13.5px; outline:none; transition:0.15s;
       box-sizing:border-box; }
     .bm-field input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,158,11,0.16); }
+    .bm-form-actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
     @media (max-width: 540px) { .bm-form-grid { grid-template-columns: 1fr; } }
 
     /* Homework tab — assignment cards with status pill, due-date chip,
@@ -1852,9 +1860,51 @@
                 <h2 data-i18n="bmTitle"></h2>
                 <p class="panel-sub muted" data-i18n="bmSub" style="margin-top:4px;"></p>
               </div>
-              <button type="button" class="bm-edit-btn" id="bmEditCardBtn" data-i18n="bmEditCard"></button>
+              <button type="button" class="bm-edit-btn" id="bmEditCardBtn" aria-expanded="false" aria-controls="bmCardForm">
+                <span data-bm-edit-label data-i18n="bmEditCard"></span>
+              </button>
             </div>
             <div class="bm-card-row" id="bmCardRow"></div>
+
+            <!-- Inline expandable update-card form. Hidden until the
+                 button above is clicked; replaces the prior modal so
+                 the action stays in-context with the card on file. -->
+            <div class="bm-card-form" id="bmCardForm" hidden>
+              <div class="bm-form-head">
+                <h3 data-i18n="bmCardModalTitle"></h3>
+                <p data-i18n="bmCardModalSub"></p>
+              </div>
+              <div class="bm-form-grid">
+                <label class="bm-field bm-field-wide">
+                  <span data-i18n="bmCardFieldNumber"></span>
+                  <input type="text" id="bmCardNumber" autocomplete="cc-number" inputmode="numeric"
+                    placeholder="4242 4242 4242 4242" maxlength="23" />
+                </label>
+                <label class="bm-field bm-field-wide">
+                  <span data-i18n="bmCardFieldHolder"></span>
+                  <input type="text" id="bmCardHolder" autocomplete="cc-name" />
+                </label>
+                <label class="bm-field">
+                  <span data-i18n="bmCardFieldExp"></span>
+                  <input type="text" id="bmCardExp" autocomplete="cc-exp"
+                    placeholder="MM/YY" inputmode="numeric" maxlength="5" />
+                </label>
+                <label class="bm-field">
+                  <span data-i18n="bmCardFieldCvv"></span>
+                  <input type="text" id="bmCardCvv" autocomplete="cc-csc"
+                    placeholder="123" inputmode="numeric" maxlength="4" />
+                </label>
+                <label class="bm-field">
+                  <span data-i18n="bmCardFieldZip"></span>
+                  <input type="text" id="bmCardZip" autocomplete="postal-code" maxlength="10" />
+                </label>
+              </div>
+              <p class="hw-modal-msg" id="bmCardMsg" role="status" aria-live="polite"></p>
+              <div class="bm-form-actions">
+                <button type="button" class="hw-modal-secondary" id="bmCardCancelBtn" data-i18n="bmCardCancel"></button>
+                <button type="button" class="hw-modal-primary" id="bmCardSaveBtn" data-i18n="bmCardSave"></button>
+              </div>
+            </div>
           </article>
 
           <!-- History (existing) -->
@@ -1862,7 +1912,6 @@
             <div class="panel-head-row">
               <div>
                 <h2 data-i18n="billingTitle"></h2>
-                <p class="panel-sub muted" data-i18n="billingSub" style="margin-top:4px;"></p>
               </div>
               <span id="billingTotalChip" class="portfolio-count" hidden></span>
             </div>
@@ -2365,45 +2414,6 @@
     </div>
   </div>
 
-  <!-- Update-card modal — payment-method-on-file form -->
-  <div class="bm-overlay" id="bmCardOverlay" role="dialog" aria-modal="true" aria-labelledby="bmCardTitle" aria-hidden="true">
-    <div class="bm-modal-card">
-      <button type="button" class="hw-close" id="bmCardCloseBtn" aria-label="Close">×</button>
-      <h3 id="bmCardTitle" class="hw-modal-title" data-i18n="bmCardModalTitle"></h3>
-      <p class="hw-modal-meta" data-i18n="bmCardModalSub"></p>
-      <div class="bm-form-grid">
-        <label class="bm-field bm-field-wide">
-          <span data-i18n="bmCardFieldNumber"></span>
-          <input type="text" id="bmCardNumber" autocomplete="cc-number" inputmode="numeric"
-            placeholder="4242 4242 4242 4242" maxlength="23" />
-        </label>
-        <label class="bm-field bm-field-wide">
-          <span data-i18n="bmCardFieldHolder"></span>
-          <input type="text" id="bmCardHolder" autocomplete="cc-name" />
-        </label>
-        <label class="bm-field">
-          <span data-i18n="bmCardFieldExp"></span>
-          <input type="text" id="bmCardExp" autocomplete="cc-exp"
-            placeholder="MM/YY" inputmode="numeric" maxlength="5" />
-        </label>
-        <label class="bm-field">
-          <span data-i18n="bmCardFieldCvv"></span>
-          <input type="text" id="bmCardCvv" autocomplete="cc-csc"
-            placeholder="123" inputmode="numeric" maxlength="4" />
-        </label>
-        <label class="bm-field">
-          <span data-i18n="bmCardFieldZip"></span>
-          <input type="text" id="bmCardZip" autocomplete="postal-code" maxlength="10" />
-        </label>
-      </div>
-      <p class="hw-modal-msg" id="bmCardMsg" role="status" aria-live="polite"></p>
-      <div class="hw-modal-actions">
-        <button type="button" class="hw-modal-secondary" id="bmCardCancelBtn" data-i18n="bmCardCancel"></button>
-        <button type="button" class="hw-modal-primary" id="bmCardSaveBtn" data-i18n="bmCardSave"></button>
-      </div>
-    </div>
-  </div>
-
   <!-- Homework detail / submission modal -->
   <div class="hw-overlay" id="hwOverlay" role="dialog" aria-modal="true" aria-labelledby="hwModalTitle" aria-hidden="true">
     <div class="hw-modal-card">
@@ -2592,6 +2602,7 @@
           bmTitle: "支付方式",
           bmSub: "用于每月自动续费的银行卡。更新后下一期账单立即按新卡扣款。",
           bmEditCard: "更新银行卡",
+          bmEditCardClose: "收起",
           bmCardEmpty: "尚未保存银行卡。点击「更新银行卡」绑定卡片，开通自动续费。",
           bmCardLast4Fmt: "•••• •••• •••• {last4}",
           bmCardExpFmt: "{name} · 有效期 {month}/{year}",
@@ -3107,6 +3118,7 @@
           bmTitle: "Payment Method",
           bmSub: "The card we charge each month. Updates take effect on the next billing cycle.",
           bmEditCard: "Update card",
+          bmEditCardClose: "Close",
           bmCardEmpty: "No card on file yet. Click 'Update card' to add one and enable auto-renew.",
           bmCardLast4Fmt: "•••• •••• •••• {last4}",
           bmCardExpFmt: "{name} · exp {month}/{year}",
@@ -6043,14 +6055,13 @@
         }
       })();
 
-      // Billing-management handlers — Update-card modal only. The
-      // payment-method panel re-renders on every render() so the
-      // displayed card flips immediately after save.
+      // Billing-management handlers — inline update-card form. Toggled
+      // open by the panel header button; closes on Cancel / successful
+      // Save / Esc when focused inside the form.
       (function () {
         var editBtn = document.getElementById("bmEditCardBtn");
-
-        var cardOverlay = document.getElementById("bmCardOverlay");
-        var cardClose = document.getElementById("bmCardCloseBtn");
+        var editLabelEl = editBtn && editBtn.querySelector("[data-bm-edit-label]");
+        var formEl = document.getElementById("bmCardForm");
         var cardCancel = document.getElementById("bmCardCancelBtn");
         var cardSave = document.getElementById("bmCardSaveBtn");
         var cardMsg = document.getElementById("bmCardMsg");
@@ -6068,8 +6079,6 @@
           var l = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
           render(l);
         }
-        function open(overlay) { if (overlay) overlay.setAttribute("aria-hidden", "false"); }
-        function close(overlay) { if (overlay) overlay.setAttribute("aria-hidden", "true"); }
         function getProfile() {
           var f = window.MindDoFlow;
           var a = (f && f.getCurrentAccount) ? f.getCurrentAccount() : null;
@@ -6092,34 +6101,49 @@
           return "generic";
         }
 
-        // ----- Edit-card open + save -----
+        function setExpanded(open) {
+          if (!formEl || !editBtn) return;
+          formEl.hidden = !open;
+          editBtn.setAttribute("aria-expanded", open ? "true" : "false");
+          if (editLabelEl) {
+            var t = dictNow();
+            editLabelEl.textContent = open
+              ? (t.bmEditCardClose || t.bmCardCancel || "Close")
+              : (t.bmEditCard || "Update card");
+          }
+        }
+
+        function openForm() {
+          var p = getProfile();
+          // Prefill if a card exists; never prefill the number (security
+          // optics) — only the holder + ZIP, which the parent shouldn't
+          // have to retype.
+          fNumber.value = "";
+          fCvv.value = "";
+          fHolder.value = (p && p.paymentMethod && p.paymentMethod.holderName) || "";
+          fZip.value = (p && p.paymentMethod && p.paymentMethod.zip) || "";
+          if (p && p.paymentMethod && p.paymentMethod.expMonth && p.paymentMethod.expYear) {
+            fExp.value = String(p.paymentMethod.expMonth).padStart(2, "0") + "/"
+              + String(p.paymentMethod.expYear).slice(-2);
+          } else {
+            fExp.value = "";
+          }
+          cardMsg.textContent = "";
+          cardMsg.className = "hw-modal-msg";
+          setExpanded(true);
+          setTimeout(function () { fNumber.focus(); }, 50);
+        }
+        function closeForm() {
+          setExpanded(false);
+        }
+
         if (editBtn) {
           editBtn.addEventListener("click", function () {
-            var p = getProfile();
-            // Prefill if a card exists; never prefill the number (security
-            // optics) — only the holder + ZIP, which the parent shouldn't
-            // have to retype.
-            fNumber.value = "";
-            fCvv.value = "";
-            fHolder.value = (p && p.paymentMethod && p.paymentMethod.holderName) || "";
-            fZip.value = (p && p.paymentMethod && p.paymentMethod.zip) || "";
-            if (p && p.paymentMethod && p.paymentMethod.expMonth && p.paymentMethod.expYear) {
-              fExp.value = String(p.paymentMethod.expMonth).padStart(2, "0") + "/"
-                + String(p.paymentMethod.expYear).slice(-2);
-            } else {
-              fExp.value = "";
-            }
-            cardMsg.textContent = "";
-            cardMsg.className = "hw-modal-msg";
-            open(cardOverlay);
-            setTimeout(function () { fNumber.focus(); }, 50);
+            if (formEl && formEl.hidden) openForm();
+            else closeForm();
           });
         }
-        if (cardClose) cardClose.addEventListener("click", function () { close(cardOverlay); });
-        if (cardCancel) cardCancel.addEventListener("click", function () { close(cardOverlay); });
-        if (cardOverlay) cardOverlay.addEventListener("click", function (e) {
-          if (e.target === cardOverlay) close(cardOverlay);
-        });
+        if (cardCancel) cardCancel.addEventListener("click", closeForm);
 
         // Auto-format card number with spaces every 4 digits.
         if (fNumber) {
@@ -6172,15 +6196,16 @@
               });
             }
             cardMsg.textContent = t.bmCardSaved;
-            setTimeout(function () { close(cardOverlay); rerender(); }, 700);
+            setTimeout(function () { closeForm(); rerender(); }, 700);
           });
         }
 
-        // ESC closes the update-card modal when open.
-        document.addEventListener("keydown", function (e) {
-          if (e.key !== "Escape") return;
-          if (cardOverlay && cardOverlay.getAttribute("aria-hidden") === "false") close(cardOverlay);
-        });
+        // ESC collapses the form when typing inside it.
+        if (formEl) {
+          formEl.addEventListener("keydown", function (e) {
+            if (e.key === "Escape") closeForm();
+          });
+        }
       })();
 
       // Homework tab handlers — filter pills, card-open delegation, and
