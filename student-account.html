@@ -1116,6 +1116,110 @@
       font-size: 13px; line-height: 1.6; background: rgba(240,249,255,0.6);
       border: 1px dashed rgba(122,48,16,0.18); border-radius: 12px; }
 
+    /* Homework tab — assignment cards with status pill, due-date chip,
+       and per-card action button. Modal handles read + submit. */
+    .hw-totals-chip { display:inline-flex; align-items:center; padding:4px 12px;
+      border-radius:999px; background:rgba(245,158,11,0.16); color:var(--clay);
+      font-size:11.5px; font-weight:800; letter-spacing:0.04em;
+      border:1px solid rgba(245,158,11,0.3); }
+    .hw-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items:center;
+      padding-bottom: 14px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+    .hw-filter-group { display:inline-flex; gap:2px; padding:3px;
+      background:rgba(122,48,16,0.06); border-radius:999px; }
+    .hw-filter-group button { all:unset; cursor:pointer; padding:6px 14px; border-radius:999px;
+      font-size:12px; font-weight:700; color:var(--muted); transition:0.12s; font-family:inherit; }
+    .hw-filter-group button.active { background:var(--clay); color:#fffbeb; }
+    .hw-filter-group button:not(.active):hover { background:#fff; color:var(--clay); }
+    .hw-list { display:grid; gap:12px; }
+    .hw-card { padding:16px 18px; background:#fff; border:1px solid var(--line);
+      border-radius:14px; transition:0.15s; cursor:pointer; display:grid;
+      grid-template-columns: 1fr auto; gap: 12px 18px; align-items: start; }
+    .hw-card:hover { transform: translateY(-1px); box-shadow:0 8px 22px rgba(122,48,16,0.06);
+      border-color:rgba(245,158,11,0.32); }
+    .hw-card.overdue { border-color: rgba(196,106,77,0.45); background: rgba(196,106,77,0.04); }
+    .hw-card.submitted { background: rgba(254,250,240,0.7); }
+    .hw-card.graded { background: rgba(254,243,199,0.4); }
+    .hw-card-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px; }
+    .hw-pill { font-size:10.5px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;
+      padding:3px 9px; border-radius:999px; white-space:nowrap; }
+    .hw-pill.course { background:rgba(245,158,11,0.16); color:var(--clay); border:1px solid rgba(245,158,11,0.3); }
+    .hw-pill.status-assigned { background:rgba(122,48,16,0.08); color:var(--clay); border:1px solid var(--line); }
+    .hw-pill.status-progress { background:rgba(245,158,11,0.18); color:#7a4f0d; border:1px solid rgba(245,158,11,0.42); }
+    .hw-pill.status-submitted { background:rgba(110,143,87,0.18); color:#3f5d26; border:1px solid rgba(110,143,87,0.4); }
+    .hw-pill.status-graded { background:linear-gradient(135deg,#fde68a,#f59e0b); color:#3a1808; border:1px solid rgba(245,158,11,0.55); }
+    .hw-pill.due-soon { background:rgba(216,156,54,0.18); color:#7a4f0d; border:1px solid rgba(216,156,54,0.42); }
+    .hw-pill.due-overdue { background:rgba(196,106,77,0.18); color:#8e3d21; border:1px solid rgba(196,106,77,0.42); }
+    .hw-card-title { font-size:15px; font-weight:800; color:var(--clay); letter-spacing:-0.01em; line-height:1.4; margin-bottom:4px; }
+    .hw-card-brief { font-size:12.5px; color:var(--muted); line-height:1.6;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .hw-card-meta { font-size:11.5px; color:var(--muted); margin-top:6px; }
+    .hw-card-meta strong { color:var(--clay); font-weight:700; }
+    .hw-card-actions { display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
+    .hw-card-cta { background:linear-gradient(135deg,#fde68a,var(--gold)); color:#3a1808;
+      border:none; border-radius:999px; padding:7px 14px; font:inherit; font-size:12px; font-weight:800;
+      cursor:pointer; box-shadow:0 3px 10px rgba(245,158,11,0.22); }
+    .hw-card-cta.secondary { background:#fff; color:var(--clay); border:1px solid var(--line); box-shadow:none; }
+    .hw-card-cta:hover { transform: translateY(-1px); }
+    .hw-card-grade { font-size: 13px; font-weight:900; color:var(--clay); }
+    .hw-card-grade .max { color:var(--muted); font-weight:700; font-size:11.5px; }
+    .hw-empty { padding:30px 16px; text-align:center; color:var(--muted); font-size:13px;
+      line-height:1.7; background:rgba(254,243,199,0.32); border:1px dashed rgba(245,158,11,0.32);
+      border-radius:14px; }
+    @media (max-width: 640px) {
+      .hw-card { grid-template-columns: 1fr; }
+      .hw-card-actions { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+    }
+
+    /* Homework detail / submit modal */
+    .hw-overlay { position: fixed; inset: 0; background: rgba(42,20,8,0.55); display: none;
+      align-items: center; justify-content: center; padding: 20px; z-index: 9000; }
+    .hw-overlay[aria-hidden="false"] { display: flex; }
+    .hw-modal-card { position:relative; background:#fff; border:1px solid var(--line);
+      border-radius:18px; max-width:560px; width:100%; padding:26px 26px 22px;
+      box-shadow:0 30px 70px rgba(42,20,8,0.32); }
+    .hw-close { position:absolute; top:12px; right:14px; background:none; border:none; cursor:pointer;
+      font-size:24px; color:var(--muted); line-height:1; padding:4px 8px; }
+    .hw-close:hover { color:var(--clay); }
+    .hw-modal-pill { display:inline-flex; padding:3px 10px; border-radius:999px;
+      background:rgba(245,158,11,0.16); color:var(--clay); border:1px solid rgba(245,158,11,0.3);
+      font-size:10.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase;
+      margin-bottom:10px; }
+    .hw-modal-title { font-size:18px; font-weight:900; color:var(--clay); letter-spacing:-0.01em;
+      line-height:1.35; margin-bottom:6px; }
+    .hw-modal-meta { font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.55; }
+    .hw-modal-meta strong { color:var(--clay); font-weight:700; }
+    .hw-modal-brief { font-size:13.5px; color:var(--text); line-height:1.75; margin-bottom:16px;
+      padding:14px 16px; background:rgba(254,243,199,0.32); border:1px solid rgba(245,158,11,0.18);
+      border-radius:12px; }
+    .hw-submit-block, .hw-graded-block { display:grid; gap:6px; margin-bottom:14px; }
+    .hw-submit-label { font-size:11px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;
+      color:var(--muted); }
+    .hw-submit-area, .hw-submit-input { width:100%; border:1px solid var(--line); background:#fef9ec;
+      color:var(--text); padding:10px 12px; border-radius:10px; font:inherit; font-size:13.5px;
+      outline:none; transition:0.15s; resize: vertical; box-sizing: border-box; }
+    .hw-submit-area:focus, .hw-submit-input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,158,11,0.16); }
+    .hw-grade-pill { display:inline-flex; align-items:baseline; gap:6px; padding:8px 14px;
+      border-radius:12px; background:linear-gradient(135deg,#fde68a,#f59e0b); color:#3a1808;
+      font-size:14px; font-weight:900; align-self:flex-start; box-shadow:0 4px 12px rgba(245,158,11,0.25); }
+    .hw-grade-pill .max { font-weight:700; opacity:0.7; font-size:12px; }
+    .hw-teacher-comment { font-size:13px; color:var(--text); line-height:1.7; padding:12px 14px;
+      background:rgba(110,143,87,0.1); border:1px solid rgba(110,143,87,0.28); border-radius:12px; }
+    .hw-modal-msg { font-size:11.5px; color:var(--success); font-weight:700; min-height: 14px;
+      margin-bottom:8px; }
+    .hw-modal-msg.error { color:var(--error); }
+    .hw-modal-actions { display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
+    .hw-modal-primary, .hw-modal-secondary, .hw-modal-progress { border:none; padding:9px 18px;
+      border-radius:999px; font:inherit; font-size:13px; font-weight:800; cursor:pointer;
+      font-family:inherit; transition:0.15s; }
+    .hw-modal-primary { background:linear-gradient(135deg,#fde68a,var(--gold)); color:#3a1808;
+      box-shadow:0 4px 12px rgba(245,158,11,0.28); }
+    .hw-modal-primary:hover { transform: translateY(-1px); }
+    .hw-modal-secondary { background:#fff; color:var(--clay); border:1px solid var(--line); }
+    .hw-modal-secondary:hover { border-color: var(--gold); }
+    .hw-modal-progress { background:rgba(245,158,11,0.14); color:#7a4f0d; border:1px solid rgba(245,158,11,0.4); }
+    .hw-modal-progress:hover { background:rgba(245,158,11,0.22); }
+    .hw-modal-actions button[hidden] { display:none !important; }
+
     /* Schedule tab — forward-looking list of classes, grouped by week */
     .upcoming-range { display: inline-flex; gap: 2px; padding: 3px; background: #f1f5f9; border-radius: 999px; }
     .upcoming-range button { all: unset; cursor: pointer; padding: 6px 14px; border-radius: 999px;
@@ -1549,6 +1653,9 @@
         <button type="button" class="sidebar-item" data-tab="schedule" role="tab">
           <span class="si-icon" aria-hidden="true">📅</span><span data-i18n="tabSchedule"></span>
         </button>
+        <button type="button" class="sidebar-item" data-tab="homework" role="tab">
+          <span class="si-icon" aria-hidden="true">📝</span><span data-i18n="tabHomework"></span>
+        </button>
         <button type="button" class="sidebar-item" data-tab="learning" role="tab">
           <span class="si-icon" aria-hidden="true">📊</span><span data-i18n="tabLearning"></span>
         </button>
@@ -1765,6 +1872,30 @@
             <h2 data-i18n="schedHistoryTitle"></h2>
             <p class="panel-sub muted" data-i18n="schedHistorySub" style="margin-top:4px;margin-bottom:14px;"></p>
             <div id="schedHistoryBody"></div>
+          </article>
+        </section>
+
+        <!-- 2.5. HOMEWORK — assignments by status -->
+        <section class="dash-section" data-tab-panel="homework" role="tabpanel" aria-label="Homework">
+          <article class="panel" id="hwPanel">
+            <div class="panel-head-row">
+              <div>
+                <h2 data-i18n="hwTitle"></h2>
+                <p class="panel-sub muted" data-i18n="hwSub" style="margin-top:4px;"></p>
+              </div>
+              <span class="hw-totals-chip" id="hwTotalsChip" hidden></span>
+            </div>
+
+            <div class="hw-toolbar" role="region" aria-label="Filter">
+              <div class="hw-filter-group" id="hwFilter" role="group" aria-label="Status">
+                <button type="button" data-hw-filter="all" class="active" data-i18n="hwFilterAll"></button>
+                <button type="button" data-hw-filter="todo" data-i18n="hwFilterTodo"></button>
+                <button type="button" data-hw-filter="submitted" data-i18n="hwFilterSubmitted"></button>
+                <button type="button" data-hw-filter="graded" data-i18n="hwFilterGraded"></button>
+              </div>
+            </div>
+
+            <div id="hwBody"></div>
           </article>
         </section>
 
@@ -2205,6 +2336,40 @@
     </div>
   </div>
 
+  <!-- Homework detail / submission modal -->
+  <div class="hw-overlay" id="hwOverlay" role="dialog" aria-modal="true" aria-labelledby="hwModalTitle" aria-hidden="true">
+    <div class="hw-modal-card">
+      <button type="button" class="hw-close" id="hwCloseBtn" aria-label="Close">×</button>
+      <span class="hw-modal-pill" id="hwModalCourse"></span>
+      <h3 id="hwModalTitle" class="hw-modal-title"></h3>
+      <div class="hw-modal-meta" id="hwModalMeta"></div>
+      <div class="hw-modal-brief" id="hwModalBrief"></div>
+
+      <!-- Submission area — shown for assigned / in_progress; switches
+           to a read-only summary for submitted / graded states. -->
+      <div class="hw-submit-block" id="hwSubmitBlock">
+        <label class="hw-submit-label" data-i18n="hwSubmitNoteLabel" for="hwSubmitNote"></label>
+        <textarea id="hwSubmitNote" rows="3" class="hw-submit-area"
+          data-i18n-placeholder="hwSubmitNotePlaceholder"></textarea>
+        <label class="hw-submit-label" data-i18n="hwSubmitUrlLabel" for="hwSubmitUrl"></label>
+        <input type="url" id="hwSubmitUrl" class="hw-submit-input"
+          data-i18n-placeholder="hwSubmitUrlPlaceholder" />
+      </div>
+
+      <div class="hw-graded-block" id="hwGradedBlock" hidden>
+        <div class="hw-grade-pill" id="hwGradePill"></div>
+        <p class="hw-teacher-comment" id="hwTeacherComment"></p>
+      </div>
+
+      <p class="hw-modal-msg" id="hwModalMsg" role="status" aria-live="polite"></p>
+      <div class="hw-modal-actions">
+        <button type="button" class="hw-modal-secondary" id="hwModalCancelBtn" data-i18n="hwModalCancel"></button>
+        <button type="button" class="hw-modal-progress" id="hwModalProgressBtn" data-i18n="hwMarkInProgress"></button>
+        <button type="button" class="hw-modal-primary" id="hwModalSubmitBtn" data-i18n="hwMarkSubmitted"></button>
+      </div>
+    </div>
+  </div>
+
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-brand">
@@ -2279,7 +2444,7 @@
         window.location.replace("login.html");
         return;
       }
-      var BADGE_TABS = ["feedback", "competitions"];
+      var BADGE_TABS = ["feedback", "competitions", "homework"];
       var LASTSEEN_PREFIX = "minddo_acct_lastseen_";
 
       var I18N = {
@@ -2380,6 +2545,44 @@
           billingFilterEmpty: "当前筛选条件下没有付费记录。",
           billingTotalFilteredFmt: "筛选后 {n} 条 · 已支付 ${total}",
           tabSchedule: "课程安排",
+          tabHomework: "作业",
+          hwTitle: "作业 / 任务",
+          hwSub: "本周老师布置的作业、提交记录与批改反馈一览。",
+          hwTotalsFmt: "共 {n} 项 · 待完成 {todo} · 已批改 {graded}",
+          hwFilterAll: "全部",
+          hwFilterTodo: "待完成",
+          hwFilterSubmitted: "已提交",
+          hwFilterGraded: "已批改",
+          hwStatusAssigned: "待开始",
+          hwStatusInProgress: "进行中",
+          hwStatusSubmitted: "已提交",
+          hwStatusGraded: "已批改",
+          hwDueAtFmt: "截止：{date}",
+          hwDueSoonFmt: "还有 {n} 天",
+          hwDueTodayFmt: "今天截止",
+          hwDueTomorrowFmt: "明天截止",
+          hwDueOverdueFmt: "逾期 {n} 天",
+          hwTeacherFmt: "老师：{name}",
+          hwPointsFmt: "{n} 分",
+          hwOpenCta: "查看详情",
+          hwSubmitCta: "去提交",
+          hwViewSubmissionCta: "查看提交",
+          hwViewGradeCta: "查看批改",
+          hwEmpty: "目前没有作业。每节课结束后老师会在这里布置下一阶段的练习。",
+          hwEmptyFiltered: "当前筛选下没有作业。",
+          hwModalSubmittedAt: "提交时间：{date}",
+          hwModalSubmissionLabel: "你的提交",
+          hwSubmitNoteLabel: "提交说明（可选）",
+          hwSubmitNotePlaceholder: "简单说一句你怎么做的、有什么心得",
+          hwSubmitUrlLabel: "作品链接（可选）",
+          hwSubmitUrlPlaceholder: "https://… 视频 / 在线 demo / 网盘",
+          hwModalCancel: "取消",
+          hwMarkInProgress: "标记为进行中",
+          hwMarkSubmitted: "提交作业",
+          hwMarkSubmittedAgain: "更新提交",
+          hwSavedToast: "已保存",
+          hwSubmittedToast: "提交成功 ✓",
+          hwGradeFmt: "{score} / {max} 分",
           tabLearning: "学习记录",
           tabFeedback: "课堂反馈",
           tabCompetitions: "竞赛",
@@ -2842,6 +3045,44 @@
           billingFilterEmpty: "No payments match the current filters.",
           billingTotalFilteredFmt: "{n} filtered · ${total} paid",
           tabSchedule: "Schedule",
+          tabHomework: "Homework",
+          hwTitle: "Homework",
+          hwSub: "Assignments from this week's classes, your submissions, and teacher feedback.",
+          hwTotalsFmt: "{n} total · {todo} to do · {graded} graded",
+          hwFilterAll: "All",
+          hwFilterTodo: "To Do",
+          hwFilterSubmitted: "Submitted",
+          hwFilterGraded: "Graded",
+          hwStatusAssigned: "Assigned",
+          hwStatusInProgress: "In progress",
+          hwStatusSubmitted: "Submitted",
+          hwStatusGraded: "Graded",
+          hwDueAtFmt: "Due: {date}",
+          hwDueSoonFmt: "{n} days left",
+          hwDueTodayFmt: "Due today",
+          hwDueTomorrowFmt: "Due tomorrow",
+          hwDueOverdueFmt: "Overdue by {n}d",
+          hwTeacherFmt: "Teacher: {name}",
+          hwPointsFmt: "{n} pts",
+          hwOpenCta: "View details",
+          hwSubmitCta: "Submit",
+          hwViewSubmissionCta: "View submission",
+          hwViewGradeCta: "View grade",
+          hwEmpty: "No assignments yet. After each class, your teacher posts the next bit of practice here.",
+          hwEmptyFiltered: "No assignments under this filter.",
+          hwModalSubmittedAt: "Submitted: {date}",
+          hwModalSubmissionLabel: "Your submission",
+          hwSubmitNoteLabel: "Submission note (optional)",
+          hwSubmitNotePlaceholder: "Briefly say how you did it / what you learned",
+          hwSubmitUrlLabel: "Project link (optional)",
+          hwSubmitUrlPlaceholder: "https://… video / live demo / cloud drive",
+          hwModalCancel: "Cancel",
+          hwMarkInProgress: "Mark in progress",
+          hwMarkSubmitted: "Submit",
+          hwMarkSubmittedAgain: "Update submission",
+          hwSavedToast: "Saved",
+          hwSubmittedToast: "Submitted ✓",
+          hwGradeFmt: "{score} / {max}",
           tabLearning: "Learning",
           tabFeedback: "Class Feedback",
           tabCompetitions: "Competitions",
@@ -3858,6 +4099,153 @@
         // feedback / request data via seedDemoData or another tab is
         // reflected immediately.
         computeBadgeCounts();
+
+        // Homework tab — assignment cards with status pill + due-chip,
+        // filterable by todo/submitted/graded. Modal handles read +
+        // submit; submitting flips status and re-renders.
+        (function () {
+          var body = document.getElementById("hwBody");
+          var totalsChip = document.getElementById("hwTotalsChip");
+          var filterBar = document.getElementById("hwFilter");
+          if (!body || !filterBar) return;
+
+          window.__minddoHwState = window.__minddoHwState || { filter: "all" };
+          var filter = window.__minddoHwState.filter || "all";
+          filterBar.querySelectorAll("[data-hw-filter]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-hw-filter") === filter);
+          });
+
+          var sid = current && current.studentId;
+          var list = (flow && flow.getStudentAssignments) ? flow.getStudentAssignments(sid) : [];
+
+          function fmtDate(iso) {
+            if (!iso) return "—";
+            try {
+              return new Date(iso).toLocaleString(lang === "en" ? "en-US" : "zh-CN", {
+                year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
+              });
+            } catch (_) { return iso; }
+          }
+          function dueChip(a) {
+            if (a.status === "submitted" || a.status === "graded") return "";
+            var dueMs = new Date(a.dueAt || 0).getTime();
+            var now = Date.now();
+            var diff = Math.round((dueMs - now) / (24 * 3600 * 1000));
+            if (diff < 0) {
+              return "<span class=\"hw-pill due-overdue\">"
+                + escHTML((t.hwDueOverdueFmt || "{n}d overdue").replace("{n}", Math.abs(diff)))
+                + "</span>";
+            }
+            if (diff === 0) return "<span class=\"hw-pill due-soon\">" + escHTML(t.hwDueTodayFmt) + "</span>";
+            if (diff === 1) return "<span class=\"hw-pill due-soon\">" + escHTML(t.hwDueTomorrowFmt) + "</span>";
+            if (diff <= 3) {
+              return "<span class=\"hw-pill due-soon\">"
+                + escHTML((t.hwDueSoonFmt || "{n} days left").replace("{n}", diff))
+                + "</span>";
+            }
+            return "";
+          }
+          function statusPill(s) {
+            var lab = s === "in_progress" ? t.hwStatusInProgress
+                    : s === "submitted"  ? t.hwStatusSubmitted
+                    : s === "graded"      ? t.hwStatusGraded
+                                            : t.hwStatusAssigned;
+            var cls = s === "in_progress" ? "status-progress"
+                    : s === "submitted"  ? "status-submitted"
+                    : s === "graded"      ? "status-graded"
+                                            : "status-assigned";
+            return "<span class=\"hw-pill " + cls + "\">" + escHTML(lab) + "</span>";
+          }
+          function ctaForStatus(a) {
+            var label = (a.status === "graded")    ? t.hwViewGradeCta
+                      : (a.status === "submitted") ? t.hwViewSubmissionCta
+                                                    : t.hwSubmitCta;
+            var primary = a.status === "assigned" || a.status === "in_progress";
+            return "<button type=\"button\" class=\"hw-card-cta" + (primary ? "" : " secondary")
+              + "\" data-hw-open=\"" + escHTML(a.id) + "\">"
+              + escHTML(label)
+              + "</button>";
+          }
+
+          // Filter the active list per the current pill.
+          var filtered = list.filter(function (a) {
+            if (filter === "all") return true;
+            if (filter === "todo") return a.status === "assigned" || a.status === "in_progress";
+            if (filter === "submitted") return a.status === "submitted";
+            if (filter === "graded") return a.status === "graded";
+            return true;
+          });
+
+          // Totals chip (counts ignore filter — represent the whole set).
+          var todoN = list.filter(function (a) { return a.status === "assigned" || a.status === "in_progress"; }).length;
+          var gradedN = list.filter(function (a) { return a.status === "graded"; }).length;
+          if (totalsChip) {
+            if (list.length === 0) {
+              totalsChip.hidden = true;
+            } else {
+              totalsChip.hidden = false;
+              totalsChip.textContent = (t.hwTotalsFmt || "{n} total · {todo} to do · {graded} graded")
+                .replace("{n}", list.length)
+                .replace("{todo}", todoN)
+                .replace("{graded}", gradedN);
+            }
+          }
+
+          if (!list.length) {
+            body.innerHTML = "<div class=\"hw-empty\">" + escHTML(t.hwEmpty) + "</div>";
+            return;
+          }
+          if (!filtered.length) {
+            body.innerHTML = "<div class=\"hw-empty\">" + escHTML(t.hwEmptyFiltered) + "</div>";
+            return;
+          }
+
+          var k = lang === "en" ? "en" : "zh";
+          body.innerHTML = "<div class=\"hw-list\">"
+            + filtered.map(function (a) {
+                var courseLabel = a.courseName ? a.courseName[k] : "";
+                var title = a.title ? a.title[k] : a.id;
+                var brief = a.brief ? a.brief[k] : "";
+                var teacher = a.teacher
+                  ? (t.hwTeacherFmt || "Teacher: {name}").replace("{name}", a.teacher)
+                  : "";
+                var pts = a.points
+                  ? (t.hwPointsFmt || "{n} pts").replace("{n}", a.points)
+                  : "";
+                var dueText = a.dueAt
+                  ? (t.hwDueAtFmt || "Due: {date}").replace("{date}", fmtDate(a.dueAt))
+                  : "";
+                var meta = [dueText, teacher, pts].filter(Boolean).join(" · ");
+                var cardCls = "hw-card";
+                var isOverdue = a.status !== "submitted" && a.status !== "graded"
+                  && a.dueAt && new Date(a.dueAt).getTime() < Date.now();
+                if (isOverdue) cardCls += " overdue";
+                if (a.status === "submitted") cardCls += " submitted";
+                if (a.status === "graded") cardCls += " graded";
+                var gradeBlock = "";
+                if (a.status === "graded" && a.grade) {
+                  gradeBlock = "<div class=\"hw-card-grade\">" + escHTML(a.grade.score)
+                    + " <span class=\"max\">/ " + escHTML(a.grade.max) + "</span></div>";
+                }
+                return "<div class=\"" + cardCls + "\" data-hw-open=\"" + escHTML(a.id) + "\">"
+                  + "<div>"
+                  +   "<div class=\"hw-card-head\">"
+                  +     "<span class=\"hw-pill course\">" + escHTML(courseLabel) + "</span>"
+                  +     statusPill(a.status)
+                  +     dueChip(a)
+                  +   "</div>"
+                  +   "<div class=\"hw-card-title\">" + escHTML(title) + "</div>"
+                  +   "<div class=\"hw-card-brief\">" + escHTML(brief) + "</div>"
+                  +   (meta ? "<div class=\"hw-card-meta\">" + escHTML(meta) + "</div>" : "")
+                  + "</div>"
+                  + "<div class=\"hw-card-actions\">"
+                  +   gradeBlock
+                  +   ctaForStatus(a)
+                  + "</div>"
+                  + "</div>";
+              }).join("")
+            + "</div>";
+        })();
 
         // Schedule tab — calendar (default) + list view of every upcoming
         // class for every family child. Replaces the old this-week-only
@@ -5360,6 +5748,21 @@
         try { active = sessionStorage.getItem("minddo_acct_active_tab") || ""; } catch (_) {}
         setBadge("feedback", active === "feedback" ? 0 : fbCount);
         setBadge("competitions", active === "competitions" ? 0 : compCount);
+
+        // Homework: count assignments not in graded/submitted state and
+        // assigned after lastseen. Active student only — multi-kid
+        // guardians switch via the family panel.
+        var hwLast = getLastseen("homework");
+        var hwCount = 0;
+        if (window.MindDoFlow && window.MindDoFlow.getStudentAssignments && current.studentId) {
+          var hwList = window.MindDoFlow.getStudentAssignments(current.studentId);
+          hwCount = hwList.filter(function (a) {
+            if (!a) return false;
+            if (a.status === "graded" || a.status === "submitted") return false;
+            return a.assignedAt && a.assignedAt > hwLast;
+          }).length;
+        }
+        setBadge("homework", active === "homework" ? 0 : hwCount);
       }
 
       // Tab switching: clicking a sidebar item (or a [data-jump-tab] link
@@ -5368,7 +5771,7 @@
       // active state. Active tab persists per session.
       (function () {
         var TAB_KEY = "minddo_acct_active_tab";
-        var KNOWN_TABS = ["overview", "enroll", "billing", "schedule", "learning", "competitions", "feedback", "profile", "referrals", "settings"];
+        var KNOWN_TABS = ["overview", "enroll", "billing", "schedule", "homework", "learning", "competitions", "feedback", "profile", "referrals", "settings"];
         function setActiveTab(key) {
           if (KNOWN_TABS.indexOf(key) === -1) key = "overview";
           document.querySelectorAll("[data-tab]").forEach(function (btn) {
@@ -5500,6 +5903,155 @@
             applyAndRerender();
           });
         }
+      })();
+
+      // Homework tab handlers — filter pills, card-open delegation, and
+      // the detail / submit modal. State persists on window.__minddoHwState
+      // and the body click delegation handles re-rendered cards.
+      (function () {
+        var filterBar = document.getElementById("hwFilter");
+        var hwBody = document.getElementById("hwBody");
+        var overlay = document.getElementById("hwOverlay");
+        var closeBtn = document.getElementById("hwCloseBtn");
+        var cancelBtn = document.getElementById("hwModalCancelBtn");
+        var progressBtn = document.getElementById("hwModalProgressBtn");
+        var submitBtn = document.getElementById("hwModalSubmitBtn");
+        var titleEl = document.getElementById("hwModalTitle");
+        var courseEl = document.getElementById("hwModalCourse");
+        var metaEl = document.getElementById("hwModalMeta");
+        var briefEl = document.getElementById("hwModalBrief");
+        var submitBlock = document.getElementById("hwSubmitBlock");
+        var submitNote = document.getElementById("hwSubmitNote");
+        var submitUrl = document.getElementById("hwSubmitUrl");
+        var gradedBlock = document.getElementById("hwGradedBlock");
+        var gradePill = document.getElementById("hwGradePill");
+        var teacherComment = document.getElementById("hwTeacherComment");
+        var msgEl = document.getElementById("hwModalMsg");
+        if (!filterBar || !hwBody || !overlay) return;
+
+        var openId = null;
+
+        function rerender() {
+          var lang = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+          render(lang);
+        }
+        function langKey() {
+          return document.documentElement.getAttribute("lang") === "en" ? "en" : "zh";
+        }
+        function dictNow() {
+          // Lazy lookup so the modal picks up the live i18n table.
+          var l = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+          return I18N && I18N[l] ? I18N[l] : {};
+        }
+
+        filterBar.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-hw-filter]");
+          if (!b) return;
+          window.__minddoHwState = window.__minddoHwState || {};
+          window.__minddoHwState.filter = b.getAttribute("data-hw-filter");
+          rerender();
+        });
+
+        // Click anywhere on a card (or its CTA) opens the modal.
+        hwBody.addEventListener("click", function (e) {
+          var trigger = e.target.closest("[data-hw-open]");
+          if (!trigger) return;
+          var id = trigger.getAttribute("data-hw-open");
+          if (id) openModal(id);
+        });
+
+        function openModal(id) {
+          if (!window.MindDoFlow || !window.MindDoFlow.findAssignmentById) return;
+          var a = window.MindDoFlow.findAssignmentById(id);
+          if (!a) return;
+          openId = id;
+          var t = dictNow();
+          var k = langKey();
+
+          courseEl.textContent = a.courseName ? a.courseName[k] : "";
+          titleEl.textContent = a.title ? a.title[k] : id;
+          briefEl.textContent = a.brief ? a.brief[k] : "";
+
+          // Meta — due / submitted-at / teacher / points
+          var bits = [];
+          if (a.dueAt && a.status !== "graded") {
+            try {
+              var d = new Date(a.dueAt).toLocaleString(k === "zh" ? "zh-CN" : "en-US",
+                { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+              bits.push((t.hwDueAtFmt || "Due: {date}").replace("{date}", d));
+            } catch (_) {}
+          }
+          if (a.status === "submitted" || a.status === "graded") {
+            if (a.submittedAt) {
+              try {
+                var ds = new Date(a.submittedAt).toLocaleString(k === "zh" ? "zh-CN" : "en-US",
+                  { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+                bits.push((t.hwModalSubmittedAt || "Submitted: {date}").replace("{date}", ds));
+              } catch (_) {}
+            }
+          }
+          if (a.teacher) bits.push((t.hwTeacherFmt || "Teacher: {name}").replace("{name}", a.teacher));
+          if (a.points) bits.push((t.hwPointsFmt || "{n} pts").replace("{n}", a.points));
+          metaEl.textContent = bits.join("  ·  ");
+
+          // Submission-area visibility + prefill from existing values.
+          if (a.status === "graded" && a.grade) {
+            submitBlock.hidden = true;
+            gradedBlock.hidden = false;
+            gradePill.innerHTML = (t.hwGradeFmt || "{score} / {max}")
+              .replace("{score}", a.grade.score)
+              .replace("{max}", a.grade.max);
+            teacherComment.textContent = a.grade.comment ? (a.grade.comment[k] || "") : "";
+            // Hide both action buttons; only Cancel remains.
+            progressBtn.hidden = true;
+            submitBtn.hidden = true;
+          } else {
+            submitBlock.hidden = false;
+            gradedBlock.hidden = true;
+            submitNote.value = a.submissionText || "";
+            submitUrl.value = a.submissionUrl || "";
+            progressBtn.hidden = (a.status !== "assigned");
+            submitBtn.hidden = false;
+            submitBtn.textContent = (a.status === "submitted")
+              ? (t.hwMarkSubmittedAgain || "Update submission")
+              : (t.hwMarkSubmitted || "Submit");
+          }
+          msgEl.textContent = "";
+          msgEl.className = "hw-modal-msg";
+          overlay.setAttribute("aria-hidden", "false");
+        }
+
+        function closeModal() {
+          openId = null;
+          overlay.setAttribute("aria-hidden", "true");
+        }
+        closeBtn.addEventListener("click", closeModal);
+        cancelBtn.addEventListener("click", closeModal);
+        overlay.addEventListener("click", function (e) {
+          if (e.target === overlay) closeModal();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && overlay.getAttribute("aria-hidden") === "false") closeModal();
+        });
+
+        progressBtn.addEventListener("click", function () {
+          if (!openId || !window.MindDoFlow || !window.MindDoFlow.updateAssignmentStatus) return;
+          window.MindDoFlow.updateAssignmentStatus(openId, "in_progress");
+          var t = dictNow();
+          msgEl.textContent = t.hwSavedToast || "Saved";
+          setTimeout(function () { closeModal(); rerender(); }, 600);
+        });
+
+        submitBtn.addEventListener("click", function () {
+          if (!openId || !window.MindDoFlow || !window.MindDoFlow.updateAssignmentStatus) return;
+          var t = dictNow();
+          window.MindDoFlow.updateAssignmentStatus(openId, "submitted", {
+            submissionText: submitNote.value.trim(),
+            submissionUrl: submitUrl.value.trim()
+          });
+          msgEl.textContent = t.hwSubmittedToast || "Submitted ✓";
+          setTimeout(function () { closeModal(); rerender(); }, 800);
+        });
       })();
 
       // Referral tab handlers — copy buttons, native share, invite form.

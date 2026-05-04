@@ -21,8 +21,56 @@
     trialSlots: "minddo_trial_slots",
     portfolio: "minddo_portfolio",
     referrals: "minddo_referrals",
-    growth: "minddo_growth_records"
+    growth: "minddo_growth_records",
+    assignments: "minddo_assignments"
   };
+
+  // Homework / assignments — each entry is a single piece of work
+  // attached to a student, optionally tied to a course offering. The
+  // parent sees them on the new Homework tab; the kid (or parent on
+  // their behalf) can transition them through the lifecycle below.
+  // Statuses: assigned → in_progress → submitted → graded
+  function getStudentAssignments(studentId) {
+    if (!studentId) return [];
+    var all = readJson(KEYS.assignments) || [];
+    return all
+      .filter(function (a) { return String(a && a.studentId || "") === String(studentId); })
+      .sort(function (a, b) {
+        // Active items first by due date asc; graded / archived sink to bottom.
+        var rank = function (s) { return s === "graded" ? 2 : (s === "submitted" ? 1 : 0); };
+        var ra = rank(a.status), rb = rank(b.status);
+        if (ra !== rb) return ra - rb;
+        return new Date(a.dueAt || 0) - new Date(b.dueAt || 0);
+      });
+  }
+  function findAssignmentById(id) {
+    if (!id) return null;
+    var all = readJson(KEYS.assignments) || [];
+    return all.filter(function (a) { return a && a.id === id; })[0] || null;
+  }
+  function upsertAssignment(record) {
+    if (!record || !record.id) return null;
+    var all = readJson(KEYS.assignments) || [];
+    var idx = all.findIndex(function (a) { return a && a.id === record.id; });
+    if (idx >= 0) all[idx] = Object.assign({}, all[idx], record);
+    else all.push(record);
+    writeJson(KEYS.assignments, all);
+    return all[idx >= 0 ? idx : all.length - 1];
+  }
+  // Convenience for the parent-side "标记为完成" / submission flow.
+  // Persists submissionText/submissionUrl when provided and stamps
+  // submittedAt; otherwise just sets the status.
+  function updateAssignmentStatus(id, status, payload) {
+    var existing = findAssignmentById(id);
+    if (!existing) return null;
+    var patch = { id: id, status: status };
+    if (status === "submitted") {
+      patch.submittedAt = new Date().toISOString();
+      if (payload && payload.submissionText !== undefined) patch.submissionText = payload.submissionText;
+      if (payload && payload.submissionUrl  !== undefined) patch.submissionUrl  = payload.submissionUrl;
+    }
+    return upsertAssignment(patch);
+  }
 
   // -----------------------------------------------------------------
   // Growth tracking — five skill axes scored 0–100, captured monthly
@@ -1751,6 +1799,119 @@
     );
     writeJson(KEYS.growth, growthRecords);
 
+    // Homework / assignment seed — mixed-status set spanning both kids
+    // so the new Homework tab demos every state (assigned, in-progress,
+    // submitted, graded) without needing a parent to click through.
+    function dueIn(days, hour) {
+      var d = new Date(now);
+      d.setDate(d.getDate() + days);
+      if (hour != null) d.setHours(hour, 0, 0, 0);
+      return d.toISOString();
+    }
+    writeJson(KEYS.assignments, [
+      {
+        id: "HW-LIRO-001",
+        studentId: student.studentId,
+        courseName: { zh: "AI 启蒙入门", en: "AI Fundamentals" },
+        title: { zh: "动手 Prompt：写 3 个不一样风格的小诗", en: "Prompt practice: 3 short poems, different styles" },
+        brief: {
+          zh: "用 ChatGPT 或类似工具，写出三段不同风格的小诗（古风 / 童趣 / 科幻），各 4 行以内。把你给 AI 的 prompt 也一起截图提交。",
+          en: "Use ChatGPT or a similar tool to write three short poems in different styles (classical / playful / sci-fi), each up to 4 lines. Submit a screenshot of the prompt you used."
+        },
+        teacher: "Dr. Sarah Chen",
+        points: 10,
+        assignedAt: daysAgo(1),
+        dueAt: dueIn(2, 19),
+        status: "assigned"
+      },
+      {
+        id: "HW-LIRO-002",
+        studentId: student.studentId,
+        courseName: { zh: "AI 启蒙入门", en: "AI Fundamentals" },
+        title: { zh: "AI 工具体验日记", en: "AI tool field notes" },
+        brief: {
+          zh: "试用 2 个生活里的 AI 应用（导航、翻译、推荐都行），用 80 字写一段「这个 AI 帮我做了什么 / 哪里还不太聪明」。",
+          en: "Try two AI tools you use in real life (navigation, translation, recommendations…). Write 80 words on what the AI did well and where it still feels dumb."
+        },
+        teacher: "Dr. Sarah Chen",
+        points: 10,
+        assignedAt: daysAgo(3),
+        dueAt: dueIn(5, 21),
+        status: "in_progress"
+      },
+      {
+        id: "HW-LIRO-003",
+        studentId: student.studentId,
+        courseName: { zh: "AI 创意工坊", en: "AI Creative Studio" },
+        title: { zh: "校园物品共享 · 项目营答辩准备", en: "Campus Share — project camp pitch prep" },
+        brief: {
+          zh: "把上周做的物品共享原型，整理成一份 5 页的答辩 deck（第一页：要解决什么问题；第二页：用户旅程；第三页：核心功能；第四页：演示截图；第五页：下一步）。",
+          en: "Polish last week's borrow-and-return prototype into a 5-slide pitch deck (1: problem · 2: user journey · 3: core feature · 4: screenshots · 5: next steps)."
+        },
+        teacher: "David Park",
+        points: 20,
+        assignedAt: daysAgo(7),
+        dueAt: daysAgo(1),
+        submittedAt: daysAgo(2),
+        submissionText: "已上传 5 页 deck，演示视频 1 分 20 秒。",
+        submissionUrl: "https://drive.google.com/demo-shared-link",
+        status: "submitted"
+      },
+      {
+        id: "HW-LIRO-004",
+        studentId: student.studentId,
+        courseName: { zh: "AI 编程进阶", en: "AI Programming" },
+        title: { zh: "Python 列表练习：Top-5 提取", en: "Python lists: extract Top-5" },
+        brief: {
+          zh: "给定一个 20 个数字的列表，用循环找出其中最大的 5 个数字并按从大到小输出。代码 + 一段 30 字解释。",
+          en: "Given a list of 20 numbers, use a loop to find the largest 5 and print them in descending order. Submit the code + a 30-word explanation."
+        },
+        teacher: "Jenny Lin",
+        points: 15,
+        assignedAt: daysAgo(14),
+        dueAt: daysAgo(7),
+        submittedAt: daysAgo(8),
+        submissionText: "用 sort() 加切片完成，但没用循环。",
+        submissionUrl: "",
+        status: "graded",
+        grade: { score: 13, max: 15, comment: { zh: "结果对，但题目要求用循环理解过程；下次试试自己实现冒泡。", en: "Result correct but the brief asks for a loop-based approach. Next time try your own bubble pass." } }
+      },
+      {
+        id: "HW-LIHA-001",
+        studentId: "MD2026-0418",
+        courseName: { zh: "AI 启蒙入门", en: "AI Fundamentals" },
+        title: { zh: "找一个 AI 应用并解释给爸妈听", en: "Find an AI app and explain it to your parents" },
+        brief: {
+          zh: "找一个生活里看到的 AI 应用，用 1 分钟向爸妈解释它「在做什么、怎么做到的」。可以录一小段视频。",
+          en: "Pick an AI app you've spotted in real life. Spend 1 minute explaining to a parent what it does and how. Optionally record a short video."
+        },
+        teacher: "Dr. Sarah Chen",
+        points: 10,
+        assignedAt: daysAgo(2),
+        dueAt: dueIn(4, 19),
+        status: "assigned"
+      },
+      {
+        id: "HW-LIHA-002",
+        studentId: "MD2026-0418",
+        courseName: { zh: "AI 启蒙入门", en: "AI Fundamentals" },
+        title: { zh: "Scratch 小练习：让小猫走 5 步", en: "Scratch warmup: walk the cat 5 steps" },
+        brief: {
+          zh: "用 Scratch 拖出「重复 5 次」积木，让小猫每次走 10 步并喵一声。完成后把项目链接贴上来。",
+          en: "Drag a 'repeat 5 times' block in Scratch — make the cat walk 10 steps and meow each time. Paste the project link when done."
+        },
+        teacher: "Jenny Lin",
+        points: 10,
+        assignedAt: daysAgo(10),
+        dueAt: daysAgo(5),
+        submittedAt: daysAgo(6),
+        submissionText: "完成了，小猫走得有点快。",
+        submissionUrl: "https://scratch.mit.edu/projects/demo",
+        status: "graded",
+        grade: { score: 10, max: 10, comment: { zh: "完成度满分！下一次试试加一个声音变化。", en: "Full marks! Next time, try varying the sound." } }
+      }
+    ]);
+
     // Sample referrals: one paid (reward earned), one signed up (pending),
     // one still in "sent" status. Bound to the demo account provisioned
     // above so the parent hub can resolve them by accountId.
@@ -2449,6 +2610,10 @@
     getStudentGrowth: getStudentGrowth,
     compositeGrowthScore: compositeGrowthScore,
     getStudentMetrics: getStudentMetrics,
+    getStudentAssignments: getStudentAssignments,
+    findAssignmentById: findAssignmentById,
+    upsertAssignment: upsertAssignment,
+    updateAssignmentStatus: updateAssignmentStatus,
     planPerSession: planPerSession,
     planMonthlyEquivalent: planMonthlyEquivalent,
     planAnnualSaving: planAnnualSaving,
