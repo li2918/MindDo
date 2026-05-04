@@ -26,18 +26,18 @@
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="MindDo 能力评估：10 道模拟测试题，8 分钟获得 AI 学习能力评级与课程建议。 · MindDo skills assessment: 10-question mock test, 8 minutes to get an AI readiness rating and course recommendation." />
+  <meta name="description" content="MindDo AI 能力评估：5 维 12 题分龄测评，10 分钟获得综合分、五维雷达与个性化课程建议。 · MindDo AI assessment: 12 age-adaptive questions across 5 axes, 10 minutes for a composite score + radar + personalised course recommendations." />
   <meta name="author" content="MindDo AI Learning Center" />
   <meta name="theme-color" content="#7c2d12" />
   <meta name="robots" content="index, follow" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="MindDo" />
   <meta property="og:title" content="能力评估 · 模拟测试" />
-  <meta property="og:description" content="MindDo skills assessment: 10-question mock test, 8 minutes to get an AI readiness rating and course recommendation." />
+  <meta property="og:description" content="MindDo AI assessment: 12 age-adaptive questions across 5 axes, 10 minutes for a composite score + skill radar." />
   <meta property="og:image" content="assets/favicon.svg" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="能力评估 · 模拟测试" />
-  <meta name="twitter:description" content="MindDo skills assessment: 10-question mock test, 8 minutes to get an AI readiness rating and course recommendation." />
+  <meta name="twitter:description" content="MindDo AI assessment: 12 age-adaptive questions across 5 axes, 10 minutes for a composite score + skill radar." />
   <link rel="canonical" href="assessment.html" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="apple-touch-icon" href="assets/favicon.svg" />
@@ -155,6 +155,41 @@
     .score-hero .score-val { position: relative; font-size: 56px; font-weight: 900; color: var(--gold); line-height: 1; margin-bottom: 10px; }
     .score-hero .score-label { position: relative; font-size: 14px; color: rgba(254,243,199,0.72); margin-bottom: 16px; }
     .score-hero .level-badge { position: relative; display: inline-flex; padding: 8px 18px; border-radius: 999px; background: rgba(245,158,11,0.22); border: 1px solid rgba(245,158,11,0.42); color: #fde68a; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+    .score-hero .level-badge.lvl-beginner { background: rgba(254,243,199,0.18); color:#fef3c7; }
+    .score-hero .level-badge.lvl-intermediate { background: rgba(245,158,11,0.22); color:#fde68a; }
+    .score-hero .level-badge.lvl-advanced { background: rgba(216,156,54,0.36); color:#fff8ee; border-color:rgba(254,243,199,0.6); }
+    .score-hero .level-badge.lvl-competition { background:linear-gradient(135deg,#f59e0b,#d97706); color:#3a1808; border-color:rgba(254,243,199,0.7); box-shadow:0 4px 14px rgba(245,158,11,0.4); }
+    .score-hero .score-meta { position: relative; margin-top: 12px; font-size: 12px; color: rgba(254,243,199,0.6); letter-spacing: 0.04em; }
+
+    /* Five-axis skill snapshot — shape mirrors the parent dashboard so
+       parents see the same vocabulary on the result page and at home. */
+    .skills-grid { display: grid; gap: 10px; margin-bottom: 22px; padding: 18px 20px;
+      background: linear-gradient(180deg,#fff,rgba(255,250,240,0.8));
+      border: 1px solid var(--line); border-radius: 16px; }
+    .skill-row { display: grid; grid-template-columns: 1fr auto; column-gap: 14px; row-gap: 4px;
+      align-items: center; padding: 9px 0; border-bottom: 1px dashed rgba(122,48,16,0.1); }
+    .skill-row:last-child { border-bottom: none; }
+    .skill-name { font-size: 13px; font-weight: 800; color: var(--clay); }
+    .skill-score { font-size: 14px; font-weight: 900; color: var(--clay); font-variant-numeric: tabular-nums; }
+    .skill-bar { grid-column: 1 / -1; height: 9px; border-radius: 999px; background: rgba(122,48,16,0.08); overflow: hidden; position: relative; }
+    .skill-bar-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px;
+      background: linear-gradient(90deg,#fde68a,var(--gold-deep)); transition: width 0.6s ease; }
+    .skill-bar-fill.weak { background: linear-gradient(90deg,#fef3c7,#fcd34d); }
+    .skill-bar-fill.strong { background: linear-gradient(90deg,#f59e0b,#d97706); }
+
+    .strengths-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
+    .strength-card { padding: 14px 16px; border-radius: 14px; background: #fff;
+      border: 1px solid var(--line); }
+    .strength-card.up { border-color: rgba(110,143,87,0.4); background: rgba(254,250,238,0.95); }
+    .strength-card.down { border-color: rgba(216,156,54,0.42); background: rgba(254,243,199,0.42); }
+    .strength-head { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+    .strength-card.up .strength-head { color:#4f6f38; }
+    .strength-card.down .strength-head { color:#7a4f0d; }
+    .strength-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; font-size: 13px; color: var(--clay); }
+    .strength-list li { display: flex; gap: 8px; align-items: baseline; line-height: 1.5; }
+    .strength-list li .pct { font-weight: 900; color: var(--clay); font-variant-numeric: tabular-nums; min-width: 38px; }
+    .strength-list li .nm { font-weight: 700; }
+
     .breakdown-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
     .breakdown-item { padding: 16px; border-radius: 14px; background: rgba(240,249,255,0.9); border: 1px solid var(--line); text-align: center; }
     .breakdown-item strong { display: block; font-size: 20px; font-weight: 900; color: var(--clay); margin-bottom: 4px; }
@@ -171,6 +206,14 @@
     .recommendation { padding: 22px; border-radius: 18px; background: linear-gradient(135deg,rgba(254,243,199,0.9),rgba(253,230,138,0.35)); border: 1px solid rgba(217,119,6,0.28); margin-top: 18px; }
     .recommendation h3 { font-size: 16px; font-weight: 800; color: var(--clay); margin-bottom: 8px; }
     .recommendation p { font-size: 14px; color: var(--text); line-height: 1.7; margin-bottom: 14px; }
+    .recommendation .rec-courses { list-style:none; padding:0; margin: 0 0 16px; display:grid; gap:8px; }
+    .recommendation .rec-courses li { display:flex; gap:10px; align-items:flex-start; padding:10px 14px;
+      background:#fff; border:1px solid var(--line); border-radius:12px; font-size:13px; color: var(--clay); line-height:1.5; }
+    .recommendation .rec-courses li .ic { display:inline-flex; align-items:center; justify-content:center;
+      width:28px; height:28px; border-radius:8px; background:rgba(245,158,11,0.18); color: var(--gold-deep);
+      font-weight:900; font-size:12px; flex:none; }
+    .recommendation .rec-courses li .body strong { display:block; font-weight:800; color:var(--clay); margin-bottom:2px; font-size:13.5px; }
+    .recommendation .rec-courses li .body span { color: var(--muted); font-size:12px; line-height:1.55; }
     .recommendation .rec-btns { display: flex; gap: 12px; flex-wrap: wrap; }
 
     /* STATES */
@@ -245,8 +288,8 @@
           <div class="page-tag"><span data-lang="zh">能力评估</span><span data-lang="en">Assessment</span></div>
           <h1><span data-lang="zh">学习能力模拟测试</span><span data-lang="en">Learning Ability Mock Test</span></h1>
           <p class="hero-sub">
-            <span data-lang="zh">10 道题，约 8 分钟，涵盖逻辑推理、编程基础、算法思维与 AI 常识。完成后系统即刻给出能力评级和课程建议。</span>
-            <span data-lang="en">10 questions, ~8 minutes, covering logic, coding fundamentals, algorithmic thinking and AI basics. Get an instant level rating and course recommendation.</span>
+            <span data-lang="zh">12 道分龄精选题，约 10 分钟，覆盖 AI 概念 / 编程 / 逻辑 / 创造力 / 项目交付五维。完成后即刻得到综合分、雷达图与个性化课程建议，结果会同步到家长端的成长曲线。</span>
+            <span data-lang="en">12 age-adaptive questions, ~10 minutes, covering five axes — AI Concepts, Coding, Logic, Creativity, Project Delivery. Get a composite score, skill radar, and a tailored course path; the result also feeds the parent Dashboard's growth curve.</span>
           </p>
           <div class="hero-actions">
             <a class="btn-ghost" href="trial.html"><span data-lang="zh">预约免费试课</span><span data-lang="en">Book Free Trial</span></a>
@@ -256,18 +299,18 @@
         <div class="hero-info-card">
           <div class="hero-info-item">
             <span class="icon">🧠</span>
-            <strong><span data-lang="zh">10 道精选题</span><span data-lang="en">10 Questions</span></strong>
-            <span><span data-lang="zh">逻辑 · 编程 · 算法 · AI</span><span data-lang="en">Logic · Coding · Algorithms · AI</span></span>
+            <strong><span data-lang="zh">12 题 · 5 维</span><span data-lang="en">12 Q · 5 Axes</span></strong>
+            <span><span data-lang="zh">AI / 编程 / 逻辑 / 创造力 / 项目</span><span data-lang="en">AI · Coding · Logic · Create · Project</span></span>
           </div>
           <div class="hero-info-item">
             <span class="icon">⏱️</span>
-            <strong><span data-lang="zh">8 分钟限时</span><span data-lang="en">8-Minute Timer</span></strong>
-            <span><span data-lang="zh">模拟真实测试节奏</span><span data-lang="en">Simulates a real test</span></span>
+            <strong><span data-lang="zh">10 分钟分龄测试</span><span data-lang="en">10-min adaptive</span></strong>
+            <span><span data-lang="zh">题库按年龄段自动调取</span><span data-lang="en">Age-banded question pool</span></span>
           </div>
           <div class="hero-info-item">
             <span class="icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>
-            <strong><span data-lang="zh">即时评级</span><span data-lang="en">Instant Rating</span></strong>
-            <span><span data-lang="zh">初阶 / 中阶 / 进阶</span><span data-lang="en">Beginner / Intermediate / Advanced</span></span>
+            <strong><span data-lang="zh">即时四档评级</span><span data-lang="en">4-tier rating</span></strong>
+            <span><span data-lang="zh">初阶 / 中阶 / 进阶 / 竞赛</span><span data-lang="en">Beginner · Intermediate · Advanced · Competition</span></span>
           </div>
         </div>
       </div>
@@ -300,10 +343,9 @@
             <div class="field">
               <label><span data-lang="zh">年龄段</span><span data-lang="en">Age Group</span></label>
               <select id="intakeAge">
-                <option value="5-7"><span data-lang="zh">5 – 7 岁</span>5–7</option>
-                <option value="8-10" selected>8 – 10</option>
-                <option value="11-14">11 – 14</option>
-                <option value="15-18">15 – 18</option>
+                <option value="6-9"><span data-lang="zh">6 – 9 岁（小学低年级）</span>6–9 (early elementary)</option>
+                <option value="10-13" selected><span data-lang="zh">10 – 13 岁（小学高年级 / 初中）</span>10–13 (upper elem / middle)</option>
+                <option value="14-18"><span data-lang="zh">14 – 18 岁（高中）</span>14–18 (high school)</option>
               </select>
             </div>
           </div>
@@ -343,7 +385,7 @@
             <span data-lang="zh">已答</span><span data-lang="en">Answered</span>:
             <strong id="answeredCount">0</strong> / <strong id="totalCount">10</strong>
           </div>
-          <div class="timer" id="timer">08:00</div>
+          <div class="timer" id="timer">10:00</div>
         </div>
 
         <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
@@ -365,26 +407,29 @@
       <div id="resultsScreen" class="results">
         <div class="card" style="padding: 28px;">
           <div class="score-hero">
-            <div class="score-val" id="finalScore">0 / 10</div>
-            <div class="score-label"><span data-lang="zh">你的测试得分</span><span data-lang="en">Your Test Score</span></div>
+            <div class="score-val" id="finalScore">0 / 100</div>
+            <div class="score-label"><span data-lang="zh">综合 AI 学习能力分</span><span data-lang="en">Composite AI-Readiness Score</span></div>
             <div class="level-badge" id="levelBadge">—</div>
+            <div class="score-meta muted" id="scoreMeta"></div>
           </div>
 
-          <div class="breakdown-grid">
-            <div class="breakdown-item"><strong id="scoreLogic">0</strong><span><span data-lang="zh">逻辑推理</span><span data-lang="en">Logic</span></span></div>
-            <div class="breakdown-item"><strong id="scoreCoding">0</strong><span><span data-lang="zh">编程基础</span><span data-lang="en">Coding</span></span></div>
-            <div class="breakdown-item"><strong id="scoreAlgo">0</strong><span><span data-lang="zh">算法思维</span><span data-lang="en">Algorithms</span></span></div>
-            <div class="breakdown-item"><strong id="scoreAI">0</strong><span><span data-lang="zh">AI 常识</span><span data-lang="en">AI Basics</span></span></div>
+          <div class="card-head" style="margin-top: 8px;">
+            <h2><span data-lang="zh">五维能力分布</span><span data-lang="en">Five-Axis Skill Snapshot</span></h2>
+            <p><span data-lang="zh">每个维度从 0–100 评分。下方雷达对应家长端「成长曲线」的同一套标准。</span><span data-lang="en">Each axis is scored 0–100, using the same scale you'll see on the parent Dashboard's growth curve.</span></p>
           </div>
+          <div class="skills-grid" id="skillsGrid"></div>
 
-          <div class="card-head">
-            <h2><span data-lang="zh">答题回顾</span><span data-lang="en">Review</span></h2>
+          <div class="strengths-grid" id="strengthsGrid"></div>
+
+          <div class="card-head" style="margin-top: 6px;">
+            <h2><span data-lang="zh">答题回顾</span><span data-lang="en">Question Review</span></h2>
           </div>
           <div class="review-list" id="reviewList"></div>
 
           <div class="recommendation">
             <h3 id="recTitle">—</h3>
             <p id="recText">—</p>
+            <ul class="rec-courses" id="recCourses"></ul>
             <div class="rec-btns">
               <a class="btn-primary" href="course-selection.html"><span data-lang="zh">选课报名</span><span data-lang="en">Enroll Now</span></a>
               <a class="btn-secondary" href="course-system.html"><span data-lang="zh">查看课程体系</span><span data-lang="en">View Curriculum</span></a>
@@ -393,7 +438,7 @@
 
           <div class="action-row">
             <button id="retakeBtn" class="btn-secondary" type="button"><span data-lang="zh">重新测试</span><span data-lang="en">Retake Test</span></button>
-            <a class="btn-primary" href="course-selection.html"><span data-lang="zh">下一步：选课报名 →</span><span data-lang="en">Next: Enroll →</span></a>
+            <a class="btn-primary" href="student-account.html"><span data-lang="zh">进入家长端查看仪表盘 →</span><span data-lang="en">Open the Parent Dashboard →</span></a>
           </div>
         </div>
       </div>
@@ -492,151 +537,326 @@
         }
       }
 
-      var QUESTIONS = [
-        {
-          category: "logic",
-          prompt: { zh: "观察数列：2, 4, 8, 16, ? 下一个数字是？", en: "Number sequence: 2, 4, 8, 16, ? What comes next?" },
+      // Five canonical skill axes — same vocabulary the parent
+      // Dashboard's growth chart and skill bars use, so a kid sees the
+      // same labels here, on the seeded growth seed, and after every
+      // future review.
+      var SKILLS = ["ai", "code", "logic", "create", "project"];
+      var CATEGORY_LABELS = {
+        ai:      { zh: "AI 概念",     en: "AI Concepts" },
+        code:    { zh: "编程能力",   en: "Coding" },
+        logic:   { zh: "逻辑思维",   en: "Logic" },
+        create:  { zh: "创造力",     en: "Creativity" },
+        project: { zh: "项目完成度", en: "Project Delivery" }
+      };
+
+      // Question bank — each entry tags:
+      //   skill   : one of SKILLS (drives the per-axis score)
+      //   bands   : age bands this question is suitable for
+      //   weight  : 1 (easy) | 2 (medium) | 3 (hard) — also influences
+      //             how much the question contributes to its skill axis
+      //   prompt/options/answer: standard MCQ shape
+      // The bank is intentionally larger than any single test (~30
+      // entries), so the picker can balance skills × difficulty per
+      // age band and a retake doesn't return identical questions.
+      var QUESTION_BANK = [
+        // ---------- AI concepts ----------
+        { skill: "ai", bands: ["6-9","10-13","14-18"], weight: 1,
+          prompt: { zh: "下面哪个最像 AI 在帮你做事？", en: "Which of these feels most like AI helping you?" },
           options: [
-            { label: "A", text: { zh: "18", en: "18" } },
-            { label: "B", text: { zh: "24", en: "24" } },
-            { label: "C", text: { zh: "32", en: "32" } },
-            { label: "D", text: { zh: "64", en: "64" } }
-          ],
-          answer: 2
-        },
-        {
-          category: "logic",
-          prompt: { zh: "图形规律：▲ ◼ ▲ ◼ ▲ ? 下一个图形最可能是？", en: "Pattern: ▲ ◼ ▲ ◼ ▲ ? What comes next?" },
+            { label:"A", text:{ zh:"手机帮你认出照片里的爸爸妈妈", en:"Your phone recognising your parents in photos" } },
+            { label:"B", text:{ zh:"用尺子量一段距离",          en:"Measuring with a ruler" } },
+            { label:"C", text:{ zh:"按下电视的电源开关",        en:"Pressing the TV power button" } },
+            { label:"D", text:{ zh:"在纸上写名字",                en:"Writing your name on paper" } }
+          ], answer: 0 },
+        { skill: "ai", bands: ["6-9","10-13","14-18"], weight: 2,
+          prompt: { zh: "下面哪一项是\"机器学习\"的核心想法？", en: "Which best describes the core idea of machine learning?" },
           options: [
-            { label: "A", text: { zh: "▲", en: "▲" } },
-            { label: "B", text: { zh: "◼", en: "◼" } },
-            { label: "C", text: { zh: "●", en: "●" } },
-            { label: "D", text: { zh: "◯", en: "◯" } }
-          ],
-          answer: 1
-        },
-        {
-          category: "logic",
-          prompt: { zh: "若所有 A 都是 B，并且 C 是 A，那么：", en: "If all A are B, and C is A, then:" },
+            { label:"A", text:{ zh:"人类写死所有规则让程序执行", en:"Humans hard-code all rules" } },
+            { label:"B", text:{ zh:"让程序从大量示例中自己找规律", en:"Let programs find patterns from many examples" } },
+            { label:"C", text:{ zh:"程序只能回答是或否",       en:"Programs can only answer yes / no" } },
+            { label:"D", text:{ zh:"必须联网才能工作",         en:"Must be online to work" } }
+          ], answer: 1 },
+        { skill: "ai", bands: ["10-13","14-18"], weight: 2,
+          prompt: { zh: "ChatGPT 这类大模型有时会说错答案，最主要原因是？", en: "Large models like ChatGPT sometimes give wrong answers — the main reason is?" },
           options: [
-            { label: "A", text: { zh: "C 一定是 B", en: "C must be B" } },
-            { label: "B", text: { zh: "C 不一定是 B", en: "C may or may not be B" } },
-            { label: "C", text: { zh: "C 一定不是 B", en: "C cannot be B" } },
-            { label: "D", text: { zh: "无法判断", en: "Cannot determine" } }
-          ],
-          answer: 0
-        },
-        {
-          category: "coding",
-          prompt: { zh: "变量（variable）在程序中的作用是？", en: "What does a variable do in a program?" },
+            { label:"A", text:{ zh:"它在网上实时搜索失败了", en:"It failed to search the web in real-time" } },
+            { label:"B", text:{ zh:"它根据训练数据预测最可能的下一个词，并不真的\"理解\"", en:"It predicts likely next words from training data, it doesn't truly \"know\"" } },
+            { label:"C", text:{ zh:"老师没批准它使用",        en:"Its teachers haven't approved it" } },
+            { label:"D", text:{ zh:"它故意捣乱",              en:"It's being mischievous on purpose" } }
+          ], answer: 1 },
+        { skill: "ai", bands: ["14-18"], weight: 3,
+          prompt: { zh: "监督学习（supervised learning）和非监督学习（unsupervised learning）最关键的区别是什么？", en: "What's the key difference between supervised and unsupervised learning?" },
           options: [
-            { label: "A", text: { zh: "存储一个可以变化的数据值", en: "Store a value that can change" } },
-            { label: "B", text: { zh: "显示图像到屏幕", en: "Display images on screen" } },
-            { label: "C", text: { zh: "连接互联网", en: "Connect to the internet" } },
-            { label: "D", text: { zh: "播放声音", en: "Play audio" } }
-          ],
-          answer: 0
-        },
-        {
-          category: "coding",
+            { label:"A", text:{ zh:"监督学习需要大量带标签的训练数据", en:"Supervised learning needs labelled training data" } },
+            { label:"B", text:{ zh:"监督学习只能在云端跑",        en:"Supervised learning only runs in the cloud" } },
+            { label:"C", text:{ zh:"非监督学习更准确",            en:"Unsupervised learning is always more accurate" } },
+            { label:"D", text:{ zh:"两者完全一样",                en:"They are exactly the same" } }
+          ], answer: 0 },
+        { skill: "ai", bands: ["10-13","14-18"], weight: 1,
+          prompt: { zh: "以下哪个属于 AI 的典型应用？", en: "Which is a typical AI application?" },
+          options: [
+            { label:"A", text:{ zh:"手机人脸识别解锁", en:"Phone face unlock" } },
+            { label:"B", text:{ zh:"视频推荐",         en:"Video recommendations" } },
+            { label:"C", text:{ zh:"智能音箱语音对话", en:"Smart speaker voice chat" } },
+            { label:"D", text:{ zh:"以上都是",         en:"All of the above" } }
+          ], answer: 3 },
+
+        // ---------- Coding ----------
+        { skill: "code", bands: ["6-9"], weight: 1,
+          prompt: { zh: "图形化编程（如 Scratch）里，「重复 5 次」积木最像下面哪种生活情境？", en: "A 'repeat 5 times' block (Scratch) is most like which everyday situation?" },
+          options: [
+            { label:"A", text:{ zh:"洗一次手", en:"Washing your hands once" } },
+            { label:"B", text:{ zh:"做 5 个相同的纸飞机", en:"Making 5 identical paper planes" } },
+            { label:"C", text:{ zh:"看一部电影", en:"Watching one movie" } },
+            { label:"D", text:{ zh:"睡觉",       en:"Sleeping" } }
+          ], answer: 1 },
+        { skill: "code", bands: ["6-9","10-13","14-18"], weight: 1,
+          prompt: { zh: "变量（variable）在程序中的作用是什么？", en: "What does a variable do in a program?" },
+          options: [
+            { label:"A", text:{ zh:"存储一个可以变化的数据值", en:"Store a value that can change" } },
+            { label:"B", text:{ zh:"显示图像到屏幕", en:"Display images on screen" } },
+            { label:"C", text:{ zh:"连接互联网",   en:"Connect to the internet" } },
+            { label:"D", text:{ zh:"播放声音",     en:"Play audio" } }
+          ], answer: 0 },
+        { skill: "code", bands: ["10-13","14-18"], weight: 2,
           prompt: { zh: "下面的 Python 代码会输出什么？", en: "What does the Python code below print?" },
           code: "for i in range(3):\n    print(\"Hi\")",
           options: [
-            { label: "A", text: { zh: "一次 Hi", en: "Hi once" } },
-            { label: "B", text: { zh: "三次 Hi", en: "Hi three times" } },
-            { label: "C", text: { zh: "四次 Hi", en: "Hi four times" } },
-            { label: "D", text: { zh: "报错", en: "Error" } }
-          ],
-          answer: 1
-        },
-        {
-          category: "coding",
-          prompt: { zh: "当 x = 5 时，以下条件哪一个结果为 True？", en: "When x = 5, which condition is True?" },
+            { label:"A", text:{ zh:"一次 Hi",   en:"Hi once" } },
+            { label:"B", text:{ zh:"三次 Hi",   en:"Hi three times" } },
+            { label:"C", text:{ zh:"四次 Hi",   en:"Hi four times" } },
+            { label:"D", text:{ zh:"报错",       en:"Error" } }
+          ], answer: 1 },
+        { skill: "code", bands: ["10-13","14-18"], weight: 2,
+          prompt: { zh: "当 x = 5 时，以下条件哪一个结果为 True？", en: "When x = 5, which condition evaluates to True?" },
           options: [
-            { label: "A", text: { zh: "x > 10", en: "x > 10" } },
-            { label: "B", text: { zh: "x == 5", en: "x == 5" } },
-            { label: "C", text: { zh: "x < 3", en: "x < 3" } },
-            { label: "D", text: { zh: "x != 5", en: "x != 5" } }
-          ],
-          answer: 1
-        },
-        {
-          category: "algo",
-          prompt: { zh: "要从 100 个数字里找到最大的数字，最合理的方式是？", en: "To find the largest number in 100 numbers, the most reasonable approach is?" },
+            { label:"A", text:{ zh:"x > 10", en:"x > 10" } },
+            { label:"B", text:{ zh:"x == 5", en:"x == 5" } },
+            { label:"C", text:{ zh:"x < 3",  en:"x < 3" } },
+            { label:"D", text:{ zh:"x != 5", en:"x != 5" } }
+          ], answer: 1 },
+        { skill: "code", bands: ["14-18"], weight: 3,
+          prompt: { zh: "在 Python 里，函数的「参数」最准确的描述是？", en: "In Python, the most accurate description of a function 'parameter' is?" },
           options: [
-            { label: "A", text: { zh: "逐个扫描，记住目前见过的最大值", en: "Scan one by one, track the max so far" } },
-            { label: "B", text: { zh: "随机抽一个当作答案", en: "Pick a random one as the answer" } },
-            { label: "C", text: { zh: "把它们全部加起来", en: "Add them all up" } },
-            { label: "D", text: { zh: "只看第一个和最后一个", en: "Only look at the first and last" } }
-          ],
-          answer: 0
-        },
-        {
-          category: "algo",
-          prompt: { zh: "代码 print(\"Hello Wolrd\") 有什么问题？", en: "What's wrong with print(\"Hello Wolrd\")?" },
+            { label:"A", text:{ zh:"调用函数时传入的具体数据", en:"The actual data passed at call time (that's an argument)" } },
+            { label:"B", text:{ zh:"函数定义时的占位变量名",  en:"A placeholder name in the function definition" } },
+            { label:"C", text:{ zh:"函数返回的结果",            en:"The function's return value" } },
+            { label:"D", text:{ zh:"全局变量",                  en:"A global variable" } }
+          ], answer: 1 },
+
+        // ---------- Logic ----------
+        { skill: "logic", bands: ["6-9","10-13"], weight: 1,
+          prompt: { zh: "图形规律：▲ ◼ ▲ ◼ ▲ ? 下一个图形最可能是？", en: "Pattern: ▲ ◼ ▲ ◼ ▲ ? What comes next?" },
           options: [
-            { label: "A", text: { zh: "拼写错误，Wolrd 应为 World", en: "Typo — Wolrd should be World" } },
-            { label: "B", text: { zh: "缺少分号 ;", en: "Missing semicolon" } },
-            { label: "C", text: { zh: "引号不对", en: "Wrong quotes" } },
-            { label: "D", text: { zh: "代码完全没问题", en: "Nothing is wrong" } }
-          ],
-          answer: 0
-        },
-        {
-          category: "ai",
-          prompt: { zh: "以下哪项最能代表\"机器学习\"的核心思想？", en: "Which best describes the core idea of machine learning?" },
+            { label:"A", text:{ zh:"▲", en:"▲" } },
+            { label:"B", text:{ zh:"◼", en:"◼" } },
+            { label:"C", text:{ zh:"●", en:"●" } },
+            { label:"D", text:{ zh:"◯", en:"◯" } }
+          ], answer: 1 },
+        { skill: "logic", bands: ["6-9","10-13","14-18"], weight: 2,
+          prompt: { zh: "数列：2, 4, 8, 16, ? 下一个数字是？", en: "Sequence: 2, 4, 8, 16, ? Next number?" },
           options: [
-            { label: "A", text: { zh: "人类写死所有规则让程序执行", en: "Humans hard-code all rules" } },
-            { label: "B", text: { zh: "让程序从大量示例中自己找规律", en: "Let programs learn patterns from many examples" } },
-            { label: "C", text: { zh: "程序只能回答是或否", en: "Programs can only answer yes/no" } },
-            { label: "D", text: { zh: "必须连接互联网才能工作", en: "Must be connected to the internet to work" } }
-          ],
-          answer: 1
-        },
-        {
-          category: "ai",
-          prompt: { zh: "以下哪个是 AI 的典型应用？", en: "Which is a typical AI application?" },
+            { label:"A", text:{ zh:"18", en:"18" } },
+            { label:"B", text:{ zh:"24", en:"24" } },
+            { label:"C", text:{ zh:"32", en:"32" } },
+            { label:"D", text:{ zh:"64", en:"64" } }
+          ], answer: 2 },
+        { skill: "logic", bands: ["10-13","14-18"], weight: 2,
+          prompt: { zh: "若所有 A 都是 B，并且 C 是 A，那么：", en: "If all A are B, and C is A, then:" },
           options: [
-            { label: "A", text: { zh: "手机人脸识别解锁", en: "Phone face unlock" } },
-            { label: "B", text: { zh: "视频推荐系统", en: "Video recommendations" } },
-            { label: "C", text: { zh: "智能音箱语音对话", en: "Smart speaker voice chat" } },
-            { label: "D", text: { zh: "以上都是", en: "All of the above" } }
-          ],
-          answer: 3
-        }
+            { label:"A", text:{ zh:"C 一定是 B",     en:"C must be B" } },
+            { label:"B", text:{ zh:"C 不一定是 B",  en:"C may or may not be B" } },
+            { label:"C", text:{ zh:"C 一定不是 B",  en:"C cannot be B" } },
+            { label:"D", text:{ zh:"无法判断",        en:"Cannot determine" } }
+          ], answer: 0 },
+        { skill: "logic", bands: ["14-18"], weight: 3,
+          prompt: { zh: "三人中至少有一人撒谎。A 说 \"B 在撒谎\"；B 说 \"C 在撒谎\"；C 说 \"A 和 B 都在撒谎\"。最可能的情况是？", en: "Among 3 people, at least one is lying. A says 'B is lying'. B says 'C is lying'. C says 'Both A and B are lying'. The most likely truth is?" },
+          options: [
+            { label:"A", text:{ zh:"A 说真话，B 撒谎，C 撒谎", en:"A truthful, B lies, C lies" } },
+            { label:"B", text:{ zh:"A 撒谎，B 说真话，C 撒谎", en:"A lies, B truthful, C lies" } },
+            { label:"C", text:{ zh:"三人都撒谎",                en:"All three lying" } },
+            { label:"D", text:{ zh:"无法判断",                  en:"Cannot determine" } }
+          ], answer: 0 },
+        { skill: "logic", bands: ["6-9","10-13","14-18"], weight: 1,
+          prompt: { zh: "要从 100 个数里找到最大的数，最合理的做法是？", en: "Most reasonable way to find the largest of 100 numbers?" },
+          options: [
+            { label:"A", text:{ zh:"逐个扫描，记住目前见过的最大值", en:"Scan one by one, track the max seen so far" } },
+            { label:"B", text:{ zh:"随机抽一个当作答案",            en:"Pick a random one" } },
+            { label:"C", text:{ zh:"把它们全部加起来",              en:"Add them all up" } },
+            { label:"D", text:{ zh:"只看第一个和最后一个",          en:"Only check first and last" } }
+          ], answer: 0 },
+
+        // ---------- Creativity ----------
+        { skill: "create", bands: ["6-9","10-13","14-18"], weight: 1,
+          prompt: { zh: "你想用 AI 给妈妈准备生日惊喜，下面哪种思路最有创意？", en: "You want to use AI for a birthday surprise for mum — which idea is most creative?" },
+          options: [
+            { label:"A", text:{ zh:"用 AI 直接生成一段「生日快乐」文字打印出来", en:"Use AI to print 'Happy Birthday'" } },
+            { label:"B", text:{ zh:"训练 AI 学习妈妈喜欢的画风，画一幅独家肖像送她", en:"Train AI on mum's favourite art style and gift her a unique portrait" } },
+            { label:"C", text:{ zh:"在网上搜一段祝福复制",          en:"Copy a greeting from the internet" } },
+            { label:"D", text:{ zh:"什么都不准备",                    en:"Don't prepare anything" } }
+          ], answer: 1 },
+        { skill: "create", bands: ["10-13","14-18"], weight: 2,
+          prompt: { zh: "请 AI 写一个故事，下面哪个 prompt 最可能产出有趣的结果？", en: "Asking AI to write a story — which prompt is most likely to give an interesting result?" },
+          options: [
+            { label:"A", text:{ zh:"\"写一个故事\"",                                          en:"\"Write a story\"" } },
+            { label:"B", text:{ zh:"\"写一个故事，约 200 字\"",                              en:"\"Write a 200-word story\"" } },
+            { label:"C", text:{ zh:"\"写一个 200 字的故事，主角是只爱看星星的乌龟，结尾要反转\"", en:"\"Write a 200-word story about a turtle who loves stargazing, with a twist ending\"" } },
+            { label:"D", text:{ zh:"\"故事\"",                                                  en:"\"Story\"" } }
+          ], answer: 2 },
+        { skill: "create", bands: ["6-9","10-13"], weight: 1,
+          prompt: { zh: "用 AI 帮你做一张校园海报，最重要的「创造力」体现在哪一步？", en: "Making a school poster with AI — where does 'creativity' matter most?" },
+          options: [
+            { label:"A", text:{ zh:"想清楚海报想传达的故事和感觉", en:"Deciding what story and feeling the poster should convey" } },
+            { label:"B", text:{ zh:"选用最好看的字体",            en:"Picking the prettiest font" } },
+            { label:"C", text:{ zh:"调高 AI 模型生成的分辨率",    en:"Cranking up the model's resolution" } },
+            { label:"D", text:{ zh:"打印多份分发",                en:"Printing many copies" } }
+          ], answer: 0 },
+        { skill: "create", bands: ["14-18"], weight: 3,
+          prompt: { zh: "面对一个开放式 AI 项目，最能体现创造力的「提问方式」是？", en: "On an open-ended AI project, the most creative way to frame questions is?" },
+          options: [
+            { label:"A", text:{ zh:"\"AI 能不能做 X？\"",                          en:"\"Can AI do X?\"" } },
+            { label:"B", text:{ zh:"\"如果把 AI 用在 X，会让用户的体验有什么变化？\"", en:"\"If we apply AI to X, how would the user's experience change?\"" } },
+            { label:"C", text:{ zh:"\"X 的标准答案是什么？\"",                     en:"\"What's the standard answer for X?\"" } },
+            { label:"D", text:{ zh:"\"老师让我做 X 我就做\"",                      en:"\"I'll just do X because the teacher said so\"" } }
+          ], answer: 1 },
+
+        // ---------- Project delivery ----------
+        { skill: "project", bands: ["6-9","10-13","14-18"], weight: 1,
+          prompt: { zh: "做一个简单的 AI 聊天机器人，下面哪个步骤顺序最合理？", en: "Building a simple AI chatbot — which order makes the most sense?" },
+          options: [
+            { label:"A", text:{ zh:"想清楚要做什么 → 收集示例对话 → 训练 / 调试 → 给同学试用 → 修改",
+                                en:"Decide what it does → collect example chats → train / debug → user testing → iterate" } },
+            { label:"B", text:{ zh:"先训练再想要做什么",          en:"Train first, decide later" } },
+            { label:"C", text:{ zh:"直接发布给所有人",            en:"Just ship it to everyone right away" } },
+            { label:"D", text:{ zh:"只写代码不测试",              en:"Just code without testing" } }
+          ], answer: 0 },
+        { skill: "project", bands: ["10-13","14-18"], weight: 2,
+          prompt: { zh: "下列哪一步在做 AI 作品时\"最不能省\"？", en: "Which step in an AI project is the one you absolutely should not skip?" },
+          options: [
+            { label:"A", text:{ zh:"想清楚\"给谁用、解决什么问题\"", en:"Clarifying 'who is this for, what problem does it solve'" } },
+            { label:"B", text:{ zh:"挑一种最酷的字体",                en:"Picking the coolest font" } },
+            { label:"C", text:{ zh:"录一段酷的演示音乐",              en:"Adding cool demo music" } },
+            { label:"D", text:{ zh:"用最贵的模型",                    en:"Using the most expensive model" } }
+          ], answer: 0 },
+        { skill: "project", bands: ["6-9","10-13"], weight: 1,
+          prompt: { zh: "做项目遇到 bug 卡住了，下面哪一步最能帮你前进？", en: "You're stuck on a project bug — what step most likely unblocks you?" },
+          options: [
+            { label:"A", text:{ zh:"复盘最近改了什么、缩小怀疑范围", en:"Review what you just changed; narrow the suspect list" } },
+            { label:"B", text:{ zh:"删了重新写一遍",                  en:"Delete and rewrite from scratch" } },
+            { label:"C", text:{ zh:"先放弃这个项目",                  en:"Abandon the project" } },
+            { label:"D", text:{ zh:"什么都不做，等它自己好",          en:"Do nothing and hope it fixes itself" } }
+          ], answer: 0 },
+        { skill: "project", bands: ["14-18"], weight: 3,
+          prompt: { zh: "团队 AI 项目临近答辩，发现核心模型准确率不达标。最佳的「Plan B」是？", en: "Final-week before a team AI project review, the core model accuracy is below target. Best Plan B?" },
+          options: [
+            { label:"A", text:{ zh:"诚实展示数据 + 已尝试的解法 + 下一步路径", en:"Honestly show the data + what you tried + the path forward" } },
+            { label:"B", text:{ zh:"夸大演示效果蒙混过关",                       en:"Inflate the demo so it looks fine" } },
+            { label:"C", text:{ zh:"换一个完全不相关的项目",                     en:"Pivot to a totally unrelated project" } },
+            { label:"D", text:{ zh:"放弃答辩",                                     en:"Skip the review entirely" } }
+          ], answer: 0 },
+        { skill: "project", bands: ["10-13","14-18"], weight: 2,
+          prompt: { zh: "把一个 AI 项目交给同学帮忙试用，最有价值的反馈是？", en: "Letting a classmate test your AI project — the most valuable feedback is?" },
+          options: [
+            { label:"A", text:{ zh:"\"在哪一步我没看懂、想关掉它\"", en:"\"At which step did I get confused and want to close it?\"" } },
+            { label:"B", text:{ zh:"\"按钮颜色挺好看\"",                en:"\"The button colour is nice\"" } },
+            { label:"C", text:{ zh:"\"我觉得还行\"",                    en:"\"It's fine I guess\"" } },
+            { label:"D", text:{ zh:"\"这个项目有几行代码？\"",          en:"\"How many lines of code is it?\"" } }
+          ], answer: 0 }
       ];
 
-      var CATEGORY_LABELS = {
-        logic: { zh: "逻辑推理", en: "Logic" },
-        coding: { zh: "编程基础", en: "Coding" },
-        algo: { zh: "算法思维", en: "Algorithms" },
-        ai: { zh: "AI 常识", en: "AI" }
-      };
+      // Pick ~12 questions from the bank, balanced across the 5 skills
+      // (≈ 2-3 each) and limited to ones suitable for the chosen age band.
+      // If the chosen band doesn't have enough coverage for some skill we
+      // fall back to questions tagged for adjacent bands so the test
+      // always reaches the target size.
+      function pickQuestions(band) {
+        var byBand = QUESTION_BANK.filter(function (q) { return q.bands.indexOf(band) !== -1; });
+        var fallback = QUESTION_BANK.slice();
+        var perSkillTarget = { ai: 3, code: 3, logic: 3, create: 2, project: 3 }; // 14 across 5
+        var picked = [];
+        var pickedIds = {};
+        function pickFromPool(pool, skill, n) {
+          var avail = pool.filter(function (q) { return q.skill === skill && !pickedIds[bankIndex(q)]; });
+          // Shuffle deterministically per render so retake gets a fresh mix.
+          for (var i = avail.length - 1; i > 0; i -= 1) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = avail[i]; avail[i] = avail[j]; avail[j] = tmp;
+          }
+          var taken = avail.slice(0, n);
+          taken.forEach(function (q) { pickedIds[bankIndex(q)] = true; picked.push(q); });
+          return taken.length;
+        }
+        function bankIndex(q) { return QUESTION_BANK.indexOf(q); }
+        Object.keys(perSkillTarget).forEach(function (skill) {
+          var got = pickFromPool(byBand, skill, perSkillTarget[skill]);
+          if (got < perSkillTarget[skill]) {
+            // Top up from any-band questions.
+            pickFromPool(fallback, skill, perSkillTarget[skill] - got);
+          }
+        });
+        return picked.slice(0, 12);
+      }
 
+      // 4-tier level mapping. Threshold tuned so a typical mid-age band
+      // taker scoring "Solid foundation" lands in Intermediate.
       var LEVELS = {
-        beginner: {
-          zh: { badge: "初阶 · Beginner", title: "从零开始的好时机！", text: "你对 AI 已经有了一些感觉，但还需要系统的学习框架。推荐从 AI 启蒙入门 开始，通过互动 AI 工具和老师的引导，建立信心与解题节奏。" },
-          en: { badge: "Beginner", title: "A great time to start!", text: "You have a basic feel for AI but need a structured foundation. We recommend starting with AI Fundamentals — interactive AI tools plus instructor guidance build confidence and rhythm." }
+        Beginner: {
+          zh: { badge: "初阶 · Beginner", title: "从 AI 启蒙阶段稳步起步！", text: "对 AI 已经有了一些直觉，但需要更系统的训练。下面三门课会帮你快速跑通\"理解 → 动手 → 作品\"的循环。" },
+          en: { badge: "Beginner",          title: "A solid place to start your AI journey", text: "You've got some intuition for AI but need a structured foundation. The three courses below will move you through Understand → Build → Ship." }
         },
-        intermediate: {
-          zh: { badge: "中阶 · Intermediate", title: "基础扎实，可以进阶了！", text: "你已经具备良好的逻辑和 AI 基础，是进入 AI 创意工坊 或 AI 编程进阶 的好时机。建议安排项目驱动的课程，把现有能力转化成真正可展示的 AI 作品。" },
-          en: { badge: "Intermediate", title: "Solid foundation — ready to advance!", text: "You've got a strong grasp of logic and AI basics. This is a great time to move into AI Creative Studio or AI Programming. Project-based classes will turn your skills into shareable AI work." }
+        Intermediate: {
+          zh: { badge: "中阶 · Intermediate", title: "基础已经成型，可以进入项目期", text: "你的逻辑和编程基础不错，是时候用真实项目巩固。建议安排项目驱动型课程，把现有能力转化成可以展示的 AI 作品。" },
+          en: { badge: "Intermediate",         title: "Foundation in place — ready for projects", text: "Your logic and coding are solid. The next step is project-based courses to turn your skills into shareable AI work." }
         },
-        advanced: {
-          zh: { badge: "进阶 · Advanced", title: "已经非常出色！", text: "你的逻辑、编程和 AI 常识都很扎实。推荐加入我们的 AI 项目营或竞赛强化班，挑战更复杂的真实项目，或为信息学竞赛做准备。" },
-          en: { badge: "Advanced", title: "Already excellent!", text: "Your logic, coding and AI fundamentals are strong. We recommend joining our AI Project Camp or Competition Track for more challenging real-world projects or informatics competition prep." }
+        Advanced: {
+          zh: { badge: "进阶 · Advanced", title: "已具备独立做项目的能力", text: "你的 AI 与编程能力都很扎实。推荐进入项目工坊或竞赛预备课程，承担更复杂的真实任务。" },
+          en: { badge: "Advanced",          title: "Capable of independent projects", text: "Your AI and coding fundamentals are strong. We recommend Project Studio or Competition Prep — more complex, more autonomy." }
+        },
+        Competition: {
+          zh: { badge: "竞赛 · Competition", title: "已经达到竞赛预备线", text: "你的综合能力位于同龄段头部。推荐加入 AI 竞赛冲刺班 + 项目营，针对信息学 / AI 建模赛事系统训练。" },
+          en: { badge: "Competition",          title: "You're at the competition-ready bar", text: "You sit at the top of your age band. The Competition Track + Project Camp combo will sharpen you for informatics / AI modelling contests." }
         }
       };
 
-      var TEST_DURATION_SEC = 8 * 60;
+      // Recommended courses by level + age band. Each entry: { code, title{zh,en}, why{zh,en} }.
+      var COURSE_RECS = {
+        Beginner: [
+          { code:"AI-FUND",   title:{ zh:"AI 启蒙入门",     en:"AI Fundamentals" },        why:{ zh:"打开 AI 的\"为什么\" — 用直观工具建立对模型与 prompt 的感觉。", en:"Build intuition for AI — what models do and why prompts matter." } },
+          { code:"CODE-CRAFT",title:{ zh:"编程小工坊",     en:"Code Crafts" },            why:{ zh:"图形化 + Python 双轨入门，把\"指令 → 输出\"的反馈循环跑通。", en:"Visual + Python intro that runs the instruction → output loop." } },
+          { code:"PROJ-START",title:{ zh:"第一件 AI 作品",  en:"First AI Project" },        why:{ zh:"3 周内做出一个可以发给亲戚看的小作品，重在完成感。",         en:"Ship a real (small) AI piece in 3 weeks — confidence by completion." } }
+        ],
+        Intermediate: [
+          { code:"AI-CREATE", title:{ zh:"AI 创意工坊",    en:"AI Creative Studio" },     why:{ zh:"用 AI 生成、改写、混合内容；学会把灵感工程化。",            en:"Generate, remix, ship — turn raw inspiration into a shippable artefact." } },
+          { code:"CODE-PRO",  title:{ zh:"AI 编程进阶",    en:"AI Programming" },          why:{ zh:"Python + 数据 + API：写得出可运行的 AI 应用骨架。",         en:"Python + data + API — write the skeleton of a working AI app." } },
+          { code:"PROJ-STUDIO",title:{ zh:"项目工坊",       en:"Project Studio" },          why:{ zh:"4 人小组，6 周交付一个有真实用户的 AI 项目。",                en:"Teams of 4, 6 weeks, ship something real users actually try." } }
+        ],
+        Advanced: [
+          { code:"PROJ-CAMP", title:{ zh:"AI 项目营",       en:"AI Project Camp" },         why:{ zh:"驻场式 8 周强化，从 idea 到展示一个可以放进作品集的项目。", en:"Residency-style 8 weeks — portfolio-grade build, idea to showcase." } },
+          { code:"COMP-PREP", title:{ zh:"竞赛预备班",     en:"Competition Prep" },        why:{ zh:"信息学 / AI 建模赛事的系统训练。",                              en:"Systematic prep for informatics / AI modelling contests." } },
+          { code:"AI-ADVANCE",title:{ zh:"AI 模型实操",    en:"Hands-on AI Modelling" },   why:{ zh:"亲手训练、评估、部署小型机器学习模型。",                       en:"Train, evaluate, deploy small ML models with your own hands." } }
+        ],
+        Competition: [
+          { code:"COMP-CORE", title:{ zh:"AI 竞赛冲刺",   en:"Competition Track" },        why:{ zh:"每周高强度训练 + 模拟赛复盘，对标头部赛事评分点。",         en:"High-intensity weekly drills + mock review, calibrated to top-tier contest rubrics." } },
+          { code:"PROJ-CAMP", title:{ zh:"AI 项目营",     en:"AI Project Camp" },          why:{ zh:"竞赛之外用项目证明实力，作品集 + 推荐信双管齐下。",         en:"Beyond contests — projects + recommendation letters for the long game." } },
+          { code:"MENTOR-1V1",title:{ zh:"1v1 导师陪跑",   en:"1:1 Mentor Coaching" },     why:{ zh:"针对薄弱环节定制训练计划，赛季内每周复盘。",                 en:"Custom plan for weak axes; weekly reviews through your contest season." } }
+        ]
+      };
 
+      var TEST_DURATION_SEC = 10 * 60;
+
+      // Active question set + answers. Filled in startTest() once we know
+      // the chosen age band; left empty until then so an unanswered intake
+      // doesn't render zero-length questions.
+      var QUESTIONS = [];
       var state = {
         started: false,
         submitted: false,
         startedAt: null,
         endsAt: null,
         timerId: null,
-        answers: QUESTIONS.map(function () { return null; })
+        answers: [],
+        ageBand: ""
       };
 
       var html = document.documentElement;
@@ -727,10 +947,13 @@
       function startTest() {
         state.started = true;
         state.submitted = false;
+        state.ageBand = intakeAge.value || "10-13";
+        QUESTIONS = pickQuestions(state.ageBand);
         state.answers = QUESTIONS.map(function () { return null; });
         intakeScreen.classList.add("hidden");
         testScreen.classList.remove("hidden");
         resultsScreen.classList.remove("active");
+        totalCountEl.textContent = QUESTIONS.length;
         renderQuestions();
         updateProgress();
         startTimer();
@@ -738,36 +961,104 @@
         submitError.textContent = "";
       }
 
+      // Per-skill scoring. Each question contributes its weight (1-3) when
+      // correct; we normalise to 0-100 per axis based on the achievable
+      // weight for *this* test. Missing axes (e.g., create when only 2 q
+      // out of band) get a default of 50 so the radar isn't lopsided to
+      // "0".
       function computeResults() {
-        var byCat = { logic: { correct: 0, total: 0 }, coding: { correct: 0, total: 0 }, algo: { correct: 0, total: 0 }, ai: { correct: 0, total: 0 } };
-        var total = QUESTIONS.length;
-        var correct = 0;
+        var pts = { ai:0, code:0, logic:0, create:0, project:0 };
+        var maxPts = { ai:0, code:0, logic:0, create:0, project:0 };
         var review = QUESTIONS.map(function (q, i) {
           var a = state.answers[i];
           var ok = a !== null && a === q.answer;
-          byCat[q.category].total += 1;
-          if (ok) { byCat[q.category].correct += 1; correct += 1; }
+          maxPts[q.skill] += q.weight;
+          if (ok) pts[q.skill] += q.weight;
           return { i: i, q: q, a: a, ok: ok };
         });
-        var level = correct <= 3 ? "beginner" : (correct <= 6 ? "intermediate" : "advanced");
-        return { correct: correct, total: total, byCat: byCat, review: review, level: level };
+        var scores = {};
+        SKILLS.forEach(function (s) {
+          if (maxPts[s] === 0) { scores[s] = 50; return; }
+          scores[s] = Math.round((pts[s] / maxPts[s]) * 100);
+        });
+        var compositeRaw = SKILLS.reduce(function (sum, s) { return sum + scores[s]; }, 0) / SKILLS.length;
+        var composite = Math.round(compositeRaw);
+        var level;
+        if      (composite < 40) level = "Beginner";
+        else if (composite < 66) level = "Intermediate";
+        else if (composite < 86) level = "Advanced";
+        else                     level = "Competition";
+        var correct = review.filter(function (r) { return r.ok; }).length;
+        return {
+          correct: correct,
+          total: QUESTIONS.length,
+          scores: scores,
+          composite: composite,
+          level: level,
+          review: review
+        };
       }
 
       function renderResults(r) {
         var k = langKey();
-        document.getElementById("finalScore").textContent = r.correct + " / " + r.total;
-        document.getElementById("scoreLogic").textContent = r.byCat.logic.correct + " / " + r.byCat.logic.total;
-        document.getElementById("scoreCoding").textContent = r.byCat.coding.correct + " / " + r.byCat.coding.total;
-        document.getElementById("scoreAlgo").textContent = r.byCat.algo.correct + " / " + r.byCat.algo.total;
-        document.getElementById("scoreAI").textContent = r.byCat.ai.correct + " / " + r.byCat.ai.total;
+        var levelKey = r.level || "Beginner";
+        var level = LEVELS[levelKey][k === "zh" ? "zh" : "en"];
 
-        var level = LEVELS[r.level][k === "zh" ? "zh" : "en"];
-        document.getElementById("levelBadge").textContent = level.badge;
+        document.getElementById("finalScore").textContent = r.composite + " / 100";
+        var lb = document.getElementById("levelBadge");
+        lb.textContent = level.badge;
+        lb.className = "level-badge lvl-" + levelKey.toLowerCase();
+        document.getElementById("scoreMeta").textContent = (k === "zh"
+          ? "答对 " + r.correct + " / " + r.total + " 题 · 用时见详细记录"
+          : "Answered " + r.correct + " of " + r.total + " correctly");
+
+        // Skill bars — one row per axis, fill width = score%, color
+        // changes with score band so weak axes stand out visually.
+        document.getElementById("skillsGrid").innerHTML = SKILLS.map(function (s) {
+          var v = r.scores[s];
+          var fillCls = v >= 75 ? " strong" : (v < 50 ? " weak" : "");
+          var label = CATEGORY_LABELS[s][k];
+          return "<div class=\"skill-row\">"
+               +   "<span class=\"skill-name\">" + label + "</span>"
+               +   "<span class=\"skill-score\">" + v + "</span>"
+               +   "<div class=\"skill-bar\"><div class=\"skill-bar-fill" + fillCls + "\" style=\"width:" + Math.max(2, v) + "%\"></div></div>"
+               + "</div>";
+        }).join("");
+
+        // Strengths / growth-areas — sort skills by score and pull top 2 / bottom 2.
+        var ordered = SKILLS.slice().sort(function (a, b) { return r.scores[b] - r.scores[a]; });
+        var top = ordered.slice(0, 2);
+        var bottom = ordered.slice(-2).reverse();
+        function listItems(arr) {
+          return arr.map(function (s) {
+            return "<li><span class=\"pct\">" + r.scores[s] + "</span><span class=\"nm\">" + CATEGORY_LABELS[s][k] + "</span></li>";
+          }).join("");
+        }
+        document.getElementById("strengthsGrid").innerHTML =
+          "<div class=\"strength-card up\">"
+          + "<div class=\"strength-head\">" + (k === "zh" ? "亮点维度" : "Strengths") + "</div>"
+          + "<ul class=\"strength-list\">" + listItems(top) + "</ul>"
+          + "</div>"
+          + "<div class=\"strength-card down\">"
+          + "<div class=\"strength-head\">" + (k === "zh" ? "成长空间" : "Growth Areas") + "</div>"
+          + "<ul class=\"strength-list\">" + listItems(bottom) + "</ul>"
+          + "</div>";
+
+        // Recommendation copy + 3 suggested courses for the level.
         document.getElementById("recTitle").textContent = level.title;
         document.getElementById("recText").textContent = level.text;
+        var recs = COURSE_RECS[levelKey] || [];
+        document.getElementById("recCourses").innerHTML = recs.map(function (c) {
+          return "<li>"
+            + "<span class=\"ic\">" + (c.code.split("-")[0] || "—") + "</span>"
+            + "<span class=\"body\"><strong>" + c.title[k] + "</strong><span>" + c.why[k] + "</span></span>"
+            + "</li>";
+        }).join("");
 
+        // Per-question review — same shape as before, but tagged with
+        // the new five-axis labels.
         var reviewHtml = r.review.map(function (row) {
-          var cat = CATEGORY_LABELS[row.q.category][k];
+          var cat = CATEGORY_LABELS[row.q.skill][k];
           var cls = row.a === null ? "skip" : (row.ok ? "ok" : "bad");
           var icon = row.a === null ? "–" : (row.ok ? "✓" : "✕");
           var prompt = row.q.prompt[k];
@@ -801,26 +1092,35 @@
         }
 
         var r = computeResults();
+        var current = window.MindDoFlow && window.MindDoFlow.getCurrentStudent
+          ? window.MindDoFlow.getCurrentStudent() : null;
         var payload = {
-          studentName: (intakeName.value || "").trim(),
-          ageGroup: intakeAge.value,
+          name: (intakeName.value || "").trim() || (current && (current.studentName || current.name)) || "",
+          email: current && current.email,
+          studentName: (intakeName.value || "").trim() || (current && (current.studentName || current.name)) || "",
+          ageBand: state.ageBand,
+          ageGroup: state.ageBand,    // kept for legacy ops dashboard parsing
           background: intakeBg.value,
           goalCategory: intakeGoal.value,
-          quizScore: r.correct,
+          quizCorrect: r.correct,
           quizTotal: r.total,
-          breakdown: r.byCat,
-          level: r.level,
+          scores: r.scores,           // { ai, code, logic, create, project } — feeds the dashboard
+          composite: r.composite,
+          level: r.level,             // canonicalised: Beginner | Intermediate | Advanced | Competition
           answers: state.answers,
           autoSubmitted: !!autoSubmitted,
           durationSec: Math.min(TEST_DURATION_SEC, Math.round((Date.now() - state.startedAt) / 1000)),
           createdAt: new Date().toISOString()
         };
 
-        if (window.MindDoFlow && window.MindDoFlow.saveAssessment) {
-          var current = window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent();
-          var name = payload.studentName || (current && (current.studentName || current.name)) || "";
-          var email = current && current.email;
-          window.MindDoFlow.saveAssessment(Object.assign({ name: name, email: email }, payload));
+        // Single end-to-end commit — writes the assessment record, a new
+        // growth snapshot the parent Dashboard chart will pick up next
+        // render, and updates the student-level lookup so Schedule
+        // auto-filters to matching offerings on the next visit.
+        if (window.MindDoFlow && window.MindDoFlow.applyAssessmentResult) {
+          window.MindDoFlow.applyAssessmentResult(payload);
+        } else if (window.MindDoFlow && window.MindDoFlow.saveAssessment) {
+          window.MindDoFlow.saveAssessment(payload);
         } else {
           try {
             var key = "minddo_assessments";

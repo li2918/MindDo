@@ -589,6 +589,58 @@
     }));
   }
 
+  // End-to-end commit for an assessment result. Writes:
+  //   1. The assessment record (existing KEYS.assessments path)
+  //   2. A growth-record snapshot keyed to today, so the parent
+  //      Dashboard chart + skill bars pick up the new data instantly.
+  //   3. The student level (KEYS.studentLevels) so Schedule auto-
+  //      filters to matching offerings and Membership upgrades land
+  //      on the right tier.
+  // Payload shape (assessment.html builds this):
+  //   { name, email, ageBand, background, goalCategory, scores:
+  //     { ai, code, logic, create, project }  // 0-100 each
+  //     composite: number, level: "Beginner|Intermediate|Advanced|
+  //     Competition", quizCorrect, quizTotal, breakdown, level,
+  //     answers, durationSec, autoSubmitted, createdAt }
+  function applyAssessmentResult(payload) {
+    if (!payload) return null;
+    var saved = saveAssessment(payload);
+    var sid = (saved && saved.studentId) || (getCurrentStudent() || {}).studentId;
+    if (!sid) return saved;
+
+    // Growth snapshot — uses the same shape buildGrowthSeries writes
+    // in seedDemoData so the dashboard chart can't tell a seeded
+    // record from a real one.
+    if (payload.scores) {
+      var period = (payload.createdAt || new Date().toISOString()).slice(0, 7);
+      var growthList = readJson(KEYS.growth) || [];
+      // Replace any existing same-period record for this student so
+      // a retake within the same month overwrites rather than stacks.
+      growthList = growthList.filter(function (r) {
+        return !(String(r && r.studentId || "") === String(sid)
+              && String(r && r.periodKey || "") === period);
+      });
+      growthList.push({
+        studentId: sid,
+        periodKey: period,
+        createdAt: payload.createdAt || new Date().toISOString(),
+        scores: {
+          ai: Number(payload.scores.ai) || 0,
+          code: Number(payload.scores.code) || 0,
+          logic: Number(payload.scores.logic) || 0,
+          create: Number(payload.scores.create) || 0,
+          project: Number(payload.scores.project) || 0
+        },
+        teacherNote: payload.note || "",
+        source: "assessment"
+      });
+      writeJson(KEYS.growth, growthList);
+    }
+
+    if (payload.level) setStudentLevel(sid, payload.level);
+    return saved;
+  }
+
   function saveSignupUser(user) {
     var current = setCurrentStudent({
       studentName: user.studentName || user.name,
@@ -2362,6 +2414,7 @@
     findLeadByEmailOrPhone: findLeadByEmailOrPhone,
     findSignupByEmail: findSignupByEmail,
     saveAssessment: saveAssessment,
+    applyAssessmentResult: applyAssessmentResult,
     saveSignupUser: saveSignupUser,
     savePayment: savePayment,
     getPortfolioForStudent: getPortfolioForStudent,
