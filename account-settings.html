@@ -75,6 +75,31 @@
     .creds-mini.creds-reset { background:rgba(216,156,54,0.12); border-color:rgba(216,156,54,0.38); color:#8a5d11; }
     .creds-mini.creds-reset:hover { background:rgba(216,156,54,0.22); }
 
+    /* Inline contact-info block — sits below credentials. Two text
+       fields (email + phone) wired to flow.upsertStudent on Save.
+       Fields show as plain text for non-primary viewers. */
+    .contact { margin-top:10px; padding:10px 12px; background:rgba(253,230,138,0.18);
+      border:1px solid rgba(245,158,11,0.22); border-radius:12px; display:grid; gap:8px; }
+    .contact-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12.5px; }
+    .contact-k { color:var(--muted); font-weight:700; letter-spacing:0.04em;
+      text-transform:uppercase; font-size:10.5px; min-width:80px; }
+    .contact-v-input { flex:1; min-width:160px; background:#fff; border:1px solid var(--line);
+      border-radius:8px; padding:5px 10px; font:inherit; font-size:12.5px; color:var(--text);
+      outline:none; transition:0.15s; }
+    .contact-v-input:focus { border-color:var(--gold); box-shadow:0 0 0 2px rgba(245,158,11,0.18); }
+    .contact-v-static { flex:1; min-width:160px; background:#fff; border:1px solid var(--line);
+      border-radius:8px; padding:5px 10px; font-size:12.5px; color:var(--clay); }
+    .contact-v-static.empty { color:var(--muted); font-style:italic; }
+    .contact-foot { display:flex; justify-content:flex-end; gap:8px; align-items:center; }
+    .contact-msg { font-size:11px; color:var(--success); font-weight:700; opacity:0; transition:0.2s; }
+    .contact-msg.show { opacity:1; }
+    .contact-save { background:linear-gradient(135deg,#fde68a,var(--gold));
+      border:1px solid rgba(245,158,11,0.45); color:#3a1808;
+      padding:5px 14px; border-radius:999px; font:inherit; font-size:11.5px; font-weight:800;
+      cursor:pointer; transition:0.15s; }
+    .contact-save:hover { transform:translateY(-1px); box-shadow:0 4px 10px rgba(245,158,11,0.28); }
+    .contact-save:disabled { opacity:0.55; cursor:not-allowed; transform:none; box-shadow:none; }
+
     .field { display:flex; flex-direction:column; margin-bottom:12px; }
     .field label { font-size:12px; font-weight:800; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; }
     .field input, .field select {
@@ -255,6 +280,14 @@
           credsNoPassword: "——",
           credsResetConfirm: "重置 {name} 的登录密码？新密码会覆盖当前密码。",
           credsResetDone: "{name} 的密码已重置",
+          contactEmailLabel: "联系邮箱",
+          contactPhoneLabel: "联系电话",
+          contactEmailPlaceholder: "student@example.com",
+          contactPhonePlaceholder: "+1 (555) 000-0000",
+          contactEmpty: "未填写",
+          contactSave: "保存",
+          contactSavedToast: "已保存 {name} 的联系方式",
+          contactInvalidEmail: "邮箱格式不正确，请检查后重试。",
           studentLoginActive: "已激活，邮箱：{email}",
           studentLoginPending: "待激活 · 链接已发送",
           studentShareTitle: "学员激活链接（请分享给学员）",
@@ -304,6 +337,14 @@
           credsNoPassword: "—",
           credsResetConfirm: "Reset {name}'s password? The new one will replace the current one.",
           credsResetDone: "{name}'s password was reset",
+          contactEmailLabel: "Contact Email",
+          contactPhoneLabel: "Phone",
+          contactEmailPlaceholder: "student@example.com",
+          contactPhonePlaceholder: "+1 (555) 000-0000",
+          contactEmpty: "Not set",
+          contactSave: "Save",
+          contactSavedToast: "Saved contact info for {name}",
+          contactInvalidEmail: "Email looks off — please double-check.",
           studentLoginActive: "Active · {email}",
           studentLoginPending: "Pending activation · link issued",
           studentShareTitle: "Share this activation link with the student",
@@ -475,6 +516,45 @@
                 "</div>";
             }
 
+            // Contact-info block — student's own contact email / phone,
+            // distinct from the auto-provisioned login email above. Edit
+            // controls only show for the primary guardian; everyone else
+            // sees the values as plain text (or "Not set" placeholder).
+            var emailVal = s.email || "";
+            var phoneVal = s.phone || "";
+            var contactBlock = "";
+            if (isPrimary) {
+              contactBlock =
+                "<div class='contact' data-contact-card='" + escapeHtml(s.studentId) + "'>" +
+                  "<div class='contact-row'>" +
+                    "<span class='contact-k'>" + escapeHtml(t.contactEmailLabel) + "</span>" +
+                    "<input type='email' class='contact-v-input' data-contact-email='" + escapeHtml(s.studentId) + "' value='" + escapeHtml(emailVal) + "' placeholder='" + escapeHtml(t.contactEmailPlaceholder) + "' autocomplete='email' />" +
+                  "</div>" +
+                  "<div class='contact-row'>" +
+                    "<span class='contact-k'>" + escapeHtml(t.contactPhoneLabel) + "</span>" +
+                    "<input type='tel' class='contact-v-input' data-contact-phone='" + escapeHtml(s.studentId) + "' value='" + escapeHtml(phoneVal) + "' placeholder='" + escapeHtml(t.contactPhonePlaceholder) + "' autocomplete='tel' />" +
+                  "</div>" +
+                  "<div class='contact-foot'>" +
+                    "<span class='contact-msg' data-contact-msg='" + escapeHtml(s.studentId) + "'></span>" +
+                    "<button type='button' class='contact-save' data-contact-save='" + escapeHtml(s.studentId) + "'>" + escapeHtml(t.contactSave) + "</button>" +
+                  "</div>" +
+                "</div>";
+            } else {
+              var emailDisplay = emailVal || ("<span class='contact-v-static empty'>" + escapeHtml(t.contactEmpty) + "</span>");
+              var phoneDisplay = phoneVal || ("<span class='contact-v-static empty'>" + escapeHtml(t.contactEmpty) + "</span>");
+              contactBlock =
+                "<div class='contact'>" +
+                  "<div class='contact-row'>" +
+                    "<span class='contact-k'>" + escapeHtml(t.contactEmailLabel) + "</span>" +
+                    (emailVal ? ("<span class='contact-v-static'>" + escapeHtml(emailVal) + "</span>") : emailDisplay) +
+                  "</div>" +
+                  "<div class='contact-row'>" +
+                    "<span class='contact-k'>" + escapeHtml(t.contactPhoneLabel) + "</span>" +
+                    (phoneVal ? ("<span class='contact-v-static'>" + escapeHtml(phoneVal) + "</span>") : phoneDisplay) +
+                  "</div>" +
+                "</div>";
+            }
+
             var cta = "";
             if (isPrimary) {
               cta += "<a class='btn-secondary' href='trial.html?sid=" + encodeURIComponent(s.studentId) + "'>" + escapeHtml(t.bookTrial) + "</a>";
@@ -486,6 +566,7 @@
                 "<div class='mname'>" + escapeHtml(s.name || s.studentId) + "</div>" +
                 "<div class='mmeta'>" + escapeHtml(s.studentId) + (s.grade ? " · Grade " + escapeHtml(s.grade) : "") + "</div>" +
                 credsBlock +
+                contactBlock +
               "</div>" +
               "<div class='mactions'>" + statusPill + cta + "</div>" +
             "</div>";
@@ -531,6 +612,43 @@
           flow.autoProvisionStudentAccount(account.familyId, sidP, { resetPassword: true });
           showToast(I18N[lang].credsResetDone.replace("{name}", name));
           render();
+          return;
+        }
+
+        // Save the contact email + phone for this student. Persists via
+        // flow.upsertStudent (shallow merge keeps the rest of the record
+        // intact). On success, flash a Saved chip beside the button —
+        // skip a full re-render so the parent doesn't lose focus mid-flow.
+        var saveBtn = e.target.closest("[data-contact-save]");
+        if (saveBtn) {
+          var sidC = saveBtn.getAttribute("data-contact-save");
+          var t3 = I18N[lang];
+          var emailIn = studentList.querySelector("[data-contact-email='" + sidC.replace(/'/g, "\\'") + "']");
+          var phoneIn = studentList.querySelector("[data-contact-phone='" + sidC.replace(/'/g, "\\'") + "']");
+          var msgEl = studentList.querySelector("[data-contact-msg='" + sidC.replace(/'/g, "\\'") + "']");
+          if (!emailIn || !phoneIn) return;
+          var emailNew = (emailIn.value || "").trim();
+          var phoneNew = (phoneIn.value || "").trim();
+          // Empty email is allowed (clears the field). Reject syntactically
+          // wrong email so we don't store garbage that breaks outreach.
+          if (emailNew && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNew)) {
+            showToast(t3.contactInvalidEmail);
+            return;
+          }
+          if (!flow || !flow.upsertStudent) return;
+          var existing = flow.findStudentById(sidC) || { studentId: sidC };
+          flow.upsertStudent({
+            studentId: sidC,
+            email: emailNew,
+            phone: phoneNew
+          });
+          var nameForToast = existing.name || existing.studentName || sidC;
+          if (msgEl) {
+            msgEl.textContent = "✓ " + t3.contactSavedToast.replace("{name}", nameForToast);
+            msgEl.classList.add("show");
+            setTimeout(function () { msgEl.classList.remove("show"); }, 2200);
+          }
+          showToast(t3.contactSavedToast.replace("{name}", nameForToast));
           return;
         }
 
