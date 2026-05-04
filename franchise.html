@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MindDo 招商加盟 · 三档合伙模式 · 完整课程 / 师训 / 数字平台 / 品牌支持。Become a MindDo partner — bring AI-era education to more families." />
+  <meta name="theme-color" content="#7c2d12" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="MindDo" />
+  <meta property="og:title" content="招商加盟 · MindDo Partnership" />
+  <meta property="og:description" content="MindDo 城市合伙人计划 · Three franchise tiers, full operational support." />
+  <meta property="og:image" content="assets/favicon.svg" />
+  <link rel="canonical" href="franchise.html" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <title>招商加盟 · MindDo Partnership</title>
+  <style>
+    :root {
+      --bg:#fff8ee; --sand:#fde9c5; --card:rgba(255,250,240,0.96);
+      --line:rgba(122,48,16,0.14); --line-strong:rgba(122,48,16,0.26);
+      --text:#1c1208; --muted:#8a6240;
+      --gold:#f59e0b; --gold-deep:#d97706; --gold-soft:#fde68a;
+      --clay:#7c2d12; --clay-deep:#5a200a; --brown:#3a1808;
+      --success:#6f8f57; --error:#c46a4d;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
+    a { color:inherit; text-decoration:none; }
+    button { font:inherit; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+
+    .skip-link { position:absolute; left:-9999px; top:0; background:#7c2d12; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #f59e0b; outline-offset:2px; }
+
+    .navbar { position:sticky; top:0; z-index:100; background:rgba(255,250,240,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:44px; height:44px; object-fit:contain; }
+    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
+    .nav-menu { display:flex; align-items:center; gap:4px; list-style:none; }
+    .nav-menu a { padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600; color:var(--muted); transition:0.15s; }
+    .nav-menu a:hover, .nav-menu a.active { color:var(--clay); background:rgba(122,48,16,0.06); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .lang-btn { background:none; border:1px solid var(--line); border-radius:999px; padding:7px 14px; cursor:pointer; font-size:13px; font-weight:600; color:var(--clay); font-family:inherit; }
+    .lang-btn:hover, .lang-btn.active { background:var(--sand); border-color:var(--gold); }
+    .nav-login { background:none; border:1px solid var(--line); border-radius:999px; padding:8px 16px; cursor:pointer; font-size:13px; font-weight:700; color:var(--clay); font-family:inherit; text-decoration:none; transition:0.15s; }
+    .nav-login:hover { background:var(--sand); border-color:var(--gold); }
+
+    .btn-primary { background:linear-gradient(135deg,#fde68a,var(--gold)); color:#3a1808; border:none; border-radius:999px; padding:12px 26px; font-size:14px; font-weight:800; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(245,158,11,0.32); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(245,158,11,0.4); }
+    .btn-secondary { background:rgba(255,250,240,0.96); color:var(--clay); border:1px solid var(--line); border-radius:999px; padding:11px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:var(--gold); }
+    .btn-ghost { background:transparent; color:#fffbeb; border:1px solid rgba(254,243,199,0.32); border-radius:999px; padding:11px 22px; font-size:14px; font-weight:700; font-family:inherit; display:inline-flex; align-items:center; gap:6px; text-decoration:none; transition:0.15s; }
+    .btn-ghost:hover { background:rgba(254,243,199,0.1); border-color:var(--gold); }
+
+    /* HERO — deep brown gradient with amber radial glow, mirrors the
+       parchment vibe of the brand mark. */
+    .page-hero { background:linear-gradient(145deg,#2a1408 0%,#3a1808 45%,#7c2d12 100%); padding:64px 0 56px; position:relative; overflow:hidden; }
+    .page-hero::before { content:""; position:absolute; inset:0; pointer-events:none;
+      background:radial-gradient(circle at 80% 0%,rgba(245,158,11,0.28) 0%,transparent 55%),
+                 radial-gradient(circle at 18% 80%,rgba(216,156,54,0.18) 0%,transparent 50%); }
+    .page-hero-inner { max-width:1180px; margin:0 auto; padding:0 48px; position:relative; z-index:1; color:#fffbeb; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(245,158,11,0.22); border:1px solid rgba(245,158,11,0.42); color:#fde68a; font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:16px; }
+    .page-hero h1 { font-size:clamp(30px,4vw,46px); font-weight:900; color:#fffbeb; letter-spacing:-0.02em; line-height:1.15; margin-bottom:14px; }
+    .page-hero h1 em { color:var(--gold-soft); font-style:normal; }
+    .page-hero p { font-size:16px; color:rgba(254,243,199,0.82); line-height:1.75; max-width:680px; margin-bottom:24px; }
+    .hero-actions { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .hero-actions .meta-line { font-size:12.5px; color:rgba(254,243,199,0.6); margin-left:6px; line-height:1.6; }
+
+    /* SECTION SHELL */
+    section.bg-section { padding:64px 0; }
+    section.bg-section.alt { background:linear-gradient(180deg,rgba(253,233,197,0.45),rgba(253,233,197,0.15)); }
+    .section-inner { max-width:1180px; margin:0 auto; padding:0 48px; }
+    .section-head { text-align:center; max-width:720px; margin:0 auto 44px; }
+    .section-eyebrow { font-size:11.5px; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--gold-deep); margin-bottom:10px; display:block; }
+    .section-head h2 { font-size:clamp(24px,3vw,34px); font-weight:900; color:var(--clay); letter-spacing:-0.02em; margin-bottom:12px; line-height:1.2; }
+    .section-head p { font-size:14.5px; color:var(--muted); line-height:1.75; }
+
+    /* WHY NOW — 4 cards */
+    .why-grid { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:14px; }
+    .why-card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:22px 20px; transition:0.2s; }
+    .why-card:hover { transform:translateY(-2px); border-color:rgba(245,158,11,0.3); box-shadow:0 14px 32px rgba(122,48,16,0.08); }
+    .why-card .ic { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,#fde68a,var(--gold)); color:#3a1808; font-size:20px; font-weight:900; margin-bottom:14px; }
+    .why-card h3 { font-size:16px; font-weight:800; color:var(--clay); letter-spacing:-0.01em; margin-bottom:8px; }
+    .why-card p { font-size:13px; color:var(--muted); line-height:1.7; }
+
+    /* TRACK RECORD — 4 metric tiles */
+    .metric-row { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:14px; }
+    .metric-tile { background:#fff; border:1px solid var(--line); border-radius:18px; padding:22px 20px; text-align:center; }
+    .metric-num { font-size:clamp(28px,3.4vw,40px); font-weight:900; color:var(--clay); letter-spacing:-0.03em; line-height:1.1; }
+    .metric-num em { color:var(--gold-deep); font-style:normal; }
+    .metric-label { font-size:11.5px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-top:6px; }
+    .metric-foot { font-size:11.5px; color:var(--muted); margin-top:8px; line-height:1.5; }
+
+    /* TIER COMPARISON — three pricing cards, middle one highlighted */
+    .tier-grid { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:16px; }
+    .tier-card { background:#fff; border:1px solid var(--line); border-radius:20px; padding:26px 22px; position:relative; display:flex; flex-direction:column; gap:14px; transition:0.2s; }
+    .tier-card.recommended { border-color:rgba(245,158,11,0.55); box-shadow:0 16px 36px rgba(245,158,11,0.12); transform:translateY(-4px); }
+    .tier-card.recommended::before { content:""; position:absolute; top:0; left:0; right:0; height:4px; border-radius:20px 20px 0 0;
+      background:linear-gradient(90deg,var(--gold-deep),var(--gold),var(--gold-deep)); }
+    .tier-ribbon { position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+      background:linear-gradient(135deg,#f59e0b,#d97706); color:#3a1808; font-size:11px; font-weight:900;
+      letter-spacing:0.1em; text-transform:uppercase; padding:5px 14px; border-radius:999px;
+      box-shadow:0 6px 16px rgba(245,158,11,0.36); white-space:nowrap; }
+    .tier-tag { font-size:10.5px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold-deep); }
+    .tier-name { font-size:20px; font-weight:900; color:var(--clay); letter-spacing:-0.01em; }
+    .tier-price { display:flex; align-items:baseline; gap:6px; }
+    .tier-price .num { font-size:30px; font-weight:900; color:var(--clay); letter-spacing:-0.02em; }
+    .tier-price .unit { font-size:12px; color:var(--muted); font-weight:700; }
+    .tier-royalty { font-size:12px; color:var(--muted); }
+    .tier-royalty strong { color:var(--clay); font-weight:800; }
+    .tier-list { list-style:none; padding:0; margin:6px 0 0; display:grid; gap:8px; font-size:13px; color:var(--text); line-height:1.55; }
+    .tier-list li { display:flex; gap:8px; align-items:flex-start; }
+    .tier-list li::before { content:"✓"; color:var(--success); font-weight:900; flex:none; margin-top:1px; }
+    .tier-cta { margin-top:auto; }
+    .tier-card a.btn-primary, .tier-card a.btn-secondary { width:100%; justify-content:center; }
+
+    /* SUPPORT PILLARS — 6 boxes */
+    .pillar-grid { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:14px; }
+    .pillar-card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:20px 18px; }
+    .pillar-card .ic { font-size:24px; line-height:1; margin-bottom:12px; }
+    .pillar-card h3 { font-size:14.5px; font-weight:800; color:var(--clay); letter-spacing:-0.01em; margin-bottom:6px; }
+    .pillar-card p { font-size:12.5px; color:var(--muted); line-height:1.65; }
+
+    /* INVESTMENT & ROI — split panel */
+    .roi-split { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .roi-card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:24px 22px; }
+    .roi-card h3 { font-size:16px; font-weight:800; color:var(--clay); letter-spacing:-0.01em; margin-bottom:6px; }
+    .roi-card .roi-sub { font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.55; }
+    .roi-table { width:100%; border-collapse:collapse; }
+    .roi-table th, .roi-table td { text-align:left; padding:9px 4px; font-size:13px; border-bottom:1px solid var(--line); }
+    .roi-table th { color:var(--muted); font-weight:800; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; padding-bottom:6px; }
+    .roi-table td:last-child, .roi-table th:last-child { text-align:right; font-variant-numeric:tabular-nums; color:var(--clay); font-weight:700; white-space:nowrap; }
+    .roi-table tr:last-child td { border-bottom:none; padding-top:12px; font-weight:900; color:var(--clay); }
+    .roi-table tr.total td { border-top:2px solid var(--clay); padding-top:12px; font-weight:900; }
+    .roi-note { font-size:11.5px; color:var(--muted); margin-top:12px; line-height:1.6; padding:10px 12px; background:rgba(253,230,138,0.32); border-radius:10px; border:1px solid rgba(245,158,11,0.22); }
+
+    /* IDEAL PARTNER — 4 column checklist */
+    .profile-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px 28px; max-width:840px; margin:0 auto; }
+    .profile-item { display:flex; gap:12px; align-items:flex-start; padding:10px 0; }
+    .profile-item .ic { width:30px; height:30px; border-radius:8px; background:rgba(245,158,11,0.16); color:var(--gold-deep); display:inline-flex; align-items:center; justify-content:center; font-weight:900; font-size:14px; flex:none; }
+    .profile-item h4 { font-size:13.5px; font-weight:800; color:var(--clay); margin-bottom:3px; }
+    .profile-item p { font-size:12.5px; color:var(--muted); line-height:1.6; }
+
+    /* PROCESS STEPS — 5 numbered chips */
+    .proc-bar { display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:10px; max-width:1080px; margin:0 auto; }
+    .proc-step { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 16px; position:relative; }
+    .proc-step .num { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:999px; background:var(--clay); color:#fffbeb; font-weight:900; font-size:14px; margin-bottom:10px; }
+    .proc-step h4 { font-size:14px; font-weight:800; color:var(--clay); letter-spacing:-0.01em; margin-bottom:4px; }
+    .proc-step p { font-size:12px; color:var(--muted); line-height:1.55; }
+
+    /* FAQ — accordion-ish */
+    .faq-list { display:grid; gap:10px; max-width:840px; margin:0 auto; }
+    .faq-item { background:#fff; border:1px solid var(--line); border-radius:14px; }
+    .faq-item summary { padding:16px 18px; font-size:14px; font-weight:800; color:var(--clay); cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px; border-radius:14px; }
+    .faq-item summary::-webkit-details-marker { display:none; }
+    .faq-item summary::after { content:"+"; color:var(--gold-deep); font-weight:900; font-size:18px; flex:none; }
+    .faq-item[open] summary::after { content:"−"; }
+    .faq-item[open] summary { background:rgba(253,230,138,0.32); border-radius:14px 14px 0 0; }
+    .faq-body { padding:14px 18px 18px; font-size:13px; color:var(--muted); line-height:1.75; }
+
+    /* APPLICATION FORM */
+    .apply-card { max-width:780px; margin:0 auto; background:#fff; border:1px solid var(--line); border-radius:22px; padding:32px 32px 28px; box-shadow:0 24px 60px rgba(122,48,16,0.08); }
+    .apply-card h3 { font-size:20px; font-weight:900; color:var(--clay); letter-spacing:-0.01em; margin-bottom:6px; }
+    .apply-card .apply-sub { font-size:13px; color:var(--muted); margin-bottom:22px; line-height:1.65; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 16px; }
+    .field { display:flex; flex-direction:column; }
+    .field.span-2 { grid-column:1 / -1; }
+    .field label { font-size:11.5px; font-weight:800; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; }
+    .field input, .field select, .field textarea {
+      width:100%; border:1px solid var(--line); background:#fef9ec; color:var(--text);
+      padding:10px 12px; border-radius:12px; font:inherit; font-size:14px; outline:none; transition:0.15s;
+      font-family:inherit;
+    }
+    .field textarea { min-height:90px; resize:vertical; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(245,158,11,0.16); }
+    .form-foot { margin-top:18px; display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; }
+    .form-foot .legal { font-size:11.5px; color:var(--muted); line-height:1.6; max-width:420px; }
+
+    /* TOAST */
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--clay); color:#fffbeb; padding:14px 20px; border-radius:14px; font-size:13.5px; font-weight:700; box-shadow:0 16px 40px rgba(42,20,8,0.32); opacity:0; transform:translateY(10px); transition:0.25s; pointer-events:none; z-index:2000; max-width:340px; line-height:1.55; }
+    .toast.show { opacity:1; transform:translateY(0); }
+
+    /* CTA STRIP — bottom band before footer */
+    .cta-strip { background:linear-gradient(135deg,#3a1808 0%,#7c2d12 100%); padding:56px 0; position:relative; overflow:hidden; }
+    .cta-strip::before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 50% 0%,rgba(245,158,11,0.28) 0%,transparent 55%); pointer-events:none; }
+    .cta-inner { max-width:1180px; margin:0 auto; padding:0 48px; position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; color:#fffbeb; }
+    .cta-inner h2 { font-size:clamp(22px,2.6vw,28px); font-weight:900; color:#fffbeb; letter-spacing:-0.01em; margin-bottom:6px; }
+    .cta-inner p { font-size:14px; color:rgba(254,243,199,0.78); line-height:1.65; }
+    .cta-actions { display:flex; gap:12px; flex-wrap:wrap; }
+
+    /* FOOTER */
+    .footer { background:var(--brown); color:rgba(254,243,199,0.72); padding:60px 48px 32px; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:40px; margin-bottom:40px; }
+    .footer-logo-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .footer-logo-row img { width:36px; height:36px; object-fit:contain; }
+    .footer-logo-row span { font-size:18px; font-weight:800; color:#fffbeb; }
+    .footer-brand p { font-size:13px; line-height:1.7; margin-bottom:16px; }
+    .footer-col h4 { font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:rgba(254,243,199,0.5); margin-bottom:16px; }
+    .footer-col ul { list-style:none; display:grid; gap:10px; }
+    .footer-col ul a { font-size:14px; color:rgba(254,243,199,0.72); transition:0.15s; }
+    .footer-col ul a:hover { color:#fffbeb; }
+    .footer-bottom { max-width:1280px; margin:0 auto; padding-top:24px; border-top:1px solid rgba(254,243,199,0.12); display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(254,243,199,0.45); }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .why-grid, .metric-row { grid-template-columns:repeat(2, 1fr); }
+      .tier-grid { grid-template-columns:1fr; }
+      .pillar-grid { grid-template-columns:repeat(2, 1fr); }
+      .proc-bar { grid-template-columns:repeat(2, 1fr); }
+      .roi-split { grid-template-columns:1fr; }
+    }
+    @media (max-width: 720px) {
+      .navbar { padding:0 22px; }
+      .nav-menu { display:none; }
+      .page-hero-inner, .section-inner, .cta-inner { padding:0 24px; }
+      section.bg-section { padding:48px 0; }
+      .why-grid, .metric-row, .pillar-grid { grid-template-columns:1fr; }
+      .proc-bar { grid-template-columns:1fr; }
+      .form-grid { grid-template-columns:1fr; }
+      .footer { padding:48px 24px 28px; }
+      .footer-inner { grid-template-columns:1fr 1fr; gap:28px; }
+      .footer-bottom { flex-direction:column; gap:8px; align-items:flex-start; }
+      .apply-card { padding:24px 22px 22px; border-radius:18px; }
+    }
+  </style>
+  <link rel="stylesheet" href="assets/minddo-theme.css" />
+  <link rel="stylesheet" href="assets/minddo-responsive.css" />
+</head>
+<body>
+  <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
+
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <ul class="nav-menu">
+      <li><a href="index.html"><span data-lang="zh">首页</span><span data-lang="en">Home</span></a></li>
+      <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+      <li><a href="about.html"><span data-lang="zh">关于我们</span><span data-lang="en">About</span></a></li>
+      <li><a href="franchise.html" class="active"><span data-lang="zh">招商加盟</span><span data-lang="en">Partnership</span></a></li>
+      <li><a href="contact.html"><span data-lang="zh">联系我们</span><span data-lang="en">Contact</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-switcher" data-lang-switcher>
+        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span class="lang-trigger-label">中文</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="lang-menu" role="listbox">
+          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
+          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+        </div>
+      </div>
+      <a class="nav-login" href="login.html"><span data-lang="zh">登录</span><span data-lang="en">Log In</span></a>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- HERO -->
+    <section class="page-hero">
+      <div class="page-hero-inner">
+        <span class="page-tag"><span data-lang="zh">招商加盟</span><span data-lang="en">Partnership Program</span></span>
+        <h1>
+          <span data-lang="zh">和我们一起把 <em>AI 时代的优质教育</em><br/>带给更多家庭</span>
+          <span data-lang="en">Bring <em>AI-era learning</em> to more families,<br/>together with MindDo</span>
+        </h1>
+        <p>
+          <span data-lang="zh">MindDo 城市合伙人计划：三档加盟模式，五位一体支持体系。已累计服务 3,400+ 学员，复购率 88%，家长 NPS 72。无论你是教育行业老兵还是跨界创业者，都能找到合适的入局方式。</span>
+          <span data-lang="en">The MindDo Partnership Program — three franchise tiers, end-to-end operational support. We've served 3,400+ students with an 88% renewal rate and an NPS of 72. Whether you're an education veteran or a first-time founder, there's a tier that fits.</span>
+        </p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="#apply">
+            <span data-lang="zh">提交意向申请 →</span><span data-lang="en">Apply now →</span>
+          </a>
+          <a class="btn-ghost" href="#tiers">
+            <span data-lang="zh">查看加盟方案</span><span data-lang="en">Compare tiers</span>
+          </a>
+          <span class="meta-line">
+            <span data-lang="zh">回复时间：1 个工作日内</span>
+            <span data-lang="en">We reply within 1 business day</span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY NOW -->
+    <section class="bg-section" id="why">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">为什么是现在</span><span data-lang="en">Why now</span></span>
+          <h2><span data-lang="zh">AI 教育进入家庭刚需窗口</span><span data-lang="en">AI education has crossed the must-have line</span></h2>
+          <p>
+            <span data-lang="zh">家长不再问「孩子要不要学 AI」，而是「在哪里学」。同时跑通课程、师资、招生、留存的玩家凤毛麟角——这正是 MindDo 模式的护城河。</span>
+            <span data-lang="en">Parents have stopped asking "should my child learn AI?" and started asking "where?". Few operators have all four pillars — curriculum, faculty, enrollment, retention — running. That's the moat MindDo has built.</span>
+          </p>
+        </div>
+        <div class="why-grid">
+          <article class="why-card">
+            <span class="ic">📈</span>
+            <h3><span data-lang="zh">时代窗口</span><span data-lang="en">Timing window</span></h3>
+            <p><span data-lang="zh">K-12 AI 教育渗透率仍 < 6%。咨询机构估算 5 年内市场放大 8–10×。</span><span data-lang="en">K-12 AI education penetration is still under 6%. Analysts project an 8–10× market by 2030.</span></p>
+          </article>
+          <article class="why-card">
+            <span class="ic">🛠</span>
+            <h3><span data-lang="zh">闭环验证</span><span data-lang="en">Validated loop</span></h3>
+            <p><span data-lang="zh">4 年迭代的课程 + 招生 + 续费三角，已在直营校区跑通完整经营年。</span><span data-lang="en">A four-year-tested curriculum × enrollment × renewal triangle, proven across full-cycle corporate locations.</span></p>
+          </article>
+          <article class="why-card">
+            <span class="ic">🤝</span>
+            <h3><span data-lang="zh">五位支持</span><span data-lang="en">Full-stack support</span></h3>
+            <p><span data-lang="zh">课程、师训、平台、营销、督导全套打包，把创业摩擦降到最小。</span><span data-lang="en">Curriculum, faculty, platform, marketing, oversight — bundled to minimise founder drag.</span></p>
+          </article>
+          <article class="why-card">
+            <span class="ic">📊</span>
+            <h3><span data-lang="zh">单店模型清晰</span><span data-lang="en">Clear unit economics</span></h3>
+            <p><span data-lang="zh">标准店年坪效 ¥4,200/㎡，14 个月内回本，第 2 年现金流正向。</span><span data-lang="en">Standard tier: $620 / sqft annual revenue density, ~14-month payback, positive cash flow in Year 2.</span></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRACK RECORD -->
+    <section class="bg-section alt" id="record">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">业绩证明</span><span data-lang="en">Track record</span></span>
+          <h2><span data-lang="zh">数据是最公平的合伙人</span><span data-lang="en">The numbers behind the model</span></h2>
+        </div>
+        <div class="metric-row">
+          <div class="metric-tile">
+            <div class="metric-num"><em>3,400</em>+</div>
+            <div class="metric-label"><span data-lang="zh">在读学员</span><span data-lang="en">Active students</span></div>
+            <div class="metric-foot"><span data-lang="zh">覆盖 K–12 全龄段</span><span data-lang="en">K–12 across all age bands</span></div>
+          </div>
+          <div class="metric-tile">
+            <div class="metric-num"><em>20</em></div>
+            <div class="metric-label"><span data-lang="zh">城市校区</span><span data-lang="en">City locations</span></div>
+            <div class="metric-foot"><span data-lang="zh">8 直营 · 12 合伙</span><span data-lang="en">8 corporate · 12 partner</span></div>
+          </div>
+          <div class="metric-tile">
+            <div class="metric-num"><em>88</em>%</div>
+            <div class="metric-label"><span data-lang="zh">续费率</span><span data-lang="en">Renewal rate</span></div>
+            <div class="metric-foot"><span data-lang="zh">连续 6 季度稳定 ≥ 85%</span><span data-lang="en">≥ 85% for 6 straight quarters</span></div>
+          </div>
+          <div class="metric-tile">
+            <div class="metric-num"><em>72</em></div>
+            <div class="metric-label"><span data-lang="zh">家长 NPS</span><span data-lang="en">Parent NPS</span></div>
+            <div class="metric-foot"><span data-lang="zh">行业头部水平 (Top 10%)</span><span data-lang="en">Top decile in K-12 STEM</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIERS -->
+    <section class="bg-section" id="tiers">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">三档加盟模式</span><span data-lang="en">Three franchise tiers</span></span>
+          <h2><span data-lang="zh">从轻量合伙人到旗舰校长</span><span data-lang="en">From lean partner to flagship principal</span></h2>
+          <p>
+            <span data-lang="zh">每档对应不同的初始投入、坪效模型与区域权益。点击下方「申请」即可与招商团队约 30 分钟初步沟通。</span>
+            <span data-lang="en">Each tier maps to a different initial investment, footprint, and territory protection. Apply below for a 30-min intro call.</span>
+          </p>
+        </div>
+
+        <div class="tier-grid">
+          <!-- TIER 1 -->
+          <article class="tier-card">
+            <span class="tier-tag"><span data-lang="zh">轻量起步</span><span data-lang="en">Lean entry</span></span>
+            <div class="tier-name"><span data-lang="zh">城市合伙人</span><span data-lang="en">City Partner</span></div>
+            <div class="tier-price">
+              <span class="num">$25K</span>
+              <span class="unit"><span data-lang="zh">起 / 加盟费</span><span data-lang="en">initial fee</span></span>
+            </div>
+            <div class="tier-royalty">
+              <span data-lang="zh">月度版税 <strong>8%</strong> · 商圈半径 <strong>1 mi</strong></span>
+              <span data-lang="en">Monthly royalty <strong>8%</strong> · Territory <strong>1 mi</strong></span>
+            </div>
+            <ul class="tier-list">
+              <li><span data-lang="zh">单教室 (≤ 50 ㎡) 或线上为主</span><span data-lang="en">Single classroom (≤ 540 sqft) or online-led</span></li>
+              <li><span data-lang="zh">3 周线上 + 1 周到岗培训</span><span data-lang="en">3-wk online + 1-wk on-site training</span></li>
+              <li><span data-lang="zh">完整数字平台 + 课程 access</span><span data-lang="en">Full digital platform + curriculum access</span></li>
+              <li><span data-lang="zh">区域督导每月 1 次</span><span data-lang="en">Monthly regional review</span></li>
+            </ul>
+            <div class="tier-cta">
+              <a class="btn-secondary" href="#apply" data-tier="partner"><span data-lang="zh">申请此档 →</span><span data-lang="en">Apply for this tier →</span></a>
+            </div>
+          </article>
+
+          <!-- TIER 2 — recommended -->
+          <article class="tier-card recommended">
+            <span class="tier-ribbon">★ <span data-lang="zh">推荐</span><span data-lang="en">Recommended</span></span>
+            <span class="tier-tag"><span data-lang="zh">主力机型</span><span data-lang="en">Best fit</span></span>
+            <div class="tier-name"><span data-lang="zh">标准校区</span><span data-lang="en">Standard Center</span></div>
+            <div class="tier-price">
+              <span class="num">$80K</span>
+              <span class="unit"><span data-lang="zh">起 / 加盟费</span><span data-lang="en">initial fee</span></span>
+            </div>
+            <div class="tier-royalty">
+              <span data-lang="zh">月度版税 <strong>6%</strong> · 商圈半径 <strong>3 mi</strong></span>
+              <span data-lang="en">Monthly royalty <strong>6%</strong> · Territory <strong>3 mi</strong></span>
+            </div>
+            <ul class="tier-list">
+              <li><span data-lang="zh">80–150 ㎡ 实体校区，2–3 教室</span><span data-lang="en">800–1,600 sqft physical center, 2–3 classrooms</span></li>
+              <li><span data-lang="zh">完整选址 / 装修 / 开业 SOP</span><span data-lang="en">Site-selection / build-out / opening SOP</span></li>
+              <li><span data-lang="zh">5 周师训营 + 实习带教</span><span data-lang="en">5-wk faculty bootcamp + apprenticeship</span></li>
+              <li><span data-lang="zh">区域独家保护 + GM 1v1 督导</span><span data-lang="en">Exclusive territory + 1:1 GM coaching</span></li>
+              <li><span data-lang="zh">14 月回本模型 + 营销基金</span><span data-lang="en">14-month payback model + co-marketing fund</span></li>
+            </ul>
+            <div class="tier-cta">
+              <a class="btn-primary" href="#apply" data-tier="standard"><span data-lang="zh">申请此档 →</span><span data-lang="en">Apply for this tier →</span></a>
+            </div>
+          </article>
+
+          <!-- TIER 3 -->
+          <article class="tier-card">
+            <span class="tier-tag"><span data-lang="zh">区域旗舰</span><span data-lang="en">Regional flagship</span></span>
+            <div class="tier-name"><span data-lang="zh">旗舰校区</span><span data-lang="en">Flagship Campus</span></div>
+            <div class="tier-price">
+              <span class="num">$180K</span>
+              <span class="unit"><span data-lang="zh">起 / 加盟费</span><span data-lang="en">initial fee</span></span>
+            </div>
+            <div class="tier-royalty">
+              <span data-lang="zh">月度版税 <strong>5%</strong> · 区域优先权</span>
+              <span data-lang="en">Monthly royalty <strong>5%</strong> · Regional priority</span>
+            </div>
+            <ul class="tier-list">
+              <li><span data-lang="zh">200+ ㎡，多教室 + 项目营空间</span><span data-lang="en">2,000+ sqft, multi-classroom + maker space</span></li>
+              <li><span data-lang="zh">区域内多店扩张优先权</span><span data-lang="en">First-look on additional locations in region</span></li>
+              <li><span data-lang="zh">总部驻店开业团队 4 周</span><span data-lang="en">4-wk on-site HQ launch team</span></li>
+              <li><span data-lang="zh">联合品牌活动 + 媒体扶持</span><span data-lang="en">Co-branded events + PR support</span></li>
+              <li><span data-lang="zh">独立盈利分成机制（合伙人模式可选）</span><span data-lang="en">Optional revenue-share model</span></li>
+            </ul>
+            <div class="tier-cta">
+              <a class="btn-secondary" href="#apply" data-tier="flagship"><span data-lang="zh">申请此档 →</span><span data-lang="en">Apply for this tier →</span></a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUPPORT PILLARS -->
+    <section class="bg-section alt" id="support">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">合伙人能拿到什么</span><span data-lang="en">What partners get</span></span>
+          <h2><span data-lang="zh">五位一体的支持矩阵</span><span data-lang="en">A five-layer support matrix</span></h2>
+          <p>
+            <span data-lang="zh">不是「卖完授权就走」的招商，而是把跑通直营校区的所有动作打包给你。每个支持模块都有 SLA 与对接人。</span>
+            <span data-lang="en">Not a sell-and-disappear franchise. We package every operating motion that worked at our corporate locations — each module has an SLA and a named owner.</span>
+          </p>
+        </div>
+        <div class="pillar-grid">
+          <article class="pillar-card">
+            <div class="ic">📚</div>
+            <h3><span data-lang="zh">完整课程体系</span><span data-lang="en">Full curriculum</span></h3>
+            <p><span data-lang="zh">K–12 四阶段 200+ 节项目化课程，含教师讲义、学生作品集模板、家长汇报模板。每季度更新。</span><span data-lang="en">200+ project-based lessons across K–12, with teacher decks, student portfolio templates, parent reports. Quarterly refresh.</span></p>
+          </article>
+          <article class="pillar-card">
+            <div class="ic">👩‍🏫</div>
+            <h3><span data-lang="zh">师资训练营</span><span data-lang="en">Faculty bootcamp</span></h3>
+            <p><span data-lang="zh">3–5 周封闭训练 + 持续陪跑：备课、课堂带教、家长沟通、教学复盘四模块。</span><span data-lang="en">3–5 wks immersive training plus ongoing support: lesson prep, in-class coaching, parent comms, post-class review.</span></p>
+          </article>
+          <article class="pillar-card">
+            <div class="ic">💻</div>
+            <h3><span data-lang="zh">数字化运营平台</span><span data-lang="en">Digital ops platform</span></h3>
+            <p><span data-lang="zh">学员 / 家长 / 教师 / 运营四端账户系统、试课转付费漏斗、自动化通知。</span><span data-lang="en">Four-side platform — student / parent / teacher / ops — with trial-to-paid funnel and automated comms.</span></p>
+          </article>
+          <article class="pillar-card">
+            <div class="ic">📣</div>
+            <h3><span data-lang="zh">品牌营销资产</span><span data-lang="en">Brand marketing kit</span></h3>
+            <p><span data-lang="zh">本地化广告模板、社交媒体素材库、家长讲座 deck、合作渠道清单（学校 / 社群 / KOL）。</span><span data-lang="en">Localised ad creatives, social asset library, parent-talk decks, vetted partner channels (schools / communities / KOLs).</span></p>
+          </article>
+          <article class="pillar-card">
+            <div class="ic">🚀</div>
+            <h3><span data-lang="zh">招生增长 playbook</span><span data-lang="en">Growth playbook</span></h3>
+            <p><span data-lang="zh">从地推到回购：体验课设计、转化话术、续费节奏、推荐有礼机制全套 SOP。</span><span data-lang="en">Trial-day design, conversion scripts, renewal cadence, referral mechanics — full SOP from acquisition to LTV.</span></p>
+          </article>
+          <article class="pillar-card">
+            <div class="ic">🛡</div>
+            <h3><span data-lang="zh">区域督导 & QBR</span><span data-lang="en">Regional oversight & QBR</span></h3>
+            <p><span data-lang="zh">区域 GM 月度复盘 + 季度业务回顾会议，问题预警 / 目标对齐 / 案例共创。</span><span data-lang="en">Monthly check-ins with a regional GM plus quarterly business reviews — early warnings, goal alignment, shared playbooks.</span></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- INVESTMENT & ROI -->
+    <section class="bg-section" id="roi">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">投资 & 回报</span><span data-lang="en">Investment & returns</span></span>
+          <h2><span data-lang="zh">标准校区单店模型（参考）</span><span data-lang="en">Standard tier single-location model</span></h2>
+          <p>
+            <span data-lang="zh">下表为标准校区典型城市的参考模型，实际数值随城市级别、选址、当地获客成本浮动。签约前会一对一做 territory study。</span>
+            <span data-lang="en">Reference unit economics for the Standard tier in a typical metro. Real numbers vary by city, site, and local CAC. We run a 1:1 territory study before any signing.</span>
+          </p>
+        </div>
+        <div class="roi-split">
+          <article class="roi-card">
+            <h3><span data-lang="zh">初始投入</span><span data-lang="en">Initial Investment</span></h3>
+            <p class="roi-sub"><span data-lang="zh">含加盟费 + 装修 + 设备 + 启动营销 + 6 个月运营储备。</span><span data-lang="en">Includes franchise fee + build-out + equipment + opening marketing + 6-month working capital.</span></p>
+            <table class="roi-table">
+              <thead>
+                <tr>
+                  <th><span data-lang="zh">项目</span><span data-lang="en">Item</span></th>
+                  <th><span data-lang="zh">金额</span><span data-lang="en">Amount</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang="zh">加盟费</span><span data-lang="en">Franchise fee</span></td><td>$80,000</td></tr>
+                <tr><td><span data-lang="zh">装修 & 设备</span><span data-lang="en">Build-out & equipment</span></td><td>$60,000</td></tr>
+                <tr><td><span data-lang="zh">开业营销</span><span data-lang="en">Opening marketing</span></td><td>$15,000</td></tr>
+                <tr><td><span data-lang="zh">6 个月运营储备金</span><span data-lang="en">6-mo working capital</span></td><td>$45,000</td></tr>
+                <tr class="total"><td><span data-lang="zh">合计</span><span data-lang="en">Total</span></td><td>$200,000</td></tr>
+              </tbody>
+            </table>
+            <div class="roi-note">
+              <span data-lang="zh">部分城市可申请装修分期，最高可降至首期 $135K 起。</span>
+              <span data-lang="en">Build-out financing available in select metros, lowering first-cheque to ~$135K.</span>
+            </div>
+          </article>
+          <article class="roi-card">
+            <h3><span data-lang="zh">3 年现金流参考</span><span data-lang="en">3-Year Cash Flow Reference</span></h3>
+            <p class="roi-sub"><span data-lang="zh">假设满员 180 学员，单生客单价 $3,800/年，复购率 85%。</span><span data-lang="en">Assumes mature run-rate of 180 students, $3,800 ARPU, 85% renewal.</span></p>
+            <table class="roi-table">
+              <thead>
+                <tr>
+                  <th><span data-lang="zh">年度</span><span data-lang="en">Year</span></th>
+                  <th><span data-lang="zh">营收</span><span data-lang="en">Revenue</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span data-lang="zh">第 1 年</span><span data-lang="en">Year 1 (ramp)</span></td><td>$340,000</td></tr>
+                <tr><td><span data-lang="zh">第 2 年</span><span data-lang="en">Year 2</span></td><td>$620,000</td></tr>
+                <tr><td><span data-lang="zh">第 3 年</span><span data-lang="en">Year 3 (mature)</span></td><td>$720,000</td></tr>
+                <tr class="total"><td><span data-lang="zh">回本周期</span><span data-lang="en">Payback</span></td><td><span data-lang="zh">≈ 14 个月</span><span data-lang="en">≈ 14 months</span></td></tr>
+              </tbody>
+            </table>
+            <div class="roi-note">
+              <span data-lang="zh">已扣除 6% 月度版税与 1% 品牌基金。第 2 年起经营性现金流转正。</span>
+              <span data-lang="en">Net of 6% monthly royalty and 1% brand fund. Positive operating cash flow from Year 2 onward.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- IDEAL PROFILE -->
+    <section class="bg-section alt" id="profile">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">理想合伙人画像</span><span data-lang="en">Ideal partner profile</span></span>
+          <h2><span data-lang="zh">不一定来自教育行业，但要懂这件事</span><span data-lang="en">You don't need an education background — but you need this</span></h2>
+        </div>
+        <div class="profile-grid">
+          <div class="profile-item">
+            <div class="ic">A</div>
+            <div>
+              <h4><span data-lang="zh">本地资源 / 社群力</span><span data-lang="en">Local network</span></h4>
+              <p><span data-lang="zh">在目标城市有学校、家长社群或社区资源，能快速切入获客。</span><span data-lang="en">Real connections to schools, parent communities, or local platforms in the target city.</span></p>
+            </div>
+          </div>
+          <div class="profile-item">
+            <div class="ic">B</div>
+            <div>
+              <h4><span data-lang="zh">投资能力</span><span data-lang="en">Capital readiness</span></h4>
+              <p><span data-lang="zh">合伙人档 $30K+ 流动资金；标准 / 旗舰档对应 $200K / $400K 总投入。</span><span data-lang="en">Partner tier: $30K+ liquid. Standard / Flagship: $200K / $400K total.</span></p>
+            </div>
+          </div>
+          <div class="profile-item">
+            <div class="ic">C</div>
+            <div>
+              <h4><span data-lang="zh">长期视角</span><span data-lang="en">Long-term horizon</span></h4>
+              <p><span data-lang="zh">愿意运营 5+ 年，把校区当作家长社区而非短期生意。</span><span data-lang="en">Willing to run for 5+ years and build a parent community, not a quick flip.</span></p>
+            </div>
+          </div>
+          <div class="profile-item">
+            <div class="ic">D</div>
+            <div>
+              <h4><span data-lang="zh">教育使命感</span><span data-lang="en">Mission alignment</span></h4>
+              <p><span data-lang="zh">认同「让每个孩子在 AI 时代找到自己的位置」这件事，对孩子有真心。</span><span data-lang="en">Believes every child deserves a place in the AI era — and means it.</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section class="bg-section" id="process">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">合作流程</span><span data-lang="en">Application process</span></span>
+          <h2><span data-lang="zh">从意向到开业，5 步走</span><span data-lang="en">From intent to opening — 5 steps</span></h2>
+        </div>
+        <div class="proc-bar">
+          <div class="proc-step">
+            <span class="num">1</span>
+            <h4><span data-lang="zh">提交意向</span><span data-lang="en">Submit interest</span></h4>
+            <p><span data-lang="zh">填写下方表单或邮件 partner@minddo.ai。</span><span data-lang="en">Fill the form below or email partner@minddo.ai.</span></p>
+          </div>
+          <div class="proc-step">
+            <span class="num">2</span>
+            <h4><span data-lang="zh">初步沟通</span><span data-lang="en">Intro call</span></h4>
+            <p><span data-lang="zh">招商负责人 30 分钟视频电话，匹配档位。</span><span data-lang="en">A 30-min video call to align on tier and goals.</span></p>
+          </div>
+          <div class="proc-step">
+            <span class="num">3</span>
+            <h4><span data-lang="zh">实地考察</span><span data-lang="en">On-site visit</span></h4>
+            <p><span data-lang="zh">到直营校区蹲点 1 天，亲眼看运营节奏。</span><span data-lang="en">Spend a day at a corporate location, see the rhythm.</span></p>
+          </div>
+          <div class="proc-step">
+            <span class="num">4</span>
+            <h4><span data-lang="zh">商业计划</span><span data-lang="en">Business plan</span></h4>
+            <p><span data-lang="zh">联合做 territory study + 单店模型，含选址 / 预算。</span><span data-lang="en">Joint territory study + unit-economics model, with siting & budget.</span></p>
+          </div>
+          <div class="proc-step">
+            <span class="num">5</span>
+            <h4><span data-lang="zh">签约启动</span><span data-lang="en">Sign & launch</span></h4>
+            <p><span data-lang="zh">合同签订、师训启动、装修开工、4–6 月开业。</span><span data-lang="en">Contract signed, faculty training begins, build-out starts, open in 4–6 months.</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="bg-section alt" id="faq">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">合伙人常问</span><span data-lang="en">FAQ</span></span>
+          <h2><span data-lang="zh">10 分钟扫完核心疑问</span><span data-lang="en">The 10-minute partner FAQ</span></h2>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary><span data-lang="zh">没有教育行业背景能加盟吗？</span><span data-lang="en">Can I join without an education background?</span></summary>
+            <div class="faq-body">
+              <span data-lang="zh">可以。我们目前 12 家合伙校区中，有 7 家创始人来自互联网、零售、金融行业。教学品质由 MindDo 师资体系保障，合伙人重点负责本地运营、社区建设与团队管理。</span>
+              <span data-lang="en">Yes. 7 of our 12 partner sites have founders from tech, retail, or finance — not education. Teaching quality is held by MindDo's faculty system; partners drive local ops, community, and people management.</span>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary><span data-lang="zh">总投入 $200K 是必须的吗？</span><span data-lang="en">Is the $200K total mandatory?</span></summary>
+            <div class="faq-body">
+              <span data-lang="zh">那是标准校区的参考预算。城市合伙人档总投入约 $40K 起；旗舰档 $400K+。我们会在签约前根据所在城市做更精确的测算。</span>
+              <span data-lang="en">That's the reference budget for a Standard center. Lean City Partner starts around $40K total; Flagship is $400K+. We tailor the number to your specific city before signing.</span>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary><span data-lang="zh">区域保护机制是怎样的？</span><span data-lang="en">How does territory protection work?</span></summary>
+            <div class="faq-body">
+              <span data-lang="zh">合伙人档 1 mile 半径内不再开新店；标准档 3 mile；旗舰档 5 mile + 区域优先权。线上学员归属按家长居住地划分，归当地校区结算。</span>
+              <span data-lang="en">No new partner site within 1 mi for Partner tier, 3 mi for Standard, 5 mi for Flagship plus regional first-look. Online students are routed by parent residence and settled with the matching local center.</span>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary><span data-lang="zh">师资从哪里来？</span><span data-lang="en">Where do teachers come from?</span></summary>
+            <div class="faq-body">
+              <span data-lang="zh">MindDo 提供两条路径：① 总部派驻首批 1–2 名核心讲师覆盖前 6 个月；② 合伙人本地招聘后，参加 5 周师训营 + 实习带教。两条路径可以叠加。</span>
+              <span data-lang="en">Two paths: (1) MindDo deploys 1–2 core instructors to seed the first 6 months; (2) you recruit locally, candidates go through our 5-week bootcamp + apprenticeship. Both paths can stack.</span>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary><span data-lang="zh">第 1 年招生大概能到多少？</span><span data-lang="en">How many students should I expect in Year 1?</span></summary>
+            <div class="faq-body">
+              <span data-lang="zh">参考已开业的 12 家合伙校区，标准档第 1 年末平均 95 名在读学员、ramp 期收入 $340K 左右；旗舰档可到 150 名 / $530K。城市级别和合伙人本地资源会显著影响曲线。</span>
+              <span data-lang="en">Across our 12 active partner centers, Standard-tier sites average 95 active students by EOY1 and $340K Year-1 revenue; Flagship hits ~150 / $530K. City tier and local network materially shift the ramp.</span>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary><span data-lang="zh">合同期多长？退出机制？</span><span data-lang="en">How long is the contract? Exit terms?</span></summary>
+            <div class="faq-body">
+              <span data-lang="zh">初始合同 5 年，期满可续签 5 年（不再收加盟费）。中途如需退出，已开业满 12 个月可申请转让；MindDo 享有优先回购权，按估值公式定价。</span>
+              <span data-lang="en">Initial term is 5 years, renewable for another 5 with no new franchise fee. Early exit is allowed after the 12-month operating mark; MindDo has right of first refusal at a formula-based valuation.</span>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary><span data-lang="zh">能跟其他教育品牌共享场地吗？</span><span data-lang="en">Can I co-locate with another education brand?</span></summary>
+            <div class="faq-body">
+              <span data-lang="zh">看品类。和外语 / 艺术 / 体育类品牌共享场地是允许的（甚至鼓励，因为家长动线契合）；与其他 STEM / 编程 / AI 品牌共享需总部审批。</span>
+              <span data-lang="en">Depends on the category. Sharing space with language / art / sports schools is fine (and often encouraged — parent journeys overlap). Sharing with other STEM / coding / AI brands requires HQ approval.</span>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPLICATION FORM -->
+    <section class="bg-section" id="apply">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">提交意向</span><span data-lang="en">Get in touch</span></span>
+          <h2><span data-lang="zh">让我们认识你</span><span data-lang="en">Tell us about you</span></h2>
+          <p>
+            <span data-lang="zh">填写下方信息，招商团队会在 1 个工作日内回复，与你约 30 分钟电话沟通。所有信息严格保密。</span>
+            <span data-lang="en">Drop the basics — our partnership team replies within one business day to schedule a 30-min intro call. All info kept strictly confidential.</span>
+          </p>
+        </div>
+
+        <form class="apply-card" id="applyForm" novalidate>
+          <h3><span data-lang="zh">招商意向表</span><span data-lang="en">Partnership Inquiry</span></h3>
+          <p class="apply-sub"><span data-lang="zh">带 * 为必填项。</span><span data-lang="en">Fields marked * are required.</span></p>
+          <div class="form-grid">
+            <div class="field">
+              <label for="apName"><span data-lang="zh">姓名 *</span><span data-lang="en">Name *</span></label>
+              <input id="apName" type="text" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <label for="apPhone"><span data-lang="zh">电话 *</span><span data-lang="en">Phone *</span></label>
+              <input id="apPhone" type="tel" autocomplete="tel" required />
+            </div>
+            <div class="field">
+              <label for="apEmail"><span data-lang="zh">邮箱 *</span><span data-lang="en">Email *</span></label>
+              <input id="apEmail" type="email" autocomplete="email" required />
+            </div>
+            <div class="field">
+              <label for="apCity"><span data-lang="zh">目标城市 *</span><span data-lang="en">Target City *</span></label>
+              <input id="apCity" type="text" placeholder="Irvine, CA / 上海 / Toronto" required />
+            </div>
+            <div class="field">
+              <label for="apTier"><span data-lang="zh">意向档位</span><span data-lang="en">Preferred Tier</span></label>
+              <select id="apTier">
+                <option value=""><span data-lang="zh">不确定 / 需要建议</span><span data-lang="en">Not sure / advise me</span></option>
+                <option value="partner"><span data-lang="zh">城市合伙人 ($25K)</span><span data-lang="en">City Partner ($25K)</span></option>
+                <option value="standard"><span data-lang="zh">标准校区 ($80K)</span><span data-lang="en">Standard Center ($80K)</span></option>
+                <option value="flagship"><span data-lang="zh">旗舰校区 ($180K)</span><span data-lang="en">Flagship ($180K)</span></option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="apBg"><span data-lang="zh">行业背景</span><span data-lang="en">Background</span></label>
+              <select id="apBg">
+                <option value=""><span data-lang="zh">请选择</span><span data-lang="en">Select</span></option>
+                <option value="education"><span data-lang="zh">教育行业</span><span data-lang="en">Education</span></option>
+                <option value="tech"><span data-lang="zh">互联网 / 科技</span><span data-lang="en">Tech / Internet</span></option>
+                <option value="retail"><span data-lang="zh">零售 / 服务</span><span data-lang="en">Retail / Service</span></option>
+                <option value="finance"><span data-lang="zh">金融 / 投资</span><span data-lang="en">Finance / Investing</span></option>
+                <option value="other"><span data-lang="zh">其他</span><span data-lang="en">Other</span></option>
+              </select>
+            </div>
+            <div class="field span-2">
+              <label for="apMsg"><span data-lang="zh">简单介绍 / 想咨询的问题</span><span data-lang="en">Tell us a bit about you / your questions</span></label>
+              <textarea id="apMsg" rows="4" placeholder=""></textarea>
+            </div>
+          </div>
+          <div class="form-foot">
+            <p class="legal">
+              <span data-lang="zh">提交即表示同意 MindDo 与你联系。我们不会向第三方分享你的信息。</span>
+              <span data-lang="en">By submitting you agree we may contact you. We never share your info with third parties.</span>
+            </p>
+            <button type="submit" class="btn-primary" id="apSubmit">
+              <span data-lang="zh">提交意向 →</span><span data-lang="en">Submit →</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- BOTTOM CTA STRIP -->
+    <section class="cta-strip">
+      <div class="cta-inner">
+        <div>
+          <h2><span data-lang="zh">先聊一聊？</span><span data-lang="en">Want to chat first?</span></h2>
+          <p><span data-lang="zh">如果还没准备好填表，可以直接发邮件，30 分钟通话起步。</span><span data-lang="en">Not ready for the form? Email us — we start with a 30-min call.</span></p>
+        </div>
+        <div class="cta-actions">
+          <a class="btn-primary" href="mailto:partner@minddo.ai"><span data-lang="zh">联系招商团队 →</span><span data-lang="en">Contact partnership →</span></a>
+          <a class="btn-ghost" href="#apply"><span data-lang="zh">回到申请表</span><span data-lang="en">Back to form</span></a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/logo.png" alt="MindDo" /><span>MindDo</span></div>
+        <p><span data-lang="zh">AI、编程与未来技能青少年学习中心，致力于让每个孩子都能在 AI 时代找到自己的位置。</span><span data-lang="en">AI and coding learning center for young learners, helping every child find their place in the AI era.</span></p>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">关于</span><span data-lang="en">About</span></h4>
+        <ul>
+          <li><a href="about.html"><span data-lang="zh">关于我们</span><span data-lang="en">About Us</span></a></li>
+          <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+          <li><a href="contact.html"><span data-lang="zh">联系我们</span><span data-lang="en">Contact</span></a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">家长入口</span><span data-lang="en">For Parents</span></h4>
+        <ul>
+          <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+          <li><a href="signup.html"><span data-lang="zh">注册 / 登录</span><span data-lang="en">Sign Up</span></a></li>
+          <li><a href="student-account.html"><span data-lang="zh">学员主页</span><span data-lang="en">My Account</span></a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">公司</span><span data-lang="en">Company</span></h4>
+        <ul>
+          <li><a href="franchise.html"><span data-lang="zh">招商加盟</span><span data-lang="en">Partnership</span></a></li>
+          <li><a href="dashboard.html"><span data-lang="zh">运营看板</span><span data-lang="en">Operations</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MindDo Learning Center · <span data-lang="zh">保留所有权利</span><span data-lang="en">All rights reserved</span></span>
+      <span><a href="privacy.html" style="color:inherit;"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy</span></a> · <a href="terms.html" style="color:inherit;"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a></span>
+    </div>
+  </footer>
+
+  <script src="assets/minddo-flow.js"></script>
+  <script>
+    (function () {
+      var I18N = {
+        "zh-CN": {
+          missingFields: "请填写姓名、电话、邮箱与目标城市。",
+          invalidEmail: "邮箱格式不正确，请检查后重试。",
+          submitOk: "意向已提交，招商团队会在 1 个工作日内联系你。",
+          tierSelected: "已为你选中「{tier}」档位，向下滚动可查看申请表。"
+        },
+        en: {
+          missingFields: "Please fill in name, phone, email, and target city.",
+          invalidEmail: "Email looks off — please double-check.",
+          submitOk: "Got it — partnership team will reach out within 1 business day.",
+          tierSelected: "Pre-selected the “{tier}” tier on the form below."
+        }
+      };
+      var TIER_LABEL = {
+        partner: { zh: "城市合伙人", en: "City Partner" },
+        standard: { zh: "标准校区", en: "Standard Center" },
+        flagship: { zh: "旗舰校区", en: "Flagship Campus" }
+      };
+
+      var html = document.documentElement;
+      var lang = (function () {
+        try {
+          return localStorage.getItem("minddo_lang") === "en" ? "en" : "zh-CN";
+        } catch (_) { return "zh-CN"; }
+      })();
+      function t() { return I18N[lang]; }
+      function langKey() { return lang === "en" ? "en" : "zh"; }
+
+      var langButtons = document.querySelectorAll("[data-set-lang]");
+      langButtons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          lang = btn.getAttribute("data-set-lang") === "en" ? "en" : "zh-CN";
+          html.setAttribute("lang", lang);
+          try { localStorage.setItem("minddo_lang", lang); } catch (_) {}
+          langButtons.forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-set-lang") === lang);
+          });
+        });
+        btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
+      });
+      html.setAttribute("lang", lang);
+
+      // Toast
+      var toastEl = document.getElementById("toast");
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
+        setTimeout(function () { toastEl.classList.remove("show"); }, 3200);
+      }
+
+      // Tier-CTA buttons inside the .tier-card grid pre-fill the form's
+      // Preferred-Tier select before scrolling down — saves the prospect
+      // a click and signals which tier they were eyeing.
+      document.querySelectorAll("[data-tier]").forEach(function (a) {
+        a.addEventListener("click", function (e) {
+          var tier = a.getAttribute("data-tier");
+          var sel = document.getElementById("apTier");
+          if (sel && tier) {
+            sel.value = tier;
+            var info = TIER_LABEL[tier];
+            if (info) {
+              showToast((t().tierSelected || "Selected {tier}").replace("{tier}", info[langKey()] || tier));
+            }
+          }
+        });
+      });
+
+      // Apply form — local-storage stash so a prospect can come back, plus
+      // a (mock) submission flow that pushes to KEYS-style key the ops
+      // dashboard can later read. No real backend; the toast is the UX.
+      var form = document.getElementById("applyForm");
+      var btn = document.getElementById("apSubmit");
+      var fields = ["apName", "apPhone", "apEmail", "apCity", "apTier", "apBg", "apMsg"];
+
+      // Restore draft so the prospect doesn't lose what they typed if they
+      // bounce around between the curriculum / about pages and back.
+      try {
+        var draft = JSON.parse(localStorage.getItem("minddo_franchise_draft") || "null");
+        if (draft) {
+          fields.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el && typeof draft[id] === "string") el.value = draft[id];
+          });
+        }
+      } catch (_) {}
+      fields.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener("input", function () {
+          try {
+            var d = {};
+            fields.forEach(function (f2) {
+              var e2 = document.getElementById(f2);
+              if (e2) d[f2] = e2.value;
+            });
+            localStorage.setItem("minddo_franchise_draft", JSON.stringify(d));
+          } catch (_) {}
+        });
+      });
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var name = document.getElementById("apName").value.trim();
+        var phone = document.getElementById("apPhone").value.trim();
+        var email = document.getElementById("apEmail").value.trim();
+        var city = document.getElementById("apCity").value.trim();
+        if (!name || !phone || !email || !city) {
+          showToast(t().missingFields);
+          return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showToast(t().invalidEmail);
+          return;
+        }
+        var record = {
+          id: "FR-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
+          name: name, phone: phone, email: email, city: city,
+          tier: document.getElementById("apTier").value || "",
+          background: document.getElementById("apBg").value || "",
+          message: document.getElementById("apMsg").value.trim(),
+          lang: lang,
+          createdAt: new Date().toISOString(),
+          status: "new"
+        };
+        try {
+          var KEY = "minddo_franchise_inquiries";
+          var list = JSON.parse(localStorage.getItem(KEY) || "[]");
+          list.push(record);
+          localStorage.setItem(KEY, JSON.stringify(list));
+          // Clear the draft once submitted.
+          localStorage.removeItem("minddo_franchise_draft");
+        } catch (_) {}
+        showToast(t().submitOk);
+        btn.disabled = true;
+        setTimeout(function () { form.reset(); btn.disabled = false; }, 800);
+      });
+    })();
+  </script>
+  <script src="assets/lang-switcher.js" defer></script>
+  <script src="assets/minddo-nav.js" defer></script>
+  <script src="assets/consent.js" defer></script>
+  <script src="assets/customer-service.js" defer></script>
+</body>
+</html>
