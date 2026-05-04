@@ -22,8 +22,30 @@
     portfolio: "minddo_portfolio",
     referrals: "minddo_referrals",
     growth: "minddo_growth_records",
-    assignments: "minddo_assignments"
+    assignments: "minddo_assignments",
+    billingProfile: "minddo_billing_profile"
   };
+
+  // Billing profile — per-family record carrying the payment method on
+  // file plus subscription-control state (auto-renew, paused-until,
+  // cancellation flag). Shared across all the family's children since
+  // a single guardian's card backs every kid's membership. The
+  // profile is keyed on familyId; helpers below shallow-merge so a
+  // partial update (e.g. just the card) doesn't clobber the rest.
+  function getBillingProfile(familyId) {
+    if (!familyId) return null;
+    var all = readJson(KEYS.billingProfile) || [];
+    return all.filter(function (p) { return p && p.familyId === familyId; })[0] || null;
+  }
+  function upsertBillingProfile(record) {
+    if (!record || !record.familyId) return null;
+    var all = readJson(KEYS.billingProfile) || [];
+    var idx = all.findIndex(function (p) { return p && p.familyId === record.familyId; });
+    if (idx >= 0) all[idx] = Object.assign({}, all[idx], record, { updatedAt: new Date().toISOString() });
+    else all.push(Object.assign({}, record, { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }));
+    writeJson(KEYS.billingProfile, all);
+    return all[idx >= 0 ? idx : all.length - 1];
+  }
 
   // Homework / assignments — each entry is a single piece of work
   // attached to a student, optionally tied to a course offering. The
@@ -1799,6 +1821,32 @@
     );
     writeJson(KEYS.growth, growthRecords);
 
+    // Billing profile — one record per family. Card is the demo Visa
+    // 4242 with a future expiry; auto-renew on; next charge calc'd from
+    // the seeded membership createdAt + 1 month.
+    if (demoAccount && demoAccount.familyId) {
+      var nextCharge = new Date(now);
+      nextCharge.setDate(nextCharge.getDate() + 28);
+      writeJson(KEYS.billingProfile, [{
+        familyId: demoAccount.familyId,
+        paymentMethod: {
+          brand: "visa",
+          last4: "4242",
+          expMonth: 12,
+          expYear: 2028,
+          holderName: "Li Mom",
+          zip: "92614"
+        },
+        autoRenew: true,
+        status: "active",          // active | paused | cancelled
+        nextChargeAt: nextCharge.toISOString(),
+        nextChargeAmount: 349,
+        nextChargePlan: "weekly2",
+        nextChargeCycle: "monthly",
+        createdAt: now.toISOString()
+      }]);
+    }
+
     // Homework / assignment seed — mixed-status set spanning both kids
     // so the new Homework tab demos every state (assigned, in-progress,
     // submitted, graded) without needing a parent to click through.
@@ -2614,6 +2662,8 @@
     findAssignmentById: findAssignmentById,
     upsertAssignment: upsertAssignment,
     updateAssignmentStatus: updateAssignmentStatus,
+    getBillingProfile: getBillingProfile,
+    upsertBillingProfile: upsertBillingProfile,
     planPerSession: planPerSession,
     planMonthlyEquivalent: planMonthlyEquivalent,
     planAnnualSaving: planAnnualSaving,
