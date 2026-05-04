@@ -848,17 +848,13 @@
       padding: 20px 22px; display: flex; flex-direction: column; gap: 10px;
       box-shadow: 0 6px 16px rgba(42,20,8,0.04); transition: 0.15s; }
     .curriculum-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(42,20,8,0.08); }
-    .curriculum-card--soon { background: rgba(240,249,255,0.55); border-style: dashed; opacity: 0.92; }
-    .curriculum-card--soon:hover { transform: none; box-shadow: 0 6px 16px rgba(42,20,8,0.04); }
     .cur-card-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .cur-card-icon { width: 32px; height: 32px; border-radius: 10px; background: rgba(253,230,138,0.4);
-      display: inline-flex; align-items: center; justify-content: center; font-size: 16px; color: var(--gold-deep); }
-    .curriculum-card--live .cur-card-icon { background: rgba(110,143,87,0.18); color: #4f6f38; }
-    .curriculum-card--soon .cur-card-icon { background: rgba(216,156,54,0.16); color: #8a5d11; }
+    .cur-card-icon { width: 32px; height: 32px; border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 16px;
+      background: rgba(110,143,87,0.18); color: #4f6f38; }
     .cur-card-eyebrow { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 3px 9px; border-radius: 999px; }
-    .curriculum-card--live .cur-card-eyebrow { background: rgba(110,143,87,0.16); color: #4f6f38; }
-    .curriculum-card--soon .cur-card-eyebrow { background: rgba(216,156,54,0.16); color: #8a5d11; border: 1px solid rgba(216,156,54,0.34); }
+      padding: 3px 9px; border-radius: 999px;
+      background: rgba(110,143,87,0.16); color: #4f6f38; }
     .cur-card-title { font-size: 16px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; line-height: 1.3; }
     .cur-card-copy { font-size: 13px; color: var(--muted); line-height: 1.6; flex: 1; }
 
@@ -1988,33 +1984,6 @@
               <p class="cur-card-copy" data-i18n="curriculumLiveCopy"></p>
               <a class="btn-primary" href="course-system.html" data-i18n="curriculumLiveCta" style="font-size:13px;padding:9px 18px;align-self:flex-start;"></a>
             </article>
-
-            <article class="curriculum-card curriculum-card--soon">
-              <div class="cur-card-head">
-                <span class="cur-card-icon" aria-hidden="true">▶</span>
-                <span class="cur-card-eyebrow" data-i18n="curriculumComingSoon"></span>
-              </div>
-              <h3 class="cur-card-title" data-i18n="curriculumRecordingsTitle"></h3>
-              <p class="cur-card-copy" data-i18n="curriculumRecordingsCopy"></p>
-            </article>
-
-            <article class="curriculum-card curriculum-card--soon">
-              <div class="cur-card-head">
-                <span class="cur-card-icon" aria-hidden="true">📑</span>
-                <span class="cur-card-eyebrow" data-i18n="curriculumComingSoon"></span>
-              </div>
-              <h3 class="cur-card-title" data-i18n="curriculumSlidesTitle"></h3>
-              <p class="cur-card-copy" data-i18n="curriculumSlidesCopy"></p>
-            </article>
-
-            <article class="curriculum-card curriculum-card--soon">
-              <div class="cur-card-head">
-                <span class="cur-card-icon" aria-hidden="true">✎</span>
-                <span class="cur-card-eyebrow" data-i18n="curriculumComingSoon"></span>
-              </div>
-              <h3 class="cur-card-title" data-i18n="curriculumHomeworkTitle"></h3>
-              <p class="cur-card-copy" data-i18n="curriculumHomeworkCopy"></p>
-            </article>
           </div>
 
           <!-- Legacy profile/summary data writers; kept hidden so render() can
@@ -2650,13 +2619,6 @@
           curriculumLiveTitle: "课程体系",
           curriculumLiveCopy: "查看 MindDo 当前的课程结构、阶段划分与每个阶段的核心能力。",
           curriculumLiveCta: "查看课程体系 →",
-          curriculumComingSoon: "即将上线",
-          curriculumRecordingsTitle: "课堂录播",
-          curriculumRecordingsCopy: "孩子缺课时可以回放老师课堂讲解，按课次归档。",
-          curriculumSlidesTitle: "课件与教材",
-          curriculumSlidesCopy: "每节课的讲义、PDF 教材与课堂资料一键下载。",
-          curriculumHomeworkTitle: "作业与练习",
-          curriculumHomeworkCopy: "查看待完成与已批改的作业，跟踪练习进度。",
           tabRequests: "请假",
           tabSettings: "设置",
           memberCurrentTitle: "当前会员方案",
@@ -3150,13 +3112,6 @@
           curriculumLiveTitle: "Course System",
           curriculumLiveCopy: "Browse MindDo's current curriculum, stage breakdown, and the core skills each stage covers.",
           curriculumLiveCta: "Open Course System →",
-          curriculumComingSoon: "Coming Soon",
-          curriculumRecordingsTitle: "Class Recordings",
-          curriculumRecordingsCopy: "Replay missed lessons, archived per class — playback ready when your child needs to catch up.",
-          curriculumSlidesTitle: "Slides & Textbooks",
-          curriculumSlidesCopy: "Download each lesson's slides, PDF materials, and class resources in one tap.",
-          curriculumHomeworkTitle: "Homework & Practice",
-          curriculumHomeworkCopy: "Track outstanding and graded assignments — keep practice on schedule.",
           tabRequests: "Leave",
           tabSettings: "Settings",
           memberCurrentTitle: "Current Membership",
