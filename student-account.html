@@ -1141,43 +1141,7 @@
       background:rgba(254,243,199,0.32); border:1px dashed rgba(245,158,11,0.32);
       border-radius:12px; margin-top:14px; }
 
-    .bm-status-pill { display:inline-flex; padding:4px 12px; border-radius:999px;
-      font-size:11px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase;
-      align-self:center; white-space:nowrap; }
-    .bm-status-pill.active { background:rgba(110,143,87,0.2); color:#3f5d26; border:1px solid rgba(110,143,87,0.4); }
-    .bm-status-pill.paused { background:rgba(216,156,54,0.2); color:#7a4f0d; border:1px solid rgba(216,156,54,0.42); }
-    .bm-status-pill.cancelled { background:rgba(196,106,77,0.18); color:#8e3d21; border:1px solid rgba(196,106,77,0.42); }
-
-    .bm-sub-grid { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:12px; margin-top:14px; }
-    .bm-sub-tile { padding:14px 16px; background:#fff; border:1px solid var(--line); border-radius:14px; }
-    .bm-sub-label { font-size:10.5px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
-    .bm-sub-value { font-size:16px; font-weight:900; color:var(--clay); letter-spacing:-0.01em; }
-    .bm-sub-foot { font-size:11.5px; color:var(--muted); margin-top:4px; }
-    @media (max-width: 720px) { .bm-sub-grid { grid-template-columns: 1fr; } }
-
-    /* Auto-renew toggle (pure-CSS pill). */
-    .bm-toggle { display:inline-flex; align-items:center; gap:10px; cursor:pointer; user-select:none; }
-    .bm-toggle input { position:absolute; opacity:0; pointer-events:none; }
-    .bm-toggle-track { width:38px; height:22px; border-radius:999px; background:rgba(122,48,16,0.16);
-      position:relative; transition:0.2s; }
-    .bm-toggle-track::after { content:""; position:absolute; top:2px; left:2px; width:18px; height:18px;
-      border-radius:999px; background:#fff; box-shadow:0 2px 6px rgba(42,20,8,0.18); transition:0.2s; }
-    .bm-toggle input:checked + .bm-toggle-track { background:linear-gradient(90deg,#fde68a,var(--gold-deep)); }
-    .bm-toggle input:checked + .bm-toggle-track::after { transform: translateX(16px); }
-    .bm-toggle-label { font-size:12.5px; font-weight:700; color:var(--clay); }
-
-    .bm-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; padding-top:16px;
-      border-top:1px solid var(--line); }
-    .bm-action-btn { background:#fff; color:var(--clay); border:1px solid var(--line);
-      border-radius:999px; padding:8px 18px; font:inherit; font-size:12.5px; font-weight:800;
-      cursor:pointer; transition:0.15s; }
-    .bm-action-btn:hover { border-color: var(--gold); transform: translateY(-1px); }
-    .bm-action-btn.primary { background:linear-gradient(135deg,#fde68a,var(--gold)); color:#3a1808;
-      border-color:rgba(245,158,11,0.45); box-shadow:0 4px 12px rgba(245,158,11,0.22); }
-    .bm-action-btn.danger { color:#8e3d21; border-color:rgba(196,106,77,0.4); background:rgba(196,106,77,0.06); }
-    .bm-action-btn.danger:hover { background:rgba(196,106,77,0.14); border-color:#c46a4d; }
-
-    /* Reuse the homework overlay frame for billing modals. */
+    /* Update-card overlay — reuses the homework modal visual language. */
     .bm-overlay { position: fixed; inset: 0; background: rgba(42,20,8,0.55); display: none;
       align-items: center; justify-content: center; padding: 20px; z-index: 9000; }
     .bm-overlay[aria-hidden="false"] { display: flex; }
@@ -1193,21 +1157,6 @@
       box-sizing:border-box; }
     .bm-field input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,158,11,0.16); }
     @media (max-width: 540px) { .bm-form-grid { grid-template-columns: 1fr; } }
-
-    .bm-cancel-impact { list-style:none; margin: 12px 0; padding: 12px 14px;
-      background:rgba(196,106,77,0.06); border:1px solid rgba(196,106,77,0.22); border-radius:12px; }
-    .bm-cancel-impact li { font-size:12.5px; color:var(--text); line-height:1.55; padding-left:18px;
-      position:relative; padding:3px 0 3px 18px; }
-    .bm-cancel-impact li::before { content:"·"; position:absolute; left:6px; top:3px; color:#c46a4d; font-weight:900; }
-    .bm-confirm-row { display:flex; gap:10px; align-items:flex-start; padding:12px 14px;
-      background:#fff8ee; border:1px solid var(--line); border-radius:12px; margin-bottom:14px; cursor:pointer; }
-    .bm-confirm-row input { width:18px; height:18px; margin-top:2px; accent-color:#c46a4d; flex-shrink:0; cursor:pointer; }
-    .bm-confirm-row span { font-size:13px; color:var(--text); line-height:1.55; }
-    .bm-modal-danger { background:#c46a4d; color:#fff; border:1px solid #8e3d21;
-      border-radius:999px; padding:9px 18px; font:inherit; font-size:13px; font-weight:800;
-      cursor:pointer; transition:0.15s; }
-    .bm-modal-danger:hover:not(:disabled) { background:#8e3d21; }
-    .bm-modal-danger:disabled { opacity:0.5; cursor:not-allowed; }
 
     /* Homework tab — assignment cards with status pill, due-date chip,
        and per-card action button. Modal handles read + submit. */
@@ -1908,19 +1857,6 @@
             <div class="bm-card-row" id="bmCardRow"></div>
           </article>
 
-          <!-- Subscription controls — next charge, auto-renew, cycle, pause/cancel -->
-          <article class="panel" id="bmSubPanel">
-            <div class="panel-head-row">
-              <div>
-                <h2 data-i18n="bmSubTitle"></h2>
-                <p class="panel-sub muted" data-i18n="bmSubSub" style="margin-top:4px;"></p>
-              </div>
-              <span class="bm-status-pill" id="bmStatusPill"></span>
-            </div>
-            <div class="bm-sub-grid" id="bmSubGrid"></div>
-            <div class="bm-actions" id="bmActions"></div>
-          </article>
-
           <!-- History (existing) -->
           <article class="panel" id="billingPanel">
             <div class="panel-head-row">
@@ -2468,43 +2404,6 @@
     </div>
   </div>
 
-  <!-- Pause-membership modal -->
-  <div class="bm-overlay" id="bmPauseOverlay" role="dialog" aria-modal="true" aria-labelledby="bmPauseTitle" aria-hidden="true">
-    <div class="bm-modal-card">
-      <button type="button" class="hw-close" id="bmPauseCloseBtn" aria-label="Close">×</button>
-      <h3 id="bmPauseTitle" class="hw-modal-title" data-i18n="bmPauseModalTitle"></h3>
-      <p class="hw-modal-meta" data-i18n="bmPauseModalSub"></p>
-      <label class="bm-field bm-field-wide" style="margin-bottom:14px;">
-        <span data-i18n="bmPauseUntilLabel"></span>
-        <input type="date" id="bmPauseUntil" />
-      </label>
-      <p class="hw-modal-msg" id="bmPauseMsg" role="status" aria-live="polite"></p>
-      <div class="hw-modal-actions">
-        <button type="button" class="hw-modal-secondary" id="bmPauseCancelBtn" data-i18n="bmCardCancel"></button>
-        <button type="button" class="hw-modal-primary" id="bmPauseConfirmBtn" data-i18n="bmPauseConfirm"></button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Cancel-membership modal -->
-  <div class="bm-overlay" id="bmCancelOverlay" role="dialog" aria-modal="true" aria-labelledby="bmCancelTitle" aria-hidden="true">
-    <div class="bm-modal-card">
-      <button type="button" class="hw-close" id="bmCancelCloseBtn" aria-label="Close">×</button>
-      <h3 id="bmCancelTitle" class="hw-modal-title" data-i18n="bmCancelModalTitle"></h3>
-      <p class="hw-modal-meta" data-i18n="bmCancelModalSub"></p>
-      <ul class="bm-cancel-impact" id="bmCancelImpact"></ul>
-      <label class="bm-confirm-row">
-        <input type="checkbox" id="bmCancelConfirmCheck" />
-        <span data-i18n="bmCancelCheckLabel"></span>
-      </label>
-      <p class="hw-modal-msg" id="bmCancelMsg" role="status" aria-live="polite"></p>
-      <div class="hw-modal-actions">
-        <button type="button" class="hw-modal-secondary" id="bmCancelCloseBtn2" data-i18n="bmCardCancel"></button>
-        <button type="button" class="bm-modal-danger" id="bmCancelConfirmBtn" data-i18n="bmCancelConfirm" disabled></button>
-      </div>
-    </div>
-  </div>
-
   <!-- Homework detail / submission modal -->
   <div class="hw-overlay" id="hwOverlay" role="dialog" aria-modal="true" aria-labelledby="hwModalTitle" aria-hidden="true">
     <div class="hw-modal-card">
@@ -2696,29 +2595,6 @@
           bmCardEmpty: "尚未保存银行卡。点击「更新银行卡」绑定卡片，开通自动续费。",
           bmCardLast4Fmt: "•••• •••• •••• {last4}",
           bmCardExpFmt: "{name} · 有效期 {month}/{year}",
-          // Subscription controls
-          bmSubTitle: "订阅设置",
-          bmSubSub: "管理自动续费、计费周期与暂停 / 取消 — 改动会写入下一个账期。",
-          bmStatusActive: "正常计费",
-          bmStatusPaused: "已暂停",
-          bmStatusCancelled: "已取消",
-          bmTileNextChargeLabel: "下次扣款",
-          bmTileNextChargeFmt: "${amount}",
-          bmTileNextChargeFootFmt: "{date} · {plan}",
-          bmTileNextChargeNone: "无即将扣款",
-          bmTileCycleLabel: "计费周期",
-          bmTileCycleMonthly: "按月付",
-          bmTileCycleAnnual: "年付（省 17%）",
-          bmTileCycleFootSwitch: "点「切换计费周期」可改",
-          bmTileAutoRenewLabel: "自动续费",
-          bmTileAutoRenewOn: "已开启",
-          bmTileAutoRenewOff: "已关闭",
-          bmTileAutoRenewFootOn: "下一期会自动扣款",
-          bmTileAutoRenewFootOff: "需手动续费才会继续上课",
-          bmActionSwitchCycle: "切换计费周期",
-          bmActionPause: "暂停会员",
-          bmActionResume: "恢复会员",
-          bmActionCancel: "取消订阅",
           // Update-card modal
           bmCardModalTitle: "更新支付方式",
           bmCardModalSub: "填入新的银行卡信息，演示版本不会真实扣款。",
@@ -2735,23 +2611,6 @@
           bmCardErrorCvv: "CVV 应为 3 或 4 位数字",
           bmCardErrorHolder: "请填写持卡人姓名",
           bmCardErrorZip: "请填写账单邮编",
-          // Pause modal
-          bmPauseModalTitle: "暂停会员",
-          bmPauseModalSub: "选择恢复日期；暂停期间不会扣款，已排课时正常进行直到当周结束。",
-          bmPauseUntilLabel: "恢复日期",
-          bmPauseConfirm: "确认暂停",
-          bmPauseSaved: "已暂停 · 恢复日期 {date}",
-          bmPauseError: "请选择未来的恢复日期。",
-          // Cancel modal
-          bmCancelModalTitle: "取消会员？",
-          bmCancelModalSub: "取消后下个账期不再扣款，本期已支付的课时仍然有效。",
-          bmCancelImpact1: "下次扣款立即停止；本期已扣款不予退款。",
-          bmCancelImpact2: "已排课程在本期结束前正常进行。",
-          bmCancelImpact3: "学员档案、家长账号与作品集会保留，可随时再次开通。",
-          bmCancelCheckLabel: "我已了解上述影响，确认取消订阅。",
-          bmCancelConfirm: "确认取消",
-          bmCancelDone: "订阅已取消。",
-          bmResumed: "会员已恢复 ✓",
           billingTotalFmt: "共 {n} 条 · 已支付 ${total}",
           billingColDate: "付款时间",
           billingColPlan: "对应方案",
@@ -3251,28 +3110,6 @@
           bmCardEmpty: "No card on file yet. Click 'Update card' to add one and enable auto-renew.",
           bmCardLast4Fmt: "•••• •••• •••• {last4}",
           bmCardExpFmt: "{name} · exp {month}/{year}",
-          bmSubTitle: "Subscription Controls",
-          bmSubSub: "Manage auto-renew, billing cycle, and pause / cancel — changes apply to the next cycle.",
-          bmStatusActive: "Active",
-          bmStatusPaused: "Paused",
-          bmStatusCancelled: "Cancelled",
-          bmTileNextChargeLabel: "Next charge",
-          bmTileNextChargeFmt: "${amount}",
-          bmTileNextChargeFootFmt: "{date} · {plan}",
-          bmTileNextChargeNone: "No upcoming charge",
-          bmTileCycleLabel: "Billing cycle",
-          bmTileCycleMonthly: "Monthly",
-          bmTileCycleAnnual: "Annual (save 17%)",
-          bmTileCycleFootSwitch: "Click 'Switch cycle' to change",
-          bmTileAutoRenewLabel: "Auto-renew",
-          bmTileAutoRenewOn: "On",
-          bmTileAutoRenewOff: "Off",
-          bmTileAutoRenewFootOn: "Will charge automatically next cycle",
-          bmTileAutoRenewFootOff: "Manual renewal required to keep classes",
-          bmActionSwitchCycle: "Switch cycle",
-          bmActionPause: "Pause membership",
-          bmActionResume: "Resume membership",
-          bmActionCancel: "Cancel subscription",
           bmCardModalTitle: "Update payment method",
           bmCardModalSub: "Enter your new card. This is a demo — no real charge happens.",
           bmCardFieldNumber: "Card number",
@@ -3288,21 +3125,6 @@
           bmCardErrorCvv: "CVV should be 3 or 4 digits",
           bmCardErrorHolder: "Please enter the cardholder name",
           bmCardErrorZip: "Please enter the billing ZIP",
-          bmPauseModalTitle: "Pause membership",
-          bmPauseModalSub: "Pick a resume date. We won't charge while paused; already-scheduled classes finish out the current week.",
-          bmPauseUntilLabel: "Resume on",
-          bmPauseConfirm: "Confirm pause",
-          bmPauseSaved: "Paused — resumes on {date}",
-          bmPauseError: "Please pick a future resume date.",
-          bmCancelModalTitle: "Cancel subscription?",
-          bmCancelModalSub: "Cancellation stops the next charge. Already-paid classes in this cycle still run.",
-          bmCancelImpact1: "Next charge stops immediately; current cycle is non-refundable.",
-          bmCancelImpact2: "Already-scheduled classes run until the cycle ends.",
-          bmCancelImpact3: "Student profile, parent login, and portfolio are kept — you can re-subscribe any time.",
-          bmCancelCheckLabel: "I understand the impact and confirm cancellation.",
-          bmCancelConfirm: "Confirm cancel",
-          bmCancelDone: "Subscription cancelled.",
-          bmResumed: "Membership resumed ✓",
           billingTotalFmt: "{n} entries · ${total} paid",
           billingColDate: "Date",
           billingColPlan: "Plan",
@@ -4881,19 +4703,15 @@
           }
         })();
 
-        // Billing-management top — payment-method panel + subscription
-        // controls. Reads from flow.getBillingProfile(familyId) and
-        // renders three tiles (next charge / cycle / auto-renew) plus
-        // an action row. Modals (update card / pause / cancel) are
-        // wired once below at script init.
+        // Billing-management — payment-method panel only. Reads from
+        // flow.getBillingProfile(familyId); update modal is wired once
+        // below at script init.
         (function () {
           var flowB = window.MindDoFlow;
           var acctB = (flowB && flowB.getCurrentAccount) ? flowB.getCurrentAccount() : null;
           var familyId = acctB && acctB.familyId;
           var profile = (familyId && flowB && flowB.getBillingProfile) ? flowB.getBillingProfile(familyId) : null;
-          var k = lang === "en" ? "en" : "zh";
 
-          // ---- Payment method ----
           var cardRow = document.getElementById("bmCardRow");
           if (cardRow) {
             if (profile && profile.paymentMethod && profile.paymentMethod.last4) {
@@ -4923,99 +4741,6 @@
             }
           }
 
-          // ---- Status pill ----
-          var statusEl = document.getElementById("bmStatusPill");
-          var status = (profile && profile.status) || "active";
-          if (statusEl) {
-            statusEl.className = "bm-status-pill " + status;
-            statusEl.textContent = status === "paused" ? t.bmStatusPaused
-              : status === "cancelled" ? t.bmStatusCancelled
-              : t.bmStatusActive;
-          }
-
-          // ---- Subscription tiles ----
-          var subGrid = document.getElementById("bmSubGrid");
-          if (subGrid) {
-            var nextChargeStr;
-            var nextFootStr;
-            if (profile && profile.nextChargeAt && status === "active" && profile.autoRenew !== false) {
-              try {
-                var d = new Date(profile.nextChargeAt);
-                var dateText = d.toLocaleDateString(k === "zh" ? "zh-CN" : "en-US",
-                  { year: "numeric", month: "short", day: "numeric" });
-                nextChargeStr = (t.bmTileNextChargeFmt || "${amount}").replace("{amount}", profile.nextChargeAmount || 0);
-                var planLabel = profile.nextChargePlan
-                  ? (formatPlan(profile.nextChargePlan, lang) || profile.nextChargePlan)
-                  : "";
-                nextFootStr = (t.bmTileNextChargeFootFmt || "{date} · {plan}")
-                  .replace("{date}", dateText)
-                  .replace("{plan}", planLabel);
-              } catch (_) {
-                nextChargeStr = "—";
-                nextFootStr = "";
-              }
-            } else {
-              nextChargeStr = "—";
-              nextFootStr = t.bmTileNextChargeNone;
-            }
-
-            var cycleVal = (profile && profile.nextChargeCycle === "annual") ? "annual" : "monthly";
-            var cycleLabel = cycleVal === "annual" ? t.bmTileCycleAnnual : t.bmTileCycleMonthly;
-
-            var arOn = profile ? profile.autoRenew !== false : true;
-
-            subGrid.innerHTML = ""
-              + "<div class=\"bm-sub-tile\">"
-              +   "<div class=\"bm-sub-label\">" + escHTML(t.bmTileNextChargeLabel) + "</div>"
-              +   "<div class=\"bm-sub-value\">" + escHTML(nextChargeStr) + "</div>"
-              +   "<div class=\"bm-sub-foot\">" + escHTML(nextFootStr) + "</div>"
-              + "</div>"
-              + "<div class=\"bm-sub-tile\">"
-              +   "<div class=\"bm-sub-label\">" + escHTML(t.bmTileCycleLabel) + "</div>"
-              +   "<div class=\"bm-sub-value\">" + escHTML(cycleLabel) + "</div>"
-              +   "<div class=\"bm-sub-foot\">" + escHTML(t.bmTileCycleFootSwitch) + "</div>"
-              + "</div>"
-              + "<div class=\"bm-sub-tile\">"
-              +   "<div class=\"bm-sub-label\">" + escHTML(t.bmTileAutoRenewLabel) + "</div>"
-              +   "<label class=\"bm-toggle\" for=\"bmAutoRenewToggle\" style=\"margin-top:2px;\">"
-              +     "<input type=\"checkbox\" id=\"bmAutoRenewToggle\"" + (arOn ? " checked" : "") + " />"
-              +     "<span class=\"bm-toggle-track\"></span>"
-              +     "<span class=\"bm-toggle-label\">" + escHTML(arOn ? t.bmTileAutoRenewOn : t.bmTileAutoRenewOff) + "</span>"
-              +   "</label>"
-              +   "<div class=\"bm-sub-foot\" style=\"margin-top:6px;\">"
-              +     escHTML(arOn ? t.bmTileAutoRenewFootOn : t.bmTileAutoRenewFootOff)
-              +   "</div>"
-              + "</div>";
-
-            // Wire the toggle inline so the label flips immediately.
-            var toggle = document.getElementById("bmAutoRenewToggle");
-            if (toggle && familyId && flowB && flowB.upsertBillingProfile) {
-              toggle.addEventListener("change", function () {
-                flowB.upsertBillingProfile({ familyId: familyId, autoRenew: toggle.checked });
-                render(lang);
-              });
-            }
-          }
-
-          // ---- Action row ----
-          var actions = document.getElementById("bmActions");
-          if (actions) {
-            var btns = "";
-            btns += "<button type=\"button\" class=\"bm-action-btn primary\" data-bm-action=\"switch-cycle\">"
-              + escHTML(t.bmActionSwitchCycle) + "</button>";
-            if (status === "paused" || status === "cancelled") {
-              btns += "<button type=\"button\" class=\"bm-action-btn\" data-bm-action=\"resume\">"
-                + escHTML(t.bmActionResume) + "</button>";
-            } else {
-              btns += "<button type=\"button\" class=\"bm-action-btn\" data-bm-action=\"pause\">"
-                + escHTML(t.bmActionPause) + "</button>";
-            }
-            if (status !== "cancelled") {
-              btns += "<button type=\"button\" class=\"bm-action-btn danger\" data-bm-action=\"cancel\">"
-                + escHTML(t.bmActionCancel) + "</button>";
-            }
-            actions.innerHTML = btns;
-          }
         })();
 
         // Billing tab — payment history with date / status / method
@@ -6318,16 +6043,12 @@
         }
       })();
 
-      // Billing-management handlers — action buttons + 3 modals (update
-      // card / pause / cancel). All bound once at script init; the
-      // panel-render block above re-runs on every render() so action
-      // buttons get re-emitted with up-to-date labels for the current
-      // status (Pause vs Resume).
+      // Billing-management handlers — Update-card modal only. The
+      // payment-method panel re-renders on every render() so the
+      // displayed card flips immediately after save.
       (function () {
-        var actions = document.getElementById("bmActions");
         var editBtn = document.getElementById("bmEditCardBtn");
 
-        // ---- Update-card modal ----
         var cardOverlay = document.getElementById("bmCardOverlay");
         var cardClose = document.getElementById("bmCardCloseBtn");
         var cardCancel = document.getElementById("bmCardCancelBtn");
@@ -6338,23 +6059,6 @@
         var fExp = document.getElementById("bmCardExp");
         var fCvv = document.getElementById("bmCardCvv");
         var fZip = document.getElementById("bmCardZip");
-
-        // ---- Pause modal ----
-        var pauseOverlay = document.getElementById("bmPauseOverlay");
-        var pauseClose = document.getElementById("bmPauseCloseBtn");
-        var pauseCancel = document.getElementById("bmPauseCancelBtn");
-        var pauseConfirm = document.getElementById("bmPauseConfirmBtn");
-        var pauseMsg = document.getElementById("bmPauseMsg");
-        var pauseUntil = document.getElementById("bmPauseUntil");
-
-        // ---- Cancel modal ----
-        var cancelOverlay = document.getElementById("bmCancelOverlay");
-        var cancelClose = document.getElementById("bmCancelCloseBtn");
-        var cancelClose2 = document.getElementById("bmCancelCloseBtn2");
-        var cancelConfirm = document.getElementById("bmCancelConfirmBtn");
-        var cancelCheck = document.getElementById("bmCancelConfirmCheck");
-        var cancelImpact = document.getElementById("bmCancelImpact");
-        var cancelMsg = document.getElementById("bmCancelMsg");
 
         function dictNow() {
           var l = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
@@ -6472,118 +6176,10 @@
           });
         }
 
-        // ----- Action delegation: switch-cycle / pause / resume / cancel -----
-        if (actions) {
-          actions.addEventListener("click", function (e) {
-            var b = e.target.closest("[data-bm-action]");
-            if (!b) return;
-            var action = b.getAttribute("data-bm-action");
-            var f = window.MindDoFlow;
-            var fam = getFamilyId();
-            if (!fam || !f) return;
-
-            if (action === "switch-cycle") {
-              var p = getProfile() || {};
-              var cur = p.nextChargeCycle === "annual" ? "annual" : "monthly";
-              var next = cur === "annual" ? "monthly" : "annual";
-              if (f.upsertBillingProfile) {
-                f.upsertBillingProfile({ familyId: fam, nextChargeCycle: next });
-              }
-              rerender();
-              return;
-            }
-            if (action === "pause") {
-              // Default the date input to 1 month out so the parent only
-              // has to confirm or tweak.
-              var def = new Date();
-              def.setDate(def.getDate() + 30);
-              pauseUntil.value = def.toISOString().slice(0, 10);
-              pauseUntil.min = new Date().toISOString().slice(0, 10);
-              pauseMsg.textContent = "";
-              pauseMsg.className = "hw-modal-msg";
-              open(pauseOverlay);
-              return;
-            }
-            if (action === "resume") {
-              if (f.upsertBillingProfile) {
-                f.upsertBillingProfile({ familyId: fam, status: "active", pausedUntil: "" });
-              }
-              rerender();
-              return;
-            }
-            if (action === "cancel") {
-              var t = dictNow();
-              cancelImpact.innerHTML = ""
-                + "<li>" + escHTML(t.bmCancelImpact1) + "</li>"
-                + "<li>" + escHTML(t.bmCancelImpact2) + "</li>"
-                + "<li>" + escHTML(t.bmCancelImpact3) + "</li>";
-              cancelCheck.checked = false;
-              cancelConfirm.disabled = true;
-              cancelMsg.textContent = "";
-              cancelMsg.className = "hw-modal-msg";
-              open(cancelOverlay);
-              return;
-            }
-          });
-        }
-
-        // ----- Pause modal -----
-        if (pauseClose) pauseClose.addEventListener("click", function () { close(pauseOverlay); });
-        if (pauseCancel) pauseCancel.addEventListener("click", function () { close(pauseOverlay); });
-        if (pauseOverlay) pauseOverlay.addEventListener("click", function (e) {
-          if (e.target === pauseOverlay) close(pauseOverlay);
-        });
-        if (pauseConfirm) {
-          pauseConfirm.addEventListener("click", function () {
-            var t = dictNow();
-            var d = pauseUntil.value;
-            if (!d || new Date(d).getTime() <= Date.now()) {
-              pauseMsg.textContent = t.bmPauseError;
-              pauseMsg.className = "hw-modal-msg error";
-              return;
-            }
-            var f = window.MindDoFlow;
-            var fam = getFamilyId();
-            if (fam && f && f.upsertBillingProfile) {
-              f.upsertBillingProfile({ familyId: fam, status: "paused", pausedUntil: new Date(d).toISOString() });
-            }
-            pauseMsg.className = "hw-modal-msg";
-            pauseMsg.textContent = (t.bmPauseSaved || "Paused").replace("{date}", d);
-            setTimeout(function () { close(pauseOverlay); rerender(); }, 700);
-          });
-        }
-
-        // ----- Cancel modal -----
-        function closeCancel() { close(cancelOverlay); }
-        if (cancelClose) cancelClose.addEventListener("click", closeCancel);
-        if (cancelClose2) cancelClose2.addEventListener("click", closeCancel);
-        if (cancelOverlay) cancelOverlay.addEventListener("click", function (e) {
-          if (e.target === cancelOverlay) closeCancel();
-        });
-        if (cancelCheck) {
-          cancelCheck.addEventListener("change", function () {
-            cancelConfirm.disabled = !cancelCheck.checked;
-          });
-        }
-        if (cancelConfirm) {
-          cancelConfirm.addEventListener("click", function () {
-            var t = dictNow();
-            var f = window.MindDoFlow;
-            var fam = getFamilyId();
-            if (fam && f && f.upsertBillingProfile) {
-              f.upsertBillingProfile({ familyId: fam, status: "cancelled", autoRenew: false });
-            }
-            cancelMsg.textContent = t.bmCancelDone;
-            setTimeout(function () { closeCancel(); rerender(); }, 700);
-          });
-        }
-
-        // ESC closes whichever billing modal is open.
+        // ESC closes the update-card modal when open.
         document.addEventListener("keydown", function (e) {
           if (e.key !== "Escape") return;
-          [cardOverlay, pauseOverlay, cancelOverlay].forEach(function (ov) {
-            if (ov && ov.getAttribute("aria-hidden") === "false") close(ov);
-          });
+          if (cardOverlay && cardOverlay.getAttribute("aria-hidden") === "false") close(cardOverlay);
         });
       })();
 

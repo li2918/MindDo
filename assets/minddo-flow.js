@@ -1821,12 +1821,9 @@
     );
     writeJson(KEYS.growth, growthRecords);
 
-    // Billing profile — one record per family. Card is the demo Visa
-    // 4242 with a future expiry; auto-renew on; next charge calc'd from
-    // the seeded membership createdAt + 1 month.
+    // Billing profile — one record per family carrying the payment
+    // method on file. Demo Visa ending 4242 with a future expiry.
     if (demoAccount && demoAccount.familyId) {
-      var nextCharge = new Date(now);
-      nextCharge.setDate(nextCharge.getDate() + 28);
       writeJson(KEYS.billingProfile, [{
         familyId: demoAccount.familyId,
         paymentMethod: {
@@ -1837,12 +1834,6 @@
           holderName: "Li Mom",
           zip: "92614"
         },
-        autoRenew: true,
-        status: "active",          // active | paused | cancelled
-        nextChargeAt: nextCharge.toISOString(),
-        nextChargeAmount: 349,
-        nextChargePlan: "weekly2",
-        nextChargeCycle: "monthly",
         createdAt: now.toISOString()
       }]);
     }
