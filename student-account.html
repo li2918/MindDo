@@ -773,6 +773,9 @@
       outline: none; transition: 0.15s; box-sizing: border-box;
     }
     .set-field input:focus, .set-field select:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,158,11,0.15); }
+    .set-field input[readonly] { background: rgba(122,48,16,0.04); color: var(--muted); cursor: not-allowed; }
+    .set-field input[readonly]:focus { border-color: var(--line); box-shadow: none; }
+    .set-field-hint { font-size: 11px; color: var(--muted); line-height: 1.55; margin-top: 2px; font-weight: 600; }
     .set-form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
     .set-btn-primary {
       background: linear-gradient(135deg,#fde68a,var(--gold)); color: #3a1808; border: none;
@@ -2015,40 +2018,27 @@
                   <form class="set-form" id="setProfileForm">
                     <div class="set-form-grid">
                       <label class="set-field">
-                        <span data-i18n="setProfileFieldStudentName"></span>
-                        <input type="text" id="setStudentName" autocomplete="off" />
+                        <span data-i18n="setProfileFieldParentName"></span>
+                        <input type="text" id="setParentName" autocomplete="name" />
                       </label>
                       <label class="set-field">
-                        <span data-i18n="setProfileFieldGrade"></span>
-                        <select id="setStudentGrade">
-                          <option value=""></option>
-                          <option value="K">K</option><option value="1">1</option><option value="2">2</option>
-                          <option value="3">3</option><option value="4">4</option><option value="5">5</option>
-                          <option value="6">6</option><option value="7">7</option><option value="8">8</option>
-                          <option value="9">9</option><option value="10">10</option><option value="11">11</option>
-                          <option value="12">12</option>
-                        </select>
-                      </label>
-                      <label class="set-field">
-                        <span data-i18n="setProfileFieldBirthday"></span>
-                        <input type="date" id="setStudentBirthday" />
-                      </label>
-                      <label class="set-field">
-                        <span data-i18n="setProfileFieldGender"></span>
-                        <select id="setStudentGender">
-                          <option value="" data-zh="不填" data-en="Prefer not to say"></option>
-                          <option value="female" data-zh="女" data-en="Female"></option>
-                          <option value="male" data-zh="男" data-en="Male"></option>
+                        <span data-i18n="setProfileFieldRelation"></span>
+                        <select id="setParentRelation">
+                          <option value="" data-zh="请选择" data-en="Select"></option>
+                          <option value="mother" data-zh="母亲" data-en="Mother"></option>
+                          <option value="father" data-zh="父亲" data-en="Father"></option>
+                          <option value="guardian" data-zh="监护人" data-en="Guardian"></option>
                           <option value="other" data-zh="其他" data-en="Other"></option>
                         </select>
                       </label>
                       <label class="set-field">
-                        <span data-i18n="setProfileFieldParentName"></span>
-                        <input type="text" id="setParentName" autocomplete="off" />
+                        <span data-i18n="setProfileFieldPhone"></span>
+                        <input type="tel" id="setParentPhone" autocomplete="tel" />
                       </label>
                       <label class="set-field">
-                        <span data-i18n="setProfileFieldPhone"></span>
-                        <input type="tel" id="setParentPhone" autocomplete="off" />
+                        <span data-i18n="setProfileFieldLoginEmail"></span>
+                        <input type="email" id="setParentEmail" autocomplete="email" readonly />
+                        <small class="set-field-hint" data-i18n="setProfileFieldLoginEmailHint"></small>
                       </label>
                     </div>
                     <div class="set-form-actions">
@@ -2544,17 +2534,16 @@
           setManageLoginsSub: "查看 / 修改每位学员的资料、登录信息与课程入口。",
           setInviteCoparentTitle: "邀请副家长",
           setInviteCoparentSub: "向另一位监护人发送只读权限的激活邀请。",
-          setEditProfileTitle: "编辑当前学员资料",
-          setEditProfileSub: "更新当前查看的孩子的基础信息和家长联系方式，保存后即时生效。",
-          setProfileFieldStudentName: "学员姓名",
-          setProfileFieldGrade: "年级",
-          setProfileFieldBirthday: "出生日期",
-          setProfileFieldGender: "性别",
+          setEditProfileTitle: "家长资料",
+          setEditProfileSub: "更新当前登录家长的姓名、关系与联系电话。学员资料请前往「家庭」→「学生账户信息」修改。",
           setProfileFieldParentName: "家长姓名",
-          setProfileFieldPhone: "家长电话",
+          setProfileFieldRelation: "与学员关系",
+          setProfileFieldPhone: "联系电话",
+          setProfileFieldLoginEmail: "登录邮箱",
+          setProfileFieldLoginEmailHint: "登录邮箱即账号本身，如需更换请联系客服。",
           setProfileSave: "保存修改",
           setProfileSaved: "已保存 ✓",
-          setProfileNoActive: "请先在「家庭成员」中选择一位孩子。",
+          setProfileNoActive: "未检测到家长账号，请重新登录后再编辑。",
           setPasswordCurrent: "当前密码",
           setPasswordNew: "新密码（至少 8 位）",
           setPasswordConfirm: "确认新密码",
@@ -3007,17 +2996,16 @@
           setManageLoginsSub: "View / edit each student's profile, login, and class actions.",
           setInviteCoparentTitle: "Invite a Co-parent",
           setInviteCoparentSub: "Send a read-only activation invite to another guardian.",
-          setEditProfileTitle: "Edit Active Student Profile",
-          setEditProfileSub: "Update the currently viewed child's basics and parent contact. Saved instantly.",
-          setProfileFieldStudentName: "Student Name",
-          setProfileFieldGrade: "Grade",
-          setProfileFieldBirthday: "Birthday",
-          setProfileFieldGender: "Gender",
-          setProfileFieldParentName: "Parent Name",
-          setProfileFieldPhone: "Parent Phone",
+          setEditProfileTitle: "Your Guardian Profile",
+          setEditProfileSub: "Update the signed-in guardian's name, relationship and phone. To edit student info, go to Family → Student Account Info.",
+          setProfileFieldParentName: "Guardian Name",
+          setProfileFieldRelation: "Relationship",
+          setProfileFieldPhone: "Phone",
+          setProfileFieldLoginEmail: "Login Email",
+          setProfileFieldLoginEmailHint: "Your login email is the account key. Contact support to change it.",
           setProfileSave: "Save Changes",
           setProfileSaved: "Saved ✓",
-          setProfileNoActive: "Pick a child from the family panel first.",
+          setProfileNoActive: "No guardian account detected. Please sign in again to edit.",
           setPasswordCurrent: "Current Password",
           setPasswordNew: "New Password (8+ chars)",
           setPasswordConfirm: "Confirm New Password",
@@ -4781,34 +4769,29 @@
           var el = document.getElementById(id);
           if (el) el.style.display = isPrimary ? "" : "none";
         });
-        // Edit-profile inline form is primary-guardian-only too — co-parents
-        // and student-role accounts can't write to the student record.
-        var profCard = document.getElementById("setProfileCard");
-        if (profCard) profCard.style.display = isPrimary ? "" : "none";
 
-        // Prefill the edit-profile form from the active student + guardian.
-        // Read straight from the underlying entities so the form reflects the
-        // canonical record (not the looser current-student snapshot).
-        if (profCard && isPrimary) {
-          var stuRec = (current && current.studentId && flow && flow.findStudentById)
-            ? flow.findStudentById(current.studentId) : null;
+        // Guardian-profile form is visible to any signed-in guardian (primary
+        // or co-parent) — each is editing their *own* linked record. Hidden
+        // for student-role accounts, who don't have a guardian to edit.
+        var isGuardianAcct = !!(acct && flow && (acct.role === flow.ROLES.guardianPrimary || acct.role === flow.ROLES.guardianSecondary));
+        var profCard = document.getElementById("setProfileCard");
+        if (profCard) profCard.style.display = isGuardianAcct ? "" : "none";
+
+        // Prefill the guardian-profile form from the linked guardian record.
+        if (profCard && isGuardianAcct) {
           var gdnRec = (acct && acct.linkedEntityId && flow && flow.findGuardianById)
             ? flow.findGuardianById(acct.linkedEntityId) : null;
-          var nameEl = document.getElementById("setStudentName");
-          var gradeEl = document.getElementById("setStudentGrade");
-          var bdayEl = document.getElementById("setStudentBirthday");
-          var genderEl = document.getElementById("setStudentGender");
           var pnameEl = document.getElementById("setParentName");
+          var relEl = document.getElementById("setParentRelation");
           var phoneEl = document.getElementById("setParentPhone");
-          if (nameEl) nameEl.value = (stuRec && stuRec.name) || (current.studentName || current.name || "");
-          if (gradeEl) gradeEl.value = (stuRec && stuRec.grade) || current.grade || "";
-          if (bdayEl) bdayEl.value = (stuRec && stuRec.birthday) || current.birthday || "";
-          if (genderEl) genderEl.value = (stuRec && stuRec.gender) || current.gender || "";
-          if (pnameEl) pnameEl.value = (gdnRec && gdnRec.name) || current.parentName || "";
-          if (phoneEl) phoneEl.value = (gdnRec && gdnRec.phone) || current.phone || "";
-          // Refresh gender dropdown labels in current language.
-          if (genderEl) {
-            genderEl.querySelectorAll("option[data-zh][data-en]").forEach(function (opt) {
+          var emailEl = document.getElementById("setParentEmail");
+          if (pnameEl) pnameEl.value = (gdnRec && gdnRec.name) || (current && current.parentName) || "";
+          if (relEl)  relEl.value   = (gdnRec && gdnRec.relation) || "";
+          if (phoneEl) phoneEl.value = (gdnRec && gdnRec.phone) || (current && current.phone) || "";
+          if (emailEl) emailEl.value = (gdnRec && gdnRec.email) || (acct && acct.email) || (current && current.email) || "";
+          // Refresh relation dropdown labels in current language.
+          if (relEl) {
+            relEl.querySelectorAll("option[data-zh][data-en]").forEach(function (opt) {
               opt.textContent = opt.getAttribute(lang === "en" ? "data-en" : "data-zh");
             });
           }
@@ -5969,9 +5952,10 @@
           return I18N[l] || I18N["zh-CN"];
         }
 
-        // Edit-profile form — writes to the canonical student + guardian
-        // entities and refreshes currentStudent so the rest of the page
-        // re-renders with the new values.
+        // Guardian-profile form — writes to the linked guardian entity for
+        // the signed-in account. Login email isn't editable here (it's the
+        // account key); the rest is shallow-merged so other guardian fields
+        // stay intact.
         var profForm = document.getElementById("setProfileForm");
         if (profForm) {
           profForm.addEventListener("submit", function (e) {
@@ -5980,45 +5964,28 @@
             var msg = document.getElementById("setProfileMsg");
             var flow = window.MindDoFlow;
             var acct = (flow && flow.getCurrentAccount) ? flow.getCurrentAccount() : null;
-            var current = (flow && flow.getCurrentStudent) ? flow.getCurrentStudent() : null;
-            if (!acct || !current || !current.studentId) {
+            if (!acct || !acct.linkedEntityId || !flow.upsertGuardian) {
               setMsg(msg, "error", t.setProfileNoActive);
               return;
             }
-            var name = document.getElementById("setStudentName").value.trim();
-            var grade = document.getElementById("setStudentGrade").value;
-            var birthday = document.getElementById("setStudentBirthday").value;
-            var gender = document.getElementById("setStudentGender").value;
             var parentName = document.getElementById("setParentName").value.trim();
+            var relation = document.getElementById("setParentRelation").value;
             var phone = document.getElementById("setParentPhone").value.trim();
 
-            if (flow.upsertStudent) {
-              flow.upsertStudent({
-                studentId: current.studentId,
-                name: name,
-                grade: grade,
-                birthday: birthday,
-                gender: gender
-              });
-            }
-            if (acct.linkedEntityId && flow.upsertGuardian) {
-              flow.upsertGuardian({
-                guardianId: acct.linkedEntityId,
-                name: parentName,
-                phone: phone
-              });
-            }
-            // Mirror student-name updates onto currentStudent so the hero,
-            // family panel, and identity chip pick them up immediately.
+            flow.upsertGuardian({
+              guardianId: acct.linkedEntityId,
+              name: parentName,
+              relation: relation,
+              phone: phone
+            });
+            // Keep current-student snapshot's parent fields in sync so the
+            // family panel + invoices + welcome lines pick up the new name
+            // immediately without a reload.
             if (flow.setCurrentStudent) {
               flow.setCurrentStudent({
-                studentName: name,
-                name: name,
-                grade: grade,
-                birthday: birthday,
-                gender: gender,
                 parentName: parentName,
-                phone: phone
+                phone: phone,
+                parentRelation: relation
               });
             }
             setMsg(msg, "success", t.setProfileSaved);
