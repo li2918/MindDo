@@ -396,6 +396,23 @@
             + " <a class='btn-secondary' style='margin-left:10px;' href='add-child.html'>" + escapeHtml(t.addChildCta) + "</a>"
             + "</div>";
         } else {
+          // Self-heal: any student in this family without a learning login
+          // (e.g. older demo state where 李若安 went through provision-
+          // GuardianPrimary which doesn't auto-create the student account)
+          // gets one provisioned on render so the credentials block always
+          // appears. Only the primary guardian has authority for this.
+          if (isPrimary && flow.autoProvisionStudentAccount) {
+            var existingAccounts = flow.listFamilyAccounts(family.familyId);
+            students.forEach(function (s) {
+              var hasStudentAcct = existingAccounts.some(function (a) {
+                return a.role === flow.ROLES.student && a.linkedEntityId === s.studentId;
+              });
+              if (!hasStudentAcct) {
+                flow.autoProvisionStudentAccount(family.familyId, s.studentId);
+              }
+            });
+          }
+
           var accounts = flow.listFamilyAccounts(family.familyId);
           studentList.innerHTML = students.map(function (s) {
             var studentAcct = accounts.filter(function (a) { return a.role === flow.ROLES.student && a.linkedEntityId === s.studentId; })[0];
