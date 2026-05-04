@@ -531,24 +531,43 @@
     .portal-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); }
     .sidebar { background: #fff; border-right: 1px solid var(--line);
       padding: 24px 14px; display: flex; flex-direction: column; gap: 18px; }
-    .sidebar-section { display: flex; flex-direction: column; gap: 2px; }
-    .sidebar-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
-      color: #94a3b8; padding: 0 12px 4px; }
-    .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 9px 12px;
+    /* Sidebar — single continuous list mirroring the school-CRM
+       reference (icon · label · optional dot · chevron). The active
+       item gets a tinted background; chevrons are subtle until hover. */
+    .sidebar-section { display: flex; flex-direction: column; gap: 1px; }
+    .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px;
       border-radius: 8px; background: transparent; border: none; color: #334155;
       font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
-      width: 100%; text-align: left; text-decoration: none; transition: 0.12s; font-family: inherit; }
+      width: 100%; text-align: left; text-decoration: none; transition: 0.12s; font-family: inherit;
+      position: relative; }
+    .sidebar-item + .sidebar-item { border-top: 1px solid rgba(226,232,240,0.55); border-radius: 0; }
+    .sidebar-item:first-child, .sidebar-item:last-child { border-radius: 8px; }
     .sidebar-item:hover { background: #f1f5f9; color: var(--clay); }
-    .sidebar-item.active { background: #e2e8f0; color: var(--clay); font-weight: 700; }
-    .sidebar-item .si-icon { width: 18px; height: 18px; color: #64748b; flex-shrink: 0;
-      display: inline-flex; align-items: center; justify-content: center; }
-    .sidebar-item.active .si-icon { color: var(--clay); }
+    .sidebar-item.active { background: linear-gradient(90deg,rgba(245,158,11,0.16),rgba(245,158,11,0.04));
+      color: var(--clay); font-weight: 800; border-top-color: transparent; }
+    .sidebar-item.active + .sidebar-item { border-top-color: transparent; }
+    .sidebar-item.active::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px;
+      width: 3px; border-radius: 2px; background: var(--gold-deep); }
+    .sidebar-item .si-icon { width: 20px; height: 20px; color: #64748b; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 16px; }
+    .sidebar-item.active .si-icon { color: var(--gold-deep); }
+    .sidebar-item .si-label { flex: 1; min-width: 0; }
+    .sidebar-item .si-arrow { color: #cbd5e1; font-size: 12px; flex-shrink: 0; transition: 0.12s; }
+    .sidebar-item:hover .si-arrow { color: #64748b; transform: translateX(2px); }
+    .sidebar-item.active .si-arrow { color: var(--gold-deep); }
+
+    /* Red attention dot — surfaces sections that have unread / pending items.
+       Sits between the label and the chevron. */
+    .sidebar-item .si-dot { width: 7px; height: 7px; border-radius: 999px;
+      background: var(--danger); flex-shrink: 0; box-shadow: 0 0 0 2px rgba(196,106,77,0.18); }
+
     .sidebar-item .tab-pill {
-      margin-left: auto; display: inline-flex; min-width: 18px;
+      display: inline-flex; min-width: 18px;
       padding: 1px 7px; border-radius: 999px; font-size: 10px; font-weight: 800;
       align-items: center; justify-content: center;
       background: rgba(196,106,77,0.14); color: var(--danger);
       border: 1px solid rgba(196,106,77,0.32);
+      flex-shrink: 0;
     }
     .sidebar-item.active .tab-pill { background: var(--danger); color: #fff; border-color: var(--danger); }
 
@@ -798,41 +817,52 @@
   <div class="portal-layout">
     <aside class="sidebar" aria-label="Operations Sections">
       <div class="sidebar-section" id="dashTabs" role="tablist">
-        <span class="sidebar-label"><span data-lang="zh">运营</span><span data-lang="en">Operations</span></span>
         <button type="button" class="sidebar-item active" data-tab="overview" role="tab">
-          <span class="si-icon" aria-hidden="true">🏠</span><span data-i18n="tabOverview"></span>
+          <span class="si-icon" aria-hidden="true">🏠</span><span class="si-label" data-i18n="tabOverview"></span>
+          <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
+        <a class="sidebar-item" href="about.html">
+          <span class="si-icon" aria-hidden="true">👑</span><span class="si-label" data-i18n="navBrand"></span>
+          <span class="si-arrow" aria-hidden="true">▸</span>
+        </a>
         <button type="button" class="sidebar-item" data-tab="enrollment" role="tab">
-          <span class="si-icon" aria-hidden="true">🎯</span><span data-i18n="tabEnrollment"></span>
+          <span class="si-icon" aria-hidden="true">🎯</span><span class="si-label" data-i18n="navEnroll"></span>
           <span class="tab-pill" id="enrollmentBadge" hidden>0</span>
+          <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
+        <a class="sidebar-item" href="course-offerings.html">
+          <span class="si-icon" aria-hidden="true">📘</span><span class="si-label" data-i18n="navAcademic"></span>
+          <span class="si-arrow" aria-hidden="true">▸</span>
+        </a>
         <button type="button" class="sidebar-item" data-tab="teaching" role="tab">
-          <span class="si-icon" aria-hidden="true">📊</span><span data-i18n="tabTeaching"></span>
-        </button>
-        <button type="button" class="sidebar-item" data-tab="finance" role="tab">
-          <span class="si-icon" aria-hidden="true">💰</span><span data-i18n="tabFinance"></span>
+          <span class="si-icon" aria-hidden="true">📊</span><span class="si-label" data-i18n="navTeaching"></span>
+          <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
         <button type="button" class="sidebar-item" data-tab="requests" role="tab">
-          <span class="si-icon" aria-hidden="true">📨</span><span data-i18n="tabRequests"></span>
+          <span class="si-icon" aria-hidden="true">📨</span><span class="si-label" data-i18n="navHomeSchool"></span>
           <span class="tab-pill" id="requestsBadge" hidden>0</span>
+          <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
-        <button type="button" class="sidebar-item" data-tab="settings" role="tab">
-          <span class="si-icon" aria-hidden="true">🛠️</span><span data-i18n="tabSettings"></span>
+        <button type="button" class="sidebar-item" data-tab="finance" role="tab">
+          <span class="si-icon" aria-hidden="true">💰</span><span class="si-label" data-i18n="navFinance"></span>
+          <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
-      </div>
-      <div class="sidebar-section">
-        <span class="sidebar-label"><span data-lang="zh">直达</span><span data-lang="en">Quick Links</span></span>
+        <a class="sidebar-item" href="semester-report.html">
+          <span class="si-icon" aria-hidden="true">📈</span><span class="si-label" data-i18n="navData"></span>
+          <span class="si-arrow" aria-hidden="true">▸</span>
+        </a>
         <a class="sidebar-item" href="student-management.html">
-          <span class="si-icon" aria-hidden="true">👥</span><span data-lang="zh">学员管理</span><span data-lang="en">Students</span>
+          <span class="si-icon" aria-hidden="true">🛠</span><span class="si-label" data-i18n="navInternal"></span>
+          <span class="si-dot" aria-hidden="true"></span>
+          <span class="si-arrow" aria-hidden="true">▸</span>
         </a>
-        <a class="sidebar-item" href="new-trials.html">
-          <span class="si-icon" aria-hidden="true">📝</span><span data-lang="zh">新试课</span><span data-lang="en">New Trials</span>
-        </a>
-        <a class="sidebar-item" href="request-center.html">
-          <span class="si-icon" aria-hidden="true">📥</span><span data-lang="zh">申请中心</span><span data-lang="en">Requests</span>
-        </a>
-        <a class="sidebar-item" href="email-outbox.html">
-          <span class="si-icon" aria-hidden="true">📧</span><span data-lang="zh">邮件发件箱</span><span data-lang="en">Mail Outbox</span>
+        <button type="button" class="sidebar-item" data-tab="settings" role="tab">
+          <span class="si-icon" aria-hidden="true">⚙️</span><span class="si-label" data-i18n="navBizSettings"></span>
+          <span class="si-arrow" aria-hidden="true">▸</span>
+        </button>
+        <a class="sidebar-item" href="franchise.html">
+          <span class="si-icon" aria-hidden="true">💎</span><span class="si-label" data-i18n="navValueAdd"></span>
+          <span class="si-arrow" aria-hidden="true">▸</span>
         </a>
       </div>
     </aside>
@@ -1384,12 +1414,23 @@
           railNewBadge: "New",
           zoneAdminOpsTitle: "管理员手动操作",
           zoneAdminOpsSub: "应急 / 离线场景使用，平时折叠隐藏",
-          tabOverview: "概览",
+          tabOverview: "首页",
           tabEnrollment: "招生",
           tabTeaching: "教学",
           tabFinance: "财务",
           tabRequests: "申请处理",
           tabSettings: "课程设置",
+          // ---- Sidebar nav labels (school-CRM style) ----
+          navBrand: "品牌中心",
+          navEnroll: "招生中心",
+          navAcademic: "教务中心",
+          navTeaching: "教学中心",
+          navHomeSchool: "家校服务",
+          navFinance: "财务中心",
+          navData: "数据中心",
+          navInternal: "内部管理",
+          navBizSettings: "业务设置",
+          navValueAdd: "增值服务",
           zoneSettingsTrialTitle: "试课时间设置",
           zoneSettingsTrialDescTpl: "为「{campus}」配置试课可选时段。家长在试课预约页看到的时间会按这里的设置展示。",
           zoneSettingsTrialDescAll: "正在配置默认时段（适用于所有未单独设置的校区）。先在顶部切换校区，再单独配置该校区的时段。",
@@ -1591,12 +1632,22 @@
           railNewBadge: "New",
           zoneAdminOpsTitle: "Admin Operations",
           zoneAdminOpsSub: "Manual recovery tools, collapsed by default",
-          tabOverview: "Overview",
+          tabOverview: "Home",
           tabEnrollment: "Enrollment",
           tabTeaching: "Teaching",
           tabFinance: "Finance",
           tabRequests: "Requests",
           tabSettings: "Course Settings",
+          navBrand: "Brand",
+          navEnroll: "Enrollment",
+          navAcademic: "Academic",
+          navTeaching: "Teaching",
+          navHomeSchool: "Home-School",
+          navFinance: "Finance",
+          navData: "Data Center",
+          navInternal: "Internal",
+          navBizSettings: "Business Settings",
+          navValueAdd: "Value-Add",
           zoneSettingsTrialTitle: "Trial Time Slots",
           zoneSettingsTrialDescTpl: "Configure available trial slots for {campus}. The trial booking page will show exactly these times to parents.",
           zoneSettingsTrialDescAll: "Currently editing the default slots (applied to any campus without its own configuration). Pick a specific campus at the top to override it.",
