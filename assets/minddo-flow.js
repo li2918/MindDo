@@ -1587,8 +1587,18 @@
       name: student.studentName,
       grade: student.grade,
       birthday: student.birthday,
-      gender: student.gender || ""
+      gender: student.gender || "",
+      email: student.email,
+      phone: student.phone
     });
+    // Auto-provision the primary student's learning login. The
+    // provisionGuardianPrimary path only creates the *guardian* account;
+    // without this, 李若安 would never get an email/password pair on the
+    // Settings → Family card while 李若涵 (added via addChildToFamily)
+    // would.
+    if (demoAccount && demoAccount.familyId) {
+      autoProvisionStudentAccount(demoAccount.familyId, student.studentId);
+    }
 
     // Second demo child — exercises the multi-kid family panel + the
     // per-kid Schedule / Overview / Membership rendering paths.
