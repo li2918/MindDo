@@ -562,6 +562,178 @@
     .ops-toolbar .campus-chip .cc-select { font-size: 12.5px; }
     .ops-toolbar .toolbar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
+    /* Overview redesign — main column + 300px right rail. Other tab
+       panels keep the legacy single-column layout (the .ops-overview
+       class only applies to the Overview content). */
+    .ops-overview { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+    .ops-overview-main { display: grid; gap: 18px; min-width: 0; }
+    .ops-overview-rail { display: grid; gap: 14px; position: sticky; top: 96px; }
+    @media (max-width: 1100px) {
+      .ops-overview { grid-template-columns: 1fr; }
+      .ops-overview-rail { position: static; }
+    }
+
+    /* Onboarding checklist — 4 task cards in a row, fraction header. */
+    .onboard-card { background: linear-gradient(135deg,#fff,rgba(254,243,199,0.32));
+      border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; }
+    .onboard-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .onboard-head h3 { font-size: 16px; font-weight: 800; color: var(--clay); margin: 0; letter-spacing: -0.01em; }
+    .onboard-head h3 em { color: var(--gold-deep); font-style: normal; font-variant-numeric: tabular-nums; }
+    .onboard-head p { font-size: 12.5px; color: var(--muted); margin: 0; flex: 1; }
+    .onboard-head button { all: unset; cursor: pointer; font-size: 11.5px; color: var(--muted); }
+    .onboard-tasks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .onboard-task { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px;
+      background: #fff; border: 1px solid var(--line); border-radius: 12px; transition: 0.15s; cursor: pointer;
+      text-decoration: none; color: inherit; }
+    .onboard-task:hover { transform: translateY(-1px); border-color: rgba(245,158,11,0.32); }
+    .onboard-task .ic { width: 36px; height: 36px; border-radius: 10px; display: inline-flex;
+      align-items: center; justify-content: center; flex: none; font-size: 18px;
+      background: rgba(245,158,11,0.16); color: var(--gold-deep); }
+    .onboard-task.done .ic { background: rgba(110,143,87,0.18); color: #4f6f38; }
+    .onboard-task .body { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
+    .onboard-task .name { font-size: 13.5px; font-weight: 800; color: var(--clay); display: flex; align-items: center; gap: 6px; }
+    .onboard-task .pill { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 999px; letter-spacing: 0.04em; }
+    .onboard-task .pill.done { background: rgba(110,143,87,0.18); color: #3f5d26; }
+    .onboard-task .pill.todo { background: rgba(216,156,54,0.2); color: #7a4f0d; }
+    .onboard-task .desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+    @media (max-width: 760px) { .onboard-tasks { grid-template-columns: repeat(2, 1fr); } }
+
+    /* Greeting + stats block */
+    .greet-card { background: linear-gradient(135deg,rgba(254,243,199,0.42),rgba(254,250,240,0.6));
+      border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px;
+      display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+    .greet-id { display: flex; align-items: center; gap: 14px; min-width: 240px; }
+    .greet-avatar { width: 52px; height: 52px; border-radius: 999px;
+      background: linear-gradient(135deg,#fde68a,var(--gold)); color: #3a1808;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; box-shadow: 0 4px 12px rgba(245,158,11,0.3); }
+    .greet-name { font-size: 17px; font-weight: 800; color: var(--clay); }
+    .greet-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .greet-stats { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; flex: 1; min-width: 0; }
+    .greet-stat { text-align: center; padding: 8px 4px; border-left: 1px solid var(--line); }
+    .greet-stat:first-child { border-left: none; }
+    .greet-stat .num { font-size: 18px; font-weight: 900; color: var(--clay); line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .greet-stat .label { font-size: 10.5px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+    @media (max-width: 720px) {
+      .greet-stats { grid-template-columns: repeat(4, 1fr); }
+      .greet-stat { border-left: none; }
+    }
+
+    /* Notice bar */
+    .notice-bar { display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+      background: rgba(254,243,199,0.45); border: 1px solid rgba(245,158,11,0.28);
+      border-radius: 12px; font-size: 13px; color: var(--clay); line-height: 1.5; }
+    .notice-bar .ic { font-size: 14px; flex: none; }
+    .notice-bar .ts { color: var(--muted); font-size: 11.5px; margin-left: auto; }
+
+    /* Quick apps — icon + label tiles */
+    .quick-apps-card { background: #fff; border: 1px solid var(--line); border-radius: 16px;
+      padding: 18px 22px; }
+    .quick-apps-head { font-size: 14px; font-weight: 800; color: var(--clay); margin-bottom: 14px; }
+    .quick-apps-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+    .qa-item { display: flex; flex-direction: column; align-items: center; gap: 8px;
+      padding: 12px 6px; border-radius: 12px; transition: 0.15s; text-decoration: none;
+      color: inherit; cursor: pointer; }
+    .qa-item:hover { background: rgba(254,243,199,0.5); transform: translateY(-1px); }
+    .qa-item .ic { width: 40px; height: 40px; border-radius: 10px; display: inline-flex;
+      align-items: center; justify-content: center; font-size: 18px;
+      background: rgba(245,158,11,0.16); color: var(--gold-deep); }
+    .qa-item:nth-child(2) .ic { background: rgba(110,143,87,0.18); color: #4f6f38; }
+    .qa-item:nth-child(3) .ic { background: rgba(216,156,54,0.2); color: #7a4f0d; }
+    .qa-item:nth-child(4) .ic { background: rgba(196,106,77,0.16); color: #8e3d21; }
+    .qa-item:nth-child(5) .ic { background: rgba(110,143,87,0.16); color: #4f6f38; }
+    .qa-item:nth-child(6) .ic { background: rgba(245,158,11,0.16); color: var(--gold-deep); }
+    .qa-item:nth-child(7) .ic { background: rgba(196,106,77,0.18); color: #8e3d21; }
+    .qa-item .label { font-size: 12.5px; color: var(--clay); font-weight: 700; text-align: center; }
+    @media (max-width: 760px) { .quick-apps-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 480px) { .quick-apps-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    /* Data brief — section heading then KPI tiles (existing #overviewMetrics) */
+    .brief-card { background: #fff; border: 1px solid var(--line); border-radius: 16px;
+      padding: 18px 22px; }
+    .brief-head { font-size: 14px; font-weight: 800; color: var(--clay); margin-bottom: 14px; }
+    .brief-card .grid { margin-top: 0; }
+
+    /* Empty cards row — 待点名日程 / 待补课学员 */
+    .ops-empty-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .ops-empty-card { background: #fff; border: 1px solid var(--line); border-radius: 16px;
+      padding: 22px; min-height: 200px; display: flex; flex-direction: column; }
+    .ops-empty-card h4 { font-size: 14px; font-weight: 800; color: var(--clay); margin-bottom: 10px; }
+    .ops-empty-body { flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center; gap: 12px; padding: 20px 0; }
+    .ops-empty-illu { font-size: 38px; opacity: 0.55; line-height: 1; }
+    .ops-empty-quote { font-size: 12.5px; color: var(--muted); font-style: italic; }
+    .ops-empty-msg { font-size: 13.5px; color: var(--clay); font-weight: 700; }
+    .ops-empty-hint { font-size: 11.5px; color: var(--muted); }
+    @media (max-width: 720px) { .ops-empty-row { grid-template-columns: 1fr; } }
+
+    /* Schedule strip */
+    .ops-sched-card { background: #fff; border: 1px solid var(--line); border-radius: 16px;
+      padding: 18px 22px; }
+    .ops-sched-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .ops-sched-head h4 { font-size: 14px; font-weight: 800; color: var(--clay); margin: 0; }
+    .ops-sched-head a { font-size: 12px; color: var(--muted); text-decoration: none; }
+    .ops-sched-head a:hover { color: var(--gold-deep); }
+    .ops-sched-month { text-align: center; font-size: 13px; font-weight: 700; color: var(--clay);
+      margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 14px; }
+    .ops-sched-month button { all: unset; cursor: pointer; color: var(--muted); padding: 0 8px; font-size: 14px; }
+    .ops-sched-strip { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 4px; margin-bottom: 12px; }
+    @media (max-width: 760px) { .ops-sched-strip { grid-template-columns: repeat(7, 1fr); } }
+    .ops-sched-day { padding: 10px 4px; text-align: center; border-radius: 10px;
+      background: #fff; border: 1px solid transparent; cursor: pointer; transition: 0.12s; }
+    .ops-sched-day:hover { background: rgba(254,243,199,0.5); }
+    .ops-sched-day.active { background: var(--gold-deep); color: #fffbeb; }
+    .ops-sched-day.active .nm { color: rgba(254,243,199,0.85); }
+    .ops-sched-day.today .num { color: var(--gold-deep); }
+    .ops-sched-day.today.active .num { color: #fffbeb; }
+    .ops-sched-day .num { font-size: 16px; font-weight: 900; color: var(--clay); line-height: 1.1; }
+    .ops-sched-day .nm { font-size: 10.5px; color: var(--muted); margin-top: 4px; }
+    .ops-sched-list { font-size: 12.5px; color: var(--muted); padding: 14px 0; }
+    .ops-sched-list .empty { text-align: center; }
+
+    /* Right rail — 我的督办, 客服 / 桌面端, 产品动态, 学习中心 */
+    .rail-card { background: #fff; border: 1px solid var(--line); border-radius: 16px;
+      padding: 16px 18px; }
+    .rail-card h4 { font-size: 13.5px; font-weight: 800; color: var(--clay); margin: 0 0 10px; letter-spacing: -0.01em; }
+    .rail-todo-body { display: flex; align-items: center; gap: 12px; }
+    .rail-todo-avatar { width: 36px; height: 36px; border-radius: 999px;
+      background: rgba(245,158,11,0.18); color: var(--gold-deep);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 900; }
+    .rail-todo-text { flex: 1; min-width: 0; font-size: 12.5px; color: var(--clay); line-height: 1.5; }
+    .rail-todo-text strong { color: var(--gold-deep); }
+    .rail-todo-text .hint { display: block; font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .rail-todo-cta { background: var(--clay); color: #fffbeb; border: none; border-radius: 999px;
+      padding: 7px 14px; font: inherit; font-size: 11.5px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+    .rail-todo-cta:hover { background: var(--brown); }
+
+    .rail-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .rail-mini-tile { padding: 12px 10px; border: 1px solid var(--line); border-radius: 12px;
+      text-align: center; background: linear-gradient(180deg,#fff,rgba(254,243,199,0.3));
+      text-decoration: none; color: inherit; transition: 0.15s; }
+    .rail-mini-tile:hover { transform: translateY(-1px); border-color: rgba(245,158,11,0.32); }
+    .rail-mini-tile .ic { font-size: 18px; line-height: 1; margin-bottom: 6px; color: var(--gold-deep); }
+    .rail-mini-tile .label { font-size: 11.5px; font-weight: 700; color: var(--clay); }
+    .rail-mini-tile .meta { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+
+    .rail-list { display: flex; flex-direction: column; gap: 8px; }
+    .rail-list-item { display: flex; gap: 8px; align-items: baseline; font-size: 12.5px;
+      color: var(--clay); line-height: 1.5; padding: 4px 0; border-bottom: 1px dashed rgba(122,48,16,0.08); }
+    .rail-list-item:last-child { border-bottom: none; }
+    .rail-list-item .tag { font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 999px;
+      letter-spacing: 0.04em; flex: none; }
+    .rail-list-item .tag.up { background: rgba(245,158,11,0.18); color: var(--gold-deep); }
+    .rail-list-item .tag.referral { background: rgba(110,143,87,0.18); color: #3f5d26; }
+    .rail-list-item .tag.flagship { background: rgba(216,156,54,0.18); color: #7a4f0d; }
+    .rail-list-item .tag.publish { background: rgba(196,106,77,0.16); color: #8e3d21; }
+    .rail-list-item .tag.event { background: rgba(245,158,11,0.18); color: var(--gold-deep); }
+    .rail-list-item .text { flex: 1; min-width: 0; }
+    .rail-list-item .text strong { font-weight: 700; }
+    .rail-list-item .new-pill { font-size: 9.5px; font-weight: 800; padding: 1px 5px;
+      background: var(--gold); color: #3a1808; border-radius: 4px; margin-left: 4px; vertical-align: middle; }
+    .rail-link { display: inline-block; margin-top: 10px; font-size: 12px; color: var(--gold-deep); text-decoration: none; font-weight: 700; }
+    .rail-link:hover { text-decoration: underline; }
+
     @media (max-width: 880px) {
       .topbar { grid-template-columns: auto 1fr auto; padding: 0 16px 0 0; }
       .topbar-brand { padding: 0 16px; }
@@ -679,34 +851,141 @@
           </div>
         </div>
 
-      <!-- ========== Overview ========== -->
+      <!-- ========== Overview — 2-column: main stack + right rail ========== -->
       <section class="dash-panel active" data-tab-panel="overview" role="tabpanel">
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneTodayTitle"></h3>
-              <p data-i18n="zoneTodaySub"></p>
-            </div>
-          </div>
-          <section class="alert-strip" id="alertStrip"></section>
-        </section>
+        <div class="ops-overview">
+          <div class="ops-overview-main">
 
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneOverviewKpiTitle"></h3>
-              <p data-i18n="zoneOverviewKpiSub"></p>
-            </div>
-          </div>
-          <section class="grid" id="overviewMetrics"></section>
-        </section>
+            <!-- Onboarding checklist — 4 setup tasks, persisted state -->
+            <section class="onboard-card" id="onboardCard">
+              <div class="onboard-head">
+                <h3 data-i18n="onboardTitle"></h3>
+                <p data-i18n="onboardSub"></p>
+                <button type="button" id="onboardCollapse" data-i18n="onboardCollapse"></button>
+              </div>
+              <div class="onboard-tasks" id="onboardTasks"></div>
+            </section>
 
-        <!-- Workspace (entry points) — moved into Overview as a quick-access section -->
-        <section id="opsWorkspace" class="workspace">
-          <div class="workspace-head">
-            <h2><span data-lang="zh">快捷入口</span><span data-lang="en">Quick Access</span></h2>
-            <span class="workspace-sub" style="margin:0;"><span data-lang="zh">直达学员、试课、申请、邮件等子页面。</span><span data-lang="en">Jump straight to students, trials, requests, mail, and more.</span></span>
-          </div>
+            <!-- Greeting + key stats — admin avatar + 7 number tiles -->
+            <section class="greet-card">
+              <div class="greet-id">
+                <div class="greet-avatar">李</div>
+                <div>
+                  <div class="greet-name" data-i18n="greetName"></div>
+                  <div class="greet-role" data-i18n="greetRole"></div>
+                </div>
+              </div>
+              <div class="greet-stats" id="greetStats"></div>
+            </section>
+
+            <!-- Notice bar — last new-student count -->
+            <div class="notice-bar" id="noticeBar"></div>
+
+            <!-- Quick apps — 7-icon launcher row -->
+            <section class="quick-apps-card">
+              <div class="quick-apps-head" data-i18n="quickAppsTitle"></div>
+              <div class="quick-apps-grid" id="quickAppsGrid"></div>
+            </section>
+
+            <!-- Data brief (existing #overviewMetrics renders 4 KPI tiles) -->
+            <section class="brief-card">
+              <div class="brief-head" data-i18n="briefTitle"></div>
+              <section class="grid" id="overviewMetrics"></section>
+            </section>
+
+            <!-- Empty cards row — 待点名日程 / 待补课学员 -->
+            <div class="ops-empty-row">
+              <section class="ops-empty-card">
+                <h4 data-i18n="emptyRollcallTitle"></h4>
+                <div class="ops-empty-body">
+                  <span class="ops-empty-illu" aria-hidden="true">🗓️</span>
+                  <span class="ops-empty-quote" data-i18n="emptyOnePassQuote"></span>
+                  <span class="ops-empty-msg" data-i18n="emptyRollcallMsg"></span>
+                  <span class="ops-empty-hint" data-i18n="emptyRollcallHint"></span>
+                </div>
+              </section>
+              <section class="ops-empty-card">
+                <h4 data-i18n="emptyMakeupTitle"></h4>
+                <div class="ops-empty-body">
+                  <span class="ops-empty-illu" aria-hidden="true">📅</span>
+                  <span class="ops-empty-quote" data-i18n="emptyOnePassQuote"></span>
+                  <span class="ops-empty-msg" data-i18n="emptyMakeupMsg"></span>
+                </div>
+              </section>
+            </div>
+
+            <!-- My schedule strip -->
+            <section class="ops-sched-card">
+              <div class="ops-sched-head">
+                <h4 data-i18n="schedStripTitle"></h4>
+                <a href="#" data-jump-tab="teaching" data-i18n="schedStripMore"></a>
+              </div>
+              <div class="ops-sched-month">
+                <button type="button" id="schedPrevWeek" aria-label="Previous">‹</button>
+                <span id="schedMonthLabel"></span>
+                <button type="button" id="schedNextWeek" aria-label="Next">›</button>
+              </div>
+              <div class="ops-sched-strip" id="schedStrip"></div>
+              <div class="ops-sched-list" id="schedDayList">
+                <div class="empty" data-i18n="schedStripEmpty"></div>
+              </div>
+            </section>
+
+          </div><!-- /ops-overview-main -->
+
+          <aside class="ops-overview-rail" aria-label="Side widgets">
+            <!-- 我的督办 — surfaces alertStrip's "needs attention" count -->
+            <div class="rail-card" id="railTodo">
+              <h4 data-i18n="railTodoTitle"></h4>
+              <div class="rail-todo-body">
+                <div class="rail-todo-avatar" aria-hidden="true">!</div>
+                <div class="rail-todo-text">
+                  <span id="railTodoMain"></span>
+                  <span class="hint" id="railTodoHint"></span>
+                </div>
+                <button type="button" class="rail-todo-cta" id="railTodoCta" data-i18n="railTodoCta"></button>
+              </div>
+            </div>
+
+            <!-- Quick mini-tiles: support / desktop -->
+            <div class="rail-card">
+              <div class="rail-mini-grid">
+                <a class="rail-mini-tile" href="contact.html">
+                  <div class="ic" aria-hidden="true">🎧</div>
+                  <div class="label" data-i18n="railSupportTitle"></div>
+                  <div class="meta" data-i18n="railSupportMeta"></div>
+                </a>
+                <a class="rail-mini-tile" href="index.html">
+                  <div class="ic" aria-hidden="true">💻</div>
+                  <div class="label" data-i18n="railDesktopTitle"></div>
+                  <div class="meta" data-i18n="railDesktopMeta"></div>
+                </a>
+              </div>
+            </div>
+
+            <!-- Product news — recent updates (mock list) -->
+            <div class="rail-card">
+              <h4 data-i18n="railNewsTitle"></h4>
+              <div class="rail-list" id="railNews"></div>
+            </div>
+
+            <!-- Learning center — operator training resources (mock list) -->
+            <div class="rail-card">
+              <h4 data-i18n="railLearnTitle"></h4>
+              <div class="rail-list" id="railLearn"></div>
+            </div>
+          </aside>
+        </div>
+
+        <!-- Legacy alertStrip — kept hidden so existing render code that
+             writes into #alertStrip keeps working. The 我的督办 widget
+             above reads the same count and surfaces it. -->
+        <section class="alert-strip" id="alertStrip" hidden></section>
+
+        <!-- Legacy workspace grid — kept hidden so existing render code
+             that writes into #workspaceGrid keeps working without null
+             guards. The Quick Apps row above is the new entry point. -->
+        <section id="opsWorkspace" hidden>
           <div class="workspace-grid" id="workspaceGrid"></div>
         </section>
       </section>
@@ -1035,6 +1314,74 @@
           recentRequests: "最近请假 / 改期申请",
           zoneTodayTitle: "今日重点",
           zoneTodaySub: "需要立即处理的提醒。",
+          // ---- Overview redesign ----
+          onboardTitle: "初始化任务（{done}/{total}）",
+          onboardSub: "一起来完成初始化，快速开始教学新体验~",
+          onboardCollapse: "收起 ▴",
+          onboardTaskStaffName: "创建员工",
+          onboardTaskStaffDesc: "填写员工信息，配置权限",
+          onboardTaskCourseName: "添加课程",
+          onboardTaskCourseDesc: "完善课程体系，设置价格",
+          onboardTaskPaymentName: "开通 / 绑定收银宝",
+          onboardTaskPaymentDesc: "免费开通，提高对账效率",
+          onboardTaskImportName: "导入学员",
+          onboardTaskImportDesc: "批量快速录入学员信息",
+          onboardPillDone: "已完成",
+          onboardPillTodo: "待完成",
+          greetName: "李老师",
+          greetRole: "当前角色：校区管理员",
+          greetStatYesterdayTeach: "昨日授课",
+          greetStatWeekTeach: "本周授课",
+          greetStatMonthTeach: "本月授课",
+          greetStatMonthTrial: "本月试听",
+          greetStatMonthIntent: "本月意向",
+          greetStatMonthFollow: "本月跟进",
+          greetStatMonthRevenue: "本月业绩",
+          noticeBarFmt: "通知 · {date} 本周新增 {n} 个在读学员",
+          quickAppsTitle: "我的应用",
+          quickAppName1: "意向学员",
+          quickAppName2: "试听管理",
+          quickAppName3: "报名续费",
+          quickAppName4: "订单",
+          quickAppName5: "班级",
+          quickAppName6: "上课点名",
+          quickAppName7: "上课记录",
+          briefTitle: "数据简报",
+          emptyOnePassQuote: "「这里好像只剩我一个了」",
+          emptyRollcallTitle: "待点名日程",
+          emptyRollcallMsg: "目前没有待点名的日程",
+          emptyRollcallHint: "请前往 App 端查看更多内容",
+          emptyMakeupTitle: "待补课学员",
+          emptyMakeupMsg: "目前没有待办事项",
+          schedStripTitle: "我的课程表",
+          schedStripMore: "更多",
+          schedStripEmpty: "日程列表（0）",
+          railTodoTitle: "我的督办",
+          railTodoMainFmt: "共 {n} 个待办 · 等待处理",
+          railTodoEmpty: "暂无待办",
+          railTodoHint: "立即提醒 1 位老师，完成待办任务",
+          railTodoCta: "一键催办",
+          railSupportTitle: "1 对 1 在线客服",
+          railSupportMeta: "电话：4006999707",
+          railDesktopTitle: "保存 PC 桌面端",
+          railDesktopMeta: "点击保存为桌面快捷方式",
+          railNewsTitle: "产品动态",
+          railNewsItem1: "教务中心多项功能优化",
+          railNewsItem2: "AI 新升级，对话生成数据报表",
+          railNewsItem3: "总部维护题库，统一分发到各校区",
+          railNewsItem4: "新增教师介绍，支持对外展示",
+          railNewsTagUp: "上新",
+          railLearnTitle: "学习中心",
+          railLearnItem1: "不要只给激励，要让家长有……",
+          railLearnItem2: "扬州大成教育参访",
+          railLearnItem3: "一文读懂校宝 App 智学版发布会",
+          railLearnItem4: "小红书 × 校宝 App，激活 3.5 亿月活",
+          railLearnItem5: "暑招方案领取",
+          railLearnTagReferral: "转介绍",
+          railLearnTagFlagship: "标杆校",
+          railLearnTagPublish: "发布会",
+          railLearnTagAdmission: "招生",
+          railNewBadge: "New",
           zoneAdminOpsTitle: "管理员手动操作",
           zoneAdminOpsSub: "应急 / 离线场景使用，平时折叠隐藏",
           tabOverview: "概览",
@@ -1174,6 +1521,74 @@
           recentRequests: "Recent Leave / Reschedule Requests",
           zoneTodayTitle: "Today's Focus",
           zoneTodaySub: "Items that need attention right now.",
+          // ---- Overview redesign ----
+          onboardTitle: "Setup Tasks ({done}/{total})",
+          onboardSub: "Finish initial setup and you're ready for class",
+          onboardCollapse: "Collapse ▴",
+          onboardTaskStaffName: "Add Staff",
+          onboardTaskStaffDesc: "Set up profiles and permissions",
+          onboardTaskCourseName: "Add Courses",
+          onboardTaskCourseDesc: "Build the curriculum, set pricing",
+          onboardTaskPaymentName: "Connect payments",
+          onboardTaskPaymentDesc: "Free to enable, faster reconciliation",
+          onboardTaskImportName: "Import students",
+          onboardTaskImportDesc: "Bulk-import existing rosters",
+          onboardPillDone: "Done",
+          onboardPillTodo: "To do",
+          greetName: "Mr. Li",
+          greetRole: "Role: Campus Admin",
+          greetStatYesterdayTeach: "Classes (yest.)",
+          greetStatWeekTeach: "Classes (week)",
+          greetStatMonthTeach: "Classes (month)",
+          greetStatMonthTrial: "Trials (month)",
+          greetStatMonthIntent: "Leads (month)",
+          greetStatMonthFollow: "Follow-ups (month)",
+          greetStatMonthRevenue: "Revenue (month)",
+          noticeBarFmt: "{date} · {n} new active students this week",
+          quickAppsTitle: "My apps",
+          quickAppName1: "Leads",
+          quickAppName2: "Trials",
+          quickAppName3: "Renewals",
+          quickAppName4: "Orders",
+          quickAppName5: "Classes",
+          quickAppName6: "Roll Call",
+          quickAppName7: "Class Records",
+          briefTitle: "Snapshot",
+          emptyOnePassQuote: "\"Looks like I'm the only one here.\"",
+          emptyRollcallTitle: "Roll Calls Pending",
+          emptyRollcallMsg: "No roll-call sessions waiting",
+          emptyRollcallHint: "Open the mobile app for the full list",
+          emptyMakeupTitle: "Make-up Students",
+          emptyMakeupMsg: "No outstanding items",
+          schedStripTitle: "My Schedule",
+          schedStripMore: "More",
+          schedStripEmpty: "Day list (0)",
+          railTodoTitle: "My To-Dos",
+          railTodoMainFmt: "{n} item(s) waiting",
+          railTodoEmpty: "Nothing waiting",
+          railTodoHint: "Ping the assigned staff to clear them",
+          railTodoCta: "Remind",
+          railSupportTitle: "1:1 Support",
+          railSupportMeta: "Tel: 4006999707",
+          railDesktopTitle: "Save Desktop",
+          railDesktopMeta: "Click to pin to desktop",
+          railNewsTitle: "Product News",
+          railNewsItem1: "Academic Center: multi-feature upgrade",
+          railNewsItem2: "AI upgrade — chat-driven data reports",
+          railNewsItem3: "HQ-managed question bank, pushed to all sites",
+          railNewsItem4: "Teacher profiles now public-facing",
+          railNewsTagUp: "Update",
+          railLearnTitle: "Learning Hub",
+          railLearnItem1: "Beyond rewards — what to give parents",
+          railLearnItem2: "Field visit: Yangzhou Dacheng Education",
+          railLearnItem3: "Recap: MindDo App for Schools launch",
+          railLearnItem4: "Xiaohongshu × MindDo: 350M MAU",
+          railLearnItem5: "Summer enrollment playbook",
+          railLearnTagReferral: "Referral",
+          railLearnTagFlagship: "Flagship",
+          railLearnTagPublish: "Launch",
+          railLearnTagAdmission: "Admission",
+          railNewBadge: "New",
           zoneAdminOpsTitle: "Admin Operations",
           zoneAdminOpsSub: "Manual recovery tools, collapsed by default",
           tabOverview: "Overview",
@@ -1511,6 +1926,192 @@
         }).join("");
       }
 
+      // Render the redesigned Overview pieces: onboarding checklist,
+      // greeting stats, notice bar, quick apps grid, schedule strip,
+      // and the right-rail widgets. Reads from the same `data` payload
+      // the existing renderMetrics() uses, plus a tiny localStorage
+      // record for the onboarding-checklist state.
+      function renderOpsOverview(data, t) {
+        // ---- Onboarding checklist ----
+        var ONBOARD_KEY = "minddo_ops_onboard_state";
+        var defaultState = { staff: true, course: true, payment: true, import: false };
+        var state;
+        try { state = JSON.parse(localStorage.getItem(ONBOARD_KEY) || "null") || defaultState; }
+        catch (_) { state = defaultState; }
+        var onboardTasks = [
+          { id: "staff",   icon: "👥", name: t.onboardTaskStaffName,   desc: t.onboardTaskStaffDesc,   href: "student-management.html" },
+          { id: "course",  icon: "📘", name: t.onboardTaskCourseName,  desc: t.onboardTaskCourseDesc,  href: "course-offerings.html" },
+          { id: "payment", icon: "💳", name: t.onboardTaskPaymentName, desc: t.onboardTaskPaymentDesc, href: "dashboard.html#finance" },
+          { id: "import",  icon: "👤", name: t.onboardTaskImportName,  desc: t.onboardTaskImportDesc,  href: "new-trials.html" }
+        ];
+        var doneCount = onboardTasks.filter(function (x) { return state[x.id]; }).length;
+        var onboardCardEl = document.getElementById("onboardCard");
+        var onboardHeadEl = onboardCardEl && onboardCardEl.querySelector(".onboard-head h3");
+        if (onboardHeadEl) {
+          onboardHeadEl.innerHTML = (t.onboardTitle || "Setup Tasks ({done}/{total})")
+            .replace("{done}", "<em>" + doneCount + "</em>")
+            .replace("{total}", onboardTasks.length);
+        }
+        var onboardEl = document.getElementById("onboardTasks");
+        if (onboardEl) {
+          onboardEl.innerHTML = onboardTasks.map(function (x) {
+            var d = !!state[x.id];
+            return "<a class='onboard-task" + (d ? " done" : "") + "' href='" + x.href + "'>"
+              + "<span class='ic'>" + x.icon + "</span>"
+              + "<span class='body'>"
+              +   "<span class='name'>" + escHTML(x.name)
+              +     "<span class='pill " + (d ? "done" : "todo") + "'>"
+              +       escHTML(d ? t.onboardPillDone : t.onboardPillTodo) + "</span>"
+              +   "</span>"
+              +   "<span class='desc'>" + escHTML(x.desc) + "</span>"
+              + "</span>"
+              + "</a>";
+          }).join("");
+        }
+
+        // ---- Greeting + stat grid ----
+        var greetEl = document.getElementById("greetStats");
+        if (greetEl) {
+          var stats = [
+            { num: data.signupToday || 0,       label: t.greetStatYesterdayTeach },
+            { num: data.signupWeek || 0,        label: t.greetStatWeekTeach },
+            { num: data.registered || 0,        label: t.greetStatMonthTeach },
+            { num: data.assessed || 0,          label: t.greetStatMonthTrial },
+            { num: data.newTrials || 0,         label: t.greetStatMonthIntent },
+            { num: data.pending || 0,           label: t.greetStatMonthFollow },
+            { num: money(data.revenue || 0),    label: t.greetStatMonthRevenue }
+          ];
+          greetEl.innerHTML = stats.map(function (s) {
+            return "<div class='greet-stat'>"
+              + "<div class='num'>" + escHTML(s.num) + "</div>"
+              + "<div class='label'>" + escHTML(s.label) + "</div>"
+              + "</div>";
+          }).join("");
+        }
+
+        // ---- Notice bar ----
+        var noticeEl = document.getElementById("noticeBar");
+        if (noticeEl) {
+          var d = new Date();
+          var lang = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+          var dateStr = d.toLocaleString(lang, {
+            year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"
+          });
+          noticeEl.innerHTML = "<span class='ic'>🔔</span><span>"
+            + escHTML((t.noticeBarFmt || "{date} · {n} new active students this week")
+                .replace("{date}", dateStr)
+                .replace("{n}", data.signupWeek || 0))
+            + "</span>";
+        }
+
+        // ---- Quick apps grid ----
+        var qaEl = document.getElementById("quickAppsGrid");
+        if (qaEl) {
+          var apps = [
+            { ic: "🎯", label: t.quickAppName1, href: "student-management.html" },
+            { ic: "🎤", label: t.quickAppName2, href: "new-trials.html" },
+            { ic: "📑", label: t.quickAppName3, href: "request-center.html" },
+            { ic: "📋", label: t.quickAppName4, href: "dashboard.html#finance" },
+            { ic: "👥", label: t.quickAppName5, href: "course-offerings.html" },
+            { ic: "✅", label: t.quickAppName6, href: "dashboard.html#teaching" },
+            { ic: "📝", label: t.quickAppName7, href: "feedback.html" }
+          ];
+          qaEl.innerHTML = apps.map(function (a) {
+            return "<a class='qa-item' href='" + a.href + "'>"
+              + "<span class='ic'>" + a.ic + "</span>"
+              + "<span class='label'>" + escHTML(a.label) + "</span>"
+              + "</a>";
+          }).join("");
+        }
+
+        // ---- Schedule strip — 14 days starting from today ----
+        var stripEl = document.getElementById("schedStrip");
+        var monthEl = document.getElementById("schedMonthLabel");
+        if (stripEl && monthEl) {
+          var today = new Date(); today.setHours(0, 0, 0, 0);
+          var langKey = document.documentElement.getAttribute("lang") === "en" ? "en-US" : "zh-CN";
+          monthEl.textContent = today.toLocaleDateString(langKey, { year: "numeric", month: "2-digit", day: "2-digit" });
+          var dayNames = (langKey === "en-US")
+            ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+            : ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+          var html2 = "";
+          for (var i = 0; i < 14; i++) {
+            var dt = new Date(today); dt.setDate(today.getDate() + i);
+            var isToday = i === 0;
+            html2 += "<button type='button' class='ops-sched-day"
+              + (isToday ? " active today" : "") + "' data-sched-i='" + i + "'>"
+              + "<div class='num'>" + dt.getDate() + "</div>"
+              + "<div class='nm'>" + dayNames[dt.getDay()] + "</div>"
+              + "</button>";
+          }
+          stripEl.innerHTML = html2;
+        }
+
+        // ---- Right rail: 我的督办 ----
+        var todoCount = data.pendingRequests || 0;
+        var todoMain = document.getElementById("railTodoMain");
+        var todoHint = document.getElementById("railTodoHint");
+        var todoCta = document.getElementById("railTodoCta");
+        if (todoMain) {
+          if (todoCount > 0) {
+            todoMain.innerHTML = (t.railTodoMainFmt || "{n} item(s) waiting")
+              .replace("{n}", "<strong>" + todoCount + "</strong>");
+            if (todoHint) todoHint.textContent = t.railTodoHint || "";
+            if (todoCta) todoCta.style.display = "";
+          } else {
+            todoMain.textContent = t.railTodoEmpty || "Nothing waiting";
+            if (todoHint) todoHint.textContent = "";
+            if (todoCta) todoCta.style.display = "none";
+          }
+        }
+
+        // ---- Right rail: product news ----
+        var newsEl = document.getElementById("railNews");
+        if (newsEl) {
+          var news = [
+            { tag: t.railNewsTagUp, tagCls: "up", text: t.railNewsItem1 },
+            { tag: t.railNewsTagUp, tagCls: "up", text: t.railNewsItem2, fresh: true },
+            { tag: t.railNewsTagUp, tagCls: "up", text: t.railNewsItem3 },
+            { tag: t.railNewsTagUp, tagCls: "up", text: t.railNewsItem4 }
+          ];
+          newsEl.innerHTML = news.map(function (n) {
+            return "<div class='rail-list-item'>"
+              + "<span class='tag " + n.tagCls + "'>" + escHTML(n.tag) + "</span>"
+              + "<span class='text'>" + escHTML(n.text)
+              +   (n.fresh ? "<span class='new-pill'>" + escHTML(t.railNewBadge) + "</span>" : "")
+              + "</span>"
+              + "</div>";
+          }).join("");
+        }
+
+        // ---- Right rail: learning center ----
+        var learnEl = document.getElementById("railLearn");
+        if (learnEl) {
+          var learn = [
+            { tag: t.railLearnTagReferral,  tagCls: "referral", text: t.railLearnItem1 },
+            { tag: t.railLearnTagFlagship,  tagCls: "flagship", text: t.railLearnItem2, fresh: true },
+            { tag: t.railLearnTagPublish,   tagCls: "publish",  text: t.railLearnItem3 },
+            { tag: t.railLearnTagAdmission, tagCls: "event",    text: t.railLearnItem4 },
+            { tag: t.railLearnTagAdmission, tagCls: "event",    text: t.railLearnItem5 }
+          ];
+          learnEl.innerHTML = learn.map(function (n) {
+            return "<div class='rail-list-item'>"
+              + "<span class='tag " + n.tagCls + "'>" + escHTML(n.tag) + "</span>"
+              + "<span class='text'>" + escHTML(n.text)
+              +   (n.fresh ? "<span class='new-pill'>" + escHTML(t.railNewBadge) + "</span>" : "")
+              + "</span>"
+              + "</div>";
+          }).join("");
+        }
+      }
+
+      // Tiny escape helper local to this file's render block.
+      function escHTML(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
       function renderMetrics(data, t) {
         // Each business tab gets a focused subset of KPIs. Overview keeps
         // the headline numbers; the rest dive deeper into their domain.
@@ -1520,6 +2121,7 @@
           { label: t.metrics.revenue, value: money(data.revenue), sub: "" },
           { label: t.metrics.pending, value: data.pending, sub: "" }
         ]);
+        renderOpsOverview(data, t);
 
         renderMetricCards(enrollmentMetrics, [
           { label: t.extra.signupToday, value: data.signupToday, sub: "" },
