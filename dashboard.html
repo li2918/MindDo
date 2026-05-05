@@ -591,6 +591,9 @@
     .mkt-trial-actions .pill.eval-done   { background: rgba(110,143,87,0.18); color: #3f5d26; border: 1px solid rgba(110,143,87,0.4); }
     .mkt-trial-actions .pill.invite-sent { background: rgba(245,158,11,0.18); color: var(--gold-deep); border: 1px solid rgba(245,158,11,0.42); }
     .mkt-trial-actions .pill.gated       { background: rgba(122,48,16,0.06); color: var(--muted); border: 1px solid var(--line); }
+    .mkt-mail-link { font-size: 11px; font-weight: 700; color: var(--gold-deep); text-decoration: none;
+      padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(245,158,11,0.28); white-space: nowrap; }
+    .mkt-mail-link:hover { background: rgba(245,158,11,0.08); border-color: var(--gold-deep); }
 
     /* Eval modal — overlay + form card. Reused for the trial-evaluation
        step (after a trial is marked done, ops captures the level + notes
@@ -1254,6 +1257,9 @@
                 <h3 data-i18n="zoneMktTrialTitle"></h3>
                 <p data-i18n="zoneMktTrialSub"></p>
               </div>
+              <div class="dash-zone-actions">
+                <a class="bm-edit-btn" href="email-outbox.html" data-i18n="mktTrialOutboxLink"></a>
+              </div>
             </div>
             <article class="panel">
               <h2 data-i18n="mktTrialHead"></h2>
@@ -1820,6 +1826,9 @@
           mktTrialActionEvaluate: "试课评估",
           mktTrialActionReEvaluate: "重新评估",
           mktTrialActionInvite: "邀请家长注册",
+          mktTrialActionResend: "重新发送邀请",
+          mktTrialActionViewMail: "查看邮件模板",
+          mktTrialOutboxLink: "📨 邮件发件箱",
           mktTrialEvalDoneFmt: "已评估 · {level}",
           mktTrialInviteSent: "已邀请",
           mktTrialEvalGated: "完成试课后可评估",
@@ -2136,6 +2145,9 @@
           mktTrialActionEvaluate: "Evaluate",
           mktTrialActionReEvaluate: "Re-evaluate",
           mktTrialActionInvite: "Invite parent",
+          mktTrialActionResend: "Resend invite",
+          mktTrialActionViewMail: "View email template",
+          mktTrialOutboxLink: "📨 Mail Outbox",
           mktTrialEvalDoneFmt: "Evaluated · {level}",
           mktTrialInviteSent: "Invited",
           mktTrialEvalGated: "Mark trial done first",
@@ -2831,8 +2843,14 @@
               // ---- Invite row (line 3) ----
               var inviteRow = "";
               if (inviteRec) {
+                // "View email" deep-links into email-outbox.html with the
+                // mailId highlighted, so ops can audit the actual template
+                // body that was sent (the previously-existing
+                // "invitation email template" feature).
+                var mailHash = inviteRec.mailId ? "?highlight=" + encodeURIComponent(inviteRec.mailId) : "";
                 inviteRow = "<span class='pill invite-sent'>" + escHTML(t.mktTrialInviteSent) + "</span>"
-                  + "<button type='button' data-mkt-trial-action='resend' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionInvite) + "</button>";
+                  + "<a class='mkt-mail-link' href='email-outbox.html" + mailHash + "'>" + escHTML(t.mktTrialActionViewMail) + "</a>"
+                  + "<button type='button' data-mkt-trial-action='resend' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionResend) + "</button>";
               } else if (status !== "done") {
                 inviteRow = "<span class='pill gated'>" + escHTML(t.mktTrialInviteGated) + "</span>";
               } else if (!hasEmail) {
