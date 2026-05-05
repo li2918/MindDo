@@ -581,6 +581,39 @@
     .ops-toolbar .campus-chip .cc-select { font-size: 12.5px; }
     .ops-toolbar .toolbar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
+    /* Data Center — conversion funnel + revenue trend chart. The funnel
+       renders as horizontal bars whose width tapers from the top stage
+       down. The trend is inline SVG (no chart library) so it stays
+       consistent with the parent dashboard's growth-curve treatment. */
+    .data-funnel { display: flex; flex-direction: column; gap: 8px; padding: 8px 0; }
+    .data-funnel-row { display: grid; grid-template-columns: 130px 1fr 90px 70px; align-items: center; gap: 14px; }
+    .data-funnel-label { font-size: 13px; color: var(--clay); font-weight: 700; }
+    .data-funnel-bar { height: 26px; background: rgba(122,48,16,0.08); border-radius: 6px; overflow: hidden; position: relative; }
+    .data-funnel-bar-fill { height: 100%;
+      background: linear-gradient(90deg,#fde68a,var(--gold-deep));
+      border-radius: 6px; transition: width 0.5s ease; }
+    .data-funnel-row:nth-child(2) .data-funnel-bar-fill { background: linear-gradient(90deg,#fcd34d,var(--gold)); }
+    .data-funnel-row:nth-child(3) .data-funnel-bar-fill { background: linear-gradient(90deg,#f59e0b,#d97706); }
+    .data-funnel-row:nth-child(4) .data-funnel-bar-fill { background: linear-gradient(90deg,#d97706,#9a4a0d); }
+    .data-funnel-row:nth-child(5) .data-funnel-bar-fill { background: linear-gradient(90deg,#9a4a0d,var(--clay)); }
+    .data-funnel-count { font-size: 14px; font-weight: 800; color: var(--clay); font-variant-numeric: tabular-nums; text-align: right; }
+    .data-funnel-rate { font-size: 12px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+    @media (max-width: 720px) {
+      .data-funnel-row { grid-template-columns: 1fr; gap: 4px; }
+      .data-funnel-count, .data-funnel-rate { text-align: left; }
+    }
+
+    .data-trend-svg { width: 100%; height: 220px; display: block; }
+    .data-trend-svg .grid-line { stroke: rgba(122,48,16,0.08); stroke-width: 1; stroke-dasharray: 3 4; }
+    .data-trend-svg .axis-label { font-size: 10.5px; fill: var(--muted); font-weight: 700; }
+    .data-trend-svg .area { fill: url(#dataTrendGrad); }
+    .data-trend-svg .line { fill: none; stroke: var(--gold-deep); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .data-trend-svg .point { fill: #fff; stroke: var(--gold-deep); stroke-width: 2; }
+    .data-trend-svg .point-label { font-size: 10.5px; fill: var(--clay); font-weight: 800; }
+    .data-trend-empty { padding: 32px 16px; text-align: center; color: var(--muted);
+      background: rgba(254,243,199,0.32); border: 1px dashed rgba(245,158,11,0.32);
+      border-radius: 12px; font-size: 13px; line-height: 1.6; }
+
     /* Overview redesign — main column + 300px right rail. Other tab
        panels keep the legacy single-column layout (the .ops-overview
        class only applies to the Overview content). */
@@ -847,10 +880,10 @@
           <span class="si-icon" aria-hidden="true">💰</span><span class="si-label" data-i18n="navFinance"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
-        <a class="sidebar-item" href="semester-report.html">
+        <button type="button" class="sidebar-item" data-tab="data" role="tab">
           <span class="si-icon" aria-hidden="true">📈</span><span class="si-label" data-i18n="navData"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
-        </a>
+        </button>
         <a class="sidebar-item" href="student-management.html">
           <span class="si-icon" aria-hidden="true">🛠</span><span class="si-label" data-i18n="navInternal"></span>
           <span class="si-dot" aria-hidden="true"></span>
@@ -1126,6 +1159,58 @@
             </article>
           </div>
         </details>
+      </section>
+
+      <!-- ========== Data Center — operational analytics ========== -->
+      <section class="dash-panel" data-tab-panel="data" role="tabpanel" hidden>
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneDataKpiTitle"></h3>
+              <p data-i18n="zoneDataKpiSub"></p>
+            </div>
+          </div>
+          <section class="grid" id="dataKpiMetrics"></section>
+        </section>
+
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneDataFunnelTitle"></h3>
+              <p data-i18n="zoneDataFunnelSub"></p>
+            </div>
+          </div>
+          <article class="panel">
+            <h2 data-i18n="dataFunnelHead"></h2>
+            <div class="data-funnel" id="dataFunnel"></div>
+          </article>
+        </section>
+
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneDataTrendTitle"></h3>
+              <p data-i18n="zoneDataTrendSub"></p>
+            </div>
+          </div>
+          <article class="panel">
+            <h2 data-i18n="dataTrendHead"></h2>
+            <div class="data-trend" id="dataRevenueTrend"></div>
+          </article>
+        </section>
+
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneDataChannelTitle"></h3>
+              <p data-i18n="zoneDataChannelSub"></p>
+            </div>
+          </div>
+          <article class="panel">
+            <h2 data-i18n="dataChannelHead"></h2>
+            <ul class="kv-list" id="dataChannelList"></ul>
+          </article>
+        </section>
       </section>
 
       <!-- ========== Requests ========== -->
@@ -1418,8 +1503,28 @@
           tabEnrollment: "招生",
           tabTeaching: "教学",
           tabFinance: "财务",
+          tabData: "数据中心",
           tabRequests: "申请处理",
           tabSettings: "课程设置",
+          // ---- Data center ----
+          zoneDataKpiTitle: "运营核心指标",
+          zoneDataKpiSub: "本期校区总览：营收、付费、转化、客单价。",
+          zoneDataFunnelTitle: "转化漏斗",
+          zoneDataFunnelSub: "从试听到付费每一步的留存比例，找到流失最大的环节。",
+          dataFunnelHead: "试听 → 付费转化",
+          funnelStageTrials: "试听报名",
+          funnelStageAssessed: "完成评估",
+          funnelStageRegistered: "完成注册",
+          funnelStagePaid: "已付费",
+          funnelRateFmt: "{pct}",
+          zoneDataTrendTitle: "营收趋势",
+          zoneDataTrendSub: "近 8 周累计营收（按支付时间聚合）。",
+          dataTrendHead: "周营收曲线",
+          dataTrendEmpty: "暂无营收数据，开通付费后此处会自动绘制曲线。",
+          zoneDataChannelTitle: "渠道分布",
+          zoneDataChannelSub: "学员来源渠道占比，识别最有效的获客来源。",
+          dataChannelHead: "试课渠道占比",
+          dataMetricFunnelDrop: "整体转化率",
           // ---- Sidebar nav labels (school-CRM style) ----
           navBrand: "品牌中心",
           navEnroll: "招生中心",
@@ -1636,8 +1741,27 @@
           tabEnrollment: "Enrollment",
           tabTeaching: "Teaching",
           tabFinance: "Finance",
+          tabData: "Data Center",
           tabRequests: "Requests",
           tabSettings: "Course Settings",
+          zoneDataKpiTitle: "Operational KPIs",
+          zoneDataKpiSub: "Headline numbers — revenue, paid, conversion, ARPU.",
+          zoneDataFunnelTitle: "Conversion Funnel",
+          zoneDataFunnelSub: "Drop-off at each stage from trial to paying — find the leakiest step.",
+          dataFunnelHead: "Trial → Paying",
+          funnelStageTrials: "Trial booked",
+          funnelStageAssessed: "Assessment done",
+          funnelStageRegistered: "Registered",
+          funnelStagePaid: "Paying",
+          funnelRateFmt: "{pct}",
+          zoneDataTrendTitle: "Revenue Trend",
+          zoneDataTrendSub: "Weekly revenue over the last 8 weeks (grouped by payment date).",
+          dataTrendHead: "Weekly revenue",
+          dataTrendEmpty: "No revenue yet — the line chart will appear once payments come in.",
+          zoneDataChannelTitle: "Channel Mix",
+          zoneDataChannelSub: "Where students come from — identify the highest-yield channels.",
+          dataChannelHead: "Trial channels",
+          dataMetricFunnelDrop: "Overall conversion",
           navBrand: "Brand",
           navEnroll: "Enrollment",
           navAcademic: "Academic",
@@ -2379,6 +2503,130 @@
           return { label: x[0], value: x[1] };
         });
         renderKvList(channelList, channelItems, t.noData);
+        // Mirror the channel list into Data Center too — same data,
+        // different surface (single consolidated analytics view).
+        var dataChannelList = document.getElementById("dataChannelList");
+        if (dataChannelList) renderKvList(dataChannelList, channelItems, t.noData);
+
+        // ---- Data Center: KPI tiles, funnel, revenue trend ----
+        var dataKpiEl = document.getElementById("dataKpiMetrics");
+        if (dataKpiEl) {
+          renderMetricCards(dataKpiEl, [
+            { label: t.metrics.revenue, value: money(data.revenue), sub: "" },
+            { label: t.metrics.paid, value: data.paid, sub: t.metrics.conversion + ": " + data.conversion },
+            { label: t.dataMetricFunnelDrop || t.metrics.conversion, value: data.conversion, sub: "" },
+            { label: t.metrics.arpu, value: money(data.arpu), sub: "" }
+          ]);
+        }
+
+        // Funnel — 4 stages: trials → assessed → registered → paid.
+        // Bar widths scale to the largest stage; per-stage rate shows
+        // conversion from the previous stage.
+        var funnelEl = document.getElementById("dataFunnel");
+        if (funnelEl) {
+          var stages = [
+            { label: t.funnelStageTrials,     count: leads.length },
+            { label: t.funnelStageAssessed,   count: assessments.length },
+            { label: t.funnelStageRegistered, count: registered },
+            { label: t.funnelStagePaid,       count: paid }
+          ];
+          var topCount = Math.max.apply(null, stages.map(function (s) { return s.count; }).concat([1]));
+          funnelEl.innerHTML = stages.map(function (s, i) {
+            var pct = topCount ? Math.round((s.count / topCount) * 100) : 0;
+            var rateText = "";
+            if (i === 0) {
+              rateText = "100%";
+            } else {
+              var prev = stages[i - 1].count;
+              rateText = prev > 0 ? Math.round((s.count / prev) * 100) + "%" : "—";
+            }
+            return "<div class='data-funnel-row'>"
+              + "<div class='data-funnel-label'>" + escHTML(s.label) + "</div>"
+              + "<div class='data-funnel-bar'><div class='data-funnel-bar-fill' style='width:" + Math.max(2, pct) + "%'></div></div>"
+              + "<div class='data-funnel-count'>" + s.count + "</div>"
+              + "<div class='data-funnel-rate'>" + rateText + "</div>"
+              + "</div>";
+          }).join("");
+        }
+
+        // Revenue trend — bucket payments into the last 8 ISO-weeks.
+        var trendEl = document.getElementById("dataRevenueTrend");
+        if (trendEl) {
+          var weeks = 8;
+          var msInWeek = 7 * 24 * 3600 * 1000;
+          var endOfThisWeek = (function () {
+            var d = new Date(); d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() + (7 - (d.getDay() || 7))); // following Sun
+            return d.getTime();
+          })();
+          var buckets = [];
+          for (var w = weeks - 1; w >= 0; w--) {
+            buckets.push({ end: endOfThisWeek - w * msInWeek, total: 0 });
+          }
+          paymentsAll.forEach(function (p) {
+            var ts = new Date(p.createdAt || p.paidAt || 0).getTime();
+            for (var b = 0; b < buckets.length; b++) {
+              var start = buckets[b].end - msInWeek;
+              if (ts > start && ts <= buckets[b].end) {
+                buckets[b].total += Number(p.amount) || 0;
+                break;
+              }
+            }
+          });
+          var hasAny = buckets.some(function (b) { return b.total > 0; });
+          if (!hasAny) {
+            trendEl.innerHTML = "<div class='data-trend-empty'>" + escHTML(t.dataTrendEmpty) + "</div>";
+          } else {
+            var W = 600, H = 220, padL = 42, padR = 18, padT = 18, padB = 32;
+            var innerW = W - padL - padR, innerH = H - padT - padB;
+            var maxVal = Math.max.apply(null, buckets.map(function (b) { return b.total; }).concat([1]));
+            // Round maxVal up to a tidy upper bound for the y-scale.
+            var step = Math.pow(10, Math.max(0, String(Math.round(maxVal)).length - 2));
+            var yMax = Math.ceil(maxVal / step) * step || 100;
+            function xAt(i) { return padL + (innerW * i) / (weeks - 1); }
+            function yAt(v) { return padT + innerH * (1 - v / yMax); }
+            var line = "", area = "";
+            buckets.forEach(function (b, i) {
+              var x = xAt(i).toFixed(1), y = yAt(b.total).toFixed(1);
+              line += (i === 0 ? "M" : "L") + x + "," + y + " ";
+            });
+            area = line
+              + "L" + xAt(weeks - 1).toFixed(1) + "," + (padT + innerH).toFixed(1) + " "
+              + "L" + xAt(0).toFixed(1) + "," + (padT + innerH).toFixed(1) + " Z";
+            var yTicks = [0, Math.round(yMax / 2), yMax];
+            var yLines = yTicks.map(function (v) {
+              var y = yAt(v).toFixed(1);
+              return "<line class='grid-line' x1='" + padL + "' x2='" + (W - padR) + "' y1='" + y + "' y2='" + y + "' />"
+                + "<text class='axis-label' x='" + (padL - 6) + "' y='" + (Number(y) + 4) + "' text-anchor='end'>$" + v + "</text>";
+            }).join("");
+            // X labels — week-end short date.
+            var xLabels = buckets.map(function (b, i) {
+              var d = new Date(b.end);
+              var lab = (state.lang === "en") ? (d.getMonth() + 1) + "/" + d.getDate() : (d.getMonth() + 1) + "/" + d.getDate();
+              return "<text class='axis-label' x='" + xAt(i).toFixed(1) + "' y='" + (H - 8) + "' text-anchor='middle'>" + lab + "</text>";
+            }).join("");
+            var points = buckets.map(function (b, i) {
+              var x = xAt(i).toFixed(1), y = yAt(b.total).toFixed(1);
+              var isLast = i === buckets.length - 1;
+              var dot = "<circle class='point' cx='" + x + "' cy='" + y + "' r='" + (isLast ? 5 : 3.5) + "' />";
+              var lbl = isLast
+                ? "<text class='point-label' x='" + x + "' y='" + (Number(y) - 10) + "' text-anchor='middle'>$" + b.total + "</text>"
+                : "";
+              return dot + lbl;
+            }).join("");
+            trendEl.innerHTML = "<svg class='data-trend-svg' viewBox='0 0 " + W + " " + H + "' preserveAspectRatio='none' role='img'>"
+              + "<defs><linearGradient id='dataTrendGrad' x1='0' y1='0' x2='0' y2='1'>"
+              +   "<stop offset='0%' stop-color='rgba(245,158,11,0.28)' />"
+              +   "<stop offset='100%' stop-color='rgba(245,158,11,0)' />"
+              + "</linearGradient></defs>"
+              + yLines
+              + "<path class='area' d='" + area + "' />"
+              + "<path class='line' d='" + line + "' />"
+              + points
+              + xLabels
+              + "</svg>";
+          }
+        }
 
         renderPaymentsTable(payments, t);
         renderRequestTable(requests, t);
