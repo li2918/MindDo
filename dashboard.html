@@ -490,6 +490,29 @@
     .topbar-brand .b-name { font-size: 17px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
     .topbar-page-title { font-size: 14px; color: #475569; font-weight: 600; padding-left: 28px; }
     .topbar-right { display: flex; align-items: center; gap: 14px; position: relative; }
+
+    /* Global campus selector — sits in the topbar, applies to every tab.
+       Reads as a pill with a building icon so a glance at the topbar
+       always shows which campus you're operating in. */
+    .topbar-campus { display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 6px 4px 12px; background: rgba(254,243,199,0.45);
+      border: 1px solid rgba(245,158,11,0.32); border-radius: 999px; }
+    .topbar-campus .tc-icon { font-size: 14px; line-height: 1; }
+    .topbar-campus .tc-select { all: unset; cursor: pointer; padding: 4px 26px 4px 4px;
+      font: inherit; font-size: 13px; font-weight: 700; color: var(--clay);
+      background: transparent; min-width: 120px; max-width: 220px;
+      appearance: none; -webkit-appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, var(--clay) 50%),
+                        linear-gradient(135deg, var(--clay) 50%, transparent 50%);
+      background-position: calc(100% - 12px) center, calc(100% - 8px) center;
+      background-size: 4px 4px, 4px 4px;
+      background-repeat: no-repeat;
+    }
+    .topbar-campus .tc-select:focus { box-shadow: 0 0 0 2px rgba(245,158,11,0.32); border-radius: 999px; }
+    .topbar-campus .tc-select option { color: var(--clay); background: #fff; }
+    @media (max-width: 880px) {
+      .topbar-campus .tc-select { max-width: 120px; min-width: 80px; font-size: 12px; }
+    }
     .user-trigger { display: inline-flex; align-items: center; gap: 10px;
       background: transparent; border: 1px solid transparent;
       padding: 6px 14px 6px 6px; border-radius: 999px; cursor: pointer;
@@ -573,13 +596,10 @@
 
     .portal-main { padding: 28px 36px 80px; min-width: 0; overflow-x: hidden; }
     .portal-main-inner { max-width: 1200px; margin: 0 auto; }
-    .ops-toolbar { display: flex; align-items: center; justify-content: space-between;
-      gap: 14px; flex-wrap: wrap; margin-bottom: 22px;
-      padding: 12px 16px; background: #fff; border: 1px solid var(--line);
+    .ops-toolbar { display: flex; align-items: center; justify-content: flex-end;
+      gap: 10px; flex-wrap: wrap; margin-bottom: 22px;
+      padding: 10px 14px; background: #fff; border: 1px solid var(--line);
       border-radius: 14px; box-shadow: 0 4px 12px rgba(42,20,8,0.04); }
-    .ops-toolbar .campus-chip { background: transparent; border: 1px solid var(--line); }
-    .ops-toolbar .campus-chip .cc-select { font-size: 12.5px; }
-    .ops-toolbar .toolbar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
     /* Academic sub-panels — KPI / classes / schedule. Same show/hide
        behaviour as the marketing sub-panels. */
@@ -1112,6 +1132,12 @@
     </a>
     <span class="topbar-page-title" id="topbarPageTitle" data-i18n="tabOverview"></span>
     <div class="topbar-right">
+      <!-- Global campus selector — one position, applies to every tab.
+           Replaces the per-page chip that used to sit in .ops-toolbar. -->
+      <div class="topbar-campus" title="">
+        <span class="tc-icon" aria-hidden="true">🏫</span>
+        <select id="campusFilter" class="tc-select" aria-label="Active campus"></select>
+      </div>
       <button type="button" class="user-trigger" id="userTrigger" aria-haspopup="menu" aria-expanded="false">
         <span class="user-avatar">OP</span>
         <span class="um-greeting"><span data-lang="zh">运营</span><span data-lang="en">Operations</span></span>
@@ -1249,14 +1275,8 @@
       <div class="portal-main-inner">
 
         <div class="ops-toolbar" role="region" aria-label="Filters">
-          <div class="campus-chip">
-            <span class="cc-label" data-i18n="activeCampusLabel"></span>
-            <select id="campusFilter" class="cc-select"></select>
-          </div>
-          <div class="toolbar-actions">
-            <div class="range-group" id="rangeGroup"></div>
-            <button class="btn btn-refresh" id="refreshBtn" data-i18n="refresh" aria-label="Refresh"></button>
-          </div>
+          <div class="range-group" id="rangeGroup"></div>
+          <button class="btn btn-refresh" id="refreshBtn" data-i18n="refresh" aria-label="Refresh"></button>
         </div>
 
       <!-- ========== Overview — 2-column: main stack + right rail ========== -->
