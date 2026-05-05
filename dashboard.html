@@ -581,6 +581,51 @@
     .ops-toolbar .campus-chip .cc-select { font-size: 12.5px; }
     .ops-toolbar .toolbar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
+    /* Trial-workflow extras — eval pill, invite pill, modal. The Actions
+       column on a "done" row stacks: Confirm/Done line, Eval pill+btn,
+       Invite pill+btn. */
+    .mkt-trial-actions { flex-direction: column; align-items: stretch; gap: 6px; }
+    .mkt-trial-actions .row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .mkt-trial-actions .pill { font-size: 10.5px; font-weight: 800; padding: 3px 9px;
+      border-radius: 999px; letter-spacing: 0.04em; white-space: nowrap; }
+    .mkt-trial-actions .pill.eval-done   { background: rgba(110,143,87,0.18); color: #3f5d26; border: 1px solid rgba(110,143,87,0.4); }
+    .mkt-trial-actions .pill.invite-sent { background: rgba(245,158,11,0.18); color: var(--gold-deep); border: 1px solid rgba(245,158,11,0.42); }
+    .mkt-trial-actions .pill.gated       { background: rgba(122,48,16,0.06); color: var(--muted); border: 1px solid var(--line); }
+
+    /* Eval modal — overlay + form card. Reused for the trial-evaluation
+       step (after a trial is marked done, ops captures the level + notes
+       so the parent's Schedule auto-filters to matching offerings). */
+    .eval-overlay { position: fixed; inset: 0; background: rgba(42,20,8,0.55); display: none;
+      align-items: center; justify-content: center; padding: 20px; z-index: 9000; }
+    .eval-overlay[aria-hidden="false"] { display: flex; }
+    .eval-modal { position: relative; background: #fff; border: 1px solid var(--line);
+      border-radius: 18px; max-width: 520px; width: 100%; padding: 24px 26px 20px;
+      box-shadow: 0 30px 70px rgba(42,20,8,0.32); }
+    .eval-modal .close { position: absolute; top: 12px; right: 14px; background: none;
+      border: none; cursor: pointer; font-size: 24px; color: var(--muted); line-height: 1; padding: 4px 8px; }
+    .eval-modal h3 { font-size: 18px; font-weight: 900; color: var(--clay); letter-spacing: -0.01em; margin-bottom: 6px; }
+    .eval-modal .sub { font-size: 12.5px; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
+    .eval-modal .field { display: grid; gap: 5px; margin-bottom: 12px; }
+    .eval-modal .field > span { font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted); }
+    .eval-modal .field input, .eval-modal .field select, .eval-modal .field textarea {
+      width: 100%; border: 1px solid var(--line); background: #fef9ec; color: var(--text);
+      padding: 9px 12px; border-radius: 10px; font: inherit; font-size: 13.5px;
+      outline: none; transition: 0.15s; box-sizing: border-box; resize: vertical; font-family: inherit;
+    }
+    .eval-modal .field textarea { min-height: 70px; }
+    .eval-modal .field input:focus, .eval-modal .field select:focus, .eval-modal .field textarea:focus {
+      border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,158,11,0.16);
+    }
+    .eval-modal .actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+    .eval-modal .btn-secondary { background: #fff; color: var(--clay); border: 1px solid var(--line);
+      border-radius: 999px; padding: 9px 18px; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+    .eval-modal .btn-primary { background: linear-gradient(135deg,#fde68a,var(--gold)); color: #3a1808;
+      border: none; border-radius: 999px; padding: 9px 18px; font: inherit; font-size: 13px; font-weight: 800;
+      cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.28); }
+    .eval-modal .msg { font-size: 11.5px; color: var(--success); font-weight: 700; min-height: 14px; margin-bottom: 6px; }
+    .eval-modal .msg.error { color: var(--error); }
+
     /* Marketing Center sub-tabs — horizontal pill row above the
        sub-panels. Active pill flips to dark-clay background. */
     .mkt-subtabs { display: flex; gap: 4px; padding: 4px; margin: 0 0 18px;
@@ -1485,6 +1530,39 @@
     </main>
   </div>
 
+  <!-- Eval modal — captures trial level + notes after a trial is marked done -->
+  <div class="eval-overlay" id="mktEvalOverlay" role="dialog" aria-modal="true" aria-labelledby="mktEvalTitle" aria-hidden="true">
+    <div class="eval-modal">
+      <button type="button" class="close" id="mktEvalCloseBtn" aria-label="Close">×</button>
+      <h3 id="mktEvalTitle" data-i18n="mktEvalTitle"></h3>
+      <p class="sub" id="mktEvalSub" data-i18n="mktEvalSub"></p>
+      <div class="field">
+        <span data-i18n="mktEvalFieldLevel"></span>
+        <select id="mktEvalLevel">
+          <option value="" data-i18n="mktEvalLevelPlaceholder"></option>
+          <option value="Beginner">Beginner / 入门</option>
+          <option value="Intermediate">Intermediate / 中级</option>
+          <option value="Advanced">Advanced / 进阶</option>
+          <option value="Project Camp">Project Camp / 项目营</option>
+          <option value="Competition">Competition / 竞赛</option>
+        </select>
+      </div>
+      <div class="field">
+        <span data-i18n="mktEvalFieldEvaluator"></span>
+        <input type="text" id="mktEvalEvaluator" autocomplete="off" />
+      </div>
+      <div class="field">
+        <span data-i18n="mktEvalFieldNotes"></span>
+        <textarea id="mktEvalNotes"></textarea>
+      </div>
+      <p class="msg" id="mktEvalMsg" role="status" aria-live="polite"></p>
+      <div class="actions">
+        <button type="button" class="btn-secondary" id="mktEvalCancelBtn" data-i18n="mktEvalCancel"></button>
+        <button type="button" class="btn-primary" id="mktEvalSaveBtn" data-i18n="mktEvalSave"></button>
+      </div>
+    </div>
+  </div>
+
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-brand">
@@ -1739,6 +1817,27 @@
           mktTrialActionDone: "标记完成",
           mktTrialActionReschedule: "改期",
           mktTrialActionReopen: "撤销完成",
+          mktTrialActionEvaluate: "试课评估",
+          mktTrialActionReEvaluate: "重新评估",
+          mktTrialActionInvite: "邀请家长注册",
+          mktTrialEvalDoneFmt: "已评估 · {level}",
+          mktTrialInviteSent: "已邀请",
+          mktTrialEvalGated: "完成试课后可评估",
+          mktTrialInviteGated: "完成试课后可邀请",
+          mktTrialInviteNoEmail: "缺联系邮箱",
+          mktEvalTitle: "试课评估",
+          mktEvalSub: "记录学员试课表现并指定后续等级，家长端的课程时段会自动按该等级筛选。",
+          mktEvalFieldLevel: "推荐等级",
+          mktEvalLevelPlaceholder: "请选择等级",
+          mktEvalFieldEvaluator: "评估老师",
+          mktEvalFieldNotes: "课堂表现备注（可选）",
+          mktEvalCancel: "取消",
+          mktEvalSave: "保存评估",
+          mktEvalToastFmt: "已保存 {name} 的评估：{level}",
+          mktEvalErrorLevel: "请先选择等级再保存。",
+          mktInviteToastFmt: "已向 {email} 发送注册邀请。",
+          mktInviteErrorNoEmail: "该试课没有邮箱，无法发送邀请。",
+          mktInviteErrorGated: "请先完成试课再邀请家长注册。",
           mktBrandItem1Title: "Logo & 标志包",
           mktBrandItem1Desc: "校区标准色、横版竖版 logo、印刷文件",
           mktBrandItem2Title: "社媒模板",
@@ -2034,6 +2133,27 @@
           mktTrialActionDone: "Mark done",
           mktTrialActionReschedule: "Reschedule",
           mktTrialActionReopen: "Reopen",
+          mktTrialActionEvaluate: "Evaluate",
+          mktTrialActionReEvaluate: "Re-evaluate",
+          mktTrialActionInvite: "Invite parent",
+          mktTrialEvalDoneFmt: "Evaluated · {level}",
+          mktTrialInviteSent: "Invited",
+          mktTrialEvalGated: "Mark trial done first",
+          mktTrialInviteGated: "Mark trial done first",
+          mktTrialInviteNoEmail: "No email",
+          mktEvalTitle: "Trial Evaluation",
+          mktEvalSub: "Capture performance + recommended level. The parent's Schedule auto-filters to matching offerings once saved.",
+          mktEvalFieldLevel: "Recommended level",
+          mktEvalLevelPlaceholder: "Select a level",
+          mktEvalFieldEvaluator: "Evaluator",
+          mktEvalFieldNotes: "Class notes (optional)",
+          mktEvalCancel: "Cancel",
+          mktEvalSave: "Save evaluation",
+          mktEvalToastFmt: "Saved {name}'s evaluation: {level}",
+          mktEvalErrorLevel: "Please pick a level before saving.",
+          mktInviteToastFmt: "Registration invite sent to {email}.",
+          mktInviteErrorNoEmail: "No email on file — can't send invite.",
+          mktInviteErrorGated: "Mark the trial done before inviting the parent.",
           mktBrandItem1Title: "Logo Pack",
           mktBrandItem1Desc: "Color spec, horizontal + vertical, print-ready",
           mktBrandItem2Title: "Social Templates",
@@ -2655,36 +2775,83 @@
             tBody.innerHTML = "<tr><td colspan='6' style='text-align:center;color:var(--muted);padding:20px;'>"
               + escHTML(t.mktTrialEmpty) + "</td></tr>";
           } else {
+            // Helper to read eval + invite state per lead (relies on the
+            // same flow.* helpers new-trials.html uses, so writes from
+            // either surface stay in sync).
+            var flow2 = window.MindDoFlow;
             tBody.innerHTML = trials.map(function (l) {
               var status = l.trialStatus || "booked";
+              // Treat completed trials as "done" even if trialStatus is
+              // still "confirmed" — flow.markTrialComplete may have written
+              // a completion record from the legacy roster page.
+              var hasCompletion = !!(flow2 && flow2.getTrialCompletionFor && flow2.getTrialCompletionFor(l));
+              if (hasCompletion && status !== "done" && status !== "noshow") status = "done";
               var statusLabel = status === "confirmed" ? t.mktTrialStatusConfirmed
                 : status === "done" ? t.mktTrialStatusDone
                 : status === "noshow" ? t.mktTrialStatusNoShow
                 : t.mktTrialStatusBooked;
               var when = (l.trialDate || "—") + " · " + (l.trialTime || "—");
-              // The createdAt timestamp is the lead's stable identifier
-              // (used by flow.updateLead). Embed it on each action so the
-              // delegated click handler can resolve which lead to mutate.
               var leadId = escHTML(l.createdAt || "");
-              var actions = "";
+              var hasEmail = !!(l.email && String(l.email).indexOf("@") > 0);
+
+              // Read post-trial workflow state.
+              var evalRec = flow2 && flow2.getTrialEvaluationFor ? flow2.getTrialEvaluationFor(l) : null;
+              var inviteRec = flow2 && flow2.getAccountInviteFor ? flow2.getAccountInviteFor(l) : null;
+
+              // ---- Status row (line 1) ----
+              var statusRow = "";
               if (status === "booked") {
-                actions = "<button type='button' class='primary' data-mkt-trial-action='confirm' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionConfirm) + "</button>"
+                statusRow = "<button type='button' class='primary' data-mkt-trial-action='confirm' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionConfirm) + "</button>"
                   + "<button type='button' data-mkt-trial-action='reschedule' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionReschedule) + "</button>";
               } else if (status === "confirmed") {
-                actions = "<button type='button' class='primary' data-mkt-trial-action='done' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionDone) + "</button>"
+                statusRow = "<button type='button' class='primary' data-mkt-trial-action='done' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionDone) + "</button>"
                   + "<button type='button' data-mkt-trial-action='noshow' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialStatusNoShow) + "</button>";
               } else if (status === "done") {
-                actions = "<button type='button' data-mkt-trial-action='reopen' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionReopen) + "</button>";
+                statusRow = "<button type='button' data-mkt-trial-action='reopen' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionReopen) + "</button>";
               } else {
-                actions = "<button type='button' data-mkt-trial-action='confirm' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionConfirm) + "</button>";
+                statusRow = "<button type='button' data-mkt-trial-action='confirm' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionConfirm) + "</button>";
               }
+
+              // ---- Evaluation row (line 2) ----
+              var evalRow = "";
+              if (status === "done") {
+                if (evalRec) {
+                  var levelText = evalRec.level || "—";
+                  evalRow = "<span class='pill eval-done'>"
+                    + escHTML((t.mktTrialEvalDoneFmt || "Evaluated · {level}").replace("{level}", levelText))
+                    + "</span>"
+                    + "<button type='button' data-mkt-trial-action='evaluate' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionReEvaluate) + "</button>";
+                } else {
+                  evalRow = "<button type='button' class='primary' data-mkt-trial-action='evaluate' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionEvaluate) + "</button>";
+                }
+              } else {
+                evalRow = "<span class='pill gated'>" + escHTML(t.mktTrialEvalGated) + "</span>";
+              }
+
+              // ---- Invite row (line 3) ----
+              var inviteRow = "";
+              if (inviteRec) {
+                inviteRow = "<span class='pill invite-sent'>" + escHTML(t.mktTrialInviteSent) + "</span>"
+                  + "<button type='button' data-mkt-trial-action='resend' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionInvite) + "</button>";
+              } else if (status !== "done") {
+                inviteRow = "<span class='pill gated'>" + escHTML(t.mktTrialInviteGated) + "</span>";
+              } else if (!hasEmail) {
+                inviteRow = "<span class='pill gated'>" + escHTML(t.mktTrialInviteNoEmail) + "</span>";
+              } else {
+                inviteRow = "<button type='button' data-mkt-trial-action='invite' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionInvite) + "</button>";
+              }
+
               return "<tr>"
                 + "<td>" + escHTML(when) + "</td>"
                 + "<td>" + escHTML(l.studentName || l.parentName || "—") + "</td>"
                 + "<td>" + escHTML(l.campusLabel || l.campus || "—") + "</td>"
                 + "<td>" + escHTML(l.channelLabel || l.channel || "—") + "</td>"
                 + "<td><span class='mkt-trial-status " + status + "'>" + escHTML(statusLabel) + "</span></td>"
-                + "<td><div class='mkt-trial-actions'>" + actions + "</div></td>"
+                + "<td><div class='mkt-trial-actions'>"
+                +   "<div class='row'>" + statusRow + "</div>"
+                +   "<div class='row'>" + evalRow + "</div>"
+                +   "<div class='row'>" + inviteRow + "</div>"
+                + "</div></td>"
                 + "</tr>";
             }).join("");
           }
@@ -2729,10 +2896,17 @@
       })();
 
       // Trial-table action delegation — Confirm / Mark done / No-show /
-      // Reschedule / Reopen. Walks the lead by its createdAt identifier
-      // and writes the new trialStatus via flow.updateLead. "Done" also
-      // writes a completion record so the legacy new-trials.html page
-      // (which reads from KEYS.completions) sees the same status.
+      // Reschedule / Reopen / Evaluate / Invite parent. Walks the lead
+      // by its createdAt identifier and writes the new trialStatus via
+      // flow.updateLead. "Done" also writes a completion record so the
+      // legacy new-trials.html page (which reads from KEYS.completions)
+      // sees the same status. Evaluate opens the modal below; Invite
+      // calls flow.sendAccountInvite.
+      function lookupLeadById(leadId) {
+        if (!window.MindDoFlow || !window.MindDoFlow.readJson || !window.MindDoFlow.keys) return null;
+        var all = window.MindDoFlow.readJson(window.MindDoFlow.keys.leads) || [];
+        return all.filter(function (l) { return l && l.createdAt === leadId; })[0] || null;
+      }
       (function () {
         var tBody = document.getElementById("mktTrialBody");
         if (!tBody) return;
@@ -2741,41 +2915,161 @@
           if (!btn) return;
           var leadId = btn.getAttribute("data-lead-id");
           var action = btn.getAttribute("data-mkt-trial-action");
-          if (!leadId || !window.MindDoFlow || !window.MindDoFlow.updateLead) return;
+          if (!leadId || !window.MindDoFlow) return;
+          var t = (state && state.lang) ? I18N[state.lang] : I18N["zh-CN"];
+
+          // Open eval modal — pre-fills with existing eval if any.
+          if (action === "evaluate") {
+            openEvalModal(leadId);
+            return;
+          }
+
+          // Send registration invite — needs email + completed trial.
+          if (action === "invite" || action === "resend") {
+            var leadObj = lookupLeadById(leadId);
+            if (!leadObj) return;
+            if (!leadObj.email || String(leadObj.email).indexOf("@") < 0) {
+              showOpsToast(t.mktInviteErrorNoEmail);
+              return;
+            }
+            var hasComp = window.MindDoFlow.getTrialCompletionFor && window.MindDoFlow.getTrialCompletionFor(leadObj);
+            if (!hasComp && (leadObj.trialStatus !== "done")) {
+              showOpsToast(t.mktInviteErrorGated);
+              return;
+            }
+            if (window.MindDoFlow.sendAccountInvite) {
+              window.MindDoFlow.sendAccountInvite(leadObj);
+            }
+            showOpsToast((t.mktInviteToastFmt || "Invite sent to {email}").replace("{email}", leadObj.email));
+            if (typeof render === "function") render();
+            return;
+          }
+
+          // Status transitions.
           var nextStatus, todayDelta = null;
           if (action === "confirm") nextStatus = "confirmed";
           else if (action === "done") nextStatus = "done";
           else if (action === "noshow") nextStatus = "noshow";
           else if (action === "reopen") nextStatus = "booked";
           else if (action === "reschedule") {
-            // Quick reschedule — push the date by 7 days. Real flow would
-            // open a date-picker modal; for the dashboard's quick-action
-            // surface a one-click bump is the right shape.
-            var lead = (window.MindDoFlow.readJson && window.MindDoFlow.keys)
-              ? (window.MindDoFlow.readJson(window.MindDoFlow.keys.leads) || []).filter(function (l) { return l && l.createdAt === leadId; })[0]
-              : null;
-            if (lead && lead.trialDate) {
-              var d = new Date(lead.trialDate); d.setDate(d.getDate() + 7);
+            var lead2 = lookupLeadById(leadId);
+            if (lead2 && lead2.trialDate) {
+              var d = new Date(lead2.trialDate); d.setDate(d.getDate() + 7);
               todayDelta = d.toISOString().slice(0, 10);
-              nextStatus = "booked";
-            } else {
-              nextStatus = "booked";
             }
+            nextStatus = "booked";
           }
-          if (!nextStatus) return;
+          if (!nextStatus || !window.MindDoFlow.updateLead) return;
           var patch = { trialStatus: nextStatus };
           if (todayDelta) patch.trialDate = todayDelta;
           window.MindDoFlow.updateLead(leadId, patch);
           // Mirror "done" into KEYS.completions so the legacy roster
           // page (new-trials.html) flips its status pill in sync.
           if (nextStatus === "done" && window.MindDoFlow.markTrialComplete) {
-            var leadFull = (window.MindDoFlow.readJson(window.MindDoFlow.keys.leads) || [])
-              .filter(function (l) { return l && l.createdAt === leadId; })[0];
+            var leadFull = lookupLeadById(leadId);
             if (leadFull) window.MindDoFlow.markTrialComplete(leadFull, { operator: "Dashboard" });
+          }
+          // Mirror "noshow" / "reopen" into completion-undo so the legacy
+          // page is consistent with the dashboard's truth.
+          if ((nextStatus === "booked" || nextStatus === "noshow") && window.MindDoFlow.unmarkTrialComplete) {
+            var leadFull2 = lookupLeadById(leadId);
+            if (leadFull2) window.MindDoFlow.unmarkTrialComplete(leadFull2);
           }
           if (typeof render === "function") render();
         });
       })();
+
+      // Evaluation modal — open / save / close. Pre-fills with the
+      // existing evaluation if there is one (so re-evaluate edits in
+      // place rather than stacks).
+      var __mktEvalLeadId = null;
+      function openEvalModal(leadId) {
+        var ov = document.getElementById("mktEvalOverlay");
+        if (!ov) return;
+        var lead = lookupLeadById(leadId);
+        if (!lead) return;
+        __mktEvalLeadId = leadId;
+        var existing = window.MindDoFlow && window.MindDoFlow.getTrialEvaluationFor
+          ? window.MindDoFlow.getTrialEvaluationFor(lead) : null;
+        document.getElementById("mktEvalLevel").value = existing ? (existing.level || "") : "";
+        document.getElementById("mktEvalEvaluator").value = existing ? (existing.evaluator || "") : "";
+        document.getElementById("mktEvalNotes").value = existing ? (existing.notes || "") : "";
+        document.getElementById("mktEvalMsg").textContent = "";
+        document.getElementById("mktEvalMsg").className = "msg";
+        ov.setAttribute("aria-hidden", "false");
+        setTimeout(function () { document.getElementById("mktEvalLevel").focus(); }, 60);
+      }
+      function closeEvalModal() {
+        var ov = document.getElementById("mktEvalOverlay");
+        if (ov) ov.setAttribute("aria-hidden", "true");
+        __mktEvalLeadId = null;
+      }
+      (function () {
+        var ov = document.getElementById("mktEvalOverlay");
+        var closeBtn = document.getElementById("mktEvalCloseBtn");
+        var cancelBtn = document.getElementById("mktEvalCancelBtn");
+        var saveBtn = document.getElementById("mktEvalSaveBtn");
+        if (!ov) return;
+        if (closeBtn) closeBtn.addEventListener("click", closeEvalModal);
+        if (cancelBtn) cancelBtn.addEventListener("click", closeEvalModal);
+        ov.addEventListener("click", function (e) { if (e.target === ov) closeEvalModal(); });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && ov.getAttribute("aria-hidden") === "false") closeEvalModal();
+        });
+        if (saveBtn) {
+          saveBtn.addEventListener("click", function () {
+            if (!__mktEvalLeadId) return;
+            var t = (state && state.lang) ? I18N[state.lang] : I18N["zh-CN"];
+            var msgEl = document.getElementById("mktEvalMsg");
+            var level = document.getElementById("mktEvalLevel").value;
+            var evaluator = document.getElementById("mktEvalEvaluator").value.trim();
+            var notes = document.getElementById("mktEvalNotes").value.trim();
+            if (!level) {
+              msgEl.textContent = t.mktEvalErrorLevel;
+              msgEl.className = "msg error";
+              return;
+            }
+            var lead = lookupLeadById(__mktEvalLeadId);
+            if (!lead || !window.MindDoFlow || !window.MindDoFlow.saveTrialEvaluation) {
+              closeEvalModal();
+              return;
+            }
+            var rec = window.MindDoFlow.saveTrialEvaluation(lead, {
+              level: level,
+              evaluator: evaluator,
+              notes: notes
+            });
+            if (rec) {
+              showOpsToast((t.mktEvalToastFmt || "Saved {name}: {level}")
+                .replace("{name}", rec.studentName || lead.studentName || "—")
+                .replace("{level}", rec.level || level));
+            }
+            closeEvalModal();
+            if (typeof render === "function") render();
+          });
+        }
+      })();
+
+      // Lightweight toast — same shape new-trials.html uses for its
+      // post-action confirmations. Re-uses the page-level body and
+      // disappears after 2.4s.
+      function showOpsToast(msg) {
+        var el = document.getElementById("__opsToast");
+        if (!el) {
+          el = document.createElement("div");
+          el.id = "__opsToast";
+          el.style.cssText = "position:fixed;bottom:24px;right:24px;background:var(--clay);color:#fffbeb;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:700;box-shadow:0 16px 40px rgba(42,20,8,0.32);opacity:0;transform:translateY(10px);transition:0.25s;pointer-events:none;z-index:9500;max-width:340px;line-height:1.55;";
+          document.body.appendChild(el);
+        }
+        el.textContent = msg;
+        el.style.opacity = "1";
+        el.style.transform = "translateY(0)";
+        clearTimeout(el.__t);
+        el.__t = setTimeout(function () {
+          el.style.opacity = "0";
+          el.style.transform = "translateY(10px)";
+        }, 2400);
+      }
 
       // Marketing Center sub-tabs — five focused groups (KPIs / CRM /
       // Trials / Channels / Brand). Same pattern Settings + Billing
