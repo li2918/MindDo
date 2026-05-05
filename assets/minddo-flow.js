@@ -1593,26 +1593,71 @@
       studentId: "MD2026-0417"
     });
 
-    writeJson(KEYS.leads, [{
-      studentName: student.studentName,
-      studentId: student.studentId,
-      grade: student.grade,
-      birthday: student.birthday,
-      parentName: student.parentName,
-      phone: student.phone,
-      city: student.city,
-      email: student.email,
-      campus: "irvine",
-      campusLabel: "加州 · 尔湾校区",
-      trialDate: now.toISOString().slice(0, 10),
-      trialTime: "18:30",
-      channel: "wechat",
-      channelLabel: "微信/社群",
-      goal: student.goal,
-      timeNote: "Prefer weekday evening slots.",
-      consent: true,
-      createdAt: daysAgo(5)
-    }]);
+    function dayString(offset) {
+      var d = new Date(now); d.setDate(d.getDate() + offset);
+      return d.toISOString().slice(0, 10);
+    }
+    writeJson(KEYS.leads, [
+      {
+        studentName: student.studentName,
+        studentId: student.studentId,
+        grade: student.grade, birthday: student.birthday,
+        parentName: student.parentName, phone: student.phone,
+        city: student.city, email: student.email,
+        campus: "irvine", campusLabel: "加州 · 尔湾校区",
+        trialDate: now.toISOString().slice(0, 10), trialTime: "18:30",
+        channel: "wechat", channelLabel: "微信/社群",
+        goal: student.goal, timeNote: "Prefer weekday evening slots.",
+        consent: true, createdAt: daysAgo(5),
+        crmStatus: "won", trialStatus: "done"
+      },
+      // ---- Marketing-CRM seed: a spread across pipeline stages so the
+      // 市场中心 tab shows visible variety in the lead list + trial table.
+      {
+        studentName: "王浩",
+        parentName: "王女士", phone: "626-555-0142",
+        email: "wang.parent@example.com",
+        campus: "arcadia", campusLabel: "加州 · 阿凯迪亚校区",
+        trialDate: dayString(2), trialTime: "16:00",
+        channel: "google", channelLabel: "Google 搜索",
+        goal: "AI 编程入门", consent: true,
+        createdAt: daysAgo(2),
+        crmStatus: "follow", trialStatus: "confirmed"
+      },
+      {
+        studentName: "陈乐",
+        parentName: "陈先生", phone: "650-555-0163",
+        email: "chen.parent@example.com",
+        campus: "diamond-bar", campusLabel: "加州 · 钻石吧校区",
+        trialDate: dayString(4), trialTime: "10:00",
+        channel: "referral", channelLabel: "老学员推荐",
+        goal: "项目营冲刺", consent: true,
+        createdAt: daysAgo(1),
+        crmStatus: "new", trialStatus: "booked"
+      },
+      {
+        studentName: "林皓",
+        parentName: "林女士", phone: "323-555-0177",
+        email: "lin.family@example.com",
+        campus: "hollywood", campusLabel: "加州 · 好莱坞校区",
+        trialDate: dayString(0), trialTime: "19:00",
+        channel: "instagram", channelLabel: "Instagram",
+        goal: "AI 创意工坊", consent: true,
+        createdAt: daysAgo(0),
+        crmStatus: "new", trialStatus: "booked"
+      },
+      {
+        studentName: "周雨",
+        parentName: "周先生", phone: "858-555-0190",
+        email: "zhou.parent@example.com",
+        campus: "san-diego", campusLabel: "加州 · 圣地亚哥校区",
+        trialDate: dayString(-12), trialTime: "15:30",
+        channel: "tiktok", channelLabel: "抖音 / TikTok",
+        goal: "兴趣探索", consent: true,
+        createdAt: daysAgo(35),
+        crmStatus: "lost", trialStatus: "noshow"
+      }
+    ]);
 
     writeJson(KEYS.assessments, [{
       name: student.studentName,

@@ -581,6 +581,84 @@
     .ops-toolbar .campus-chip .cc-select { font-size: 12.5px; }
     .ops-toolbar .toolbar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
+    /* Marketing Center — CRM lead pipeline + trial management table +
+       brand-asset grid. */
+    .mkt-crm-filters { display: inline-flex; gap: 2px; padding: 3px;
+      background: rgba(122,48,16,0.06); border-radius: 999px; }
+    .mkt-crm-filters button { all: unset; cursor: pointer; padding: 6px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 700; color: var(--muted); transition: 0.12s; font-family: inherit; }
+    .mkt-crm-filters button.active { background: var(--clay); color: #fffbeb; }
+    .mkt-crm-filters button:not(.active):hover { background: #fff; color: var(--clay); }
+
+    .mkt-crm-list { display: grid; gap: 8px; }
+    .mkt-crm-row { display: grid; grid-template-columns: 36px 1fr auto auto; gap: 12px;
+      align-items: center; padding: 12px 14px; background: #fff; border: 1px solid var(--line);
+      border-radius: 12px; transition: 0.15s; }
+    .mkt-crm-row:hover { transform: translateY(-1px); border-color: rgba(245,158,11,0.32);
+      box-shadow: 0 6px 16px rgba(122,48,16,0.06); }
+    .mkt-crm-avatar { width: 36px; height: 36px; border-radius: 999px;
+      background: linear-gradient(135deg,#fde68a,var(--gold)); color: #3a1808;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 900; flex-shrink: 0; }
+    .mkt-crm-info .name { font-size: 14px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .mkt-crm-info .meta { font-size: 11.5px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+    .mkt-crm-info .meta .channel { display: inline-block; padding: 1px 8px; border-radius: 999px;
+      background: rgba(245,158,11,0.14); color: var(--clay); border: 1px solid rgba(245,158,11,0.28);
+      font-size: 10.5px; font-weight: 700; margin-right: 8px; }
+    .mkt-crm-status { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px;
+      letter-spacing: 0.04em; white-space: nowrap; }
+    .mkt-crm-status.new       { background: rgba(245,158,11,0.18); color: var(--gold-deep); border: 1px solid rgba(245,158,11,0.42); }
+    .mkt-crm-status.follow    { background: rgba(216,156,54,0.2); color: #7a4f0d; border: 1px solid rgba(216,156,54,0.42); }
+    .mkt-crm-status.won       { background: rgba(110,143,87,0.2); color: #3f5d26; border: 1px solid rgba(110,143,87,0.4); }
+    .mkt-crm-status.lost      { background: rgba(196,106,77,0.18); color: #8e3d21; border: 1px solid rgba(196,106,77,0.42); }
+    .mkt-crm-actions { display: flex; gap: 6px; }
+    .mkt-crm-actions button { all: unset; cursor: pointer; padding: 5px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; color: var(--clay); border: 1px solid var(--line);
+      background: #fff; transition: 0.12s; }
+    .mkt-crm-actions button:hover { border-color: var(--gold); }
+    .mkt-crm-empty { padding: 30px 16px; text-align: center; color: var(--muted); font-size: 13px;
+      background: rgba(254,243,199,0.32); border: 1px dashed rgba(245,158,11,0.32); border-radius: 12px; }
+    @media (max-width: 720px) {
+      .mkt-crm-row { grid-template-columns: 36px 1fr; }
+      .mkt-crm-status, .mkt-crm-actions { grid-column: 2; justify-self: start; }
+    }
+
+    .mkt-trial-table { width: 100%; border-collapse: collapse; }
+    .mkt-trial-table th, .mkt-trial-table td { padding: 10px 12px; text-align: left;
+      font-size: 13px; border-bottom: 1px solid var(--line); }
+    .mkt-trial-table th { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); }
+    .mkt-trial-table tr:last-child td { border-bottom: none; }
+    .mkt-trial-status { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px;
+      letter-spacing: 0.04em; white-space: nowrap; }
+    .mkt-trial-status.booked    { background: rgba(245,158,11,0.16); color: var(--gold-deep); border: 1px solid rgba(245,158,11,0.32); }
+    .mkt-trial-status.confirmed { background: rgba(216,156,54,0.18); color: #7a4f0d; border: 1px solid rgba(216,156,54,0.4); }
+    .mkt-trial-status.done      { background: rgba(110,143,87,0.18); color: #3f5d26; border: 1px solid rgba(110,143,87,0.4); }
+    .mkt-trial-status.noshow    { background: rgba(196,106,77,0.16); color: #8e3d21; border: 1px solid rgba(196,106,77,0.4); }
+    .mkt-trial-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .mkt-trial-actions button { all: unset; cursor: pointer; padding: 4px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; color: var(--clay); border: 1px solid var(--line);
+      background: #fff; transition: 0.12s; }
+    .mkt-trial-actions button.primary { background: linear-gradient(135deg,#fde68a,var(--gold));
+      border-color: rgba(245,158,11,0.45); }
+    .mkt-trial-actions button:hover { border-color: var(--gold-deep); }
+
+    .mkt-brand-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .mkt-brand-card { padding: 16px 18px; background: #fff; border: 1px solid var(--line);
+      border-radius: 14px; display: flex; gap: 12px; align-items: flex-start; transition: 0.15s; }
+    .mkt-brand-card:hover { transform: translateY(-1px); border-color: rgba(245,158,11,0.32);
+      box-shadow: 0 8px 22px rgba(122,48,16,0.06); }
+    .mkt-brand-card .ic { width: 40px; height: 40px; border-radius: 10px; flex: none;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 18px;
+      background: rgba(245,158,11,0.16); color: var(--gold-deep); }
+    .mkt-brand-card .body { flex: 1; min-width: 0; }
+    .mkt-brand-card h4 { font-size: 13.5px; font-weight: 800; color: var(--clay); margin-bottom: 4px; }
+    .mkt-brand-card p { font-size: 12px; color: var(--muted); line-height: 1.55; margin-bottom: 8px; }
+    .mkt-brand-card .dl { display: inline-block; font-size: 11.5px; font-weight: 800;
+      color: var(--gold-deep); cursor: pointer; }
+    .mkt-brand-card .dl::after { content: " ↓"; }
+    @media (max-width: 720px) { .mkt-brand-grid { grid-template-columns: 1fr; } }
+
     /* Data Center — conversion funnel + revenue trend chart. The funnel
        renders as horizontal bars whose width tapers from the top stage
        down. The trend is inline SVG (no chart library) so it stays
@@ -854,12 +932,8 @@
           <span class="si-icon" aria-hidden="true">🏠</span><span class="si-label" data-i18n="tabOverview"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
-        <a class="sidebar-item" href="about.html">
-          <span class="si-icon" aria-hidden="true">👑</span><span class="si-label" data-i18n="navBrand"></span>
-          <span class="si-arrow" aria-hidden="true">▸</span>
-        </a>
         <button type="button" class="sidebar-item" data-tab="enrollment" role="tab">
-          <span class="si-icon" aria-hidden="true">🎯</span><span class="si-label" data-i18n="navEnroll"></span>
+          <span class="si-icon" aria-hidden="true">📣</span><span class="si-label" data-i18n="navMarketing"></span>
           <span class="tab-pill" id="enrollmentBadge" hidden>0</span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
@@ -1053,13 +1127,14 @@
         </section>
       </section>
 
-      <!-- ========== Enrollment ========== -->
+      <!-- ========== Marketing Center — KPIs + CRM + trial mgmt + brand ========== -->
       <section class="dash-panel" data-tab-panel="enrollment" role="tabpanel" hidden>
+
         <section class="dash-zone">
           <div class="dash-zone-head">
             <div class="dash-zone-text">
-              <h3 data-i18n="zoneEnrollKpiTitle"></h3>
-              <p data-i18n="zoneEnrollKpiSub"></p>
+              <h3 data-i18n="zoneMktKpiTitle"></h3>
+              <p data-i18n="zoneMktKpiSub"></p>
             </div>
           </div>
           <section class="grid" id="enrollmentMetrics"></section>
@@ -1068,8 +1143,57 @@
         <section class="dash-zone">
           <div class="dash-zone-head">
             <div class="dash-zone-text">
-              <h3 data-i18n="zoneEnrollChannelTitle"></h3>
-              <p data-i18n="zoneEnrollChannelSub"></p>
+              <h3 data-i18n="zoneMktCrmTitle"></h3>
+              <p data-i18n="zoneMktCrmSub"></p>
+            </div>
+          </div>
+          <article class="panel">
+            <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+              <h2 data-i18n="mktCrmHead" style="margin:0;"></h2>
+              <div class="mkt-crm-filters" id="mktCrmFilters" role="group" aria-label="CRM filter">
+                <button type="button" data-mkt-crm-filter="all" class="active" data-i18n="mktCrmFilterAll"></button>
+                <button type="button" data-mkt-crm-filter="new" data-i18n="mktCrmFilterNew"></button>
+                <button type="button" data-mkt-crm-filter="follow" data-i18n="mktCrmFilterFollow"></button>
+                <button type="button" data-mkt-crm-filter="won" data-i18n="mktCrmFilterWon"></button>
+                <button type="button" data-mkt-crm-filter="lost" data-i18n="mktCrmFilterLost"></button>
+              </div>
+            </div>
+            <div id="mktCrmList"></div>
+          </article>
+        </section>
+
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneMktTrialTitle"></h3>
+              <p data-i18n="zoneMktTrialSub"></p>
+            </div>
+          </div>
+          <article class="panel">
+            <h2 data-i18n="mktTrialHead"></h2>
+            <div class="table-wrap">
+              <table class="mkt-trial-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="mktTrialColTime"></th>
+                    <th data-i18n="mktTrialColStudent"></th>
+                    <th data-i18n="mktTrialColCampus"></th>
+                    <th data-i18n="mktTrialColChannel"></th>
+                    <th data-i18n="mktTrialColStatus"></th>
+                    <th data-i18n="mktTrialColAction"></th>
+                  </tr>
+                </thead>
+                <tbody id="mktTrialBody"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneMktChannelTitle"></h3>
+              <p data-i18n="zoneMktChannelSub"></p>
             </div>
           </div>
           <article class="panel">
@@ -1077,6 +1201,17 @@
             <ul class="kv-list" id="channelList"></ul>
           </article>
         </section>
+
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneMktBrandTitle"></h3>
+              <p data-i18n="zoneMktBrandSub"></p>
+            </div>
+          </div>
+          <div class="mkt-brand-grid" id="mktBrandGrid"></div>
+        </section>
+
       </section>
 
       <!-- ========== Teaching ========== -->
@@ -1500,12 +1635,65 @@
           zoneAdminOpsTitle: "管理员手动操作",
           zoneAdminOpsSub: "应急 / 离线场景使用，平时折叠隐藏",
           tabOverview: "首页",
-          tabEnrollment: "招生",
+          tabEnrollment: "市场中心",
           tabTeaching: "教学",
           tabFinance: "财务",
           tabData: "数据中心",
           tabRequests: "申请处理",
           tabSettings: "课程设置",
+          // ---- Marketing Center (CRM + trial mgmt + brand) ----
+          zoneMktKpiTitle: "市场核心指标",
+          zoneMktKpiSub: "本期获客 + 转化全景。",
+          zoneMktCrmTitle: "CRM 客户管理",
+          zoneMktCrmSub: "线索 → 跟进 → 转化全流程，按状态分组管理。",
+          zoneMktTrialTitle: "试课管理",
+          zoneMktTrialSub: "已预约 / 待确认 / 已完成 — 跟进每一节体验课。",
+          zoneMktChannelTitle: "渠道分布",
+          zoneMktChannelSub: "学员来源渠道占比。",
+          zoneMktBrandTitle: "品牌物料",
+          zoneMktBrandSub: "授权下载校区物料、社媒模板与活动素材。",
+          mktCrmHead: "线索管理",
+          mktCrmEmpty: "暂无线索 — 试课报名后会自动出现在这里。",
+          mktCrmFilterAll: "全部",
+          mktCrmFilterNew: "新线索",
+          mktCrmFilterFollow: "跟进中",
+          mktCrmFilterWon: "已转化",
+          mktCrmFilterLost: "流失",
+          mktCrmStatusNew: "新线索",
+          mktCrmStatusFollow: "跟进中",
+          mktCrmStatusWon: "已转化",
+          mktCrmStatusLost: "流失",
+          mktCrmActionCall: "拨号",
+          mktCrmActionEmail: "邮件",
+          mktCrmActionDetail: "详情",
+          mktCrmCreatedFmt: "{n} 天前进入",
+          mktCrmTodayLabel: "今天",
+          mktCrmYesterdayLabel: "昨天",
+          mktCrmChannelFmt: "渠道：{ch}",
+          mktTrialHead: "近期试课",
+          mktTrialEmpty: "近期没有试课预约。",
+          mktTrialColTime: "时间",
+          mktTrialColStudent: "学员",
+          mktTrialColCampus: "校区",
+          mktTrialColChannel: "渠道",
+          mktTrialColStatus: "状态",
+          mktTrialColAction: "操作",
+          mktTrialStatusBooked: "已预约",
+          mktTrialStatusConfirmed: "已确认",
+          mktTrialStatusDone: "已完成",
+          mktTrialStatusNoShow: "未到场",
+          mktTrialActionConfirm: "确认",
+          mktTrialActionDone: "标记完成",
+          mktTrialActionReschedule: "改期",
+          mktBrandItem1Title: "Logo & 标志包",
+          mktBrandItem1Desc: "校区标准色、横版竖版 logo、印刷文件",
+          mktBrandItem2Title: "社媒模板",
+          mktBrandItem2Desc: "微信朋友圈、视频号、海报模板包",
+          mktBrandItem3Title: "招生物料",
+          mktBrandItem3Desc: "落地海报、桌牌、易拉宝、X 展架源文件",
+          mktBrandItem4Title: "活动素材",
+          mktBrandItem4Desc: "开放日 / 项目营 / 家长讲座成套素材",
+          mktBrandDownload: "下载",
           // ---- Data center ----
           zoneDataKpiTitle: "运营核心指标",
           zoneDataKpiSub: "本期校区总览：营收、付费、转化、客单价。",
@@ -1526,8 +1714,7 @@
           dataChannelHead: "试课渠道占比",
           dataMetricFunnelDrop: "整体转化率",
           // ---- Sidebar nav labels (school-CRM style) ----
-          navBrand: "品牌中心",
-          navEnroll: "招生中心",
+          navMarketing: "市场中心",
           navAcademic: "教务中心",
           navTeaching: "教学中心",
           navHomeSchool: "家校服务",
@@ -1738,12 +1925,64 @@
           zoneAdminOpsTitle: "Admin Operations",
           zoneAdminOpsSub: "Manual recovery tools, collapsed by default",
           tabOverview: "Home",
-          tabEnrollment: "Enrollment",
+          tabEnrollment: "Marketing Center",
           tabTeaching: "Teaching",
           tabFinance: "Finance",
           tabData: "Data Center",
           tabRequests: "Requests",
           tabSettings: "Course Settings",
+          zoneMktKpiTitle: "Marketing KPIs",
+          zoneMktKpiSub: "Acquisition + conversion view for the period.",
+          zoneMktCrmTitle: "CRM — Lead Pipeline",
+          zoneMktCrmSub: "Manage every lead from first contact through conversion.",
+          zoneMktTrialTitle: "Trial Management",
+          zoneMktTrialSub: "Booked / Confirmed / Done — follow up on every trial class.",
+          zoneMktChannelTitle: "Channel Mix",
+          zoneMktChannelSub: "Where students come from.",
+          zoneMktBrandTitle: "Brand Assets",
+          zoneMktBrandSub: "Download campus materials, social templates, and event kits.",
+          mktCrmHead: "Leads",
+          mktCrmEmpty: "No leads yet — they'll show up here as trial bookings come in.",
+          mktCrmFilterAll: "All",
+          mktCrmFilterNew: "New",
+          mktCrmFilterFollow: "Following up",
+          mktCrmFilterWon: "Won",
+          mktCrmFilterLost: "Lost",
+          mktCrmStatusNew: "New",
+          mktCrmStatusFollow: "Follow-up",
+          mktCrmStatusWon: "Won",
+          mktCrmStatusLost: "Lost",
+          mktCrmActionCall: "Call",
+          mktCrmActionEmail: "Email",
+          mktCrmActionDetail: "Details",
+          mktCrmCreatedFmt: "Entered {n}d ago",
+          mktCrmTodayLabel: "Today",
+          mktCrmYesterdayLabel: "Yesterday",
+          mktCrmChannelFmt: "Channel: {ch}",
+          mktTrialHead: "Upcoming trials",
+          mktTrialEmpty: "No upcoming trials.",
+          mktTrialColTime: "When",
+          mktTrialColStudent: "Student",
+          mktTrialColCampus: "Campus",
+          mktTrialColChannel: "Channel",
+          mktTrialColStatus: "Status",
+          mktTrialColAction: "Action",
+          mktTrialStatusBooked: "Booked",
+          mktTrialStatusConfirmed: "Confirmed",
+          mktTrialStatusDone: "Done",
+          mktTrialStatusNoShow: "No-show",
+          mktTrialActionConfirm: "Confirm",
+          mktTrialActionDone: "Mark done",
+          mktTrialActionReschedule: "Reschedule",
+          mktBrandItem1Title: "Logo Pack",
+          mktBrandItem1Desc: "Color spec, horizontal + vertical, print-ready",
+          mktBrandItem2Title: "Social Templates",
+          mktBrandItem2Desc: "WeChat, Channel video, poster bundles",
+          mktBrandItem3Title: "Enrollment Kit",
+          mktBrandItem3Desc: "On-site posters, table cards, banner standees",
+          mktBrandItem4Title: "Event Kit",
+          mktBrandItem4Desc: "Open day, camp, parent-talk asset packs",
+          mktBrandDownload: "Download",
           zoneDataKpiTitle: "Operational KPIs",
           zoneDataKpiSub: "Headline numbers — revenue, paid, conversion, ARPU.",
           zoneDataFunnelTitle: "Conversion Funnel",
@@ -1762,8 +2001,7 @@
           zoneDataChannelSub: "Where students come from — identify the highest-yield channels.",
           dataChannelHead: "Trial channels",
           dataMetricFunnelDrop: "Overall conversion",
-          navBrand: "Brand",
-          navEnroll: "Enrollment",
+          navMarketing: "Marketing",
           navAcademic: "Academic",
           navTeaching: "Teaching",
           navHomeSchool: "Home-School",
@@ -2287,6 +2525,143 @@
           .replace(/"/g, "&quot;");
       }
 
+      // Marketing Center — CRM lead pipeline + trial-management table +
+      // brand-asset grid. Reads from the unfiltered leads array (campus-
+      // filtered upstream) so the list reflects the active campus but
+      // not the date range (the CRM is its own time horizon).
+      var __mktCrmFilter = "all";
+      function renderMarketingCenter(leadsAll, t) {
+        var listEl = document.getElementById("mktCrmList");
+        var tBody = document.getElementById("mktTrialBody");
+        var brandEl = document.getElementById("mktBrandGrid");
+        var lang = (state && state.lang) === "en" ? "en" : "zh";
+
+        // ---- CRM list ----
+        if (listEl) {
+          var sorted = (leadsAll || []).slice().sort(function (a, b) {
+            return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+          });
+          var filtered = sorted.filter(function (l) {
+            if (__mktCrmFilter === "all") return true;
+            return (l.crmStatus || "new") === __mktCrmFilter;
+          });
+          if (!filtered.length) {
+            listEl.innerHTML = "<div class='mkt-crm-empty'>" + escHTML(t.mktCrmEmpty) + "</div>";
+          } else {
+            listEl.innerHTML = "<div class='mkt-crm-list'>" + filtered.map(function (l) {
+              var name = l.studentName || l.parentName || "—";
+              var status = l.crmStatus || "new";
+              var statusLabel = status === "follow" ? t.mktCrmStatusFollow
+                : status === "won" ? t.mktCrmStatusWon
+                : status === "lost" ? t.mktCrmStatusLost
+                : t.mktCrmStatusNew;
+              var initial = name.slice(0, 1);
+              // "Entered N days ago" — friendly relative time.
+              var daysAgoN = Math.max(0, Math.floor((Date.now() - new Date(l.createdAt || 0).getTime()) / (24 * 3600 * 1000)));
+              var ago = daysAgoN === 0 ? t.mktCrmTodayLabel
+                : daysAgoN === 1 ? t.mktCrmYesterdayLabel
+                : (t.mktCrmCreatedFmt || "{n}d").replace("{n}", daysAgoN);
+              var channelLabel = l.channelLabel || l.channel || "—";
+              var contact = (l.parentName ? l.parentName + " · " : "") + (l.phone || l.email || "");
+              return "<div class='mkt-crm-row'>"
+                + "<div class='mkt-crm-avatar'>" + escHTML(initial) + "</div>"
+                + "<div class='mkt-crm-info'>"
+                +   "<div class='name'>" + escHTML(name) + "</div>"
+                +   "<div class='meta'>"
+                +     "<span class='channel'>" + escHTML(channelLabel) + "</span>"
+                +     escHTML(contact) + " · " + escHTML(ago)
+                +   "</div>"
+                + "</div>"
+                + "<span class='mkt-crm-status " + status + "'>" + escHTML(statusLabel) + "</span>"
+                + "<div class='mkt-crm-actions'>"
+                +   "<button type='button'>" + escHTML(t.mktCrmActionCall) + "</button>"
+                +   "<button type='button'>" + escHTML(t.mktCrmActionEmail) + "</button>"
+                +   "<button type='button'>" + escHTML(t.mktCrmActionDetail) + "</button>"
+                + "</div>"
+                + "</div>";
+            }).join("") + "</div>";
+          }
+        }
+
+        // ---- Trial table — leads with trialDate sorted ascending ----
+        if (tBody) {
+          var trials = (leadsAll || []).filter(function (l) { return l.trialDate; })
+            .slice()
+            .sort(function (a, b) {
+              return new Date(a.trialDate + "T" + (a.trialTime || "00:00") + ":00") -
+                     new Date(b.trialDate + "T" + (b.trialTime || "00:00") + ":00");
+            });
+          if (!trials.length) {
+            tBody.innerHTML = "<tr><td colspan='6' style='text-align:center;color:var(--muted);padding:20px;'>"
+              + escHTML(t.mktTrialEmpty) + "</td></tr>";
+          } else {
+            tBody.innerHTML = trials.map(function (l) {
+              var status = l.trialStatus || "booked";
+              var statusLabel = status === "confirmed" ? t.mktTrialStatusConfirmed
+                : status === "done" ? t.mktTrialStatusDone
+                : status === "noshow" ? t.mktTrialStatusNoShow
+                : t.mktTrialStatusBooked;
+              var when = (l.trialDate || "—") + " · " + (l.trialTime || "—");
+              var actions = "";
+              if (status === "booked") {
+                actions = "<button type='button' class='primary'>" + escHTML(t.mktTrialActionConfirm) + "</button>"
+                  + "<button type='button'>" + escHTML(t.mktTrialActionReschedule) + "</button>";
+              } else if (status === "confirmed") {
+                actions = "<button type='button' class='primary'>" + escHTML(t.mktTrialActionDone) + "</button>"
+                  + "<button type='button'>" + escHTML(t.mktTrialActionReschedule) + "</button>";
+              } else {
+                actions = "<button type='button'>" + escHTML(t.mktTrialActionReschedule) + "</button>";
+              }
+              return "<tr>"
+                + "<td>" + escHTML(when) + "</td>"
+                + "<td>" + escHTML(l.studentName || l.parentName || "—") + "</td>"
+                + "<td>" + escHTML(l.campusLabel || l.campus || "—") + "</td>"
+                + "<td>" + escHTML(l.channelLabel || l.channel || "—") + "</td>"
+                + "<td><span class='mkt-trial-status " + status + "'>" + escHTML(statusLabel) + "</span></td>"
+                + "<td><div class='mkt-trial-actions'>" + actions + "</div></td>"
+                + "</tr>";
+            }).join("");
+          }
+        }
+
+        // ---- Brand assets — 4 cards (placeholder, demo only) ----
+        if (brandEl) {
+          var brandItems = [
+            { ic: "🅻", title: t.mktBrandItem1Title, desc: t.mktBrandItem1Desc },
+            { ic: "📱", title: t.mktBrandItem2Title, desc: t.mktBrandItem2Desc },
+            { ic: "📌", title: t.mktBrandItem3Title, desc: t.mktBrandItem3Desc },
+            { ic: "🎉", title: t.mktBrandItem4Title, desc: t.mktBrandItem4Desc }
+          ];
+          brandEl.innerHTML = brandItems.map(function (b) {
+            return "<div class='mkt-brand-card'>"
+              + "<div class='ic'>" + b.ic + "</div>"
+              + "<div class='body'>"
+              +   "<h4>" + escHTML(b.title) + "</h4>"
+              +   "<p>" + escHTML(b.desc) + "</p>"
+              +   "<span class='dl'>" + escHTML(t.mktBrandDownload) + "</span>"
+              + "</div>"
+              + "</div>";
+          }).join("");
+        }
+      }
+
+      // CRM filter pills — clicking re-renders the list with the new filter.
+      // Bound once at script init; the data render block above re-runs the
+      // list output on every render() call.
+      (function () {
+        var bar = document.getElementById("mktCrmFilters");
+        if (!bar) return;
+        bar.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-mkt-crm-filter]");
+          if (!b) return;
+          __mktCrmFilter = b.getAttribute("data-mkt-crm-filter");
+          bar.querySelectorAll("[data-mkt-crm-filter]").forEach(function (btn) {
+            btn.classList.toggle("active", btn === b);
+          });
+          if (typeof render === "function") render();
+        });
+      })();
+
       function renderMetrics(data, t) {
         // Each business tab gets a focused subset of KPIs. Overview keeps
         // the headline numbers; the rest dive deeper into their domain.
@@ -2507,6 +2882,9 @@
         // different surface (single consolidated analytics view).
         var dataChannelList = document.getElementById("dataChannelList");
         if (dataChannelList) renderKvList(dataChannelList, channelItems, t.noData);
+
+        // ---- Marketing Center: CRM lead list + trial table + brand grid ----
+        renderMarketingCenter(leadsAll, t);
 
         // ---- Data Center: KPI tiles, funnel, revenue trend ----
         var dataKpiEl = document.getElementById("dataKpiMetrics");
