@@ -614,6 +614,39 @@
     .int-subpanel { display: none; }
     .int-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
 
+    /* Data Center sub-panels (wall / enroll / academic / finance) */
+    .data-subpanel { display: none; }
+    .data-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
+
+    /* Data Wall — TV-wall hero strip with bigger numbers, sparkline row,
+       and a 2-col side-by-side mini-list grid. */
+    .data-wall-hero { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .data-wall-tile { background: linear-gradient(135deg,#fffbeb,#fef3c7);
+      border: 1px solid var(--line); border-radius: 18px; padding: 22px 24px;
+      box-shadow: 0 6px 18px rgba(122,48,16,0.06); transition: 0.15s; }
+    .data-wall-tile:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(122,48,16,0.1); }
+    .data-wall-tile .label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .data-wall-tile .num   { font-size: 32px; font-weight: 900; color: var(--clay); line-height: 1.05; margin-top: 8px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+    .data-wall-tile .sub   { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+    .data-wall-tile .sub.up { color: #4f6f38; font-weight: 700; }
+    @media (max-width: 880px) { .data-wall-hero { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .data-wall-hero { grid-template-columns: 1fr; } }
+
+    .data-wall-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 880px) { .data-wall-grid { grid-template-columns: 1fr; } }
+    .data-wall-grid > .panel[style*="span 2"] { grid-column: span 2; }
+    @media (max-width: 880px) { .data-wall-grid > .panel[style*="span 2"] { grid-column: span 1; } }
+
+    /* Sparkline row for the data wall — 4 mini SVG charts side-by-side. */
+    .data-spark-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    @media (max-width: 760px) { .data-spark-row { grid-template-columns: repeat(2, 1fr); } }
+    .data-spark { padding: 12px 14px; background: rgba(254,243,199,0.32); border: 1px solid var(--line); border-radius: 12px; }
+    .data-spark .label { font-size: 10.5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .data-spark .num { font-size: 18px; font-weight: 900; color: var(--clay); margin: 4px 0 6px; font-variant-numeric: tabular-nums; }
+    .data-spark svg { display: block; width: 100%; height: 36px; }
+    .data-spark svg path { fill: none; stroke: var(--gold-deep); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .data-spark svg .area { fill: rgba(245,158,11,0.18); stroke: none; }
+
     /* Staff status pill */
     .int-status { display: inline-flex; padding: 3px 10px; border-radius: 999px;
       font-size: 11px; font-weight: 800; letter-spacing: 0.04em; white-space: nowrap; }
@@ -1291,6 +1324,21 @@
           <span class="si-icon" aria-hidden="true">📈</span><span class="si-label" data-i18n="navData"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
+        <!-- 数据中心 second-level menu — 4 functional cuts of analytics -->
+        <div class="sidebar-subnav" id="dataSubtabs" role="tablist" aria-label="Data groups">
+          <button type="button" class="sidebar-subitem data-subtab active" data-data-subtab="wall" role="tab">
+            <span class="ms-icon" aria-hidden="true">📺</span><span class="ms-label" data-i18n="dataSubtabWall"></span>
+          </button>
+          <button type="button" class="sidebar-subitem data-subtab" data-data-subtab="enroll" role="tab">
+            <span class="ms-icon" aria-hidden="true">🎯</span><span class="ms-label" data-i18n="dataSubtabEnroll"></span>
+          </button>
+          <button type="button" class="sidebar-subitem data-subtab" data-data-subtab="academic" role="tab">
+            <span class="ms-icon" aria-hidden="true">🎓</span><span class="ms-label" data-i18n="dataSubtabAcademic"></span>
+          </button>
+          <button type="button" class="sidebar-subitem data-subtab" data-data-subtab="finance" role="tab">
+            <span class="ms-icon" aria-hidden="true">💰</span><span class="ms-label" data-i18n="dataSubtabFinance"></span>
+          </button>
+        </div>
         <button type="button" class="sidebar-item" data-tab="internal" role="tab">
           <span class="si-icon" aria-hidden="true">🛠</span><span class="si-label" data-i18n="navInternal"></span>
           <span class="si-dot" aria-hidden="true"></span>
@@ -1935,56 +1983,120 @@
 
       </section>
 
-      <!-- ========== Data Center — operational analytics ========== -->
+      <!-- ========== Data Center — 4 sub-tabs (wall / enroll / academic / finance) ========== -->
       <section class="dash-panel" data-tab-panel="data" role="tabpanel" hidden>
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneDataKpiTitle"></h3>
-              <p data-i18n="zoneDataKpiSub"></p>
-            </div>
-          </div>
-          <section class="grid" id="dataKpiMetrics"></section>
-        </section>
 
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneDataFunnelTitle"></h3>
-              <p data-i18n="zoneDataFunnelSub"></p>
+        <!-- Sub-panel 1: 数据大屏 — TV-wall summary view -->
+        <div class="data-subpanel active" data-data-subpanel="wall" role="tabpanel">
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneDataWallTitle"></h3>
+                <p data-i18n="zoneDataWallSub"></p>
+              </div>
             </div>
-          </div>
-          <article class="panel">
-            <h2 data-i18n="dataFunnelHead"></h2>
-            <div class="data-funnel" id="dataFunnel"></div>
-          </article>
-        </section>
+            <!-- Hero KPI strip — bigger numbers + sub-line -->
+            <div class="data-wall-hero" id="dataWallHero"></div>
+          </section>
+          <section class="dash-zone">
+            <div class="data-wall-grid">
+              <article class="panel">
+                <h2 data-i18n="dataWallTopChannelHead"></h2>
+                <ul class="kv-list" id="dataWallChannelList"></ul>
+              </article>
+              <article class="panel">
+                <h2 data-i18n="dataWallTopTeacherHead"></h2>
+                <ul class="kv-list" id="dataWallTeacherList"></ul>
+              </article>
+              <article class="panel" style="grid-column: span 2;">
+                <h2 data-i18n="dataWallSparkHead"></h2>
+                <div class="data-spark-row" id="dataWallSparks"></div>
+              </article>
+            </div>
+          </section>
+        </div>
 
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneDataTrendTitle"></h3>
-              <p data-i18n="zoneDataTrendSub"></p>
+        <!-- Sub-panel 2: 招生数据 — funnel + channel + lead trend -->
+        <div class="data-subpanel" data-data-subpanel="enroll" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneDataEnrollTitle"></h3>
+                <p data-i18n="zoneDataEnrollSub"></p>
+              </div>
             </div>
-          </div>
-          <article class="panel">
-            <h2 data-i18n="dataTrendHead"></h2>
-            <div class="data-trend" id="dataRevenueTrend"></div>
-          </article>
-        </section>
+            <section class="grid" id="dataEnrollKpi"></section>
+          </section>
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="dataFunnelHead"></h2>
+              <div class="data-funnel" id="dataFunnel"></div>
+            </article>
+          </section>
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="dataChannelHead"></h2>
+              <ul class="kv-list" id="dataChannelList"></ul>
+            </article>
+          </section>
+        </div>
 
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneDataChannelTitle"></h3>
-              <p data-i18n="zoneDataChannelSub"></p>
+        <!-- Sub-panel 3: 教务数据 — level mix + class utilisation + teacher load -->
+        <div class="data-subpanel" data-data-subpanel="academic" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneDataAcademicTitle"></h3>
+                <p data-i18n="zoneDataAcademicSub"></p>
+              </div>
             </div>
-          </div>
-          <article class="panel">
-            <h2 data-i18n="dataChannelHead"></h2>
-            <ul class="kv-list" id="dataChannelList"></ul>
-          </article>
-        </section>
+            <section class="grid" id="dataAcademicKpi"></section>
+          </section>
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="dataAcadLevelHead"></h2>
+              <ul class="kv-list" id="dataAcadLevelList"></ul>
+            </article>
+          </section>
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="dataAcadUtilHead"></h2>
+              <ul class="kv-list" id="dataAcadUtilList"></ul>
+            </article>
+          </section>
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="dataAcadTeacherHead"></h2>
+              <ul class="kv-list" id="dataAcadTeacherList"></ul>
+            </article>
+          </section>
+        </div>
+
+        <!-- Sub-panel 4: 财务数据 — revenue trend + payment method + monthly bars -->
+        <div class="data-subpanel" data-data-subpanel="finance" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneDataFinanceTitle"></h3>
+                <p data-i18n="zoneDataFinanceSub"></p>
+              </div>
+            </div>
+            <section class="grid" id="dataFinanceKpi"></section>
+          </section>
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="dataTrendHead"></h2>
+              <div class="data-trend" id="dataRevenueTrend"></div>
+            </article>
+          </section>
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="dataFinPaymentMethodHead"></h2>
+              <ul class="kv-list" id="dataFinPaymentList"></ul>
+            </article>
+          </section>
+        </div>
+
       </section>
 
       <!-- ========== Requests ========== -->
@@ -2671,6 +2783,52 @@
           mktBrandItem4Title: "活动素材",
           mktBrandItem4Desc: "开放日 / 项目营 / 家长讲座成套素材",
           mktBrandDownload: "下载",
+          // ---- Data center sub-tabs ----
+          dataSubtabWall: "数据大屏",
+          dataSubtabEnroll: "招生数据",
+          dataSubtabAcademic: "教务数据",
+          dataSubtabFinance: "财务数据",
+          // 数据大屏
+          zoneDataWallTitle: "数据大屏",
+          zoneDataWallSub: "校区核心数据一屏总览，适合大屏展示与早会讲数。",
+          dataWallTopChannelHead: "Top 渠道",
+          dataWallTopTeacherHead: "Top 教师（按工资）",
+          dataWallSparkHead: "近 8 周关键指标走势",
+          dataWallSparkRevenue: "营收 ($)",
+          dataWallSparkLeads: "新线索",
+          dataWallSparkPaid: "新付费",
+          dataWallSparkTrials: "试听",
+          dataWallTileRevenue: "本月营收",
+          dataWallTileStudents: "在读学员",
+          dataWallTileConv: "试听转化率",
+          dataWallTileARPU: "客单价",
+          dataWallSubVsLast: "vs 上期",
+          // 招生数据
+          zoneDataEnrollTitle: "招生数据",
+          zoneDataEnrollSub: "线索 → 试听 → 注册 → 付费的全链路转化与渠道画像。",
+          dataEnrollKpiLeads: "本月线索",
+          dataEnrollKpiTrials: "本月试听",
+          dataEnrollKpiSignups: "本月注册",
+          dataEnrollKpiConv: "线索转付费",
+          // 教务数据
+          zoneDataAcademicTitle: "教务数据",
+          zoneDataAcademicSub: "学员等级分布、班级上座率与教师课时负载。",
+          dataAcademicKpiActive: "在读学员",
+          dataAcademicKpiClasses: "班级总数",
+          dataAcademicKpiUtil: "上座率",
+          dataAcademicKpiTeachers: "授课教师",
+          dataAcadLevelHead: "等级分布",
+          dataAcadUtilHead: "上座率排行（高 → 低）",
+          dataAcadTeacherHead: "教师课时负载",
+          dataAcadTeacherFmt: "{n} 节",
+          // 财务数据
+          zoneDataFinanceTitle: "财务数据",
+          zoneDataFinanceSub: "营收趋势、付款方式构成与月度对比。",
+          dataFinanceKpiRevenue: "本月营收",
+          dataFinanceKpiPaid: "本月付费笔数",
+          dataFinanceKpiAvg: "平均客单",
+          dataFinanceKpiRefund: "本月退款",
+          dataFinPaymentMethodHead: "付款方式构成",
           // ---- Data center ----
           zoneDataKpiTitle: "运营核心指标",
           zoneDataKpiSub: "本期校区总览：营收、付费、转化、客单价。",
@@ -3186,6 +3344,47 @@
           mktBrandItem4Title: "Event Kit",
           mktBrandItem4Desc: "Open day, camp, parent-talk asset packs",
           mktBrandDownload: "Download",
+          dataSubtabWall: "Data Wall",
+          dataSubtabEnroll: "Marketing",
+          dataSubtabAcademic: "Academic",
+          dataSubtabFinance: "Finance",
+          zoneDataWallTitle: "Data Wall",
+          zoneDataWallSub: "All-in-one snapshot for the campus — perfect for the lobby screen / morning standup.",
+          dataWallTopChannelHead: "Top Channels",
+          dataWallTopTeacherHead: "Top Teachers (by payroll)",
+          dataWallSparkHead: "Last 8 weeks — key signals",
+          dataWallSparkRevenue: "Revenue ($)",
+          dataWallSparkLeads: "Leads",
+          dataWallSparkPaid: "Paid",
+          dataWallSparkTrials: "Trials",
+          dataWallTileRevenue: "Revenue (mo)",
+          dataWallTileStudents: "Active Students",
+          dataWallTileConv: "Trial Conv.",
+          dataWallTileARPU: "ARPU",
+          dataWallSubVsLast: "vs last period",
+          zoneDataEnrollTitle: "Marketing Data",
+          zoneDataEnrollSub: "Full lead → trial → signup → paid funnel and channel mix.",
+          dataEnrollKpiLeads: "Leads (mo)",
+          dataEnrollKpiTrials: "Trials (mo)",
+          dataEnrollKpiSignups: "Signups (mo)",
+          dataEnrollKpiConv: "Lead→Paid",
+          zoneDataAcademicTitle: "Academic Data",
+          zoneDataAcademicSub: "Level distribution, class utilisation, teacher load.",
+          dataAcademicKpiActive: "Active Students",
+          dataAcademicKpiClasses: "Classes",
+          dataAcademicKpiUtil: "Utilisation",
+          dataAcademicKpiTeachers: "Teachers",
+          dataAcadLevelHead: "Level distribution",
+          dataAcadUtilHead: "Top utilised classes",
+          dataAcadTeacherHead: "Teacher class load",
+          dataAcadTeacherFmt: "{n} classes",
+          zoneDataFinanceTitle: "Finance Data",
+          zoneDataFinanceSub: "Revenue trend, payment-method mix, monthly comparison.",
+          dataFinanceKpiRevenue: "Revenue (mo)",
+          dataFinanceKpiPaid: "Payments (mo)",
+          dataFinanceKpiAvg: "Avg ticket",
+          dataFinanceKpiRefund: "Refunds (mo)",
+          dataFinPaymentMethodHead: "Payment-method mix",
           zoneDataKpiTitle: "Operational KPIs",
           zoneDataKpiSub: "Headline numbers — revenue, paid, conversion, ARPU.",
           zoneDataFunnelTitle: "Conversion Funnel",
@@ -4999,6 +5198,290 @@
         applySub(saved || "staff");
       })();
 
+      // ============================================================
+      // Data Center — 4 sub-panels (wall / enroll / academic / finance)
+      // ============================================================
+
+      // Bucket records into the last 8 ISO weeks. Returns an array of 8
+      // numeric totals (oldest → newest), with `valueOf` summing the
+      // numeric field returned by `pick`.
+      function dataWeekBuckets(records, pick) {
+        var weeks = 8;
+        var msInWeek = 7 * 24 * 3600 * 1000;
+        var d = new Date(); d.setHours(0, 0, 0, 0);
+        d.setDate(d.getDate() + (7 - (d.getDay() || 7)));
+        var endOfThisWeek = d.getTime();
+        var totals = [];
+        for (var w = weeks - 1; w >= 0; w--) totals.push(0);
+        records.forEach(function (r) {
+          var ts = new Date(r.createdAt || r.paidAt || 0).getTime();
+          if (!ts) return;
+          for (var b = 0; b < weeks; b++) {
+            var end = endOfThisWeek - (weeks - 1 - b) * msInWeek;
+            var start = end - msInWeek;
+            if (ts > start && ts <= end) {
+              totals[b] += pick(r);
+              break;
+            }
+          }
+        });
+        return totals;
+      }
+
+      // Render a tiny inline-SVG sparkline as a `.data-spark` card.
+      function dataSparkSvg(values, label, color) {
+        var W = 220, H = 60, padX = 6, padY = 8;
+        var max = Math.max.apply(null, values.concat([1]));
+        var n = values.length;
+        var line = "", area = "";
+        values.forEach(function (v, i) {
+          var x = (padX + ((W - padX * 2) * i) / Math.max(1, n - 1)).toFixed(1);
+          var y = (padY + (H - padY * 2) * (1 - v / max)).toFixed(1);
+          line += (i === 0 ? "M" : "L") + x + "," + y + " ";
+        });
+        var lastX = (W - padX).toFixed(1);
+        var firstX = padX.toFixed(1);
+        var bottom = (H - padY).toFixed(1);
+        area = line + "L" + lastX + "," + bottom + " L" + firstX + "," + bottom + " Z";
+        var last = values[values.length - 1] || 0;
+        return "<div class='data-spark'>"
+          +   "<div class='label'>" + escHTML(label) + "</div>"
+          +   "<div class='num' style='color:" + color + ";'>" + last + "</div>"
+          +   "<svg viewBox='0 0 " + W + " " + H + "' preserveAspectRatio='none' role='img' aria-label='" + escHTML(label) + "'>"
+          +     "<path class='area' d='" + area + "' fill='" + color + "' fill-opacity='0.18' stroke='none' />"
+          +     "<path d='" + line + "' fill='none' stroke='" + color + "' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' />"
+          +   "</svg>"
+          + "</div>";
+      }
+
+      // 数据大屏 — TV-wall summary: 4 hero tiles + top channels +
+      // top teachers + 4 sparklines.
+      function renderDataWall(d, paymentsAll, leadsAll, channels, t) {
+        var heroEl = document.getElementById("dataWallHero");
+        if (heroEl) {
+          var trialCount = leadsAll.length;
+          var paidCount = d.paid || 0;
+          var trialConv = trialCount ? Math.round((paidCount / trialCount) * 100) + "%" : "—";
+          var tiles = [
+            { label: t.dataWallTileRevenue || t.metrics.revenue, value: money(d.revenue || 0) },
+            { label: t.dataWallTileStudents || t.metrics.registered, value: d.registered || 0 },
+            { label: t.dataWallTileConv || t.metrics.conversion, value: trialConv },
+            { label: t.dataWallTileARPU || t.metrics.arpu, value: money(d.arpu || 0) }
+          ];
+          heroEl.innerHTML = tiles.map(function (x) {
+            return "<div class='data-wall-tile'>"
+              +   "<div class='label'>" + escHTML(x.label) + "</div>"
+              +   "<div class='num'>" + escHTML(String(x.value)) + "</div>"
+              +   "<div class='sub'>" + escHTML(t.dataWallSubVsLast || "") + "</div>"
+              + "</div>";
+          }).join("");
+        }
+
+        // Top channels — re-use the same channels object the main render
+        // already computed. Top 5.
+        var chList = document.getElementById("dataWallChannelList");
+        if (chList) {
+          var chItems = Object.entries(channels || {})
+            .sort(function (a, b) { return b[1] - a[1]; })
+            .slice(0, 5)
+            .map(function (x) { return { label: x[0], value: x[1] }; });
+          renderKvList(chList, chItems, t.noData);
+        }
+
+        // Top teachers by payroll total.
+        var tList = document.getElementById("dataWallTeacherList");
+        if (tList) {
+          var f = window.MindDoFlow;
+          var rows = (f && f.readJson && f.keys && f.keys.payroll)
+            ? (f.readJson(f.keys.payroll) || []) : [];
+          var byTeacher = {};
+          rows.forEach(function (r) {
+            if (!r || !r.teacher) return;
+            byTeacher[r.teacher] = (byTeacher[r.teacher] || 0) + (Number(r.total) || 0);
+          });
+          var teacherItems = Object.entries(byTeacher)
+            .sort(function (a, b) { return b[1] - a[1]; })
+            .slice(0, 5)
+            .map(function (x) { return { label: x[0], value: money(x[1]) }; });
+          renderKvList(tList, teacherItems, t.noData);
+        }
+
+        // Sparklines — revenue / leads / paid / trials over the last 8 weeks.
+        var sparkEl = document.getElementById("dataWallSparks");
+        if (sparkEl) {
+          var paidEmailWeekly = paymentsAll;
+          var revWeeks = dataWeekBuckets(paymentsAll, function (p) { return Number(p.amount) || 0; });
+          var leadsWeeks = dataWeekBuckets(leadsAll, function () { return 1; });
+          var paidWeeks = dataWeekBuckets(paidEmailWeekly, function () { return 1; });
+          // "Trials" approximated as leads with a trial booking — same
+          // dataset as leads when we don't track distinct trial events.
+          var trialWeeks = dataWeekBuckets(leadsAll.filter(function (l) {
+            return l && (l.trialDate || l.trialStatus);
+          }), function () { return 1; });
+          if (!trialWeeks.some(function (n) { return n > 0; })) trialWeeks = leadsWeeks;
+          sparkEl.innerHTML =
+              dataSparkSvg(revWeeks,    t.dataWallSparkRevenue || "Revenue", "#f59e0b")
+            + dataSparkSvg(leadsWeeks,  t.dataWallSparkLeads   || "Leads",   "#d97706")
+            + dataSparkSvg(paidWeeks,   t.dataWallSparkPaid    || "Paid",    "#7c2d12")
+            + dataSparkSvg(trialWeeks,  t.dataWallSparkTrials  || "Trials", "#92400e");
+        }
+      }
+
+      // 招生数据 — funnel KPI strip. The funnel + channel list are still
+      // populated by the existing render() block.
+      function renderDataEnrollPanel(d, t) {
+        var kpiEl = document.getElementById("dataEnrollKpi");
+        if (!kpiEl) return;
+        var convPct = d.conversion || (d.registered ? Math.round((d.paid / d.registered) * 100) + "%" : "—");
+        renderMetricCards(kpiEl, [
+          { label: t.dataEnrollKpiLeads   || t.metrics.registered, value: (d.newTrials || 0), sub: "" },
+          { label: t.dataEnrollKpiTrials  || t.metrics.assessed,   value: (d.assessed || 0),  sub: "" },
+          { label: t.dataEnrollKpiSignups || t.metrics.registered, value: (d.registered || 0), sub: "" },
+          { label: t.dataEnrollKpiConv    || t.metrics.conversion, value: convPct,             sub: "" }
+        ]);
+      }
+
+      // 教务数据 — KPI tiles + level mix + class utilisation + teacher load.
+      function renderDataAcademicPanel(d, levels, t) {
+        var kpiEl = document.getElementById("dataAcademicKpi");
+        var f = window.MindDoFlow;
+        var offerings = (f && f.getClassOfferings) ? (f.getClassOfferings() || []) : [];
+        var totalSeats = offerings.reduce(function (a, c) { return a + (c.seatsTotal || 0); }, 0);
+        var seatsTaken = offerings.reduce(function (a, c) { return a + (c.seatsTaken || 0); }, 0);
+        var util = totalSeats ? Math.round((seatsTaken / totalSeats) * 100) + "%" : "—";
+        var teacherSet = {};
+        offerings.forEach(function (o) { if (o.teacher) teacherSet[o.teacher] = true; });
+        var teacherCount = Object.keys(teacherSet).length;
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.dataAcademicKpiActive   || t.metrics.registered, value: d.registered || 0, sub: "" },
+            { label: t.dataAcademicKpiClasses  || "Classes",            value: offerings.length,  sub: "" },
+            { label: t.dataAcademicKpiUtil     || "Utilisation",        value: util,              sub: "" },
+            { label: t.dataAcademicKpiTeachers || "Teachers",           value: teacherCount,      sub: "" }
+          ]);
+        }
+
+        var levelEl = document.getElementById("dataAcadLevelList");
+        if (levelEl) {
+          var levelItems = Object.entries(levels || {})
+            .sort(function (a, b) { return b[1] - a[1]; })
+            .map(function (x) { return { label: x[0], value: x[1] }; });
+          renderKvList(levelEl, levelItems, t.noData);
+        }
+
+        var utilEl = document.getElementById("dataAcadUtilList");
+        if (utilEl) {
+          var k = state.lang === "en" ? "en" : "zh";
+          var utilItems = offerings
+            .map(function (o) {
+              var taken = o.seatsTaken || 0, total = o.seatsTotal || 0;
+              var pct = total ? Math.round((taken / total) * 100) : 0;
+              var name = (o.courseName && (o.courseName[k] || o.courseName.en)) || (o.classId || "—");
+              return {
+                label: name + (o.teacher ? " · " + o.teacher : ""),
+                value: taken + "/" + total + "  " + pct + "%",
+                pct: pct
+              };
+            })
+            .sort(function (a, b) { return b.pct - a.pct; })
+            .slice(0, 6);
+          renderKvList(utilEl, utilItems, t.noData);
+        }
+
+        var teacherEl = document.getElementById("dataAcadTeacherList");
+        if (teacherEl) {
+          var byTeacher = {};
+          offerings.forEach(function (o) {
+            if (!o.teacher) return;
+            byTeacher[o.teacher] = (byTeacher[o.teacher] || 0) + 1;
+          });
+          var fmt = t.dataAcadTeacherFmt || "{n} classes";
+          var teacherItems = Object.entries(byTeacher)
+            .sort(function (a, b) { return b[1] - a[1]; })
+            .slice(0, 6)
+            .map(function (x) { return { label: x[0], value: fmt.replace("{n}", x[1]) }; });
+          renderKvList(teacherEl, teacherItems, t.noData);
+        }
+      }
+
+      // 财务数据 — KPI tiles + payment-method mix. Revenue trend is still
+      // drawn by the existing render() block targeting #dataRevenueTrend.
+      function renderDataFinancePanel(d, paymentsAll, t) {
+        var thisMonth = new Date(); thisMonth.setDate(1); thisMonth.setHours(0, 0, 0, 0);
+        var monthly = paymentsAll.filter(function (p) {
+          var ts = new Date(p.createdAt || p.paidAt || 0);
+          return ts.getTime() >= thisMonth.getTime();
+        });
+        var monthlyRevenue = monthly.reduce(function (a, p) { return a + (Number(p.amount) || 0); }, 0);
+        var monthlyCount = monthly.length;
+        var avgTicket = monthlyCount ? monthlyRevenue / monthlyCount : 0;
+        var refundCount = paymentsAll.filter(function (p) {
+          var s = String(p.status || "").toLowerCase();
+          return s === "refunded" || s === "refund";
+        }).length;
+
+        var kpiEl = document.getElementById("dataFinanceKpi");
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.dataFinanceKpiRevenue || t.metrics.revenue, value: money(monthlyRevenue), sub: "" },
+            { label: t.dataFinanceKpiPaid    || t.metrics.paid,    value: monthlyCount,          sub: "" },
+            { label: t.dataFinanceKpiAvg     || t.metrics.arpu,    value: money(avgTicket),      sub: "" },
+            { label: t.dataFinanceKpiRefund  || "Refunds",         value: refundCount,           sub: "" }
+          ]);
+        }
+
+        var payListEl = document.getElementById("dataFinPaymentList");
+        if (payListEl) {
+          var byMethod = {};
+          paymentsAll.forEach(function (p) {
+            var m = String(p.method || p.source || "—").toLowerCase();
+            byMethod[m] = (byMethod[m] || 0) + (Number(p.amount) || 0);
+          });
+          var methodLabelMap = state.lang === "en"
+            ? { alipay: "Alipay", wechat: "WeChat Pay", card: "Credit Card", email: "Email Pay", "—": "Other" }
+            : { alipay: "支付宝", wechat: "微信支付", card: "信用卡", email: "邮箱代收", "—": "其他" };
+          var totalAll = Object.values(byMethod).reduce(function (a, x) { return a + x; }, 0);
+          var methodItems = Object.entries(byMethod)
+            .sort(function (a, b) { return b[1] - a[1]; })
+            .map(function (x) {
+              var label = methodLabelMap[x[0]] || x[0];
+              var pct = totalAll ? Math.round((x[1] / totalAll) * 100) + "%" : "—";
+              return { label: label, value: money(x[1]) + "  " + pct };
+            });
+          renderKvList(payListEl, methodItems, t.noData);
+        }
+      }
+
+      // Data sub-tab handler — same pattern as the marketing/academic/
+      // finance/internal handlers. Switches the four .data-subpanel
+      // surfaces and persists the active key.
+      (function () {
+        var bar = document.getElementById("dataSubtabs");
+        if (!bar) return;
+        var KEY = "minddo_dash_data_subtab";
+        var KNOWN = ["wall", "enroll", "academic", "finance"];
+        function applySub(key) {
+          if (KNOWN.indexOf(key) === -1) key = "wall";
+          bar.querySelectorAll("[data-data-subtab]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-data-subtab") === key);
+          });
+          document.querySelectorAll("[data-data-subpanel]").forEach(function (p) {
+            var match = p.getAttribute("data-data-subpanel") === key;
+            p.classList.toggle("active", match);
+            p.hidden = !match;
+          });
+          try { localStorage.setItem(KEY, key); } catch (_) {}
+        }
+        bar.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-data-subtab]");
+          if (!b) return;
+          applySub(b.getAttribute("data-data-subtab"));
+        });
+        var saved;
+        try { saved = localStorage.getItem(KEY); } catch (_) {}
+        applySub(saved || "wall");
+      })();
+
       // CRM filter pills — clicking re-renders the list with the new filter.
       // Bound once at script init; the data render block above re-runs the
       // list output on every render() call.
@@ -5404,7 +5887,7 @@
 
         var leadToAssessRate = pct(assessed, leads.length || 0);
 
-        renderMetrics({
+        var data = {
           registered: registered,
           paid: paid,
           conversion: pct(paid, registered),
@@ -5419,7 +5902,8 @@
           pendingRequests: pendingRequests,
           newTrials: newTrials,
           newStudents: newStudents
-        }, t);
+        };
+        renderMetrics(data, t);
 
         renderAlerts({
           newTrials: newTrials,
@@ -5465,7 +5949,14 @@
         renderInternalStaff(t);
         renderInternalRoles(t);
 
-        // ---- Data Center: KPI tiles, funnel, revenue trend ----
+        // ---- Data Center: 4 sub-panels (wall / enroll / academic / finance) ----
+        renderDataWall(data, paymentsAll, leadsAll, channels, t);
+        renderDataEnrollPanel(data, t);
+        renderDataAcademicPanel(data, levels, t);
+        renderDataFinancePanel(data, paymentsAll, t);
+        // Legacy #dataKpiMetrics holder still receives a render in case
+        // anything bookmarks the old layout — no-op when the element
+        // no longer exists in the DOM.
         var dataKpiEl = document.getElementById("dataKpiMetrics");
         if (dataKpiEl) {
           renderMetricCards(dataKpiEl, [
