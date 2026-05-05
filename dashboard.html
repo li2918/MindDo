@@ -1738,6 +1738,7 @@
           mktTrialActionConfirm: "确认",
           mktTrialActionDone: "标记完成",
           mktTrialActionReschedule: "改期",
+          mktTrialActionReopen: "撤销完成",
           mktBrandItem1Title: "Logo & 标志包",
           mktBrandItem1Desc: "校区标准色、横版竖版 logo、印刷文件",
           mktBrandItem2Title: "社媒模板",
@@ -2032,6 +2033,7 @@
           mktTrialActionConfirm: "Confirm",
           mktTrialActionDone: "Mark done",
           mktTrialActionReschedule: "Reschedule",
+          mktTrialActionReopen: "Reopen",
           mktBrandItem1Title: "Logo Pack",
           mktBrandItem1Desc: "Color spec, horizontal + vertical, print-ready",
           mktBrandItem2Title: "Social Templates",
@@ -2660,15 +2662,21 @@
                 : status === "noshow" ? t.mktTrialStatusNoShow
                 : t.mktTrialStatusBooked;
               var when = (l.trialDate || "—") + " · " + (l.trialTime || "—");
+              // The createdAt timestamp is the lead's stable identifier
+              // (used by flow.updateLead). Embed it on each action so the
+              // delegated click handler can resolve which lead to mutate.
+              var leadId = escHTML(l.createdAt || "");
               var actions = "";
               if (status === "booked") {
-                actions = "<button type='button' class='primary'>" + escHTML(t.mktTrialActionConfirm) + "</button>"
-                  + "<button type='button'>" + escHTML(t.mktTrialActionReschedule) + "</button>";
+                actions = "<button type='button' class='primary' data-mkt-trial-action='confirm' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionConfirm) + "</button>"
+                  + "<button type='button' data-mkt-trial-action='reschedule' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionReschedule) + "</button>";
               } else if (status === "confirmed") {
-                actions = "<button type='button' class='primary'>" + escHTML(t.mktTrialActionDone) + "</button>"
-                  + "<button type='button'>" + escHTML(t.mktTrialActionReschedule) + "</button>";
+                actions = "<button type='button' class='primary' data-mkt-trial-action='done' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionDone) + "</button>"
+                  + "<button type='button' data-mkt-trial-action='noshow' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialStatusNoShow) + "</button>";
+              } else if (status === "done") {
+                actions = "<button type='button' data-mkt-trial-action='reopen' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionReopen) + "</button>";
               } else {
-                actions = "<button type='button'>" + escHTML(t.mktTrialActionReschedule) + "</button>";
+                actions = "<button type='button' data-mkt-trial-action='confirm' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionConfirm) + "</button>";
               }
               return "<tr>"
                 + "<td>" + escHTML(when) + "</td>"
@@ -2716,6 +2724,55 @@
           bar.querySelectorAll("[data-mkt-crm-filter]").forEach(function (btn) {
             btn.classList.toggle("active", btn === b);
           });
+          if (typeof render === "function") render();
+        });
+      })();
+
+      // Trial-table action delegation — Confirm / Mark done / No-show /
+      // Reschedule / Reopen. Walks the lead by its createdAt identifier
+      // and writes the new trialStatus via flow.updateLead. "Done" also
+      // writes a completion record so the legacy new-trials.html page
+      // (which reads from KEYS.completions) sees the same status.
+      (function () {
+        var tBody = document.getElementById("mktTrialBody");
+        if (!tBody) return;
+        tBody.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-mkt-trial-action]");
+          if (!btn) return;
+          var leadId = btn.getAttribute("data-lead-id");
+          var action = btn.getAttribute("data-mkt-trial-action");
+          if (!leadId || !window.MindDoFlow || !window.MindDoFlow.updateLead) return;
+          var nextStatus, todayDelta = null;
+          if (action === "confirm") nextStatus = "confirmed";
+          else if (action === "done") nextStatus = "done";
+          else if (action === "noshow") nextStatus = "noshow";
+          else if (action === "reopen") nextStatus = "booked";
+          else if (action === "reschedule") {
+            // Quick reschedule — push the date by 7 days. Real flow would
+            // open a date-picker modal; for the dashboard's quick-action
+            // surface a one-click bump is the right shape.
+            var lead = (window.MindDoFlow.readJson && window.MindDoFlow.keys)
+              ? (window.MindDoFlow.readJson(window.MindDoFlow.keys.leads) || []).filter(function (l) { return l && l.createdAt === leadId; })[0]
+              : null;
+            if (lead && lead.trialDate) {
+              var d = new Date(lead.trialDate); d.setDate(d.getDate() + 7);
+              todayDelta = d.toISOString().slice(0, 10);
+              nextStatus = "booked";
+            } else {
+              nextStatus = "booked";
+            }
+          }
+          if (!nextStatus) return;
+          var patch = { trialStatus: nextStatus };
+          if (todayDelta) patch.trialDate = todayDelta;
+          window.MindDoFlow.updateLead(leadId, patch);
+          // Mirror "done" into KEYS.completions so the legacy roster
+          // page (new-trials.html) flips its status pill in sync.
+          if (nextStatus === "done" && window.MindDoFlow.markTrialComplete) {
+            var leadFull = (window.MindDoFlow.readJson(window.MindDoFlow.keys.leads) || [])
+              .filter(function (l) { return l && l.createdAt === leadId; })[0];
+            if (leadFull) window.MindDoFlow.markTrialComplete(leadFull, { operator: "Dashboard" });
+          }
           if (typeof render === "function") render();
         });
       })();
