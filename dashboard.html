@@ -581,6 +581,21 @@
     .ops-toolbar .campus-chip .cc-select { font-size: 12.5px; }
     .ops-toolbar .toolbar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
+    /* Marketing Center sub-tabs — horizontal pill row above the
+       sub-panels. Active pill flips to dark-clay background. */
+    .mkt-subtabs { display: flex; gap: 4px; padding: 4px; margin: 0 0 18px;
+      background: rgba(122,48,16,0.05); border: 1px solid var(--line);
+      border-radius: 14px; overflow-x: auto; }
+    .mkt-subtab { all: unset; cursor: pointer; padding: 9px 18px;
+      border-radius: 10px; font-size: 13px; font-weight: 700; color: var(--muted);
+      transition: 0.12s; font-family: inherit; display: inline-flex; align-items: center; gap: 8px;
+      white-space: nowrap; }
+    .mkt-subtab:not(.active):hover { background: rgba(255,255,255,0.6); color: var(--clay); }
+    .mkt-subtab.active { background: var(--clay); color: #fffbeb; box-shadow: 0 4px 12px rgba(122,48,16,0.18); }
+    .mkt-subtab .ms-icon { font-size: 14px; }
+    .mkt-subpanel { display: none; }
+    .mkt-subpanel.active { display: block; }
+
     /* Marketing Center — CRM lead pipeline + trial management table +
        brand-asset grid. */
     .mkt-crm-filters { display: inline-flex; gap: 2px; padding: 3px;
@@ -1127,90 +1142,123 @@
         </section>
       </section>
 
-      <!-- ========== Marketing Center — KPIs + CRM + trial mgmt + brand ========== -->
+      <!-- ========== Marketing Center — sub-tabs ========== -->
       <section class="dash-panel" data-tab-panel="enrollment" role="tabpanel" hidden>
 
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneMktKpiTitle"></h3>
-              <p data-i18n="zoneMktKpiSub"></p>
-            </div>
-          </div>
-          <section class="grid" id="enrollmentMetrics"></section>
-        </section>
+        <nav class="mkt-subtabs" id="mktSubtabs" role="tablist" aria-label="Marketing groups">
+          <button type="button" class="mkt-subtab active" data-mkt-subtab="kpi" role="tab">
+            <span class="ms-icon" aria-hidden="true">📈</span><span data-i18n="mktSubtabKpi"></span>
+          </button>
+          <button type="button" class="mkt-subtab" data-mkt-subtab="crm" role="tab">
+            <span class="ms-icon" aria-hidden="true">👥</span><span data-i18n="mktSubtabCrm"></span>
+          </button>
+          <button type="button" class="mkt-subtab" data-mkt-subtab="trial" role="tab">
+            <span class="ms-icon" aria-hidden="true">🎤</span><span data-i18n="mktSubtabTrial"></span>
+          </button>
+          <button type="button" class="mkt-subtab" data-mkt-subtab="channel" role="tab">
+            <span class="ms-icon" aria-hidden="true">🛒</span><span data-i18n="mktSubtabChannel"></span>
+          </button>
+          <button type="button" class="mkt-subtab" data-mkt-subtab="brand" role="tab">
+            <span class="ms-icon" aria-hidden="true">👑</span><span data-i18n="mktSubtabBrand"></span>
+          </button>
+        </nav>
 
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneMktCrmTitle"></h3>
-              <p data-i18n="zoneMktCrmSub"></p>
-            </div>
-          </div>
-          <article class="panel">
-            <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
-              <h2 data-i18n="mktCrmHead" style="margin:0;"></h2>
-              <div class="mkt-crm-filters" id="mktCrmFilters" role="group" aria-label="CRM filter">
-                <button type="button" data-mkt-crm-filter="all" class="active" data-i18n="mktCrmFilterAll"></button>
-                <button type="button" data-mkt-crm-filter="new" data-i18n="mktCrmFilterNew"></button>
-                <button type="button" data-mkt-crm-filter="follow" data-i18n="mktCrmFilterFollow"></button>
-                <button type="button" data-mkt-crm-filter="won" data-i18n="mktCrmFilterWon"></button>
-                <button type="button" data-mkt-crm-filter="lost" data-i18n="mktCrmFilterLost"></button>
+        <!-- Sub-tab 1: KPIs -->
+        <div class="mkt-subpanel active" data-mkt-subpanel="kpi" role="tabpanel">
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneMktKpiTitle"></h3>
+                <p data-i18n="zoneMktKpiSub"></p>
               </div>
             </div>
-            <div id="mktCrmList"></div>
-          </article>
-        </section>
+            <section class="grid" id="enrollmentMetrics"></section>
+          </section>
+        </div>
 
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneMktTrialTitle"></h3>
-              <p data-i18n="zoneMktTrialSub"></p>
+        <!-- Sub-tab 2: CRM -->
+        <div class="mkt-subpanel" data-mkt-subpanel="crm" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneMktCrmTitle"></h3>
+                <p data-i18n="zoneMktCrmSub"></p>
+              </div>
             </div>
-          </div>
-          <article class="panel">
-            <h2 data-i18n="mktTrialHead"></h2>
-            <div class="table-wrap">
-              <table class="mkt-trial-table">
-                <thead>
-                  <tr>
-                    <th data-i18n="mktTrialColTime"></th>
-                    <th data-i18n="mktTrialColStudent"></th>
-                    <th data-i18n="mktTrialColCampus"></th>
-                    <th data-i18n="mktTrialColChannel"></th>
-                    <th data-i18n="mktTrialColStatus"></th>
-                    <th data-i18n="mktTrialColAction"></th>
-                  </tr>
-                </thead>
-                <tbody id="mktTrialBody"></tbody>
-              </table>
-            </div>
-          </article>
-        </section>
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                <h2 data-i18n="mktCrmHead" style="margin:0;"></h2>
+                <div class="mkt-crm-filters" id="mktCrmFilters" role="group" aria-label="CRM filter">
+                  <button type="button" data-mkt-crm-filter="all" class="active" data-i18n="mktCrmFilterAll"></button>
+                  <button type="button" data-mkt-crm-filter="new" data-i18n="mktCrmFilterNew"></button>
+                  <button type="button" data-mkt-crm-filter="follow" data-i18n="mktCrmFilterFollow"></button>
+                  <button type="button" data-mkt-crm-filter="won" data-i18n="mktCrmFilterWon"></button>
+                  <button type="button" data-mkt-crm-filter="lost" data-i18n="mktCrmFilterLost"></button>
+                </div>
+              </div>
+              <div id="mktCrmList"></div>
+            </article>
+          </section>
+        </div>
 
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneMktChannelTitle"></h3>
-              <p data-i18n="zoneMktChannelSub"></p>
+        <!-- Sub-tab 3: Trial management -->
+        <div class="mkt-subpanel" data-mkt-subpanel="trial" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneMktTrialTitle"></h3>
+                <p data-i18n="zoneMktTrialSub"></p>
+              </div>
             </div>
-          </div>
-          <article class="panel">
-            <h2 data-i18n="channelDist"></h2>
-            <ul class="kv-list" id="channelList"></ul>
-          </article>
-        </section>
+            <article class="panel">
+              <h2 data-i18n="mktTrialHead"></h2>
+              <div class="table-wrap">
+                <table class="mkt-trial-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="mktTrialColTime"></th>
+                      <th data-i18n="mktTrialColStudent"></th>
+                      <th data-i18n="mktTrialColCampus"></th>
+                      <th data-i18n="mktTrialColChannel"></th>
+                      <th data-i18n="mktTrialColStatus"></th>
+                      <th data-i18n="mktTrialColAction"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="mktTrialBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </div>
 
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneMktBrandTitle"></h3>
-              <p data-i18n="zoneMktBrandSub"></p>
+        <!-- Sub-tab 4: Channel mix -->
+        <div class="mkt-subpanel" data-mkt-subpanel="channel" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneMktChannelTitle"></h3>
+                <p data-i18n="zoneMktChannelSub"></p>
+              </div>
             </div>
-          </div>
-          <div class="mkt-brand-grid" id="mktBrandGrid"></div>
-        </section>
+            <article class="panel">
+              <h2 data-i18n="channelDist"></h2>
+              <ul class="kv-list" id="channelList"></ul>
+            </article>
+          </section>
+        </div>
+
+        <!-- Sub-tab 5: Brand assets -->
+        <div class="mkt-subpanel" data-mkt-subpanel="brand" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneMktBrandTitle"></h3>
+                <p data-i18n="zoneMktBrandSub"></p>
+              </div>
+            </div>
+            <div class="mkt-brand-grid" id="mktBrandGrid"></div>
+          </section>
+        </div>
 
       </section>
 
@@ -1642,6 +1690,11 @@
           tabRequests: "申请处理",
           tabSettings: "课程设置",
           // ---- Marketing Center (CRM + trial mgmt + brand) ----
+          mktSubtabKpi: "指标",
+          mktSubtabCrm: "CRM",
+          mktSubtabTrial: "试课",
+          mktSubtabChannel: "渠道",
+          mktSubtabBrand: "品牌",
           zoneMktKpiTitle: "市场核心指标",
           zoneMktKpiSub: "本期获客 + 转化全景。",
           zoneMktCrmTitle: "CRM 客户管理",
@@ -1931,6 +1984,11 @@
           tabData: "Data Center",
           tabRequests: "Requests",
           tabSettings: "Course Settings",
+          mktSubtabKpi: "KPIs",
+          mktSubtabCrm: "CRM",
+          mktSubtabTrial: "Trials",
+          mktSubtabChannel: "Channels",
+          mktSubtabBrand: "Brand",
           zoneMktKpiTitle: "Marketing KPIs",
           zoneMktKpiSub: "Acquisition + conversion view for the period.",
           zoneMktCrmTitle: "CRM — Lead Pipeline",
@@ -2660,6 +2718,39 @@
           });
           if (typeof render === "function") render();
         });
+      })();
+
+      // Marketing Center sub-tabs — five focused groups (KPIs / CRM /
+      // Trials / Channels / Brand). Same pattern Settings + Billing
+      // sub-tabs use, attribute-scoped via [data-mkt-subtab] /
+      // [data-mkt-subpanel] so handlers don't collide. Active sub-tab
+      // persists in localStorage so a refresh keeps you on the same
+      // function within the Marketing tab.
+      (function () {
+        var bar = document.getElementById("mktSubtabs");
+        if (!bar) return;
+        var KEY = "minddo_dash_mkt_subtab";
+        var KNOWN = ["kpi", "crm", "trial", "channel", "brand"];
+        function applySub(key) {
+          if (KNOWN.indexOf(key) === -1) key = "kpi";
+          bar.querySelectorAll("[data-mkt-subtab]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-mkt-subtab") === key);
+          });
+          document.querySelectorAll("[data-mkt-subpanel]").forEach(function (p) {
+            var match = p.getAttribute("data-mkt-subpanel") === key;
+            p.classList.toggle("active", match);
+            p.hidden = !match;
+          });
+          try { localStorage.setItem(KEY, key); } catch (_) {}
+        }
+        bar.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-mkt-subtab]");
+          if (!b) return;
+          applySub(b.getAttribute("data-mkt-subtab"));
+        });
+        var saved;
+        try { saved = localStorage.getItem(KEY); } catch (_) {}
+        applySub(saved || "kpi");
       })();
 
       function renderMetrics(data, t) {
