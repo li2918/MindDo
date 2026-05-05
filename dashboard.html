@@ -610,6 +610,42 @@
     .fin-subpanel { display: none; }
     .fin-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
 
+    /* Internal Management sub-panels (staff / roles) */
+    .int-subpanel { display: none; }
+    .int-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
+
+    /* Staff status pill */
+    .int-status { display: inline-flex; padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.04em; white-space: nowrap; }
+    .int-status.active   { background: rgba(110,143,87,0.18); color: #3f5d26; border: 1px solid rgba(110,143,87,0.4); }
+    .int-status.leave    { background: rgba(216,156,54,0.2); color: #7a4f0d; border: 1px solid rgba(216,156,54,0.42); }
+    .int-status.inactive { background: rgba(122,48,16,0.08); color: var(--muted); border: 1px solid var(--line); }
+
+    /* Role-management cards — 2-column grid of role definitions with
+       permission chips and member-count footer. */
+    .int-roles-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    @media (max-width: 720px) { .int-roles-grid { grid-template-columns: 1fr; } }
+    .int-role-card { background: #fff; border: 1px solid var(--line); border-radius: 14px;
+      padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+    .int-role-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .int-role-title { font-size: 15px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .int-role-cat { display: inline-flex; padding: 2px 9px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; flex-shrink: 0; }
+    .int-role-cat.academic { background: rgba(245,158,11,0.16); color: var(--gold-deep); border: 1px solid rgba(245,158,11,0.3); }
+    .int-role-cat.ops      { background: rgba(110,143,87,0.18); color: #3f5d26; border: 1px solid rgba(110,143,87,0.4); }
+    .int-role-desc { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+    .int-role-perms { display: flex; flex-wrap: wrap; gap: 5px; }
+    .int-role-perm { font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+      background: rgba(122,48,16,0.06); color: var(--clay); border: 1px solid var(--line);
+      font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace; }
+    .int-role-foot { display: flex; justify-content: space-between; align-items: center;
+      padding-top: 10px; border-top: 1px solid var(--line); margin-top: 4px; }
+    .int-role-members { font-size: 12px; color: var(--clay); font-weight: 700; }
+    .int-role-edit { all: unset; cursor: pointer; padding: 5px 12px; border-radius: 999px;
+      font: inherit; font-size: 11.5px; font-weight: 700; color: var(--clay);
+      border: 1px solid var(--line); background: #fff; transition: 0.12s; }
+    .int-role-edit:hover { border-color: var(--gold-deep); }
+
     /* Approval / status pills used across finance tables */
     .fin-status { display: inline-flex; padding: 3px 10px; border-radius: 999px;
       font-size: 11px; font-weight: 800; letter-spacing: 0.04em; white-space: nowrap; }
@@ -1255,11 +1291,20 @@
           <span class="si-icon" aria-hidden="true">📈</span><span class="si-label" data-i18n="navData"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
-        <a class="sidebar-item" href="student-management.html">
+        <button type="button" class="sidebar-item" data-tab="internal" role="tab">
           <span class="si-icon" aria-hidden="true">🛠</span><span class="si-label" data-i18n="navInternal"></span>
           <span class="si-dot" aria-hidden="true"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
-        </a>
+        </button>
+        <!-- 内部管理 second-level menu — staff + roles. -->
+        <div class="sidebar-subnav" id="intSubtabs" role="tablist" aria-label="Internal groups">
+          <button type="button" class="sidebar-subitem int-subtab active" data-int-subtab="staff" role="tab">
+            <span class="ms-icon" aria-hidden="true">👤</span><span class="ms-label" data-i18n="intSubtabStaff"></span>
+          </button>
+          <button type="button" class="sidebar-subitem int-subtab" data-int-subtab="roles" role="tab">
+            <span class="ms-icon" aria-hidden="true">🛡️</span><span class="ms-label" data-i18n="intSubtabRoles"></span>
+          </button>
+        </div>
         <button type="button" class="sidebar-item" data-tab="settings" role="tab">
           <span class="si-icon" aria-hidden="true">⚙️</span><span class="si-label" data-i18n="navBizSettings"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
@@ -1982,6 +2027,72 @@
         </section>
       </section>
 
+      <!-- ========== Internal Management — staff + roles ========== -->
+      <section class="dash-panel" data-tab-panel="internal" role="tabpanel" hidden>
+
+        <!-- Sub-panel 1: Staff -->
+        <div class="int-subpanel active" data-int-subpanel="staff" role="tabpanel">
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneIntStaffTitle"></h3>
+                <p data-i18n="zoneIntStaffSub"></p>
+              </div>
+            </div>
+            <section class="grid" id="intStaffKpi"></section>
+          </section>
+
+          <section class="dash-zone">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                <h2 data-i18n="intStaffHead" style="margin:0;"></h2>
+                <div class="acad-filters">
+                  <input type="search" class="acad-search" id="intStaffSearch" data-i18n-placeholder="intStaffSearchPlaceholder" />
+                  <select id="intStaffRoleFilter" class="acad-select"></select>
+                  <select id="intStaffStatusFilter" class="acad-select"></select>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="acad-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="intStaffColName"></th>
+                      <th data-i18n="intStaffColRole"></th>
+                      <th data-i18n="intStaffColDept"></th>
+                      <th data-i18n="intStaffColContact"></th>
+                      <th data-i18n="intStaffColStatus"></th>
+                      <th data-i18n="intStaffColAction"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="intStaffBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <!-- Sub-panel 2: Roles -->
+        <div class="int-subpanel" data-int-subpanel="roles" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneIntRolesTitle"></h3>
+                <p data-i18n="zoneIntRolesSub"></p>
+              </div>
+            </div>
+            <section class="grid" id="intRolesKpi"></section>
+          </section>
+
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="intRolesHead"></h2>
+              <div class="int-roles-grid" id="intRolesGrid"></div>
+            </article>
+          </section>
+        </div>
+
+      </section>
+
       <!-- ========== Course Settings ========== -->
       <section class="dash-panel" data-tab-panel="settings" role="tabpanel" hidden>
         <section class="dash-zone">
@@ -2268,7 +2379,46 @@
           tabFinance: "财务",
           tabData: "数据中心",
           tabRequests: "申请处理",
+          tabInternal: "内部管理",
           tabSettings: "课程设置",
+          // ---- Internal Management ----
+          intSubtabStaff: "员工管理",
+          intSubtabRoles: "角色管理",
+          // 员工管理
+          zoneIntStaffTitle: "员工管理",
+          zoneIntStaffSub: "全部员工与岗位、所属部门、联系方式与在职状态。",
+          intStaffHead: "员工列表",
+          intStaffSearchPlaceholder: "搜索 姓名 / 邮箱",
+          intStaffFilterAllRoles: "全部岗位",
+          intStaffFilterAllStatus: "全部状态",
+          intStaffStatusActive: "在职",
+          intStaffStatusLeave: "请假中",
+          intStaffStatusInactive: "已离职",
+          intStaffColName: "姓名",
+          intStaffColRole: "岗位",
+          intStaffColDept: "部门",
+          intStaffColContact: "联系方式",
+          intStaffColStatus: "状态",
+          intStaffColAction: "操作",
+          intStaffActionEdit: "编辑",
+          intStaffActionDeactivate: "停用",
+          intStaffKpiTotal: "员工总数",
+          intStaffKpiActive: "在职",
+          intStaffKpiLeave: "请假中",
+          intStaffKpiNew: "本月入职",
+          // 角色管理
+          zoneIntRolesTitle: "角色管理",
+          zoneIntRolesSub: "岗位定义、权限矩阵与人员归属。",
+          intRolesHead: "角色列表",
+          intRolesKpiTotal: "角色总数",
+          intRolesKpiAcademic: "教学岗",
+          intRolesKpiOps: "运营岗",
+          intRolesKpiUnassigned: "未分配人员",
+          intRolesMembersFmt: "{n} 人",
+          intRolesPermsHead: "权限",
+          intRoleCategoryAcademic: "教学",
+          intRoleCategoryOps: "运营",
+          intRoleEditAction: "编辑权限",
           // ---- Finance sub-tabs ----
           finSubtabOrders: "订单管理",
           finSubtabApprovals: "审批管理",
@@ -2758,7 +2908,43 @@
           tabFinance: "Finance",
           tabData: "Data Center",
           tabRequests: "Requests",
+          tabInternal: "Internal",
           tabSettings: "Course Settings",
+          intSubtabStaff: "Staff",
+          intSubtabRoles: "Roles",
+          zoneIntStaffTitle: "Staff Management",
+          zoneIntStaffSub: "All employees with role, department, contact, and status.",
+          intStaffHead: "Staff list",
+          intStaffSearchPlaceholder: "Search name / email",
+          intStaffFilterAllRoles: "All roles",
+          intStaffFilterAllStatus: "All status",
+          intStaffStatusActive: "Active",
+          intStaffStatusLeave: "On leave",
+          intStaffStatusInactive: "Off-boarded",
+          intStaffColName: "Name",
+          intStaffColRole: "Role",
+          intStaffColDept: "Dept",
+          intStaffColContact: "Contact",
+          intStaffColStatus: "Status",
+          intStaffColAction: "Action",
+          intStaffActionEdit: "Edit",
+          intStaffActionDeactivate: "Deactivate",
+          intStaffKpiTotal: "Total staff",
+          intStaffKpiActive: "Active",
+          intStaffKpiLeave: "On leave",
+          intStaffKpiNew: "New (mo)",
+          zoneIntRolesTitle: "Role Management",
+          zoneIntRolesSub: "Role definitions, permission matrix, and staff assignments.",
+          intRolesHead: "Role catalog",
+          intRolesKpiTotal: "Total roles",
+          intRolesKpiAcademic: "Academic",
+          intRolesKpiOps: "Operations",
+          intRolesKpiUnassigned: "Unassigned",
+          intRolesMembersFmt: "{n} member(s)",
+          intRolesPermsHead: "Permissions",
+          intRoleCategoryAcademic: "Academic",
+          intRoleCategoryOps: "Operations",
+          intRoleEditAction: "Edit permissions",
           acadSubtabRoster: "Students",
           acadSubtabClasses: "Classes",
           acadSubtabSchedule: "Schedule",
@@ -4603,6 +4789,216 @@
         applySub(saved || "orders");
       })();
 
+      // ============================================================
+      // Internal Management (staff + roles)
+      // ============================================================
+      var __intStaffSearch = "";
+      var __intStaffRoleFilter = "";
+      var __intStaffStatusFilter = "";
+
+      // 员工管理 — staff roster with search + role/status filters.
+      function renderInternalStaff(t) {
+        var f = window.MindDoFlow;
+        if (!f || !f.readJson || !f.keys || !f.keys.staff) return;
+        var staff = (f.readJson(f.keys.staff) || []).slice();
+        var roles = (f.readJson(f.keys.roles) || []).slice();
+        var roleById = {};
+        roles.forEach(function (r) { roleById[r.id] = r; });
+        var lang = state.lang === "en" ? "en" : "zh";
+
+        // KPI tiles
+        var thisMonth = new Date(); thisMonth.setDate(1); thisMonth.setHours(0, 0, 0, 0);
+        var active = staff.filter(function (s) { return s.status === "active"; }).length;
+        var leave = staff.filter(function (s) { return s.status === "leave"; }).length;
+        var newHires = staff.filter(function (s) {
+          return s.joinedAt && new Date(s.joinedAt) >= thisMonth;
+        }).length;
+        var kpiEl = document.getElementById("intStaffKpi");
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.intStaffKpiTotal, value: staff.length, sub: "" },
+            { label: t.intStaffKpiActive, value: active, sub: "" },
+            { label: t.intStaffKpiLeave, value: leave, sub: "" },
+            { label: t.intStaffKpiNew, value: newHires, sub: "" }
+          ]);
+        }
+
+        // Hydrate filter dropdowns
+        var roleSel = document.getElementById("intStaffRoleFilter");
+        if (roleSel && !roleSel.dataset.hydrated) {
+          roleSel.innerHTML = "<option value=''>" + escHTML(t.intStaffFilterAllRoles) + "</option>"
+            + roles.map(function (r) {
+                return "<option value='" + escHTML(r.id) + "'>" + escHTML(lang === "en" ? (r.nameEn || r.name) : r.name) + "</option>";
+              }).join("");
+          roleSel.dataset.hydrated = "1";
+          roleSel.addEventListener("change", function () {
+            __intStaffRoleFilter = roleSel.value;
+            renderInternalStaff(t);
+          });
+        }
+        if (roleSel) roleSel.value = __intStaffRoleFilter;
+
+        var statusSel = document.getElementById("intStaffStatusFilter");
+        if (statusSel && !statusSel.dataset.hydrated) {
+          statusSel.innerHTML = "<option value=''>" + escHTML(t.intStaffFilterAllStatus) + "</option>"
+            + "<option value='active'>" + escHTML(t.intStaffStatusActive) + "</option>"
+            + "<option value='leave'>" + escHTML(t.intStaffStatusLeave) + "</option>"
+            + "<option value='inactive'>" + escHTML(t.intStaffStatusInactive) + "</option>";
+          statusSel.dataset.hydrated = "1";
+          statusSel.addEventListener("change", function () {
+            __intStaffStatusFilter = statusSel.value;
+            renderInternalStaff(t);
+          });
+        }
+        if (statusSel) statusSel.value = __intStaffStatusFilter;
+
+        var searchEl = document.getElementById("intStaffSearch");
+        if (searchEl && !searchEl.dataset.hydrated) {
+          searchEl.dataset.hydrated = "1";
+          var debounceT;
+          searchEl.addEventListener("input", function () {
+            clearTimeout(debounceT);
+            debounceT = setTimeout(function () {
+              __intStaffSearch = String(searchEl.value || "").trim().toLowerCase();
+              renderInternalStaff(t);
+            }, 180);
+          });
+        }
+        if (searchEl) searchEl.value = __intStaffSearch;
+
+        // Filter
+        var filtered = staff.filter(function (s) {
+          if (__intStaffRoleFilter && s.roleId !== __intStaffRoleFilter) return false;
+          if (__intStaffStatusFilter && s.status !== __intStaffStatusFilter) return false;
+          if (__intStaffSearch) {
+            var hay = (s.name + " " + (s.email || "") + " " + (s.phone || "") + " " + s.id).toLowerCase();
+            if (hay.indexOf(__intStaffSearch) < 0) return false;
+          }
+          return true;
+        });
+
+        var tBody = document.getElementById("intStaffBody");
+        if (!tBody) return;
+        if (!staff.length) {
+          tBody.innerHTML = "<tr><td colspan='6'><div class='acad-empty'>" + escHTML(t.acadEmpty || "No data") + "</div></td></tr>";
+          return;
+        }
+        if (!filtered.length) {
+          tBody.innerHTML = "<tr><td colspan='6'><div class='acad-empty'>" + escHTML(t.acadEmptyFiltered || "No matches") + "</div></td></tr>";
+          return;
+        }
+        tBody.innerHTML = filtered.map(function (s) {
+          var role = roleById[s.roleId];
+          var roleName = role ? (lang === "en" ? (role.nameEn || role.name) : role.name) : (s.roleId || "—");
+          var statusLabel = s.status === "leave" ? t.intStaffStatusLeave
+            : s.status === "inactive" ? t.intStaffStatusInactive
+            : t.intStaffStatusActive;
+          var contact = (s.email ? s.email : "") + (s.phone ? " · " + s.phone : "");
+          var initial = (s.name || "—").slice(0, 1);
+          return "<tr>"
+            + "<td><div class='acad-name'>"
+            +   "<span style='display:inline-flex;align-items:center;gap:8px;'>"
+            +     "<span class='greet-avatar' style='width:28px;height:28px;font-size:11px;'>" + escHTML(initial) + "</span>"
+            +     escHTML(s.name)
+            +   "</span>"
+            +   "<span class='sid'>" + escHTML(s.id) + "</span>"
+            + "</div></td>"
+            + "<td>" + escHTML(roleName) + "</td>"
+            + "<td>" + escHTML(s.department || "—") + "</td>"
+            + "<td>" + escHTML(contact || "—") + "</td>"
+            + "<td><span class='int-status " + s.status + "'>" + escHTML(statusLabel) + "</span></td>"
+            + "<td><div class='acad-row-actions'>"
+            +   "<button type='button'>" + escHTML(t.intStaffActionEdit) + "</button>"
+            +   (s.status === "active" ? "<button type='button'>" + escHTML(t.intStaffActionDeactivate) + "</button>" : "")
+            + "</div></td>"
+            + "</tr>";
+        }).join("");
+      }
+
+      // 角色管理 — role catalog grid with permission chips + member counts.
+      function renderInternalRoles(t) {
+        var f = window.MindDoFlow;
+        if (!f || !f.readJson || !f.keys || !f.keys.roles) return;
+        var roles = (f.readJson(f.keys.roles) || []).slice();
+        var staff = (f.readJson(f.keys.staff) || []).slice();
+        var lang = state.lang === "en" ? "en" : "zh";
+
+        // Member-count map: roleId → count of active staff with that role
+        var counts = {};
+        staff.forEach(function (s) { if (s.roleId) counts[s.roleId] = (counts[s.roleId] || 0) + 1; });
+
+        // KPI tiles
+        var academicCount = roles.filter(function (r) { return r.category === "academic"; }).length;
+        var opsCount = roles.filter(function (r) { return r.category === "ops"; }).length;
+        var unassigned = roles.filter(function (r) { return !counts[r.id]; }).length;
+        var kpiEl = document.getElementById("intRolesKpi");
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.intRolesKpiTotal, value: roles.length, sub: "" },
+            { label: t.intRolesKpiAcademic, value: academicCount, sub: "" },
+            { label: t.intRolesKpiOps, value: opsCount, sub: "" },
+            { label: t.intRolesKpiUnassigned, value: unassigned, sub: "" }
+          ]);
+        }
+
+        // Card grid
+        var grid = document.getElementById("intRolesGrid");
+        if (!grid) return;
+        if (!roles.length) {
+          grid.innerHTML = "<div class='acad-empty'>" + escHTML(t.acadEmpty || "No data") + "</div>";
+          return;
+        }
+        grid.innerHTML = roles.map(function (r) {
+          var name = lang === "en" ? (r.nameEn || r.name) : r.name;
+          var desc = lang === "en" ? (r.descEn || r.desc) : r.desc;
+          var catLabel = r.category === "academic" ? t.intRoleCategoryAcademic : t.intRoleCategoryOps;
+          var memberLabel = (t.intRolesMembersFmt || "{n} member(s)").replace("{n}", counts[r.id] || 0);
+          var perms = (r.permissions || []).map(function (p) {
+            return "<span class='int-role-perm'>" + escHTML(p) + "</span>";
+          }).join("");
+          return "<div class='int-role-card'>"
+            + "<div class='int-role-head'>"
+            +   "<div class='int-role-title'>" + escHTML(name) + "</div>"
+            +   "<span class='int-role-cat " + r.category + "'>" + escHTML(catLabel) + "</span>"
+            + "</div>"
+            + "<div class='int-role-desc'>" + escHTML(desc) + "</div>"
+            + "<div class='int-role-perms'>" + perms + "</div>"
+            + "<div class='int-role-foot'>"
+            +   "<span class='int-role-members'>👥 " + escHTML(memberLabel) + "</span>"
+            +   "<button type='button' class='int-role-edit'>" + escHTML(t.intRoleEditAction) + "</button>"
+            + "</div>"
+            + "</div>";
+        }).join("");
+      }
+
+      // Internal sub-tab handler — same pattern as the others.
+      (function () {
+        var bar = document.getElementById("intSubtabs");
+        if (!bar) return;
+        var KEY = "minddo_dash_int_subtab";
+        var KNOWN = ["staff", "roles"];
+        function applySub(key) {
+          if (KNOWN.indexOf(key) === -1) key = "staff";
+          bar.querySelectorAll("[data-int-subtab]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-int-subtab") === key);
+          });
+          document.querySelectorAll("[data-int-subpanel]").forEach(function (p) {
+            var match = p.getAttribute("data-int-subpanel") === key;
+            p.classList.toggle("active", match);
+            p.hidden = !match;
+          });
+          try { localStorage.setItem(KEY, key); } catch (_) {}
+        }
+        bar.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-int-subtab]");
+          if (!b) return;
+          applySub(b.getAttribute("data-int-subtab"));
+        });
+        var saved;
+        try { saved = localStorage.getItem(KEY); } catch (_) {}
+        applySub(saved || "staff");
+      })();
+
       // CRM filter pills — clicking re-renders the list with the new filter.
       // Bound once at script init; the data render block above re-runs the
       // list output on every render() call.
@@ -5064,6 +5460,10 @@
         renderFinanceBilling(paymentsAll, t);
         renderFinancePayroll(t);
         renderFinanceContracts(t);
+
+        // ---- Internal Management: staff + roles ----
+        renderInternalStaff(t);
+        renderInternalRoles(t);
 
         // ---- Data Center: KPI tiles, funnel, revenue trend ----
         var dataKpiEl = document.getElementById("dataKpiMetrics");

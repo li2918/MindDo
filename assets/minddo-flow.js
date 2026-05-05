@@ -26,7 +26,9 @@
     billingProfile: "minddo_billing_profile",
     payroll: "minddo_payroll",
     contracts: "minddo_contracts",
-    approvals: "minddo_approvals"
+    approvals: "minddo_approvals",
+    staff: "minddo_staff",
+    roles: "minddo_roles"
   };
 
   // Billing profile — per-family record carrying the payment method on
@@ -2069,6 +2071,34 @@
       { id: "AP-2026-004", type: "resched",  requester: "李女士",         detail: "周二改至周四同时段",         amount: 0,    submittedAt: daysAgo(3),  status: "approved" },
       { id: "AP-2026-005", type: "payroll",  requester: "Marcus Johnson", detail: "课时费上调申请 +$10/h",      amount: 240,  submittedAt: daysAgo(7),  status: "approved" },
       { id: "AP-2026-006", type: "refund",   requester: "周先生",         detail: "孩子不再上课，申请退余额",   amount: 580,  submittedAt: daysAgo(9),  status: "rejected" }
+    ]);
+
+    // ---- Internal Management seed: staff + roles ----
+    // Staff list spans teaching, ops, and operations roles so the
+    // 内部管理 → 员工 view shows real variety. Each staff entry
+    // carries a roleId that joins to the roles seed below.
+    writeJson(KEYS.staff, [
+      { id: "EM001", name: "Dr. Sarah Chen",  roleId: "instructor-senior", department: "教学部", email: "sarah@minddo.local",  phone: "626-555-0102", status: "active",  joinedAt: daysAgo(450) },
+      { id: "EM002", name: "Jenny Lin",       roleId: "instructor",        department: "教学部", email: "jenny@minddo.local",  phone: "626-555-0118", status: "active",  joinedAt: daysAgo(380) },
+      { id: "EM003", name: "Marcus Johnson",  roleId: "instructor-senior", department: "教学部", email: "marcus@minddo.local", phone: "626-555-0134", status: "active",  joinedAt: daysAgo(220) },
+      { id: "EM004", name: "David Park",      roleId: "academic-lead",     department: "教学部", email: "david@minddo.local",  phone: "626-555-0156", status: "active",  joinedAt: daysAgo(560) },
+      { id: "EM005", name: "Wei Zhang",       roleId: "campus-manager",    department: "运营部", email: "wei@minddo.local",    phone: "626-555-0173", status: "active",  joinedAt: daysAgo(610) },
+      { id: "EM006", name: "Amy Cheng",       roleId: "instructor-intern", department: "教学部", email: "amy@minddo.local",    phone: "626-555-0188", status: "active",  joinedAt: daysAgo(60)  },
+      { id: "EM007", name: "Kevin Wu",        roleId: "marketing",         department: "市场部", email: "kevin@minddo.local",  phone: "626-555-0210", status: "active",  joinedAt: daysAgo(180) },
+      { id: "EM008", name: "Iris Yang",       roleId: "finance",           department: "财务部", email: "iris@minddo.local",   phone: "626-555-0225", status: "leave",   joinedAt: daysAgo(420) },
+      { id: "EM009", name: "Lily Hsu",        roleId: "frontdesk",         department: "运营部", email: "lily@minddo.local",   phone: "626-555-0246", status: "active",  joinedAt: daysAgo(150) },
+      { id: "EM010", name: "Tom Liu",         roleId: "marketing",         department: "市场部", email: "tom@minddo.local",    phone: "626-555-0262", status: "inactive",joinedAt: daysAgo(540) }
+    ]);
+
+    writeJson(KEYS.roles, [
+      { id: "academic-lead",      name: "教学主管",   nameEn: "Academic Lead",    category: "academic", desc: "统筹课程体系、教师培训与教研活动。",        descEn: "Owns curriculum, teacher training, and pedagogical R&D.", permissions: ["academic.write", "staff.view", "approvals.approve", "reports.view"] },
+      { id: "instructor-senior",  name: "高级讲师",   nameEn: "Senior Instructor",category: "academic", desc: "可独立授课、负责竞赛 / 项目营核心班次。",     descEn: "Independent classroom + competition / project-camp lead.",   permissions: ["academic.write", "students.view", "feedback.write"] },
+      { id: "instructor",         name: "讲师",       nameEn: "Instructor",       category: "academic", desc: "负责常规班级授课与课堂反馈。",              descEn: "Standard class delivery + feedback authoring.",             permissions: ["students.view", "feedback.write"] },
+      { id: "instructor-intern",  name: "实习讲师",   nameEn: "Intern Instructor",category: "academic", desc: "在导师指导下完成助教与试课带班。",          descEn: "Mentored TA + trial-class delivery.",                       permissions: ["students.view"] },
+      { id: "campus-manager",     name: "校区经理",   nameEn: "Campus Manager",   category: "ops",      desc: "校区运营、师资排班、家校沟通的负责人。",     descEn: "Owns campus ops, scheduling, parent comms.",                permissions: ["staff.view", "academic.view", "billing.view", "approvals.approve"] },
+      { id: "marketing",          name: "市场专员",   nameEn: "Marketing",        category: "ops",      desc: "招生渠道维护、试听跟进与品牌物料。",        descEn: "Channel growth, trial follow-up, brand assets.",            permissions: ["leads.write", "marketing.write"] },
+      { id: "finance",            name: "财务",       nameEn: "Finance",          category: "ops",      desc: "订单 / 账单 / 工资 / 报销审批。",            descEn: "Orders, billing, payroll, expense approvals.",              permissions: ["billing.write", "payroll.write", "approvals.approve"] },
+      { id: "frontdesk",          name: "前台",       nameEn: "Front Desk",       category: "ops",      desc: "试听签到、家长接待、日程协助。",            descEn: "Trial check-in, parent reception, scheduling support.",     permissions: ["students.view", "leads.view"] }
     ]);
   }
 
