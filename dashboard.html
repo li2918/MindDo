@@ -581,6 +581,52 @@
     .ops-toolbar .campus-chip .cc-select { font-size: 12.5px; }
     .ops-toolbar .toolbar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
+    /* Academic sub-panels — KPI / classes / schedule. Same show/hide
+       behaviour as the marketing sub-panels. */
+    .acad-subpanel { display: none; }
+    .acad-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
+
+    /* Weekly schedule grid — 8 columns (time + Mon..Sun). Each cell holds
+       up to a few class chips; chips are color-tinted by level. */
+    .acad-grid-wrap { overflow-x: auto; }
+    .acad-grid { display: grid; grid-template-columns: 90px repeat(7, minmax(120px, 1fr));
+      gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px;
+      overflow: hidden; min-width: 760px; }
+    .acad-grid > div { background: #fff; padding: 10px 8px; min-height: 48px; font-size: 12px; }
+    .acad-grid .head { background: linear-gradient(180deg,#fff,rgba(254,243,199,0.4));
+      font-weight: 800; color: var(--clay); font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase; text-align: center; padding: 12px 8px; }
+    .acad-grid .time { background: linear-gradient(180deg,#fff,rgba(254,243,199,0.32));
+      font-weight: 800; color: var(--muted); font-size: 11px; text-align: right;
+      padding-right: 12px; font-variant-numeric: tabular-nums; }
+    .acad-grid .cell { display: flex; flex-direction: column; gap: 4px; min-height: 64px; }
+    .acad-grid .cell.empty { background: rgba(254,250,240,0.4); }
+    .acad-chip { padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 700;
+      line-height: 1.45; cursor: default; border: 1px solid transparent; }
+    .acad-chip .chip-name { font-weight: 800; }
+    .acad-chip .chip-meta { font-size: 10.5px; opacity: 0.72; margin-top: 2px; }
+    .acad-chip.lvl-Beginner    { background: rgba(110,143,87,0.18); color: #3f5d26; border-color: rgba(110,143,87,0.32); }
+    .acad-chip.lvl-Intermediate { background: rgba(245,158,11,0.16); color: var(--gold-deep); border-color: rgba(245,158,11,0.3); }
+    .acad-chip.lvl-Advanced    { background: rgba(216,156,54,0.28); color: var(--clay); border-color: rgba(216,156,54,0.4); }
+    .acad-chip.lvl-Competition { background: linear-gradient(135deg,#fde68a,var(--gold)); color: #3a1808; border-color: rgba(254,243,199,0.5); }
+    .acad-chip.lvl-PC          { background: rgba(196,106,77,0.16); color: #8e3d21; border-color: rgba(196,106,77,0.32); }
+
+    /* Class-mode pill (1v1 / small group) on the class catalog table */
+    .acad-mode-pill { display: inline-flex; padding: 2px 8px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; }
+    .acad-mode-pill.mode-1v1   { background: rgba(245,158,11,0.18); color: var(--gold-deep); border: 1px solid rgba(245,158,11,0.32); }
+    .acad-mode-pill.mode-small { background: rgba(110,143,87,0.18); color: #3f5d26; border: 1px solid rgba(110,143,87,0.32); }
+
+    /* Seats progress bar — color depends on fill (green→amber→red as it fills). */
+    .acad-seats { display: flex; align-items: center; gap: 8px; min-width: 120px; }
+    .acad-seats-track { flex: 1; height: 6px; background: rgba(122,48,16,0.08); border-radius: 999px; overflow: hidden; }
+    .acad-seats-fill { height: 100%; border-radius: 999px; transition: width 0.4s ease; }
+    .acad-seats-fill.low  { background: linear-gradient(90deg,#a3c374,#6e8b58); }
+    .acad-seats-fill.mid  { background: linear-gradient(90deg,#fcd34d,var(--gold)); }
+    .acad-seats-fill.full { background: linear-gradient(90deg,#d97706,#9a4a0d); }
+    .acad-seats-text { font-size: 11px; font-weight: 800; color: var(--clay); white-space: nowrap;
+      font-variant-numeric: tabular-nums; }
+
     /* Academic Affairs — roster table for currently-active students.
        Search input + level / grade selects in the header, level pill +
        inline level-adjust select per row. */
@@ -1084,6 +1130,18 @@
           <span class="si-icon" aria-hidden="true">📘</span><span class="si-label" data-i18n="navAcademic"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
+        <!-- 教务中心 second-level menu — auto-expands when academic tab active -->
+        <div class="sidebar-subnav" id="acadSubtabs" role="tablist" aria-label="Academic groups">
+          <button type="button" class="sidebar-subitem acad-subtab active" data-acad-subtab="roster" role="tab">
+            <span class="ms-icon" aria-hidden="true">🧑‍🎓</span><span class="ms-label" data-i18n="acadSubtabRoster"></span>
+          </button>
+          <button type="button" class="sidebar-subitem acad-subtab" data-acad-subtab="classes" role="tab">
+            <span class="ms-icon" aria-hidden="true">🏫</span><span class="ms-label" data-i18n="acadSubtabClasses"></span>
+          </button>
+          <button type="button" class="sidebar-subitem acad-subtab" data-acad-subtab="schedule" role="tab">
+            <span class="ms-icon" aria-hidden="true">📅</span><span class="ms-label" data-i18n="acadSubtabSchedule"></span>
+          </button>
+        </div>
         <button type="button" class="sidebar-item" data-tab="teaching" role="tab">
           <span class="si-icon" aria-hidden="true">📊</span><span class="si-label" data-i18n="navTeaching"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
@@ -1377,57 +1435,123 @@
 
       </section>
 
-      <!-- ========== Academic Affairs — student roster + course catalog ========== -->
+      <!-- ========== Academic Affairs — sub-tabs (roster / classes / schedule) ========== -->
       <section class="dash-panel" data-tab-panel="academic" role="tabpanel" hidden>
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneAcadStudentTitle"></h3>
-              <p data-i18n="zoneAcadStudentSub"></p>
-            </div>
-            <div class="dash-zone-actions">
-              <a class="bm-edit-btn" href="course-offerings.html" data-i18n="acadCourseLink"></a>
-            </div>
-          </div>
 
-          <!-- KPI strip — students currently in class -->
-          <section class="grid" id="acadKpiMetrics"></section>
-        </section>
-
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneAcadRosterTitle"></h3>
-              <p data-i18n="zoneAcadRosterSub"></p>
-            </div>
-          </div>
-          <article class="panel">
-            <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
-              <h2 data-i18n="acadRosterHead" style="margin:0;"></h2>
-              <div class="acad-filters">
-                <input type="search" class="acad-search" id="acadSearch" data-i18n-placeholder="acadSearchPlaceholder" />
-                <select id="acadLevelFilter" class="acad-select"></select>
-                <select id="acadGradeFilter" class="acad-select"></select>
+        <!-- Sub-panel 1: Student roster (existing) -->
+        <div class="acad-subpanel active" data-acad-subpanel="roster" role="tabpanel">
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneAcadStudentTitle"></h3>
+                <p data-i18n="zoneAcadStudentSub"></p>
+              </div>
+              <div class="dash-zone-actions">
+                <a class="bm-edit-btn" href="course-offerings.html" data-i18n="acadCourseLink"></a>
               </div>
             </div>
-            <div class="table-wrap">
-              <table class="acad-table">
-                <thead>
-                  <tr>
-                    <th data-i18n="acadColStudent"></th>
-                    <th data-i18n="acadColGrade"></th>
-                    <th data-i18n="acadColLevel"></th>
-                    <th data-i18n="acadColPlan"></th>
-                    <th data-i18n="acadColEnrolled"></th>
-                    <th data-i18n="acadColParent"></th>
-                    <th data-i18n="acadColAction"></th>
-                  </tr>
-                </thead>
-                <tbody id="acadRosterBody"></tbody>
-              </table>
+            <section class="grid" id="acadKpiMetrics"></section>
+          </section>
+
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneAcadRosterTitle"></h3>
+                <p data-i18n="zoneAcadRosterSub"></p>
+              </div>
             </div>
-          </article>
-        </section>
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                <h2 data-i18n="acadRosterHead" style="margin:0;"></h2>
+                <div class="acad-filters">
+                  <input type="search" class="acad-search" id="acadSearch" data-i18n-placeholder="acadSearchPlaceholder" />
+                  <select id="acadLevelFilter" class="acad-select"></select>
+                  <select id="acadGradeFilter" class="acad-select"></select>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="acad-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="acadColStudent"></th>
+                      <th data-i18n="acadColGrade"></th>
+                      <th data-i18n="acadColLevel"></th>
+                      <th data-i18n="acadColPlan"></th>
+                      <th data-i18n="acadColEnrolled"></th>
+                      <th data-i18n="acadColParent"></th>
+                      <th data-i18n="acadColAction"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="acadRosterBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <!-- Sub-panel 2: Class catalog -->
+        <div class="acad-subpanel" data-acad-subpanel="classes" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneAcadClassesTitle"></h3>
+                <p data-i18n="zoneAcadClassesSub"></p>
+              </div>
+              <div class="dash-zone-actions">
+                <a class="bm-edit-btn" href="course-offerings.html" data-i18n="acadClassEditLink"></a>
+              </div>
+            </div>
+            <section class="grid" id="acadClassKpiMetrics"></section>
+          </section>
+
+          <section class="dash-zone">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                <h2 data-i18n="acadClassesHead" style="margin:0;"></h2>
+                <div class="acad-filters">
+                  <select id="acadClassLevelFilter" class="acad-select"></select>
+                  <select id="acadClassDayFilter" class="acad-select"></select>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="acad-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="acadClassColCourse"></th>
+                      <th data-i18n="acadClassColLevel"></th>
+                      <th data-i18n="acadClassColTeacher"></th>
+                      <th data-i18n="acadClassColMode"></th>
+                      <th data-i18n="acadClassColTime"></th>
+                      <th data-i18n="acadClassColSeats"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="acadClassBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <!-- Sub-panel 3: Weekly schedule grid -->
+        <div class="acad-subpanel" data-acad-subpanel="schedule" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneAcadScheduleTitle"></h3>
+                <p data-i18n="zoneAcadScheduleSub"></p>
+              </div>
+              <div class="dash-zone-actions">
+                <select id="acadScheduleLevelFilter" class="acad-select"></select>
+              </div>
+            </div>
+            <article class="panel" style="padding:18px;">
+              <div class="acad-grid-wrap">
+                <div class="acad-grid" id="acadScheduleGrid"></div>
+              </div>
+            </article>
+          </section>
+        </div>
+
       </section>
 
       <!-- ========== Teaching ========== -->
@@ -1891,6 +2015,38 @@
           tabData: "数据中心",
           tabRequests: "申请处理",
           tabSettings: "课程设置",
+          // ---- Academic Affairs (sub-tabs) ----
+          acadSubtabRoster: "学员管理",
+          acadSubtabClasses: "班级管理",
+          acadSubtabSchedule: "课表",
+          // Class catalog sub-panel
+          zoneAcadClassesTitle: "班级管理",
+          zoneAcadClassesSub: "全部班级（按等级 / 教师 / 时段筛选），上座率超 80% 自动标黄。",
+          acadClassEditLink: "✎ 编辑课程目录",
+          acadClassesHead: "班级列表",
+          acadClassColCourse: "课程",
+          acadClassColLevel: "等级",
+          acadClassColTeacher: "教师",
+          acadClassColMode: "课型",
+          acadClassColTime: "时段",
+          acadClassColSeats: "上座",
+          acadClassModeOneOnOne: "1 v 1",
+          acadClassModeSmall: "小组课",
+          acadClassFilterAllDays: "全部时段",
+          acadClassDayMon: "周一",
+          acadClassDayTue: "周二",
+          acadClassDayWed: "周三",
+          acadClassDayThu: "周四",
+          acadClassDayFri: "周五",
+          acadClassDaySat: "周六",
+          acadClassDaySun: "周日",
+          acadClassKpiTotal: "班级总数",
+          acadClassKpiSeatsTotal: "总席位",
+          acadClassKpiSeatsTaken: "已占席位",
+          acadClassKpiUtilisation: "上座率",
+          // Schedule sub-panel
+          zoneAcadScheduleTitle: "周课表",
+          zoneAcadScheduleSub: "Mon→Sun 网格视图，方便查看时段冲突与教师排班。",
           // ---- Academic Affairs (student roster) ----
           zoneAcadStudentTitle: "学员管理",
           zoneAcadStudentSub: "目前正在上课的学员总览，可按等级 / 年级筛选并就地调整等级。",
@@ -2241,6 +2397,35 @@
           tabData: "Data Center",
           tabRequests: "Requests",
           tabSettings: "Course Settings",
+          acadSubtabRoster: "Students",
+          acadSubtabClasses: "Classes",
+          acadSubtabSchedule: "Schedule",
+          zoneAcadClassesTitle: "Class Management",
+          zoneAcadClassesSub: "All classes (filter by level / teacher / day). Cells &gt;80% full are flagged amber.",
+          acadClassEditLink: "✎ Edit catalog",
+          acadClassesHead: "Class list",
+          acadClassColCourse: "Course",
+          acadClassColLevel: "Level",
+          acadClassColTeacher: "Teacher",
+          acadClassColMode: "Mode",
+          acadClassColTime: "Time",
+          acadClassColSeats: "Seats",
+          acadClassModeOneOnOne: "1:1",
+          acadClassModeSmall: "Small Group",
+          acadClassFilterAllDays: "All days",
+          acadClassDayMon: "Mon",
+          acadClassDayTue: "Tue",
+          acadClassDayWed: "Wed",
+          acadClassDayThu: "Thu",
+          acadClassDayFri: "Fri",
+          acadClassDaySat: "Sat",
+          acadClassDaySun: "Sun",
+          acadClassKpiTotal: "Classes",
+          acadClassKpiSeatsTotal: "Total seats",
+          acadClassKpiSeatsTaken: "Seats taken",
+          acadClassKpiUtilisation: "Utilisation",
+          zoneAcadScheduleTitle: "Weekly Schedule",
+          zoneAcadScheduleSub: "Mon→Sun grid view — spot teacher conflicts and slot overlaps fast.",
           zoneAcadStudentTitle: "Student Management",
           zoneAcadStudentSub: "Currently-active students. Filter by level / grade and adjust placements inline.",
           acadCourseLink: "📘 Course Catalog",
@@ -3296,6 +3481,230 @@
         });
       })();
 
+      // 班级管理 — class catalog table. Reads flow.getClassOfferings()
+      // (the seeded weekly slots: 4 per level × 5 levels = 20 rows) and
+      // renders a filterable list with mode pill, time, and seats bar.
+      var __acadClassLevelFilter = "";
+      var __acadClassDayFilter = "";
+      var DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+      function dayLabel(t, dayKey) {
+        var k = (dayKey || "").toLowerCase();
+        return t["acadClassDay" + k.charAt(0).toUpperCase() + k.slice(1)] || k;
+      }
+      function renderAcademicClasses(t) {
+        var f = window.MindDoFlow;
+        if (!f || !f.getClassOfferings) return;
+        var k = state.lang === "en" ? "en" : "zh";
+        var all = f.getClassOfferings() || [];
+
+        // Hydrate the level filter dropdown once. We use the canonical
+        // English level keys (Beginner / Intermediate / Advanced /
+        // Project Camp / Competition) since they're what flow.* helpers
+        // already standardise on.
+        var levelSel = document.getElementById("acadClassLevelFilter");
+        if (levelSel && !levelSel.dataset.hydrated) {
+          var seenLevels = {};
+          all.forEach(function (o) { if (o.level && o.level.en) seenLevels[o.level.en] = true; });
+          var lvls = Object.keys(seenLevels);
+          levelSel.innerHTML = "<option value=''>" + escHTML(t.acadFilterAllLevels) + "</option>"
+            + lvls.map(function (l) { return "<option value='" + l + "'>" + l + "</option>"; }).join("");
+          levelSel.dataset.hydrated = "1";
+          levelSel.addEventListener("change", function () {
+            __acadClassLevelFilter = levelSel.value;
+            renderAcademicClasses(t);
+          });
+        }
+        if (levelSel) levelSel.value = __acadClassLevelFilter;
+
+        var daySel = document.getElementById("acadClassDayFilter");
+        if (daySel && !daySel.dataset.hydrated) {
+          daySel.innerHTML = "<option value=''>" + escHTML(t.acadClassFilterAllDays) + "</option>"
+            + DAY_KEYS.map(function (d) { return "<option value='" + d + "'>" + dayLabel(t, d) + "</option>"; }).join("");
+          daySel.dataset.hydrated = "1";
+          daySel.addEventListener("change", function () {
+            __acadClassDayFilter = daySel.value;
+            renderAcademicClasses(t);
+          });
+        }
+        if (daySel) daySel.value = __acadClassDayFilter;
+
+        // KPI tiles — total classes, total seats, seats taken, utilisation.
+        var kpiEl = document.getElementById("acadClassKpiMetrics");
+        if (kpiEl) {
+          var totalClasses = all.length;
+          var totalSeats = all.reduce(function (a, c) { return a + (c.seatsTotal || 0); }, 0);
+          var seatsTaken = all.reduce(function (a, c) { return a + (c.seatsTaken || 0); }, 0);
+          var util = totalSeats ? Math.round((seatsTaken / totalSeats) * 100) + "%" : "—";
+          renderMetricCards(kpiEl, [
+            { label: t.acadClassKpiTotal, value: totalClasses, sub: "" },
+            { label: t.acadClassKpiSeatsTotal, value: totalSeats, sub: "" },
+            { label: t.acadClassKpiSeatsTaken, value: seatsTaken, sub: "" },
+            { label: t.acadClassKpiUtilisation, value: util, sub: "" }
+          ]);
+        }
+
+        // Filter + render rows.
+        var filtered = all.filter(function (o) {
+          if (__acadClassLevelFilter && (!o.level || o.level.en !== __acadClassLevelFilter)) return false;
+          if (__acadClassDayFilter && o.dayKey !== __acadClassDayFilter) return false;
+          return true;
+        });
+
+        var tBody = document.getElementById("acadClassBody");
+        if (!tBody) return;
+        if (!filtered.length) {
+          tBody.innerHTML = "<tr><td colspan='6'><div class='acad-empty'>" + escHTML(t.acadEmptyFiltered) + "</div></td></tr>";
+          return;
+        }
+        // Sort by day then time so the table reads chronologically.
+        filtered.sort(function (a, b) {
+          var dA = DAY_KEYS.indexOf(a.dayKey), dB = DAY_KEYS.indexOf(b.dayKey);
+          if (dA !== dB) return dA - dB;
+          return String(a.timeSlot || "").localeCompare(String(b.timeSlot || ""));
+        });
+
+        tBody.innerHTML = filtered.map(function (o) {
+          var courseName = (o.courseName && o.courseName[k]) || o.courseName.en;
+          var levelText = (o.level && o.level[k]) || o.level.en;
+          var levelClass = o.level && o.level.en === "Project Camp" ? "lvl-PC" : ("lvl-" + (o.level ? o.level.en : ""));
+          var dayText = (o.weekday && o.weekday[k]) || dayLabel(t, o.dayKey);
+          var modeClass = o.classMode === "1v1" ? "mode-1v1" : "mode-small";
+          var modeLabel = o.classMode === "1v1" ? t.acadClassModeOneOnOne : t.acadClassModeSmall;
+          var taken = o.seatsTaken || 0;
+          var total = o.seatsTotal || 0;
+          var pct = total ? Math.round((taken / total) * 100) : 0;
+          var fillCls = pct >= 90 ? "full" : pct >= 60 ? "mid" : "low";
+          return "<tr>"
+            + "<td><strong style='color:var(--clay);'>" + escHTML(courseName) + "</strong></td>"
+            + "<td><span class='acad-level-pill " + levelClass + "'>" + escHTML(levelText) + "</span></td>"
+            + "<td>" + escHTML(o.teacher || "—") + "</td>"
+            + "<td><span class='acad-mode-pill " + modeClass + "'>" + escHTML(modeLabel) + "</span></td>"
+            + "<td>" + escHTML(dayText + " · " + (o.timeSlot || "")) + "</td>"
+            + "<td><div class='acad-seats'>"
+            +   "<div class='acad-seats-track'><div class='acad-seats-fill " + fillCls + "' style='width:" + Math.max(2, pct) + "%'></div></div>"
+            +   "<span class='acad-seats-text'>" + taken + " / " + total + "</span>"
+            + "</div></td>"
+            + "</tr>";
+        }).join("");
+      }
+
+      // 课表 — Mon→Sun × time-slot grid view of every offering. Time
+      // slots are derived from the offerings' slotKey (t09…t20) so the
+      // grid stays focused on actual class hours, not a fixed 24h band.
+      var __acadScheduleLevelFilter = "";
+      function renderAcademicSchedule(t) {
+        var f = window.MindDoFlow;
+        if (!f || !f.getClassOfferings) return;
+        var k = state.lang === "en" ? "en" : "zh";
+        var all = f.getClassOfferings() || [];
+
+        // Level filter dropdown
+        var levelSel = document.getElementById("acadScheduleLevelFilter");
+        if (levelSel && !levelSel.dataset.hydrated) {
+          var seenLevels2 = {};
+          all.forEach(function (o) { if (o.level && o.level.en) seenLevels2[o.level.en] = true; });
+          var lvls2 = Object.keys(seenLevels2);
+          levelSel.innerHTML = "<option value=''>" + escHTML(t.acadFilterAllLevels) + "</option>"
+            + lvls2.map(function (l) { return "<option value='" + l + "'>" + l + "</option>"; }).join("");
+          levelSel.dataset.hydrated = "1";
+          levelSel.addEventListener("change", function () {
+            __acadScheduleLevelFilter = levelSel.value;
+            renderAcademicSchedule(t);
+          });
+        }
+        if (levelSel) levelSel.value = __acadScheduleLevelFilter;
+
+        var filtered = all.filter(function (o) {
+          if (__acadScheduleLevelFilter && (!o.level || o.level.en !== __acadScheduleLevelFilter)) return false;
+          return true;
+        });
+
+        // Bucket offerings by slotKey × dayKey.
+        var slots = {};   // slotKey → { label: "16:00 – 17:00", cells: { mon: [], tue: []... } }
+        filtered.forEach(function (o) {
+          if (!slots[o.slotKey]) {
+            slots[o.slotKey] = { label: o.timeSlot || o.slotKey, cells: { mon:[], tue:[], wed:[], thu:[], fri:[], sat:[], sun:[] } };
+          }
+          if (slots[o.slotKey].cells[o.dayKey]) {
+            slots[o.slotKey].cells[o.dayKey].push(o);
+          }
+        });
+        // Sort slot keys by leading hour (t09 → t20).
+        var slotKeys = Object.keys(slots).sort(function (a, b) {
+          var ha = parseInt(String(a).replace(/[^\d]/g, ""), 10) || 0;
+          var hb = parseInt(String(b).replace(/[^\d]/g, ""), 10) || 0;
+          return ha - hb;
+        });
+
+        var grid = document.getElementById("acadScheduleGrid");
+        if (!grid) return;
+
+        // Header row — "" + Mon..Sun
+        var html = "<div class='head'></div>";
+        DAY_KEYS.forEach(function (d) {
+          html += "<div class='head'>" + escHTML(dayLabel(t, d)) + "</div>";
+        });
+
+        if (!slotKeys.length) {
+          // Empty grid placeholder spanning all 8 columns.
+          html += "<div class='cell empty' style='grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;padding:24px;'>"
+            + escHTML(t.acadEmptyFiltered) + "</div>";
+        } else {
+          slotKeys.forEach(function (sk) {
+            var slot = slots[sk];
+            html += "<div class='time'>" + escHTML(slot.label) + "</div>";
+            DAY_KEYS.forEach(function (d) {
+              var cellOfferings = slot.cells[d] || [];
+              if (cellOfferings.length === 0) {
+                html += "<div class='cell empty'></div>";
+              } else {
+                var chips = cellOfferings.map(function (o) {
+                  var name = (o.courseName && o.courseName[k]) || o.courseName.en;
+                  var lvlCls = o.level && o.level.en === "Project Camp" ? "lvl-PC" : "lvl-" + o.level.en;
+                  return "<div class='acad-chip " + lvlCls + "'>"
+                    + "<div class='chip-name'>" + escHTML(name) + "</div>"
+                    + "<div class='chip-meta'>" + escHTML(o.teacher || "") + " · " + escHTML(o.seatsTaken + "/" + o.seatsTotal) + "</div>"
+                    + "</div>";
+                }).join("");
+                html += "<div class='cell'>" + chips + "</div>";
+              }
+            });
+          });
+        }
+        grid.innerHTML = html;
+      }
+
+      // Academic sub-tabs handler — same pattern as the marketing sub-
+      // tabs. Persists active sub-tab in localStorage so a refresh
+      // lands on the same surface. Auto-expand follows the
+      // sidebar-item.active + sidebar-subnav CSS rule (no JS toggle).
+      (function () {
+        var bar = document.getElementById("acadSubtabs");
+        if (!bar) return;
+        var KEY = "minddo_dash_acad_subtab";
+        var KNOWN = ["roster", "classes", "schedule"];
+        function applySub(key) {
+          if (KNOWN.indexOf(key) === -1) key = "roster";
+          bar.querySelectorAll("[data-acad-subtab]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-acad-subtab") === key);
+          });
+          document.querySelectorAll("[data-acad-subpanel]").forEach(function (p) {
+            var match = p.getAttribute("data-acad-subpanel") === key;
+            p.classList.toggle("active", match);
+            p.hidden = !match;
+          });
+          try { localStorage.setItem(KEY, key); } catch (_) {}
+        }
+        bar.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-acad-subtab]");
+          if (!b) return;
+          applySub(b.getAttribute("data-acad-subtab"));
+        });
+        var saved;
+        try { saved = localStorage.getItem(KEY); } catch (_) {}
+        applySub(saved || "roster");
+      })();
+
       // CRM filter pills — clicking re-renders the list with the new filter.
       // Bound once at script init; the data render block above re-runs the
       // list output on every render() call.
@@ -3746,8 +4155,10 @@
         // ---- Marketing Center: CRM lead list + trial table + brand grid ----
         renderMarketingCenter(leadsAll, t);
 
-        // ---- Academic Affairs: student roster ----
+        // ---- Academic Affairs: roster + class catalog + weekly schedule ----
         renderAcademicCenter(t);
+        renderAcademicClasses(t);
+        renderAcademicSchedule(t);
 
         // ---- Data Center: KPI tiles, funnel, revenue trend ----
         var dataKpiEl = document.getElementById("dataKpiMetrics");
