@@ -674,40 +674,34 @@
     .eval-modal .msg { font-size: 11.5px; color: var(--success); font-weight: 700; min-height: 14px; margin-bottom: 6px; }
     .eval-modal .msg.error { color: var(--error); }
 
-    /* Marketing Center — left sub-sidebar + right content. Mirrors the
-       primary sidebar's row pattern (icon · label · ▸ chevron) so the
-       nesting reads as one consistent navigation idiom. */
-    .mkt-shell { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 18px; align-items: start; }
-    .mkt-subtabs { display: flex; flex-direction: column; gap: 1px;
-      background: #fff; border: 1px solid var(--line); border-radius: 14px;
-      padding: 6px; position: sticky; top: 96px; max-height: calc(100vh - 120px); overflow-y: auto; }
-    .mkt-subtab { all: unset; cursor: pointer; padding: 10px 12px; border-radius: 8px;
-      font-size: 13.5px; font-weight: 600; color: #334155; transition: 0.12s; font-family: inherit;
-      display: flex; align-items: center; gap: 10px; }
-    .mkt-subtab:not(.active):hover { background: #f1f5f9; color: var(--clay); }
-    .mkt-subtab.active { background: linear-gradient(90deg,rgba(245,158,11,0.16),rgba(245,158,11,0.04));
-      color: var(--clay); font-weight: 800; position: relative; }
-    .mkt-subtab.active::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px;
-      width: 3px; border-radius: 2px; background: var(--gold-deep); }
-    .mkt-subtab .ms-icon { width: 18px; font-size: 15px; flex-shrink: 0; }
-    .mkt-subtab.active .ms-icon { color: var(--gold-deep); }
-    .mkt-subtab .ms-label { flex: 1; min-width: 0; }
-    .mkt-subtab .ms-arrow { color: #cbd5e1; font-size: 12px; flex-shrink: 0; transition: 0.12s; }
-    .mkt-subtab:hover .ms-arrow { color: #64748b; transform: translateX(2px); }
-    .mkt-subtab.active .ms-arrow { color: var(--gold-deep); }
+    /* Marketing Center sub-tabs as a nested second-level menu in the
+       primary sidebar. Visible only when 市场中心 is the active main
+       tab — hidden otherwise via the adjacent-sibling rule below. */
+    .sidebar-subnav { display: none; flex-direction: column; gap: 0;
+      padding: 4px 0 8px 0; margin-top: -1px;
+      border-top: 1px solid rgba(226,232,240,0.5);
+      background: rgba(254,243,199,0.18); }
+    .sidebar-item.active + .sidebar-subnav { display: flex; }
+    .sidebar-subitem { all: unset; cursor: pointer; padding: 8px 12px 8px 42px;
+      font-size: 13px; font-weight: 600; color: #475569; transition: 0.12s;
+      font-family: inherit; display: flex; align-items: center; gap: 8px;
+      position: relative; border-radius: 6px; margin: 1px 6px; }
+    .sidebar-subitem::before { content: ""; position: absolute; left: 24px; top: 50%;
+      width: 8px; height: 1px; background: rgba(122,48,16,0.18); }
+    .sidebar-subitem:hover { background: rgba(255,255,255,0.6); color: var(--clay); }
+    .sidebar-subitem.active { background: rgba(245,158,11,0.18); color: var(--clay); font-weight: 800; }
+    .sidebar-subitem.active::before { background: var(--gold-deep); height: 2px; }
+    .sidebar-subitem .ms-icon { font-size: 13px; flex-shrink: 0; }
+    .sidebar-subitem.active .ms-icon { color: var(--gold-deep); }
+    .sidebar-subitem .ms-label { flex: 1; min-width: 0; }
+
+    /* Panels container takes full width again — no in-content sidebar. */
     .mkt-panels { min-width: 0; }
     .mkt-subpanel { display: none; }
     .mkt-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
     @keyframes mktPanelIn {
-      from { opacity: 0; transform: translateX(4px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-    @media (max-width: 880px) {
-      .mkt-shell { grid-template-columns: 1fr; }
-      .mkt-subtabs { position: static; max-height: none; flex-direction: row; overflow-x: auto; padding: 4px; }
-      .mkt-subtab { white-space: nowrap; padding: 8px 14px; }
-      .mkt-subtab + .mkt-subtab { border-top: 0; }
-      .mkt-subtab .ms-arrow { display: none; }
+      from { opacity: 0; transform: translateY(2px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     /* Marketing Center — CRM lead pipeline + trial management table +
@@ -1066,6 +1060,26 @@
           <span class="tab-pill" id="enrollmentBadge" hidden>0</span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
+        <!-- Nested sub-menu — visible only when 市场中心 is the active
+             main tab. CSS uses an adjacent-sibling rule on the active
+             button so the expand/collapse follows tab state for free. -->
+        <div class="sidebar-subnav" id="mktSubtabs" role="tablist" aria-label="Marketing groups">
+          <button type="button" class="sidebar-subitem mkt-subtab active" data-mkt-subtab="kpi" role="tab">
+            <span class="ms-icon" aria-hidden="true">📈</span><span class="ms-label" data-i18n="mktSubtabKpi"></span>
+          </button>
+          <button type="button" class="sidebar-subitem mkt-subtab" data-mkt-subtab="crm" role="tab">
+            <span class="ms-icon" aria-hidden="true">👥</span><span class="ms-label" data-i18n="mktSubtabCrm"></span>
+          </button>
+          <button type="button" class="sidebar-subitem mkt-subtab" data-mkt-subtab="trial" role="tab">
+            <span class="ms-icon" aria-hidden="true">🎤</span><span class="ms-label" data-i18n="mktSubtabTrial"></span>
+          </button>
+          <button type="button" class="sidebar-subitem mkt-subtab" data-mkt-subtab="channel" role="tab">
+            <span class="ms-icon" aria-hidden="true">🛒</span><span class="ms-label" data-i18n="mktSubtabChannel"></span>
+          </button>
+          <button type="button" class="sidebar-subitem mkt-subtab" data-mkt-subtab="brand" role="tab">
+            <span class="ms-icon" aria-hidden="true">👑</span><span class="ms-label" data-i18n="mktSubtabBrand"></span>
+          </button>
+        </div>
         <button type="button" class="sidebar-item" data-tab="academic" role="tab">
           <span class="si-icon" aria-hidden="true">📘</span><span class="si-label" data-i18n="navAcademic"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
@@ -1256,32 +1270,8 @@
         </section>
       </section>
 
-      <!-- ========== Marketing Center — left sub-sidebar + content ========== -->
+      <!-- ========== Marketing Center — sub-tabs live in the sidebar ========== -->
       <section class="dash-panel" data-tab-panel="enrollment" role="tabpanel" hidden>
-        <div class="mkt-shell">
-        <nav class="mkt-subtabs" id="mktSubtabs" role="tablist" aria-label="Marketing groups">
-          <button type="button" class="mkt-subtab active" data-mkt-subtab="kpi" role="tab">
-            <span class="ms-icon" aria-hidden="true">📈</span><span class="ms-label" data-i18n="mktSubtabKpi"></span>
-            <span class="ms-arrow" aria-hidden="true">▸</span>
-          </button>
-          <button type="button" class="mkt-subtab" data-mkt-subtab="crm" role="tab">
-            <span class="ms-icon" aria-hidden="true">👥</span><span class="ms-label" data-i18n="mktSubtabCrm"></span>
-            <span class="ms-arrow" aria-hidden="true">▸</span>
-          </button>
-          <button type="button" class="mkt-subtab" data-mkt-subtab="trial" role="tab">
-            <span class="ms-icon" aria-hidden="true">🎤</span><span class="ms-label" data-i18n="mktSubtabTrial"></span>
-            <span class="ms-arrow" aria-hidden="true">▸</span>
-          </button>
-          <button type="button" class="mkt-subtab" data-mkt-subtab="channel" role="tab">
-            <span class="ms-icon" aria-hidden="true">🛒</span><span class="ms-label" data-i18n="mktSubtabChannel"></span>
-            <span class="ms-arrow" aria-hidden="true">▸</span>
-          </button>
-          <button type="button" class="mkt-subtab" data-mkt-subtab="brand" role="tab">
-            <span class="ms-icon" aria-hidden="true">👑</span><span class="ms-label" data-i18n="mktSubtabBrand"></span>
-            <span class="ms-arrow" aria-hidden="true">▸</span>
-          </button>
-        </nav>
-
         <div class="mkt-panels">
 
         <!-- Sub-tab 1: KPIs -->
@@ -1384,7 +1374,6 @@
           </section>
         </div>
         </div><!-- /mkt-panels -->
-        </div><!-- /mkt-shell -->
 
       </section>
 
