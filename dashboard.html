@@ -581,6 +581,51 @@
     .ops-toolbar .campus-chip .cc-select { font-size: 12.5px; }
     .ops-toolbar .toolbar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
+    /* Academic Affairs — roster table for currently-active students.
+       Search input + level / grade selects in the header, level pill +
+       inline level-adjust select per row. */
+    .acad-filters { display: inline-flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .acad-search { width: 180px; padding: 7px 12px; border: 1px solid var(--line);
+      border-radius: 999px; font: inherit; font-size: 12.5px; color: var(--clay);
+      background: #fff; outline: none; transition: 0.15s; font-family: inherit; }
+    .acad-search:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,158,11,0.16); }
+    .acad-select { background: #fff; border: 1px solid var(--line); border-radius: 999px;
+      padding: 7px 12px; font: inherit; font-size: 12.5px; color: var(--clay);
+      font-family: inherit; cursor: pointer; transition: 0.15s; }
+    .acad-select:hover { border-color: var(--gold); }
+    .acad-select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,158,11,0.16); }
+
+    .acad-table { width: 100%; border-collapse: collapse; }
+    .acad-table th, .acad-table td { padding: 10px 12px; text-align: left;
+      font-size: 13px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .acad-table th { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); }
+    .acad-table tr:last-child td { border-bottom: none; }
+    .acad-name { font-weight: 800; color: var(--clay); }
+    .acad-name .sid { display: block; font-size: 11px; color: var(--muted); font-weight: 600;
+      margin-top: 2px; font-family: "SFMono-Regular",ui-monospace,Menlo,Consolas,monospace; }
+    .acad-level-pill { display: inline-flex; padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.04em;
+      background: rgba(245,158,11,0.16); color: var(--gold-deep); border: 1px solid rgba(245,158,11,0.3); }
+    .acad-level-pill.lvl-Beginner    { background: rgba(254,243,199,0.6); color: #7a4f0d; }
+    .acad-level-pill.lvl-Intermediate { background: rgba(245,158,11,0.18); color: var(--gold-deep); }
+    .acad-level-pill.lvl-Advanced    { background: rgba(216,156,54,0.32); color: var(--clay); }
+    .acad-level-pill.lvl-Competition { background: linear-gradient(135deg,#fde68a,var(--gold-deep)); color: #fffbeb; border-color: rgba(254,243,199,0.6); }
+    .acad-level-pill.lvl-PC          { background: rgba(110,143,87,0.18); color: #3f5d26; border-color: rgba(110,143,87,0.4); }
+    .acad-level-pill.lvl-none        { background: rgba(122,48,16,0.06); color: var(--muted); border-color: var(--line); }
+    .acad-level-cell { display: inline-flex; align-items: center; gap: 6px; }
+    .acad-level-edit { all: unset; cursor: pointer; padding: 3px 8px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 700; color: var(--gold-deep); border: 1px solid rgba(245,158,11,0.3); }
+    .acad-level-edit:hover { background: rgba(245,158,11,0.08); }
+    .acad-row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .acad-row-actions a, .acad-row-actions button { all: unset; cursor: pointer;
+      padding: 4px 10px; border-radius: 999px; font: inherit; font-size: 11px; font-weight: 700;
+      color: var(--clay); border: 1px solid var(--line); background: #fff; transition: 0.12s;
+      font-family: inherit; }
+    .acad-row-actions a:hover, .acad-row-actions button:hover { border-color: var(--gold-deep); }
+    .acad-empty { padding: 24px 16px; text-align: center; color: var(--muted); font-size: 13px;
+      background: rgba(254,243,199,0.32); border: 1px dashed rgba(245,158,11,0.32); border-radius: 12px; }
+
     /* Trial-workflow extras — eval pill, invite pill, modal. The Actions
        column on a "done" row stacks: Confirm/Done line, Eval pill+btn,
        Invite pill+btn. */
@@ -1000,10 +1045,10 @@
           <span class="tab-pill" id="enrollmentBadge" hidden>0</span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
-        <a class="sidebar-item" href="course-offerings.html">
+        <button type="button" class="sidebar-item" data-tab="academic" role="tab">
           <span class="si-icon" aria-hidden="true">📘</span><span class="si-label" data-i18n="navAcademic"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
-        </a>
+        </button>
         <button type="button" class="sidebar-item" data-tab="teaching" role="tab">
           <span class="si-icon" aria-hidden="true">📊</span><span class="si-label" data-i18n="navTeaching"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
@@ -1311,6 +1356,59 @@
           </section>
         </div>
 
+      </section>
+
+      <!-- ========== Academic Affairs — student roster + course catalog ========== -->
+      <section class="dash-panel" data-tab-panel="academic" role="tabpanel" hidden>
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneAcadStudentTitle"></h3>
+              <p data-i18n="zoneAcadStudentSub"></p>
+            </div>
+            <div class="dash-zone-actions">
+              <a class="bm-edit-btn" href="course-offerings.html" data-i18n="acadCourseLink"></a>
+            </div>
+          </div>
+
+          <!-- KPI strip — students currently in class -->
+          <section class="grid" id="acadKpiMetrics"></section>
+        </section>
+
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneAcadRosterTitle"></h3>
+              <p data-i18n="zoneAcadRosterSub"></p>
+            </div>
+          </div>
+          <article class="panel">
+            <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+              <h2 data-i18n="acadRosterHead" style="margin:0;"></h2>
+              <div class="acad-filters">
+                <input type="search" class="acad-search" id="acadSearch" data-i18n-placeholder="acadSearchPlaceholder" />
+                <select id="acadLevelFilter" class="acad-select"></select>
+                <select id="acadGradeFilter" class="acad-select"></select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="acad-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="acadColStudent"></th>
+                    <th data-i18n="acadColGrade"></th>
+                    <th data-i18n="acadColLevel"></th>
+                    <th data-i18n="acadColPlan"></th>
+                    <th data-i18n="acadColEnrolled"></th>
+                    <th data-i18n="acadColParent"></th>
+                    <th data-i18n="acadColAction"></th>
+                  </tr>
+                </thead>
+                <tbody id="acadRosterBody"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
       </section>
 
       <!-- ========== Teaching ========== -->
@@ -1768,11 +1866,41 @@
           zoneAdminOpsSub: "应急 / 离线场景使用，平时折叠隐藏",
           tabOverview: "首页",
           tabEnrollment: "市场中心",
+          tabAcademic: "教务中心",
           tabTeaching: "教学",
           tabFinance: "财务",
           tabData: "数据中心",
           tabRequests: "申请处理",
           tabSettings: "课程设置",
+          // ---- Academic Affairs (student roster) ----
+          zoneAcadStudentTitle: "学员管理",
+          zoneAcadStudentSub: "目前正在上课的学员总览，可按等级 / 年级筛选并就地调整等级。",
+          acadCourseLink: "📘 课程目录",
+          zoneAcadRosterTitle: "学员名单",
+          zoneAcadRosterSub: "所有有效会员订单关联的学员。下方搜索框可按姓名 / 邮箱过滤。",
+          acadRosterHead: "在读学员",
+          acadSearchPlaceholder: "搜索 姓名 / 邮箱",
+          acadFilterAllLevels: "全部等级",
+          acadFilterAllGrades: "全部年级",
+          acadColStudent: "学员",
+          acadColGrade: "年级",
+          acadColLevel: "等级",
+          acadColPlan: "套餐",
+          acadColEnrolled: "入学日期",
+          acadColParent: "家长 / 联系",
+          acadColAction: "操作",
+          acadKpiActive: "在读学员",
+          acadKpiNew: "本月新生",
+          acadKpiCompetition: "竞赛 / 进阶",
+          acadKpiAvgRate: "平均上课频率",
+          acadKpiAvgRateUnit: "节 / 周",
+          acadActionDetail: "成长档案",
+          acadActionAdjust: "调整等级",
+          acadActionContact: "联系家长",
+          acadEmpty: "暂无在读学员，可前往「市场中心 → 试课」邀请新家长注册。",
+          acadEmptyFiltered: "当前筛选下没有学员。",
+          acadLevelOptionEmpty: "（未分配）",
+          acadAdjustToast: "{name} 的等级已更新为 {level}",
           // ---- Marketing Center (CRM + trial mgmt + brand) ----
           mktSubtabKpi: "指标",
           mktSubtabCrm: "CRM",
@@ -2088,11 +2216,40 @@
           zoneAdminOpsSub: "Manual recovery tools, collapsed by default",
           tabOverview: "Home",
           tabEnrollment: "Marketing Center",
+          tabAcademic: "Academic",
           tabTeaching: "Teaching",
           tabFinance: "Finance",
           tabData: "Data Center",
           tabRequests: "Requests",
           tabSettings: "Course Settings",
+          zoneAcadStudentTitle: "Student Management",
+          zoneAcadStudentSub: "Currently-active students. Filter by level / grade and adjust placements inline.",
+          acadCourseLink: "📘 Course Catalog",
+          zoneAcadRosterTitle: "Student Roster",
+          zoneAcadRosterSub: "Every student tied to an active membership order. Search by name or email.",
+          acadRosterHead: "Active students",
+          acadSearchPlaceholder: "Search name / email",
+          acadFilterAllLevels: "All levels",
+          acadFilterAllGrades: "All grades",
+          acadColStudent: "Student",
+          acadColGrade: "Grade",
+          acadColLevel: "Level",
+          acadColPlan: "Plan",
+          acadColEnrolled: "Enrolled",
+          acadColParent: "Parent / Contact",
+          acadColAction: "Actions",
+          acadKpiActive: "Active",
+          acadKpiNew: "New this month",
+          acadKpiCompetition: "Adv / Comp",
+          acadKpiAvgRate: "Avg sessions",
+          acadKpiAvgRateUnit: "/wk",
+          acadActionDetail: "Growth",
+          acadActionAdjust: "Adjust level",
+          acadActionContact: "Contact",
+          acadEmpty: "No active students yet — invite parents from Marketing → Trials.",
+          acadEmptyFiltered: "No students match the current filter.",
+          acadLevelOptionEmpty: "(unassigned)",
+          acadAdjustToast: "{name}'s level updated to {level}",
           mktSubtabKpi: "KPIs",
           mktSubtabCrm: "CRM",
           mktSubtabTrial: "Trials",
@@ -2896,6 +3053,230 @@
         }
       }
 
+      // Academic Affairs — student roster. Reads memberships + students
+      // + studentLevels to assemble the active-student list. Filter
+      // state lives in module-scoped vars so the click handlers below
+      // can re-render without losing the current selection.
+      var __acadSearch = "";
+      var __acadLevelFilter = "";
+      var __acadGradeFilter = "";
+      var ACAD_LEVELS = ["Beginner", "Intermediate", "Advanced", "Project Camp", "Competition"];
+
+      function renderAcademicCenter(t) {
+        var f = window.MindDoFlow;
+        if (!f || !f.readJson || !f.keys) return;
+        var memberships = (f.readJson(f.keys.memberships) || []);
+        var paidEmails = new Set();
+        // De-dup by studentId — pick the latest (most recent createdAt)
+        // membership per student so plan / enrolled date represent the
+        // current state, not the first-ever purchase.
+        var byStudent = {};
+        memberships.forEach(function (m) {
+          if (!m || !m.studentId) return;
+          if (!byStudent[m.studentId] || new Date(m.createdAt || 0) > new Date(byStudent[m.studentId].createdAt || 0)) {
+            byStudent[m.studentId] = m;
+          }
+          if (m.email) paidEmails.add(String(m.email).toLowerCase());
+        });
+        var roster = Object.keys(byStudent).map(function (sid) {
+          var mem = byStudent[sid];
+          var stu = (f.findStudentById && f.findStudentById(sid)) || {};
+          var level = (f.getStudentLevel && f.getStudentLevel(sid)) || "";
+          return {
+            sid: sid,
+            name: stu.name || mem.studentName || "—",
+            grade: stu.grade || mem.grade || "—",
+            email: stu.email || mem.email || "",
+            phone: stu.phone || mem.phone || "",
+            parent: mem.parentName || stu.parentName || "",
+            level: level,
+            plan: mem.plan || "",
+            planLabel: mem.planLabel || (mem.plan ? formatPlanShort(mem.plan, t) : ""),
+            sessionsPerWeek: (mem.sessions && mem.sessions.length) || 0,
+            enrolledAt: mem.createdAt || ""
+          };
+        });
+
+        // ---- KPI tiles ----
+        var thisMonth = new Date(); thisMonth.setDate(1); thisMonth.setHours(0, 0, 0, 0);
+        var newThisMonth = roster.filter(function (r) {
+          return r.enrolledAt && new Date(r.enrolledAt) >= thisMonth;
+        }).length;
+        var advCount = roster.filter(function (r) {
+          return r.level === "Advanced" || r.level === "Competition" || r.level === "Project Camp";
+        }).length;
+        var avgRate = roster.length
+          ? Math.round((roster.reduce(function (a, r) { return a + (r.sessionsPerWeek || 0); }, 0) / roster.length) * 10) / 10
+          : 0;
+        var kpiEl = document.getElementById("acadKpiMetrics");
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.acadKpiActive, value: roster.length, sub: "" },
+            { label: t.acadKpiNew, value: newThisMonth, sub: "" },
+            { label: t.acadKpiCompetition, value: advCount, sub: "" },
+            { label: t.acadKpiAvgRate, value: avgRate, sub: t.acadKpiAvgRateUnit }
+          ]);
+        }
+
+        // ---- Filter dropdowns: populate Level + Grade options ----
+        var levelSel = document.getElementById("acadLevelFilter");
+        if (levelSel && !levelSel.dataset.hydrated) {
+          levelSel.innerHTML = "<option value=''>" + escHTML(t.acadFilterAllLevels) + "</option>"
+            + ACAD_LEVELS.map(function (l) { return "<option value='" + l + "'>" + l + "</option>"; }).join("");
+          levelSel.dataset.hydrated = "1";
+          levelSel.addEventListener("change", function () {
+            __acadLevelFilter = levelSel.value;
+            renderAcademicCenter(t);
+          });
+        }
+        if (levelSel) levelSel.value = __acadLevelFilter;
+
+        var gradeSel = document.getElementById("acadGradeFilter");
+        if (gradeSel && !gradeSel.dataset.hydrated) {
+          var grades = ["K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+          gradeSel.innerHTML = "<option value=''>" + escHTML(t.acadFilterAllGrades) + "</option>"
+            + grades.map(function (g) { return "<option value='" + g + "'>" + g + "</option>"; }).join("");
+          gradeSel.dataset.hydrated = "1";
+          gradeSel.addEventListener("change", function () {
+            __acadGradeFilter = gradeSel.value;
+            renderAcademicCenter(t);
+          });
+        }
+        if (gradeSel) gradeSel.value = __acadGradeFilter;
+
+        var searchEl = document.getElementById("acadSearch");
+        if (searchEl && !searchEl.dataset.hydrated) {
+          searchEl.dataset.hydrated = "1";
+          var debounceT;
+          searchEl.addEventListener("input", function () {
+            clearTimeout(debounceT);
+            debounceT = setTimeout(function () {
+              __acadSearch = String(searchEl.value || "").trim().toLowerCase();
+              renderAcademicCenter(t);
+            }, 180);
+          });
+        }
+        if (searchEl) searchEl.value = __acadSearch;
+
+        // ---- Apply filters ----
+        var filtered = roster.filter(function (r) {
+          if (__acadLevelFilter && r.level !== __acadLevelFilter) return false;
+          if (__acadGradeFilter) {
+            var g = String(r.grade || "").replace(/年级$/, "").trim();
+            // Grade can be stored as "六" / "6" / "六年级"; map zh numerals.
+            var zhMap = { "零":"0","一":"1","二":"2","两":"2","三":"3","四":"4","五":"5","六":"6","七":"7","八":"8","九":"9","十":"10" };
+            if (zhMap[g]) g = zhMap[g];
+            if (String(g) !== String(__acadGradeFilter)) return false;
+          }
+          if (__acadSearch) {
+            var hay = (r.name + " " + r.email + " " + r.parent + " " + r.sid).toLowerCase();
+            if (hay.indexOf(__acadSearch) < 0) return false;
+          }
+          return true;
+        });
+
+        // ---- Render the table ----
+        var tBody = document.getElementById("acadRosterBody");
+        if (!tBody) return;
+        if (!roster.length) {
+          tBody.innerHTML = "<tr><td colspan='7'><div class='acad-empty'>" + escHTML(t.acadEmpty) + "</div></td></tr>";
+          return;
+        }
+        if (!filtered.length) {
+          tBody.innerHTML = "<tr><td colspan='7'><div class='acad-empty'>" + escHTML(t.acadEmptyFiltered) + "</div></td></tr>";
+          return;
+        }
+        tBody.innerHTML = filtered.sort(function (a, b) {
+          return new Date(b.enrolledAt || 0) - new Date(a.enrolledAt || 0);
+        }).map(function (r) {
+          var enrolled = r.enrolledAt
+            ? new Date(r.enrolledAt).toLocaleDateString(state.lang === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "short", day: "numeric" })
+            : "—";
+          var pillCls = r.level === "Beginner"     ? "lvl-Beginner"
+                      : r.level === "Intermediate" ? "lvl-Intermediate"
+                      : r.level === "Advanced"     ? "lvl-Advanced"
+                      : r.level === "Competition"  ? "lvl-Competition"
+                      : r.level === "Project Camp" ? "lvl-PC"
+                                                    : "lvl-none";
+          var levelText = r.level || t.acadLevelOptionEmpty;
+          var contact = (r.parent ? r.parent + " · " : "") + (r.phone || r.email || "—");
+          var initial = (r.name || "—").slice(0, 1);
+          return "<tr>"
+            + "<td><div class='acad-name'>"
+            +   "<span style='display:inline-flex;align-items:center;gap:8px;'>"
+            +     "<span class='greet-avatar' style='width:28px;height:28px;font-size:11px;'>" + escHTML(initial) + "</span>"
+            +     escHTML(r.name)
+            +   "</span>"
+            +   "<span class='sid'>" + escHTML(r.sid) + "</span>"
+            + "</div></td>"
+            + "<td>" + escHTML(r.grade || "—") + "</td>"
+            + "<td><div class='acad-level-cell'>"
+            +   "<span class='acad-level-pill " + pillCls + "'>" + escHTML(levelText) + "</span>"
+            +   "<button type='button' class='acad-level-edit' data-acad-action='adjust' data-sid='" + escHTML(r.sid) + "'>✎</button>"
+            + "</div></td>"
+            + "<td>" + escHTML(r.planLabel || "—") + "</td>"
+            + "<td>" + escHTML(enrolled) + "</td>"
+            + "<td>" + escHTML(contact) + "</td>"
+            + "<td><div class='acad-row-actions'>"
+            +   "<a href='student-account.html?sid=" + encodeURIComponent(r.sid) + "'>" + escHTML(t.acadActionDetail) + "</a>"
+            +   (r.email ? "<a href='mailto:" + escHTML(r.email) + "'>" + escHTML(t.acadActionContact) + "</a>" : "")
+            + "</div></td>"
+            + "</tr>";
+        }).join("");
+      }
+
+      // Tiny helper — short-form plan label for the Plan column when
+      // saveMembershipOrder didn't stash a planLabel.
+      function formatPlanShort(plan, t) {
+        var v = String(plan || "").toLowerCase();
+        var en = (state && state.lang === "en");
+        if (v === "weekly1") return en ? "1 cls/wk" : "每周 1 节";
+        if (v === "weekly2") return en ? "2 cls/wk" : "每周 2 节";
+        if (v === "weekly3") return en ? "3 cls/wk" : "每周 3 节";
+        return plan || "—";
+      }
+
+      // Inline level-adjust — clicking the ✎ on a roster row replaces
+      // the level pill with a select; choosing a level writes through
+      // flow.setStudentLevel and triggers a re-render.
+      (function () {
+        var tBody = document.getElementById("acadRosterBody");
+        if (!tBody) return;
+        tBody.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-acad-action='adjust']");
+          if (!btn) return;
+          var sid = btn.getAttribute("data-sid");
+          var cell = btn.closest(".acad-level-cell");
+          if (!cell) return;
+          var t = (state && state.lang) ? I18N[state.lang] : I18N["zh-CN"];
+          var current = (window.MindDoFlow && window.MindDoFlow.getStudentLevel) ? window.MindDoFlow.getStudentLevel(sid) : "";
+          var sel = document.createElement("select");
+          sel.className = "acad-select";
+          sel.style.maxWidth = "180px";
+          sel.innerHTML = "<option value=''>" + escHTML(t.acadLevelOptionEmpty) + "</option>"
+            + ACAD_LEVELS.map(function (l) {
+              return "<option value='" + l + "'" + (l === current ? " selected" : "") + ">" + l + "</option>";
+            }).join("");
+          cell.innerHTML = "";
+          cell.appendChild(sel);
+          sel.focus();
+          sel.addEventListener("change", function () {
+            if (window.MindDoFlow && window.MindDoFlow.setStudentLevel) {
+              window.MindDoFlow.setStudentLevel(sid, sel.value);
+              var stu = window.MindDoFlow.findStudentById && window.MindDoFlow.findStudentById(sid);
+              if (typeof showOpsToast === "function") {
+                showOpsToast((t.acadAdjustToast || "Level updated").replace("{name}", (stu && stu.name) || sid).replace("{level}", sel.value || "—"));
+              }
+            }
+            if (typeof render === "function") render();
+          });
+          sel.addEventListener("blur", function () {
+            // Restore the pill if no choice was made.
+            if (typeof render === "function") render();
+          });
+        });
+      })();
+
       // CRM filter pills — clicking re-renders the list with the new filter.
       // Bound once at script init; the data render block above re-runs the
       // list output on every render() call.
@@ -3345,6 +3726,9 @@
 
         // ---- Marketing Center: CRM lead list + trial table + brand grid ----
         renderMarketingCenter(leadsAll, t);
+
+        // ---- Academic Affairs: student roster ----
+        renderAcademicCenter(t);
 
         // ---- Data Center: KPI tiles, funnel, revenue trend ----
         var dataKpiEl = document.getElementById("dataKpiMetrics");
