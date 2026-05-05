@@ -23,7 +23,10 @@
     referrals: "minddo_referrals",
     growth: "minddo_growth_records",
     assignments: "minddo_assignments",
-    billingProfile: "minddo_billing_profile"
+    billingProfile: "minddo_billing_profile",
+    payroll: "minddo_payroll",
+    contracts: "minddo_contracts",
+    approvals: "minddo_approvals"
   };
 
   // Billing profile — per-family record carrying the payment method on
@@ -2033,6 +2036,39 @@
         status: "sent",
         createdAt: daysAgo(2)
       }
+    ]);
+
+    // ---- Finance Center seed: payroll, e-contracts, approvals ----
+    // Mock data so the new finance sub-tabs render with visible variety;
+    // each entry is shaped like what an LMS-style ops product would
+    // expect, so the demo reads as plausible rather than placeholder.
+    writeJson(KEYS.payroll, [
+      { teacher: "Dr. Sarah Chen",  role: "讲师",     classes: 12, hours: 36, rate: 75, total: 2700, status: "paid",    period: "2026-04" },
+      { teacher: "Jenny Lin",       role: "讲师",     classes: 10, hours: 30, rate: 65, total: 1950, status: "paid",    period: "2026-04" },
+      { teacher: "Marcus Johnson",  role: "高级讲师", classes:  8, hours: 24, rate: 90, total: 2160, status: "pending", period: "2026-04" },
+      { teacher: "David Park",      role: "高级讲师", classes:  9, hours: 27, rate: 95, total: 2565, status: "pending", period: "2026-04" },
+      { teacher: "Amy Cheng",       role: "实习",     classes:  6, hours: 12, rate: 35, total:  420, status: "pending", period: "2026-04" },
+      { teacher: "Wei Zhang",       role: "教学主管", classes:  4, hours: 12, rate: 110, total: 1320, status: "paid",   period: "2026-04" }
+    ]);
+
+    writeJson(KEYS.contracts, [
+      { id: "CON-2026-001", party: "李若安 (家长 李女士)", type: "enrollment", signedAt: daysAgo(48),  expiresAt: daysAgo(-317), status: "signed" },
+      { id: "CON-2026-002", party: "王浩 (家长 王女士)",   type: "enrollment", signedAt: daysAgo(12),  expiresAt: daysAgo(-353), status: "signed" },
+      { id: "CON-2026-003", party: "陈乐 (家长 陈先生)",   type: "enrollment", signedAt: "",             expiresAt: "",             status: "pending" },
+      { id: "CON-2025-088", party: "Dr. Sarah Chen",      type: "employment", signedAt: daysAgo(364), expiresAt: daysAgo(1),   status: "expiring" },
+      { id: "CON-2025-091", party: "Jenny Lin",           type: "employment", signedAt: daysAgo(280), expiresAt: daysAgo(-85),  status: "signed" },
+      { id: "CON-2025-094", party: "Marcus Johnson",      type: "employment", signedAt: daysAgo(190), expiresAt: daysAgo(-175), status: "signed" },
+      { id: "CON-2024-019", party: "Irvine 校区物业",      type: "lease",     signedAt: daysAgo(720), expiresAt: daysAgo(-365), status: "signed" },
+      { id: "CON-2025-070", party: "Diamond Bar 校区物业", type: "lease",     signedAt: daysAgo(330), expiresAt: daysAgo(35),  status: "expired" }
+    ]);
+
+    writeJson(KEYS.approvals, [
+      { id: "AP-2026-001", type: "refund",   requester: "陈先生",      detail: "课程冲突，申请退订未上课时", amount: 150,  submittedAt: daysAgo(1),  status: "pending"  },
+      { id: "AP-2026-002", type: "leave",    requester: "Dr. Sarah Chen", detail: "本周三因家庭事务请假",       amount: 0,    submittedAt: daysAgo(2),  status: "pending"  },
+      { id: "AP-2026-003", type: "expense",  requester: "Jenny Lin",      detail: "项目营物料采购报销",         amount: 320,  submittedAt: daysAgo(4),  status: "pending"  },
+      { id: "AP-2026-004", type: "resched",  requester: "李女士",         detail: "周二改至周四同时段",         amount: 0,    submittedAt: daysAgo(3),  status: "approved" },
+      { id: "AP-2026-005", type: "payroll",  requester: "Marcus Johnson", detail: "课时费上调申请 +$10/h",      amount: 240,  submittedAt: daysAgo(7),  status: "approved" },
+      { id: "AP-2026-006", type: "refund",   requester: "周先生",         detail: "孩子不再上课，申请退余额",   amount: 580,  submittedAt: daysAgo(9),  status: "rejected" }
     ]);
   }
 

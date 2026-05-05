@@ -586,6 +586,58 @@
     .acad-subpanel { display: none; }
     .acad-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
 
+    /* Finance sub-panels (orders / approvals / billing / payroll / contracts) */
+    .fin-subpanel { display: none; }
+    .fin-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
+
+    /* Approval / status pills used across finance tables */
+    .fin-status { display: inline-flex; padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.04em; white-space: nowrap; }
+    .fin-status.paid     { background: rgba(110,143,87,0.18); color: #3f5d26; border: 1px solid rgba(110,143,87,0.4); }
+    .fin-status.pending  { background: rgba(216,156,54,0.2); color: #7a4f0d; border: 1px solid rgba(216,156,54,0.42); }
+    .fin-status.overdue  { background: rgba(196,106,77,0.18); color: #8e3d21; border: 1px solid rgba(196,106,77,0.42); }
+    .fin-status.refunded { background: rgba(122,48,16,0.08); color: var(--clay); border: 1px solid var(--line); }
+    .fin-status.approved { background: rgba(110,143,87,0.18); color: #3f5d26; border: 1px solid rgba(110,143,87,0.4); }
+    .fin-status.rejected { background: rgba(196,106,77,0.18); color: #8e3d21; border: 1px solid rgba(196,106,77,0.42); }
+    .fin-status.signed   { background: rgba(110,143,87,0.18); color: #3f5d26; border: 1px solid rgba(110,143,87,0.4); }
+    .fin-status.expired  { background: rgba(122,48,16,0.08); color: var(--muted); border: 1px solid var(--line); }
+    .fin-status.expiring { background: rgba(216,156,54,0.2); color: #7a4f0d; border: 1px solid rgba(216,156,54,0.42); }
+
+    /* Approve / Reject mini buttons */
+    .fin-actions { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+    .fin-actions button, .fin-actions a {
+      all: unset; cursor: pointer; padding: 4px 11px; border-radius: 999px;
+      font: inherit; font-size: 11px; font-weight: 800; transition: 0.12s; font-family: inherit;
+    }
+    .fin-actions .approve { background: linear-gradient(135deg,#a3c374,#6e8b58); color: #fff; }
+    .fin-actions .approve:hover { transform: translateY(-1px); }
+    .fin-actions .reject  { background: rgba(196,106,77,0.14); color: #8e3d21; border: 1px solid rgba(196,106,77,0.32); }
+    .fin-actions .reject:hover { background: rgba(196,106,77,0.22); }
+    .fin-actions .view    { background: #fff; color: var(--clay); border: 1px solid var(--line); }
+    .fin-actions .view:hover { border-color: var(--gold-deep); }
+
+    /* Approval-type pill */
+    .fin-typepill { display: inline-flex; padding: 2px 9px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; white-space: nowrap; }
+    .fin-typepill.refund   { background: rgba(196,106,77,0.16); color: #8e3d21; border: 1px solid rgba(196,106,77,0.32); }
+    .fin-typepill.leave    { background: rgba(216,156,54,0.16); color: #7a4f0d; border: 1px solid rgba(216,156,54,0.32); }
+    .fin-typepill.resched  { background: rgba(245,158,11,0.16); color: var(--gold-deep); border: 1px solid rgba(245,158,11,0.32); }
+    .fin-typepill.expense  { background: rgba(110,143,87,0.18); color: #3f5d26; border: 1px solid rgba(110,143,87,0.4); }
+    .fin-typepill.payroll  { background: rgba(122,48,16,0.1); color: var(--clay); border: 1px solid var(--line); }
+
+    /* Monthly bars on the Billing panel */
+    .fin-month-bars { display: grid; gap: 10px; padding: 8px 0; }
+    .fin-month-row { display: grid; grid-template-columns: 70px 1fr 100px; align-items: center; gap: 14px; }
+    .fin-month-label { font-size: 12px; color: var(--muted); font-weight: 700; }
+    .fin-month-bar { height: 22px; background: rgba(122,48,16,0.08); border-radius: 6px; overflow: hidden; position: relative; }
+    .fin-month-bar-fill { height: 100%; background: linear-gradient(90deg,#fde68a,var(--gold-deep)); border-radius: 6px; transition: width 0.5s ease; }
+    .fin-month-amount { font-size: 13px; font-weight: 800; color: var(--clay); text-align: right;
+      font-variant-numeric: tabular-nums; }
+    @media (max-width: 540px) {
+      .fin-month-row { grid-template-columns: 1fr; gap: 4px; }
+      .fin-month-amount { text-align: left; }
+    }
+
     /* Weekly schedule grid — 8 columns (time + Mon..Sun). Each cell holds
        up to a few class chips; chips are color-tinted by level. */
     .acad-grid-wrap { overflow-x: auto; }
@@ -1155,6 +1207,24 @@
           <span class="si-icon" aria-hidden="true">💰</span><span class="si-label" data-i18n="navFinance"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
+        <!-- 财务中心 second-level menu — auto-expands when finance tab active -->
+        <div class="sidebar-subnav" id="finSubtabs" role="tablist" aria-label="Finance groups">
+          <button type="button" class="sidebar-subitem fin-subtab active" data-fin-subtab="orders" role="tab">
+            <span class="ms-icon" aria-hidden="true">🧾</span><span class="ms-label" data-i18n="finSubtabOrders"></span>
+          </button>
+          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="approvals" role="tab">
+            <span class="ms-icon" aria-hidden="true">✅</span><span class="ms-label" data-i18n="finSubtabApprovals"></span>
+          </button>
+          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="billing" role="tab">
+            <span class="ms-icon" aria-hidden="true">📄</span><span class="ms-label" data-i18n="finSubtabBilling"></span>
+          </button>
+          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="payroll" role="tab">
+            <span class="ms-icon" aria-hidden="true">💼</span><span class="ms-label" data-i18n="finSubtabPayroll"></span>
+          </button>
+          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="contracts" role="tab">
+            <span class="ms-icon" aria-hidden="true">📝</span><span class="ms-label" data-i18n="finSubtabContracts"></span>
+          </button>
+        </div>
         <button type="button" class="sidebar-item" data-tab="data" role="tab">
           <span class="si-icon" aria-hidden="true">📈</span><span class="si-label" data-i18n="navData"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
@@ -1580,60 +1650,224 @@
         </section>
       </section>
 
-      <!-- ========== Finance ========== -->
+      <!-- ========== Finance — sub-tabs (orders / approvals / billing / payroll / contracts) ========== -->
       <section class="dash-panel" data-tab-panel="finance" role="tabpanel" hidden>
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneFinanceKpiTitle"></h3>
-              <p data-i18n="zoneFinanceKpiSub"></p>
-            </div>
-          </div>
-          <section class="grid" id="financeMetrics"></section>
-        </section>
 
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneFinancePaymentsTitle"></h3>
-              <p data-i18n="zoneFinancePaymentsSub"></p>
+        <!-- Sub-panel 1: 订单管理 -->
+        <div class="fin-subpanel active" data-fin-subpanel="orders" role="tabpanel">
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneFinanceKpiTitle"></h3>
+                <p data-i18n="zoneFinanceKpiSub"></p>
+              </div>
             </div>
-          </div>
-          <article class="panel">
-            <h2 data-i18n="recentPayments"></h2>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th data-i18n="colEmail"></th>
-                    <th data-i18n="colAmount"></th>
-                    <th data-i18n="colSource"></th>
-                    <th data-i18n="colTime"></th>
-                  </tr>
-                </thead>
-                <tbody id="paymentTable"></tbody>
-              </table>
-            </div>
-          </article>
-        </section>
+            <section class="grid" id="financeMetrics"></section>
+          </section>
 
-        <details class="admin-ops">
-          <summary>
-            <span data-i18n="zoneAdminOpsTitle"></span>
-            <span class="admin-ops-sub" data-i18n="zoneAdminOpsSub"></span>
-          </summary>
-          <div class="admin-ops-body">
-            <article class="panel" style="box-shadow:none;border-color:rgba(122,48,16,0.08);">
-              <h2 data-i18n="paymentOps"></h2>
-              <form id="paymentForm" class="pay-form">
-                <input id="payEmail" type="email" placeholder="student@email.com" required />
-                <input id="payAmount" type="number" min="0" step="0.01" placeholder="199" required />
-                <button class="btn" type="submit" data-i18n="markPaid"></button>
-              </form>
-              <div id="paymentStatus" class="status"></div>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneFinOrdersTitle"></h3>
+                <p data-i18n="zoneFinOrdersSub"></p>
+              </div>
+            </div>
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                <h2 data-i18n="finOrdersHead" style="margin:0;"></h2>
+                <div class="acad-filters">
+                  <select id="finOrderStatusFilter" class="acad-select"></select>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="acad-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="finOrdersColId"></th>
+                      <th data-i18n="finOrdersColStudent"></th>
+                      <th data-i18n="finOrdersColPlan"></th>
+                      <th data-i18n="finOrdersColAmount"></th>
+                      <th data-i18n="finOrdersColMethod"></th>
+                      <th data-i18n="finOrdersColDate"></th>
+                      <th data-i18n="finOrdersColStatus"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="finOrdersBody"></tbody>
+                </table>
+              </div>
             </article>
-          </div>
-        </details>
+          </section>
+
+          <details class="admin-ops">
+            <summary>
+              <span data-i18n="zoneAdminOpsTitle"></span>
+              <span class="admin-ops-sub" data-i18n="zoneAdminOpsSub"></span>
+            </summary>
+            <div class="admin-ops-body">
+              <article class="panel" style="box-shadow:none;border-color:rgba(122,48,16,0.08);">
+                <h2 data-i18n="paymentOps"></h2>
+                <form id="paymentForm" class="pay-form">
+                  <input id="payEmail" type="email" placeholder="student@email.com" required />
+                  <input id="payAmount" type="number" min="0" step="0.01" placeholder="199" required />
+                  <button class="btn" type="submit" data-i18n="markPaid"></button>
+                </form>
+                <div id="paymentStatus" class="status"></div>
+              </article>
+            </div>
+          </details>
+        </div>
+
+        <!-- Sub-panel 2: 审批管理 -->
+        <div class="fin-subpanel" data-fin-subpanel="approvals" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneFinApprovalsTitle"></h3>
+                <p data-i18n="zoneFinApprovalsSub"></p>
+              </div>
+            </div>
+            <section class="grid" id="finApprovalsKpi"></section>
+          </section>
+          <section class="dash-zone">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                <h2 data-i18n="finApprovalsHead" style="margin:0;"></h2>
+                <div class="acad-filters">
+                  <select id="finApprovalStatusFilter" class="acad-select"></select>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="acad-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="finApprovalsColType"></th>
+                      <th data-i18n="finApprovalsColRequester"></th>
+                      <th data-i18n="finApprovalsColDetail"></th>
+                      <th data-i18n="finApprovalsColAmount"></th>
+                      <th data-i18n="finApprovalsColSubmitted"></th>
+                      <th data-i18n="finApprovalsColStatus"></th>
+                      <th data-i18n="finApprovalsColAction"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="finApprovalsBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <!-- Sub-panel 3: 账单管理 -->
+        <div class="fin-subpanel" data-fin-subpanel="billing" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneFinBillingTitle"></h3>
+                <p data-i18n="zoneFinBillingSub"></p>
+              </div>
+            </div>
+            <section class="grid" id="finBillingKpi"></section>
+          </section>
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="finBillingMonthHead"></h2>
+              <div class="fin-month-bars" id="finBillingMonthBars"></div>
+            </article>
+          </section>
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="finBillingInvoicesHead"></h2>
+              <div class="table-wrap">
+                <table class="acad-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="finBillingColInvoice"></th>
+                      <th data-i18n="finBillingColStudent"></th>
+                      <th data-i18n="finBillingColAmount"></th>
+                      <th data-i18n="finBillingColDate"></th>
+                      <th data-i18n="finBillingColStatus"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="finBillingInvoicesBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <!-- Sub-panel 4: 工资管理 -->
+        <div class="fin-subpanel" data-fin-subpanel="payroll" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneFinPayrollTitle"></h3>
+                <p data-i18n="zoneFinPayrollSub"></p>
+              </div>
+            </div>
+            <section class="grid" id="finPayrollKpi"></section>
+          </section>
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="finPayrollHead"></h2>
+              <div class="table-wrap">
+                <table class="acad-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="finPayrollColTeacher"></th>
+                      <th data-i18n="finPayrollColRole"></th>
+                      <th data-i18n="finPayrollColClasses"></th>
+                      <th data-i18n="finPayrollColHours"></th>
+                      <th data-i18n="finPayrollColRate"></th>
+                      <th data-i18n="finPayrollColTotal"></th>
+                      <th data-i18n="finPayrollColStatus"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="finPayrollBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <!-- Sub-panel 5: 电子合同 -->
+        <div class="fin-subpanel" data-fin-subpanel="contracts" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneFinContractsTitle"></h3>
+                <p data-i18n="zoneFinContractsSub"></p>
+              </div>
+            </div>
+            <section class="grid" id="finContractsKpi"></section>
+          </section>
+          <section class="dash-zone">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                <h2 data-i18n="finContractsHead" style="margin:0;"></h2>
+                <div class="acad-filters">
+                  <select id="finContractStatusFilter" class="acad-select"></select>
+                  <select id="finContractTypeFilter" class="acad-select"></select>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="acad-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="finContractsColId"></th>
+                      <th data-i18n="finContractsColParty"></th>
+                      <th data-i18n="finContractsColType"></th>
+                      <th data-i18n="finContractsColSigned"></th>
+                      <th data-i18n="finContractsColExpiry"></th>
+                      <th data-i18n="finContractsColStatus"></th>
+                      <th data-i18n="finContractsColAction"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="finContractsBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </div>
+
       </section>
 
       <!-- ========== Data Center — operational analytics ========== -->
@@ -2015,6 +2249,114 @@
           tabData: "数据中心",
           tabRequests: "申请处理",
           tabSettings: "课程设置",
+          // ---- Finance sub-tabs ----
+          finSubtabOrders: "订单管理",
+          finSubtabApprovals: "审批管理",
+          finSubtabBilling: "账单管理",
+          finSubtabPayroll: "工资管理",
+          finSubtabContracts: "电子合同",
+          // 订单管理
+          zoneFinOrdersTitle: "订单列表",
+          zoneFinOrdersSub: "全部会员订单（含付款 / 退款 / 取消），按状态筛选。",
+          finOrdersHead: "订单流水",
+          finOrdersFilterAll: "全部状态",
+          finOrdersStatusPaid: "已付费",
+          finOrdersStatusPending: "待付费",
+          finOrdersStatusRefunded: "已退款",
+          finOrdersColId: "订单号",
+          finOrdersColStudent: "学员",
+          finOrdersColPlan: "套餐",
+          finOrdersColAmount: "金额",
+          finOrdersColMethod: "方式",
+          finOrdersColDate: "下单时间",
+          finOrdersColStatus: "状态",
+          // 审批管理
+          zoneFinApprovalsTitle: "审批中心",
+          zoneFinApprovalsSub: "退款 / 请假 / 改期 / 报销 / 工资调整审批，按状态分流。",
+          finApprovalsHead: "审批列表",
+          finApprovalsFilterAll: "全部",
+          finApprovalsFilterPending: "待审批",
+          finApprovalsFilterApproved: "已通过",
+          finApprovalsFilterRejected: "已驳回",
+          finApprovalsKpiPending: "待审批",
+          finApprovalsKpiApproved: "本月通过",
+          finApprovalsKpiRejected: "本月驳回",
+          finApprovalsKpiAvgHours: "平均处理时长",
+          finApprovalsKpiAvgUnit: "小时",
+          finApprovalsColType: "类型",
+          finApprovalsColRequester: "申请人",
+          finApprovalsColDetail: "事由",
+          finApprovalsColAmount: "金额",
+          finApprovalsColSubmitted: "提交时间",
+          finApprovalsColStatus: "状态",
+          finApprovalsColAction: "操作",
+          finApprovalsActionApprove: "通过",
+          finApprovalsActionReject: "驳回",
+          finApprovalsTypeRefund: "退款",
+          finApprovalsTypeLeave: "请假",
+          finApprovalsTypeResched: "改期",
+          finApprovalsTypeExpense: "报销",
+          finApprovalsTypePayroll: "工资调整",
+          finApprovalToastApproved: "已通过 {who} 的{type}申请",
+          finApprovalToastRejected: "已驳回 {who} 的{type}申请",
+          // 账单管理
+          zoneFinBillingTitle: "账单概览",
+          zoneFinBillingSub: "本月营收、应收 / 已收款、月度对比与发票明细。",
+          finBillingKpiThisMonth: "本月营收",
+          finBillingKpiPending: "待回款",
+          finBillingKpiPaidCount: "本月已收笔数",
+          finBillingKpiAvgValue: "平均客单",
+          finBillingMonthHead: "近 6 月营收对比",
+          finBillingInvoicesHead: "发票明细",
+          finBillingColInvoice: "发票号",
+          finBillingColStudent: "学员 / 邮箱",
+          finBillingColAmount: "金额",
+          finBillingColDate: "开票日期",
+          finBillingColStatus: "状态",
+          // 工资管理
+          zoneFinPayrollTitle: "工资管理",
+          zoneFinPayrollSub: "教师本月排课课时、固定工资与课时费汇总。",
+          finPayrollKpiTotal: "本月工资总额",
+          finPayrollKpiTeachers: "教师人数",
+          finPayrollKpiAvg: "人均工资",
+          finPayrollKpiHours: "总课时数",
+          finPayrollHead: "教师工资单",
+          finPayrollColTeacher: "教师",
+          finPayrollColRole: "岗位",
+          finPayrollColClasses: "课程数",
+          finPayrollColHours: "课时",
+          finPayrollColRate: "课时费",
+          finPayrollColTotal: "本月小计",
+          finPayrollColStatus: "发放状态",
+          finPayrollStatusPending: "待发放",
+          finPayrollStatusPaid: "已发放",
+          // 电子合同
+          zoneFinContractsTitle: "电子合同",
+          zoneFinContractsSub: "学员入学协议、教师劳动合同与场地租赁合同的电子签流转。",
+          finContractsKpiActive: "履约中",
+          finContractsKpiSigned: "本月签订",
+          finContractsKpiExpiring: "30 天内到期",
+          finContractsKpiExpired: "已过期",
+          finContractsHead: "合同列表",
+          finContractsFilterAllStatus: "全部状态",
+          finContractsFilterAllType: "全部类型",
+          finContractsTypeEnrollment: "入学协议",
+          finContractsTypeEmployment: "劳动合同",
+          finContractsTypeLease: "场地租赁",
+          finContractsTypeOther: "其他",
+          finContractsColId: "合同号",
+          finContractsColParty: "签约方",
+          finContractsColType: "类型",
+          finContractsColSigned: "签订日期",
+          finContractsColExpiry: "到期日期",
+          finContractsColStatus: "状态",
+          finContractsColAction: "操作",
+          finContractsActionView: "查看",
+          finContractsActionRemind: "催签",
+          finContractsStatusPending: "待签署",
+          finContractsStatusSigned: "已签署",
+          finContractsStatusExpiring: "即将到期",
+          finContractsStatusExpired: "已过期",
           // ---- Academic Affairs (sub-tabs) ----
           acadSubtabRoster: "学员管理",
           acadSubtabClasses: "班级管理",
@@ -2400,6 +2742,108 @@
           acadSubtabRoster: "Students",
           acadSubtabClasses: "Classes",
           acadSubtabSchedule: "Schedule",
+          finSubtabOrders: "Orders",
+          finSubtabApprovals: "Approvals",
+          finSubtabBilling: "Billing",
+          finSubtabPayroll: "Payroll",
+          finSubtabContracts: "E-Contracts",
+          zoneFinOrdersTitle: "Orders",
+          zoneFinOrdersSub: "Every membership order with payment / refund / cancel status.",
+          finOrdersHead: "Order ledger",
+          finOrdersFilterAll: "All status",
+          finOrdersStatusPaid: "Paid",
+          finOrdersStatusPending: "Pending",
+          finOrdersStatusRefunded: "Refunded",
+          finOrdersColId: "Order #",
+          finOrdersColStudent: "Student",
+          finOrdersColPlan: "Plan",
+          finOrdersColAmount: "Amount",
+          finOrdersColMethod: "Method",
+          finOrdersColDate: "Date",
+          finOrdersColStatus: "Status",
+          zoneFinApprovalsTitle: "Approvals",
+          zoneFinApprovalsSub: "Refunds, leave, reschedule, expense, payroll-adjust requests.",
+          finApprovalsHead: "Approval queue",
+          finApprovalsFilterAll: "All",
+          finApprovalsFilterPending: "Pending",
+          finApprovalsFilterApproved: "Approved",
+          finApprovalsFilterRejected: "Rejected",
+          finApprovalsKpiPending: "Pending",
+          finApprovalsKpiApproved: "Approved (mo)",
+          finApprovalsKpiRejected: "Rejected (mo)",
+          finApprovalsKpiAvgHours: "Avg handling time",
+          finApprovalsKpiAvgUnit: "h",
+          finApprovalsColType: "Type",
+          finApprovalsColRequester: "Requester",
+          finApprovalsColDetail: "Reason",
+          finApprovalsColAmount: "Amount",
+          finApprovalsColSubmitted: "Submitted",
+          finApprovalsColStatus: "Status",
+          finApprovalsColAction: "Action",
+          finApprovalsActionApprove: "Approve",
+          finApprovalsActionReject: "Reject",
+          finApprovalsTypeRefund: "Refund",
+          finApprovalsTypeLeave: "Leave",
+          finApprovalsTypeResched: "Reschedule",
+          finApprovalsTypeExpense: "Expense",
+          finApprovalsTypePayroll: "Payroll Adj.",
+          finApprovalToastApproved: "Approved {who}'s {type} request",
+          finApprovalToastRejected: "Rejected {who}'s {type} request",
+          zoneFinBillingTitle: "Billing Overview",
+          zoneFinBillingSub: "This-month revenue, AR / collected, monthly comparison, invoice details.",
+          finBillingKpiThisMonth: "Revenue (mo)",
+          finBillingKpiPending: "AR pending",
+          finBillingKpiPaidCount: "Paid this month",
+          finBillingKpiAvgValue: "Avg ticket",
+          finBillingMonthHead: "Last 6 months",
+          finBillingInvoicesHead: "Invoice ledger",
+          finBillingColInvoice: "Invoice #",
+          finBillingColStudent: "Student / Email",
+          finBillingColAmount: "Amount",
+          finBillingColDate: "Issued",
+          finBillingColStatus: "Status",
+          zoneFinPayrollTitle: "Payroll",
+          zoneFinPayrollSub: "Teachers' monthly hours, base salary, and per-class fees.",
+          finPayrollKpiTotal: "Payroll (mo)",
+          finPayrollKpiTeachers: "Teachers",
+          finPayrollKpiAvg: "Avg salary",
+          finPayrollKpiHours: "Total hours",
+          finPayrollHead: "Teacher payroll",
+          finPayrollColTeacher: "Teacher",
+          finPayrollColRole: "Role",
+          finPayrollColClasses: "Classes",
+          finPayrollColHours: "Hours",
+          finPayrollColRate: "Rate",
+          finPayrollColTotal: "Subtotal (mo)",
+          finPayrollColStatus: "Status",
+          finPayrollStatusPending: "Pending",
+          finPayrollStatusPaid: "Paid",
+          zoneFinContractsTitle: "E-Contracts",
+          zoneFinContractsSub: "Enrollment, employment, and lease contracts — digital signature flow.",
+          finContractsKpiActive: "In force",
+          finContractsKpiSigned: "Signed (mo)",
+          finContractsKpiExpiring: "Expiring (30d)",
+          finContractsKpiExpired: "Expired",
+          finContractsHead: "Contract list",
+          finContractsFilterAllStatus: "All status",
+          finContractsFilterAllType: "All types",
+          finContractsTypeEnrollment: "Enrollment",
+          finContractsTypeEmployment: "Employment",
+          finContractsTypeLease: "Lease",
+          finContractsTypeOther: "Other",
+          finContractsColId: "Contract #",
+          finContractsColParty: "Party",
+          finContractsColType: "Type",
+          finContractsColSigned: "Signed",
+          finContractsColExpiry: "Expires",
+          finContractsColStatus: "Status",
+          finContractsColAction: "Action",
+          finContractsActionView: "View",
+          finContractsActionRemind: "Remind",
+          finContractsStatusPending: "Pending",
+          finContractsStatusSigned: "Signed",
+          finContractsStatusExpiring: "Expiring",
+          finContractsStatusExpired: "Expired",
           zoneAcadClassesTitle: "Class Management",
           zoneAcadClassesSub: "All classes (filter by level / teacher / day). Cells &gt;80% full are flagged amber.",
           acadClassEditLink: "✎ Edit catalog",
@@ -3705,6 +4149,440 @@
         applySub(saved || "roster");
       })();
 
+      // ============================================================
+      // Finance Center sub-panels (orders / approvals / billing /
+      // payroll / contracts). Sub-tab handler at bottom.
+      // ============================================================
+      var __finOrderStatusFilter = "";
+      var __finApprovalStatusFilter = "";
+      var __finContractStatusFilter = "";
+      var __finContractTypeFilter = "";
+
+      // 订单管理 — every membership order plus loose payments.
+      function renderFinanceOrders(paymentsAll, t) {
+        var f = window.MindDoFlow;
+        if (!f) return;
+        var memberships = (f.readJson(f.keys.memberships) || []).slice();
+        // Sort by createdAt desc so newest is on top.
+        memberships.sort(function (a, b) {
+          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        });
+
+        // Hydrate filter dropdown once.
+        var statusSel = document.getElementById("finOrderStatusFilter");
+        if (statusSel && !statusSel.dataset.hydrated) {
+          statusSel.innerHTML = "<option value=''>" + escHTML(t.finOrdersFilterAll) + "</option>"
+            + "<option value='paid'>" + escHTML(t.finOrdersStatusPaid) + "</option>"
+            + "<option value='pending'>" + escHTML(t.finOrdersStatusPending) + "</option>"
+            + "<option value='refunded'>" + escHTML(t.finOrdersStatusRefunded) + "</option>";
+          statusSel.dataset.hydrated = "1";
+          statusSel.addEventListener("change", function () {
+            __finOrderStatusFilter = statusSel.value;
+            renderFinanceOrders(paymentsAll, t);
+          });
+        }
+        if (statusSel) statusSel.value = __finOrderStatusFilter;
+
+        // Pair up payments by orderId for status lookup.
+        var paidByOrder = {};
+        (paymentsAll || []).forEach(function (p) {
+          if (p && p.orderId) paidByOrder[p.orderId] = p;
+        });
+
+        var rows = memberships.map(function (m) {
+          var pay = m.orderId && paidByOrder[m.orderId];
+          var status = m.status === "refunded" ? "refunded"
+            : (pay || m.totalAmount) ? "paid"
+            : "pending";
+          return {
+            id: m.orderId || "—",
+            student: m.studentName || (m.email || "—"),
+            plan: m.planLabel || (m.plan ? formatPlanShort(m.plan, t) : "—"),
+            amount: m.totalAmount || (pay && pay.amount) || 0,
+            method: (pay && (pay.method || pay.source)) || m.paymentMethod || "—",
+            date: m.createdAt || "",
+            status: status
+          };
+        });
+        var filtered = __finOrderStatusFilter
+          ? rows.filter(function (r) { return r.status === __finOrderStatusFilter; })
+          : rows;
+
+        var tBody = document.getElementById("finOrdersBody");
+        if (!tBody) return;
+        if (!filtered.length) {
+          tBody.innerHTML = "<tr><td colspan='7'><div class='acad-empty'>" + escHTML(t.acadEmpty || "No data") + "</div></td></tr>";
+          return;
+        }
+        tBody.innerHTML = filtered.map(function (r) {
+          var dateText = r.date
+            ? new Date(r.date).toLocaleDateString(state.lang === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "short", day: "numeric" })
+            : "—";
+          var statusLabel = r.status === "paid" ? t.finOrdersStatusPaid
+            : r.status === "refunded" ? t.finOrdersStatusRefunded
+            : t.finOrdersStatusPending;
+          return "<tr>"
+            + "<td><strong style='font-family:\"SFMono-Regular\",ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--clay);'>" + escHTML(r.id) + "</strong></td>"
+            + "<td>" + escHTML(r.student) + "</td>"
+            + "<td>" + escHTML(r.plan) + "</td>"
+            + "<td><strong>" + money(r.amount) + "</strong></td>"
+            + "<td>" + escHTML(r.method || "—") + "</td>"
+            + "<td>" + escHTML(dateText) + "</td>"
+            + "<td><span class='fin-status " + r.status + "'>" + escHTML(statusLabel) + "</span></td>"
+            + "</tr>";
+        }).join("");
+      }
+
+      // 审批管理 — refund / leave / reschedule / expense / payroll requests.
+      function renderFinanceApprovals(t) {
+        var f = window.MindDoFlow;
+        if (!f || !f.readJson || !f.keys || !f.keys.approvals) return;
+        var all = (f.readJson(f.keys.approvals) || []).slice();
+        all.sort(function (a, b) { return new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0); });
+
+        // KPI tiles
+        var thisMonth = new Date(); thisMonth.setDate(1); thisMonth.setHours(0, 0, 0, 0);
+        var pending = all.filter(function (r) { return r.status === "pending"; }).length;
+        var monthApproved = all.filter(function (r) { return r.status === "approved" && new Date(r.submittedAt || 0) >= thisMonth; }).length;
+        var monthRejected = all.filter(function (r) { return r.status === "rejected" && new Date(r.submittedAt || 0) >= thisMonth; }).length;
+        var avgHours = 8; // mock — a real impl would compute from submitted→decided delta
+        var kpiEl = document.getElementById("finApprovalsKpi");
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.finApprovalsKpiPending, value: pending, sub: "" },
+            { label: t.finApprovalsKpiApproved, value: monthApproved, sub: "" },
+            { label: t.finApprovalsKpiRejected, value: monthRejected, sub: "" },
+            { label: t.finApprovalsKpiAvgHours, value: avgHours, sub: t.finApprovalsKpiAvgUnit }
+          ]);
+        }
+
+        // Filter dropdown
+        var statusSel = document.getElementById("finApprovalStatusFilter");
+        if (statusSel && !statusSel.dataset.hydrated) {
+          statusSel.innerHTML = "<option value=''>" + escHTML(t.finApprovalsFilterAll) + "</option>"
+            + "<option value='pending'>" + escHTML(t.finApprovalsFilterPending) + "</option>"
+            + "<option value='approved'>" + escHTML(t.finApprovalsFilterApproved) + "</option>"
+            + "<option value='rejected'>" + escHTML(t.finApprovalsFilterRejected) + "</option>";
+          statusSel.dataset.hydrated = "1";
+          statusSel.addEventListener("change", function () {
+            __finApprovalStatusFilter = statusSel.value;
+            renderFinanceApprovals(t);
+          });
+        }
+        if (statusSel) statusSel.value = __finApprovalStatusFilter;
+
+        var filtered = __finApprovalStatusFilter
+          ? all.filter(function (r) { return r.status === __finApprovalStatusFilter; })
+          : all;
+
+        var tBody = document.getElementById("finApprovalsBody");
+        if (!tBody) return;
+        if (!filtered.length) {
+          tBody.innerHTML = "<tr><td colspan='7'><div class='acad-empty'>" + escHTML(t.acadEmpty || "No data") + "</div></td></tr>";
+          return;
+        }
+        tBody.innerHTML = filtered.map(function (r) {
+          var typeLabel = t["finApprovalsType" + r.type.charAt(0).toUpperCase() + r.type.slice(1)] || r.type;
+          var statusLabel = r.status === "approved" ? t.finApprovalsFilterApproved
+            : r.status === "rejected" ? t.finApprovalsFilterRejected
+            : t.finApprovalsFilterPending;
+          var statusCls = r.status === "approved" ? "approved" : r.status === "rejected" ? "rejected" : "pending";
+          var dateText = r.submittedAt
+            ? new Date(r.submittedAt).toLocaleDateString(state.lang === "en" ? "en-US" : "zh-CN", { month: "short", day: "numeric" })
+            : "—";
+          var actions = (r.status === "pending")
+            ? "<div class='fin-actions'>"
+              + "<button class='approve' data-fin-approval-action='approve' data-aid='" + escHTML(r.id) + "'>" + escHTML(t.finApprovalsActionApprove) + "</button>"
+              + "<button class='reject' data-fin-approval-action='reject' data-aid='" + escHTML(r.id) + "'>" + escHTML(t.finApprovalsActionReject) + "</button>"
+              + "</div>"
+            : "—";
+          return "<tr>"
+            + "<td><span class='fin-typepill " + r.type + "'>" + escHTML(typeLabel) + "</span></td>"
+            + "<td>" + escHTML(r.requester || "—") + "</td>"
+            + "<td>" + escHTML(r.detail || "—") + "</td>"
+            + "<td>" + (r.amount ? "<strong>" + money(r.amount) + "</strong>" : "—") + "</td>"
+            + "<td>" + escHTML(dateText) + "</td>"
+            + "<td><span class='fin-status " + statusCls + "'>" + escHTML(statusLabel) + "</span></td>"
+            + "<td>" + actions + "</td>"
+            + "</tr>";
+        }).join("");
+      }
+
+      // 账单管理 — overview + 6-month bars + invoice ledger.
+      function renderFinanceBilling(paymentsAll, t) {
+        var paid = (paymentsAll || []).slice().sort(function (a, b) {
+          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        });
+
+        // KPI
+        var thisMonth = new Date(); thisMonth.setDate(1); thisMonth.setHours(0, 0, 0, 0);
+        var monthRev = paid.filter(function (p) { return new Date(p.createdAt || 0) >= thisMonth; })
+          .reduce(function (a, p) { return a + (Number(p.amount) || 0); }, 0);
+        var monthCount = paid.filter(function (p) { return new Date(p.createdAt || 0) >= thisMonth; }).length;
+        var avgVal = monthCount ? Math.round((monthRev / monthCount) * 100) / 100 : 0;
+        // Pending AR — mock as the sum of pending memberships (none today since
+        // every seeded membership has a payment).
+        var pendingAR = 0;
+        var kpiEl = document.getElementById("finBillingKpi");
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.finBillingKpiThisMonth, value: money(monthRev), sub: "" },
+            { label: t.finBillingKpiPending, value: money(pendingAR), sub: "" },
+            { label: t.finBillingKpiPaidCount, value: monthCount, sub: "" },
+            { label: t.finBillingKpiAvgValue, value: money(avgVal), sub: "" }
+          ]);
+        }
+
+        // 6-month bars
+        var barsEl = document.getElementById("finBillingMonthBars");
+        if (barsEl) {
+          var months = [];
+          var d = new Date(); d.setDate(1); d.setHours(0, 0, 0, 0);
+          for (var i = 5; i >= 0; i--) {
+            var start = new Date(d); start.setMonth(start.getMonth() - i);
+            var end = new Date(start); end.setMonth(end.getMonth() + 1);
+            var sum = paid.filter(function (p) {
+              var ts = new Date(p.createdAt || 0);
+              return ts >= start && ts < end;
+            }).reduce(function (a, p) { return a + (Number(p.amount) || 0); }, 0);
+            var label = start.toLocaleDateString(state.lang === "en" ? "en-US" : "zh-CN", { year: "2-digit", month: "short" });
+            months.push({ label: label, total: sum });
+          }
+          var maxVal = Math.max.apply(null, months.map(function (m) { return m.total; }).concat([1]));
+          barsEl.innerHTML = months.map(function (m) {
+            var pct = maxVal ? Math.round((m.total / maxVal) * 100) : 0;
+            return "<div class='fin-month-row'>"
+              + "<div class='fin-month-label'>" + escHTML(m.label) + "</div>"
+              + "<div class='fin-month-bar'><div class='fin-month-bar-fill' style='width:" + Math.max(2, pct) + "%'></div></div>"
+              + "<div class='fin-month-amount'>" + money(m.total) + "</div>"
+              + "</div>";
+          }).join("");
+        }
+
+        // Invoice ledger
+        var tBody = document.getElementById("finBillingInvoicesBody");
+        if (tBody) {
+          if (!paid.length) {
+            tBody.innerHTML = "<tr><td colspan='5'><div class='acad-empty'>" + escHTML(t.acadEmpty || "No data") + "</div></td></tr>";
+          } else {
+            tBody.innerHTML = paid.slice(0, 30).map(function (p) {
+              var date = p.createdAt
+                ? new Date(p.createdAt).toLocaleDateString(state.lang === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "short", day: "numeric" })
+                : "—";
+              return "<tr>"
+                + "<td><strong style='font-family:\"SFMono-Regular\",ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--clay);'>"
+                + escHTML(p.orderId || "—") + "</strong></td>"
+                + "<td>" + escHTML(p.email || "—") + "</td>"
+                + "<td><strong>" + money(p.amount) + "</strong></td>"
+                + "<td>" + escHTML(date) + "</td>"
+                + "<td><span class='fin-status paid'>" + escHTML(t.finOrdersStatusPaid) + "</span></td>"
+                + "</tr>";
+            }).join("");
+          }
+        }
+      }
+
+      // 工资管理 — teacher payroll table.
+      function renderFinancePayroll(t) {
+        var f = window.MindDoFlow;
+        if (!f || !f.readJson || !f.keys || !f.keys.payroll) return;
+        var rows = (f.readJson(f.keys.payroll) || []).slice();
+
+        var totalPay = rows.reduce(function (a, r) { return a + (Number(r.total) || 0); }, 0);
+        var totalHours = rows.reduce(function (a, r) { return a + (Number(r.hours) || 0); }, 0);
+        var avgPay = rows.length ? Math.round((totalPay / rows.length) * 100) / 100 : 0;
+
+        var kpiEl = document.getElementById("finPayrollKpi");
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.finPayrollKpiTotal, value: money(totalPay), sub: "" },
+            { label: t.finPayrollKpiTeachers, value: rows.length, sub: "" },
+            { label: t.finPayrollKpiAvg, value: money(avgPay), sub: "" },
+            { label: t.finPayrollKpiHours, value: totalHours, sub: "" }
+          ]);
+        }
+
+        var tBody = document.getElementById("finPayrollBody");
+        if (!tBody) return;
+        if (!rows.length) {
+          tBody.innerHTML = "<tr><td colspan='7'><div class='acad-empty'>" + escHTML(t.acadEmpty || "No data") + "</div></td></tr>";
+          return;
+        }
+        tBody.innerHTML = rows.map(function (r) {
+          var statusCls = r.status === "paid" ? "paid" : "pending";
+          var statusLabel = r.status === "paid" ? t.finPayrollStatusPaid : t.finPayrollStatusPending;
+          return "<tr>"
+            + "<td><strong>" + escHTML(r.teacher) + "</strong></td>"
+            + "<td>" + escHTML(r.role || "—") + "</td>"
+            + "<td>" + r.classes + "</td>"
+            + "<td>" + r.hours + "</td>"
+            + "<td>" + money(r.rate) + "/h</td>"
+            + "<td><strong>" + money(r.total) + "</strong></td>"
+            + "<td><span class='fin-status " + statusCls + "'>" + escHTML(statusLabel) + "</span></td>"
+            + "</tr>";
+        }).join("");
+      }
+
+      // 电子合同 — contract list with type filter + status filter.
+      function renderFinanceContracts(t) {
+        var f = window.MindDoFlow;
+        if (!f || !f.readJson || !f.keys || !f.keys.contracts) return;
+        var all = (f.readJson(f.keys.contracts) || []).slice();
+
+        // Auto-flag expiring (within 30 days) for visibility.
+        var nowMs = Date.now();
+        var thirtyDaysMs = 30 * 24 * 3600 * 1000;
+        all.forEach(function (c) {
+          if (c.status === "signed" && c.expiresAt) {
+            var diff = new Date(c.expiresAt).getTime() - nowMs;
+            if (diff > 0 && diff <= thirtyDaysMs) c.status = "expiring";
+            else if (diff <= 0) c.status = "expired";
+          }
+        });
+
+        // KPI
+        var thisMonth = new Date(); thisMonth.setDate(1); thisMonth.setHours(0, 0, 0, 0);
+        var active = all.filter(function (c) { return c.status === "signed" || c.status === "expiring"; }).length;
+        var signedThisMonth = all.filter(function (c) { return c.signedAt && new Date(c.signedAt) >= thisMonth; }).length;
+        var expiringSoon = all.filter(function (c) { return c.status === "expiring"; }).length;
+        var expiredCount = all.filter(function (c) { return c.status === "expired"; }).length;
+        var kpiEl = document.getElementById("finContractsKpi");
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.finContractsKpiActive, value: active, sub: "" },
+            { label: t.finContractsKpiSigned, value: signedThisMonth, sub: "" },
+            { label: t.finContractsKpiExpiring, value: expiringSoon, sub: "" },
+            { label: t.finContractsKpiExpired, value: expiredCount, sub: "" }
+          ]);
+        }
+
+        // Status filter
+        var statusSel = document.getElementById("finContractStatusFilter");
+        if (statusSel && !statusSel.dataset.hydrated) {
+          statusSel.innerHTML = "<option value=''>" + escHTML(t.finContractsFilterAllStatus) + "</option>"
+            + "<option value='pending'>" + escHTML(t.finContractsStatusPending) + "</option>"
+            + "<option value='signed'>" + escHTML(t.finContractsStatusSigned) + "</option>"
+            + "<option value='expiring'>" + escHTML(t.finContractsStatusExpiring) + "</option>"
+            + "<option value='expired'>" + escHTML(t.finContractsStatusExpired) + "</option>";
+          statusSel.dataset.hydrated = "1";
+          statusSel.addEventListener("change", function () {
+            __finContractStatusFilter = statusSel.value;
+            renderFinanceContracts(t);
+          });
+        }
+        if (statusSel) statusSel.value = __finContractStatusFilter;
+
+        // Type filter
+        var typeSel = document.getElementById("finContractTypeFilter");
+        if (typeSel && !typeSel.dataset.hydrated) {
+          typeSel.innerHTML = "<option value=''>" + escHTML(t.finContractsFilterAllType) + "</option>"
+            + "<option value='enrollment'>" + escHTML(t.finContractsTypeEnrollment) + "</option>"
+            + "<option value='employment'>" + escHTML(t.finContractsTypeEmployment) + "</option>"
+            + "<option value='lease'>" + escHTML(t.finContractsTypeLease) + "</option>"
+            + "<option value='other'>" + escHTML(t.finContractsTypeOther) + "</option>";
+          typeSel.dataset.hydrated = "1";
+          typeSel.addEventListener("change", function () {
+            __finContractTypeFilter = typeSel.value;
+            renderFinanceContracts(t);
+          });
+        }
+        if (typeSel) typeSel.value = __finContractTypeFilter;
+
+        var filtered = all.filter(function (c) {
+          if (__finContractStatusFilter && c.status !== __finContractStatusFilter) return false;
+          if (__finContractTypeFilter && c.type !== __finContractTypeFilter) return false;
+          return true;
+        }).sort(function (a, b) { return new Date(b.signedAt || 0) - new Date(a.signedAt || 0); });
+
+        var tBody = document.getElementById("finContractsBody");
+        if (!tBody) return;
+        if (!filtered.length) {
+          tBody.innerHTML = "<tr><td colspan='7'><div class='acad-empty'>" + escHTML(t.acadEmpty || "No data") + "</div></td></tr>";
+          return;
+        }
+        function fmtDateOrDash(s) {
+          if (!s) return "—";
+          try {
+            return new Date(s).toLocaleDateString(state.lang === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "short", day: "numeric" });
+          } catch (_) { return s; }
+        }
+        tBody.innerHTML = filtered.map(function (c) {
+          var typeLabel = t["finContractsType" + c.type.charAt(0).toUpperCase() + c.type.slice(1)] || c.type;
+          var statusLabel = c.status === "signed" ? t.finContractsStatusSigned
+            : c.status === "expiring" ? t.finContractsStatusExpiring
+            : c.status === "expired" ? t.finContractsStatusExpired
+            : t.finContractsStatusPending;
+          var actions = (c.status === "pending")
+            ? "<div class='fin-actions'><button class='approve'>" + escHTML(t.finContractsActionRemind) + "</button><button class='view'>" + escHTML(t.finContractsActionView) + "</button></div>"
+            : "<div class='fin-actions'><button class='view'>" + escHTML(t.finContractsActionView) + "</button></div>";
+          return "<tr>"
+            + "<td><strong style='font-family:\"SFMono-Regular\",ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--clay);'>" + escHTML(c.id) + "</strong></td>"
+            + "<td>" + escHTML(c.party) + "</td>"
+            + "<td>" + escHTML(typeLabel) + "</td>"
+            + "<td>" + escHTML(fmtDateOrDash(c.signedAt)) + "</td>"
+            + "<td>" + escHTML(fmtDateOrDash(c.expiresAt)) + "</td>"
+            + "<td><span class='fin-status " + c.status + "'>" + escHTML(statusLabel) + "</span></td>"
+            + "<td>" + actions + "</td>"
+            + "</tr>";
+        }).join("");
+      }
+
+      // Approval action delegation — Approve / Reject buttons mutate the
+      // record in localStorage and re-render. Toast confirms.
+      (function () {
+        var tBody = document.getElementById("finApprovalsBody");
+        if (!tBody) return;
+        tBody.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-fin-approval-action]");
+          if (!btn) return;
+          var aid = btn.getAttribute("data-aid");
+          var action = btn.getAttribute("data-fin-approval-action");
+          var f = window.MindDoFlow;
+          if (!f || !f.readJson || !f.writeJson) return;
+          var list = f.readJson(f.keys.approvals) || [];
+          var idx = list.findIndex(function (r) { return r && r.id === aid; });
+          if (idx < 0) return;
+          list[idx] = Object.assign({}, list[idx], { status: action === "approve" ? "approved" : "rejected" });
+          f.writeJson(f.keys.approvals, list);
+          var t = (state && state.lang) ? I18N[state.lang] : I18N["zh-CN"];
+          var typeLabel = t["finApprovalsType" + list[idx].type.charAt(0).toUpperCase() + list[idx].type.slice(1)] || list[idx].type;
+          var msgTpl = action === "approve" ? t.finApprovalToastApproved : t.finApprovalToastRejected;
+          if (typeof showOpsToast === "function") {
+            showOpsToast((msgTpl || "Done").replace("{who}", list[idx].requester || "").replace("{type}", typeLabel));
+          }
+          if (typeof render === "function") render();
+        });
+      })();
+
+      // Finance sub-tab handler — same pattern as the marketing /
+      // academic ones; persists active sub-tab in localStorage.
+      (function () {
+        var bar = document.getElementById("finSubtabs");
+        if (!bar) return;
+        var KEY = "minddo_dash_fin_subtab";
+        var KNOWN = ["orders", "approvals", "billing", "payroll", "contracts"];
+        function applySub(key) {
+          if (KNOWN.indexOf(key) === -1) key = "orders";
+          bar.querySelectorAll("[data-fin-subtab]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-fin-subtab") === key);
+          });
+          document.querySelectorAll("[data-fin-subpanel]").forEach(function (p) {
+            var match = p.getAttribute("data-fin-subpanel") === key;
+            p.classList.toggle("active", match);
+            p.hidden = !match;
+          });
+          try { localStorage.setItem(KEY, key); } catch (_) {}
+        }
+        bar.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-fin-subtab]");
+          if (!b) return;
+          applySub(b.getAttribute("data-fin-subtab"));
+        });
+        var saved;
+        try { saved = localStorage.getItem(KEY); } catch (_) {}
+        applySub(saved || "orders");
+      })();
+
       // CRM filter pills — clicking re-renders the list with the new filter.
       // Bound once at script init; the data render block above re-runs the
       // list output on every render() call.
@@ -4159,6 +5037,13 @@
         renderAcademicCenter(t);
         renderAcademicClasses(t);
         renderAcademicSchedule(t);
+
+        // ---- Finance: orders + approvals + billing + payroll + contracts ----
+        renderFinanceOrders(paymentsAll, t);
+        renderFinanceApprovals(t);
+        renderFinanceBilling(paymentsAll, t);
+        renderFinancePayroll(t);
+        renderFinanceContracts(t);
 
         // ---- Data Center: KPI tiles, funnel, revenue trend ----
         var dataKpiEl = document.getElementById("dataKpiMetrics");
