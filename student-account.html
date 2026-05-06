@@ -1433,15 +1433,6 @@
     .sched-leave-hint strong { font-size: 13.5px; color: var(--clay); font-weight: 800; }
     .sched-leave-hint span { font-size: 12.5px; color: #475569; line-height: 1.5; }
 
-    /* Leave-only link inside the reschedule modal — for parents who
-       just want to skip the class without scheduling a makeup. */
-    .resched-leave-only { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
-      text-align: center; }
-    .resched-leave-only-btn { background: transparent; border: none; cursor: pointer;
-      font: inherit; font-size: 12.5px; color: #b2502d; font-weight: 700;
-      padding: 6px 12px; border-radius: 8px; transition: 0.12s; font-family: inherit; }
-    .resched-leave-only-btn:hover { background: rgba(178,80,45,0.08); color: #8e3d21; }
-
     .leave-history-list { display: grid; gap: 8px; }
     .leave-history-row { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline;
       padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
@@ -2495,9 +2486,6 @@
       </div>
       <div class="resched-options" id="reschedOptions"></div>
       <p class="resched-msg" id="reschedMsg" role="status" aria-live="polite"></p>
-      <div class="resched-leave-only">
-        <button type="button" class="resched-leave-only-btn" id="reschedLeaveOnlyBtn" data-i18n="reschedLeaveOnly"></button>
-      </div>
     </div>
   </div>
 
@@ -2998,10 +2986,8 @@
           reschedSubmitting: "提交中…",
           reschedSuccess: "已提交改期申请，等待运营确认。",
           reschedError: "提交失败，请稍后再试。",
-          reschedLeaveOnly: "无需补课，直接请假",
-          reschedLeaveSuccess: "已提交请假申请（不补课），等待运营确认。",
           schedLeaveHintTitle: "请假 / 改期入口",
-          schedLeaveHintSub: "在下方日历或列表中点击任意一节课，即可改期到本等级其他空闲时段，或选择直接请假。",
+          schedLeaveHintSub: "在下方日历或列表中点击任意一节课，可改期到本等级其他空闲时段。如需请假，请前往「请假」标签页提交申请，由运营审核后处理。",
           schedHistoryTitle: "我的申请记录",
           schedHistorySub: "最近 8 条请假与改期申请，可在此查看运营审核状态。",
           schedHistoryEmpty: "暂无申请记录。",
@@ -3517,10 +3503,8 @@
           reschedSubmitting: "Submitting…",
           reschedSuccess: "Reschedule request filed — waiting for ops confirmation.",
           reschedError: "Couldn't submit. Try again in a moment.",
-          reschedLeaveOnly: "Skip this class without a make-up",
-          reschedLeaveSuccess: "Leave request filed (no make-up) — waiting for ops confirmation.",
           schedLeaveHintTitle: "Leave & Reschedule",
-          schedLeaveHintSub: "Tap any class on the calendar or list below to reschedule it to another open same-level slot, or to file a no-make-up leave.",
+          schedLeaveHintSub: "Tap any class on the calendar or list below to reschedule it to another open same-level slot. Need to take leave? Submit a request from the Leave tab — ops will review and confirm it.",
           schedHistoryTitle: "My Requests",
           schedHistorySub: "Your 8 most recent leave / reschedule requests with current ops review status.",
           schedHistoryEmpty: "No requests yet.",
@@ -6857,41 +6841,6 @@
           }
         });
 
-        // "Skip without makeup" — file a leave request scoped to the
-        // clicked class. No alternative slot picked.
-        var leaveOnlyBtn = document.getElementById("reschedLeaveOnlyBtn");
-        if (leaveOnlyBtn) {
-          leaveOnlyBtn.addEventListener("click", function () {
-            var ln = langNow();
-            var t = dictNow();
-            var state = {};
-            try { state = JSON.parse(overlay.dataset.occState || "{}"); } catch (_) {}
-            msgEl.textContent = t.reschedSubmitting;
-            msgEl.className = "resched-msg";
-            var cur = (window.MindDoFlow && window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent()) || {};
-            if (!window.MindDoFlow || !window.MindDoFlow.saveScheduleRequest) {
-              msgEl.textContent = t.reschedError;
-              msgEl.className = "resched-msg error";
-              return;
-            }
-            try {
-              window.MindDoFlow.saveScheduleRequest({
-                type: "leave",
-                targetLabel: state.originalLine || "",
-                reason: (ln === "en") ? "Skip without makeup" : "请假不补课",
-                email: cur.email || "",
-                studentName: state.kidName || cur.studentName || cur.name || "",
-                studentId: state.kidId || cur.studentId || ""
-              });
-              msgEl.textContent = t.reschedLeaveSuccess;
-              msgEl.className = "resched-msg success";
-              setTimeout(function () { close(); render(ln); }, 700);
-            } catch (_) {
-              msgEl.textContent = t.reschedError;
-              msgEl.className = "resched-msg error";
-            }
-          });
-        }
       })();
 
       requestForm.addEventListener("submit", function (e) {
