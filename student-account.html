@@ -1894,16 +1894,16 @@
         <section class="dash-section" data-tab-panel="billing" role="tabpanel" aria-label="Billing">
 
           <nav class="settings-subtabs" id="billingSubtabs" role="tablist" aria-label="Billing groups">
-            <button type="button" class="settings-subtab active" data-bill-subtab="payment" role="tab">
-              <span class="ss-icon" aria-hidden="true">💳</span><span data-i18n="bmSubtabPayment"></span>
-            </button>
-            <button type="button" class="settings-subtab" data-bill-subtab="history" role="tab">
+            <button type="button" class="settings-subtab active" data-bill-subtab="history" role="tab">
               <span class="ss-icon" aria-hidden="true">📋</span><span data-i18n="bmSubtabHistory"></span>
+            </button>
+            <button type="button" class="settings-subtab" data-bill-subtab="payment" role="tab">
+              <span class="ss-icon" aria-hidden="true">💳</span><span data-i18n="bmSubtabPayment"></span>
             </button>
           </nav>
 
           <!-- Sub-tab 1: Payment method (current card + inline update form) -->
-          <div class="settings-subpanel active" data-bill-subpanel="payment" role="tabpanel">
+          <div class="settings-subpanel" data-bill-subpanel="payment" role="tabpanel" hidden>
 
           <!-- Payment method on file -->
           <article class="panel" id="bmPanel">
@@ -1962,7 +1962,7 @@
           </div><!-- /sub-tab payment -->
 
           <!-- Sub-tab 2: Past payments / history -->
-          <div class="settings-subpanel" data-bill-subpanel="history" role="tabpanel" hidden>
+          <div class="settings-subpanel active" data-bill-subpanel="history" role="tabpanel">
 
           <!-- History (existing) -->
           <article class="panel" id="billingPanel">
@@ -6836,9 +6836,9 @@
         var bar = document.getElementById("billingSubtabs");
         if (!bar) return;
         var KEY = "minddo_acct_billing_subtab";
-        var KNOWN = ["payment", "history"];
+        var KNOWN = ["history", "payment"];
         function applySub(key) {
-          if (KNOWN.indexOf(key) === -1) key = "payment";
+          if (KNOWN.indexOf(key) === -1) key = "history";
           bar.querySelectorAll("[data-bill-subtab]").forEach(function (b) {
             b.classList.toggle("active", b.getAttribute("data-bill-subtab") === key);
           });
@@ -6856,7 +6856,7 @@
         });
         var saved;
         try { saved = localStorage.getItem(KEY); } catch (_) {}
-        applySub(saved || "payment");
+        applySub(saved || "history");
       })();
 
       // Settings sub-tabs — five focused groups (Account / Family / Security
