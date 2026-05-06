@@ -510,6 +510,19 @@
           seatsTaken: 0
         });
         renderRows();
+        // The new row lands at the bottom of a 20+ row catalog, so the
+        // viewport may have it well off-screen — scroll it into view,
+        // focus the first input, and toast a confirmation so the
+        // action is visible.
+        var newTr = rowsContainer.lastElementChild;
+        if (newTr) {
+          try { newTr.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
+          newTr.style.background = "rgba(245,158,11,0.16)";
+          setTimeout(function () { newTr.style.background = ""; }, 900);
+          var firstInput = newTr.querySelector("input,select");
+          if (firstInput) try { firstInput.focus(); } catch (_) {}
+        }
+        showToast(lang === "en" ? "Empty row added — fill it in below." : "已添加一条空白班次，向下滚动填写。");
       });
 
       document.getElementById("saveBtn").addEventListener("click", function () {
