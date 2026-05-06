@@ -5040,6 +5040,15 @@
           var rewards = (refAcct && flow && flow.getReferralRewards)
             ? flow.getReferralRewards(refAcct.accountId)
             : { earned: 0, pending: 0, paidCount: 0, bonus: 0, perRef: 50, tiers: [] };
+
+          // refShareSub uses a {amount} placeholder ("...获得 ${amount} 学习金
+          // 奖励") but is populated by the generic data-i18n loop, which
+          // doesn't run replace(). Substitute it explicitly here so the
+          // copy reads "$50" instead of "${amount}".
+          var refShareSubEl = document.querySelector('[data-i18n="refShareSub"]');
+          if (refShareSubEl && t.refShareSub) {
+            refShareSubEl.textContent = t.refShareSub.replace("{amount}", rewards.perRef);
+          }
           var nextTierLine = "";
           var nextTier = (rewards.tiers || []).filter(function (tt) { return rewards.paidCount < tt.count; })[0];
           if (nextTier) {
