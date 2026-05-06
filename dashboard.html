@@ -544,6 +544,23 @@
     .user-menu-item .um-icon { width: 18px; height: 18px; color: #64748b; flex-shrink: 0;
       display: inline-flex; align-items: center; justify-content: center; }
     .user-menu hr { border: none; border-top: 1px solid var(--line); margin: 6px 4px; }
+    /* Switch-identity submenu — section label + role-tag pill on each row. */
+    .um-section-label { font-size: 10.5px; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); padding: 8px 12px 4px; }
+    .um-switch-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+      border-radius: 10px; background: transparent; border: none; cursor: pointer; width: 100%;
+      text-align: left; font: inherit; font-size: 12.5px; color: var(--clay); transition: 0.12s; font-family: inherit; }
+    .um-switch-row:hover { background: #f1f5f9; }
+    .um-switch-row.active { background: linear-gradient(135deg,#fef3c7,#fde68a); }
+    .um-switch-row .um-sw-name { font-weight: 800; flex: 1 1 auto; min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .um-switch-row .um-sw-role { font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px;
+      background: rgba(124,45,18,0.1); color: var(--clay); border: 1px solid rgba(124,45,18,0.18);
+      flex: none; letter-spacing: 0.04em; }
+    .um-switch-row .um-sw-role.admin    { background: rgba(124,45,18,0.16); color: var(--clay); border-color: rgba(124,45,18,0.32); }
+    .um-switch-row .um-sw-role.academic { background: rgba(245,158,11,0.18); color: var(--gold-deep); border-color: rgba(245,158,11,0.36); }
+    .um-switch-row .um-sw-role.ops      { background: rgba(110,143,87,0.18); color: #3f5d26; border-color: rgba(110,143,87,0.36); }
+    .um-switch-row .um-sw-check { font-size: 12px; color: var(--gold-deep); font-weight: 900; flex: none; }
     .user-menu-lang { display: flex; gap: 4px; padding: 4px; background: #f1f5f9;
       border-radius: 999px; margin: 6px 4px 4px; }
     .user-menu-lang button { all: unset; flex: 1; text-align: center; padding: 6px 12px;
@@ -1277,18 +1294,24 @@
         <select id="campusFilter" class="tc-select" aria-label="Active campus"></select>
       </div>
       <button type="button" class="user-trigger" id="userTrigger" aria-haspopup="menu" aria-expanded="false">
-        <span class="user-avatar">OP</span>
-        <span class="um-greeting"><span data-lang="zh">运营</span><span data-lang="en">Operations</span></span>
+        <span class="user-avatar" id="userAvatarBadge">OP</span>
+        <span class="um-greeting" id="userGreeting"><span data-lang="zh">运营</span><span data-lang="en">Operations</span></span>
         <span class="caret" aria-hidden="true">▾</span>
       </button>
       <div class="user-menu" id="userMenu" role="menu" aria-labelledby="userTrigger">
         <div class="user-menu-head">
-          <span class="user-avatar">OP</span>
+          <span class="user-avatar" id="userMenuAvatar">OP</span>
           <div class="um-text">
-            <span class="um-name"><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></span>
-            <span class="um-role"><span data-lang="zh">内部账户</span><span data-lang="en">Internal account</span></span>
+            <span class="um-name" id="userMenuName"><span data-lang="zh">运营后台</span><span data-lang="en">Operations</span></span>
+            <span class="um-role" id="userMenuRole"><span data-lang="zh">内部账户</span><span data-lang="en">Internal account</span></span>
           </div>
         </div>
+        <!-- Switch-identity submenu (mock auth for testing) — populated
+             from KEYS.staff at runtime. Owner / Admin / Operations etc.
+             show as one-click identity swaps. -->
+        <div class="um-section-label"><span data-lang="zh">切换身份（测试）</span><span data-lang="en">Switch Identity (test)</span></div>
+        <div id="userSwitchList"></div>
+        <hr />
         <a class="user-menu-item" href="trial.html">
           <span class="um-icon" aria-hidden="true">＋</span>
           <span><span data-lang="zh">新建试课</span><span data-lang="en">New Trial</span></span>
@@ -1297,6 +1320,10 @@
           <span class="um-icon" aria-hidden="true">⌂</span>
           <span><span data-lang="zh">回到首页</span><span data-lang="en">Home</span></span>
         </a>
+        <button type="button" class="user-menu-item" id="reseedBtn" style="background:none;border:none;cursor:pointer;width:100%;text-align:left;font:inherit;">
+          <span class="um-icon" aria-hidden="true">🔄</span>
+          <span><span data-lang="zh">重置示例数据</span><span data-lang="en">Reseed Demo Data</span></span>
+        </button>
         <a class="user-menu-item" href="login.html">
           <span class="um-icon" aria-hidden="true">⎋</span>
           <span><span data-lang="zh">退出登录</span><span data-lang="en">Log Out</span></span>
@@ -6539,6 +6566,119 @@
         });
         document.addEventListener("keydown", function (e) {
           if (e.key === "Escape" && menu.classList.contains("open")) close();
+        });
+      })();
+
+      // ---------- Mock-auth identity (active ops user) ----------
+      // Reads MindDoFlow.getActiveOpsUser() and paints the topbar avatar
+      // / greeting / menu head. Builds a 切换身份 list from KEYS.staff
+      // sorted admin → academic → ops so the highest-privilege option
+      // sits at the top.
+      (function () {
+        var flow = window.MindDoFlow;
+        if (!flow) return;
+        function initials(name) {
+          if (!name) return "OP";
+          var parts = String(name).trim().split(/\s+/);
+          if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+          return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        function refreshIdentity() {
+          var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+          var avatar = document.getElementById("userAvatarBadge");
+          var greeting = document.getElementById("userGreeting");
+          var menuAvatar = document.getElementById("userMenuAvatar");
+          var menuName = document.getElementById("userMenuName");
+          var menuRole = document.getElementById("userMenuRole");
+          var lang = state && state.lang === "en" ? "en" : "zh";
+          if (active && active.staff) {
+            var staff = active.staff;
+            var role = active.role || {};
+            var roleName = lang === "en" ? (role.nameEn || role.name || "—") : (role.name || role.nameEn || "—");
+            if (avatar) avatar.textContent = initials(staff.name);
+            if (menuAvatar) menuAvatar.textContent = initials(staff.name);
+            if (greeting) greeting.textContent = staff.name;
+            if (menuName) menuName.textContent = staff.name;
+            if (menuRole) menuRole.textContent = roleName;
+          }
+        }
+
+        // Switch-list — sorted by category priority (admin > academic > ops).
+        function renderSwitchList() {
+          var listEl = document.getElementById("userSwitchList");
+          if (!listEl) return;
+          var staff = (flow.readJson && flow.keys && flow.keys.staff)
+            ? (flow.readJson(flow.keys.staff) || []) : [];
+          var roles = (flow.readJson && flow.keys && flow.keys.roles)
+            ? (flow.readJson(flow.keys.roles) || []) : [];
+          var roleById = {};
+          roles.forEach(function (r) { roleById[r.id] = r; });
+          var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+          var activeId = active && active.staff ? active.staff.id : null;
+          var lang = state && state.lang === "en" ? "en" : "zh";
+          var catRank = { admin: 0, academic: 1, ops: 2 };
+          var roster = staff
+            .filter(function (s) { return s.status === "active"; })
+            .map(function (s) {
+              var role = roleById[s.roleId] || {};
+              return { staff: s, role: role, rank: (role.category in catRank) ? catRank[role.category] : 99 };
+            })
+            .sort(function (a, b) {
+              if (a.rank !== b.rank) return a.rank - b.rank;
+              return String(a.staff.name).localeCompare(String(b.staff.name));
+            });
+          if (!roster.length) {
+            listEl.innerHTML = "<div style='padding:8px 12px;color:var(--muted);font-size:12px;'>"
+              + (lang === "en" ? "No staff seeded." : "暂无员工数据。")
+              + "</div>";
+            return;
+          }
+          listEl.innerHTML = roster.slice(0, 8).map(function (r) {
+            var roleName = lang === "en" ? (r.role.nameEn || r.role.name || "—") : (r.role.name || r.role.nameEn || "—");
+            var cls = (r.role.category || "ops");
+            var isActive = r.staff.id === activeId;
+            return "<button type='button' class='um-switch-row" + (isActive ? " active" : "") + "' data-switch-staff='" + escHTML(r.staff.id) + "'>"
+              +   "<span class='um-sw-name'>" + escHTML(r.staff.name) + "</span>"
+              +   "<span class='um-sw-role " + cls + "'>" + escHTML(roleName) + "</span>"
+              +   (isActive ? "<span class='um-sw-check' aria-hidden='true'>✓</span>" : "")
+              + "</button>";
+          }).join("");
+        }
+
+        // Click delegation: switch identity, reseed.
+        document.addEventListener("click", function (e) {
+          var sw = e.target.closest("[data-switch-staff]");
+          if (sw) {
+            var sid = sw.getAttribute("data-switch-staff");
+            if (flow.setActiveOpsUser) flow.setActiveOpsUser(sid);
+            refreshIdentity();
+            renderSwitchList();
+            // Re-render the dashboard so per-tab content honors the new
+            // identity (the per-tab gates aren't wired yet, but staff
+            // count / KPIs read live state, so reload-free is fine).
+            return;
+          }
+          var rs = e.target.closest("#reseedBtn");
+          if (rs) {
+            e.preventDefault();
+            if (!confirm((state && state.lang === "en")
+              ? "Reseed demo data? This wipes all current localStorage progress and reloads the page as the system owner."
+              : "确认重置示例数据？这会清空当前 localStorage 中的进度，并以「超级管理员」身份重新加载页面。")) return;
+            try {
+              flow.seedDemoData();
+              if (flow.loginAsRole) flow.loginAsRole("admin", { preferRoleId: "owner" });
+            } catch (_) {}
+            window.location.reload();
+          }
+        });
+
+        refreshIdentity();
+        renderSwitchList();
+        // Re-render switch list whenever the user menu opens so it
+        // reflects the current active user without a full reload.
+        var trig = document.getElementById("userTrigger");
+        if (trig) trig.addEventListener("click", function () {
+          setTimeout(function () { refreshIdentity(); renderSwitchList(); }, 30);
         });
       })();
 

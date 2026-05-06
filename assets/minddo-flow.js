@@ -1574,6 +1574,73 @@
     return false;
   }
 
+  // ---- Seed-version + active-ops-user (for "log in as role" testing) --
+  // Bump SEED_VERSION whenever seedDemoData adds/changes shape so existing
+  // localStorage gets refreshed automatically on next page load. Active
+  // ops user is the staff record the dashboard treats as "currently
+  // logged in" — visible in the topbar and switchable from the user menu.
+  var SEED_VERSION = "2026-05-roles-v1";
+  var KEY_SEED_VERSION = "minddo_seed_version";
+  var KEY_ACTIVE_OPS_USER = "minddo_active_ops_user";
+
+  function getSeedVersion() {
+    try { return localStorage.getItem(KEY_SEED_VERSION) || ""; } catch (_) { return ""; }
+  }
+  function markSeedFresh() {
+    try { localStorage.setItem(KEY_SEED_VERSION, SEED_VERSION); } catch (_) {}
+  }
+  function isSeedStale() { return getSeedVersion() !== SEED_VERSION; }
+
+  function getActiveOpsUser() {
+    try {
+      var sid = localStorage.getItem(KEY_ACTIVE_OPS_USER);
+      if (!sid) return null;
+      var staff = readJson(KEYS.staff) || [];
+      var roles = readJson(KEYS.roles) || [];
+      var rec = staff.filter(function (s) { return s.id === sid; })[0];
+      if (!rec) return null;
+      var role = roles.filter(function (r) { return r.id === rec.roleId; })[0] || null;
+      return { staff: rec, role: role };
+    } catch (_) { return null; }
+  }
+  function setActiveOpsUser(staffId) {
+    try {
+      if (staffId) localStorage.setItem(KEY_ACTIVE_OPS_USER, staffId);
+      else localStorage.removeItem(KEY_ACTIVE_OPS_USER);
+    } catch (_) {}
+    return getActiveOpsUser();
+  }
+  // "Log in as the highest-privilege role we have." Walks the staff list
+  // looking for the first active member whose role.category matches; the
+  // owner / admin pair sits at the top of the role hierarchy.
+  function loginAsRole(roleCategory, opts) {
+    var staff = readJson(KEYS.staff) || [];
+    var roles = readJson(KEYS.roles) || [];
+    var prefer = (opts && opts.preferRoleId) || null;
+    if (prefer) {
+      var direct = staff.filter(function (s) { return s.roleId === prefer && s.status === "active"; })[0];
+      if (direct) return setActiveOpsUser(direct.id);
+    }
+    var match = staff.filter(function (s) {
+      if (s.status !== "active") return false;
+      var r = roles.filter(function (rr) { return rr.id === s.roleId; })[0];
+      return r && r.category === roleCategory;
+    })[0];
+    if (match) return setActiveOpsUser(match.id);
+    return null;
+  }
+
+  // Pick a sane default ops user after every fresh seed: the owner if
+  // present, otherwise any admin, otherwise the campus manager.
+  function defaultActiveOpsUser() {
+    var roles = readJson(KEYS.roles) || [];
+    var staff = readJson(KEYS.staff) || [];
+    function pickByRoleId(id) {
+      return staff.filter(function (s) { return s.roleId === id && s.status === "active"; })[0];
+    }
+    return pickByRoleId("owner") || pickByRoleId("admin") || pickByRoleId("campus-manager") || staff[0];
+  }
+
   function seedDemoData() {
     clearFlowData();
 
@@ -2115,6 +2182,13 @@
       { id: "finance",            name: "财务",       nameEn: "Finance",          category: "ops",      desc: "订单 / 账单 / 工资 / 报销审批。",            descEn: "Orders, billing, payroll, expense approvals.",              permissions: ["billing.write", "payroll.write", "approvals.approve"] },
       { id: "frontdesk",          name: "前台",       nameEn: "Front Desk",       category: "ops",      desc: "试听签到、家长接待、日程协助。",            descEn: "Trial check-in, parent reception, scheduling support.",     permissions: ["students.view", "leads.view"] }
     ]);
+
+    // Stamp the seed version + pick a default ops user (owner) so the
+    // dashboard topbar lights up with the highest-privilege identity
+    // straight after a fresh seed.
+    markSeedFresh();
+    var defaultOps = defaultActiveOpsUser();
+    if (defaultOps) setActiveOpsUser(defaultOps.id);
   }
 
   // =================================================================
@@ -2838,6 +2912,30 @@
     upsertStudent: upsertStudent,
     upsertGuardian: upsertGuardian,
     getCurrentAccount: getCurrentAccount,
-    buildClaimUrl: buildClaimUrl
+    buildClaimUrl: buildClaimUrl,
+    // Active ops user (mock auth for dashboard testing)
+    SEED_VERSION: SEED_VERSION,
+    isSeedStale: isSeedStale,
+    markSeedFresh: markSeedFresh,
+    getActiveOpsUser: getActiveOpsUser,
+    setActiveOpsUser: setActiveOpsUser,
+    loginAsRole: loginAsRole,
+    defaultActiveOpsUser: defaultActiveOpsUser
   };
+
+  // Auto-reseed once when the seed schema bumps. We run lazily on the
+  // very next page load so existing demo storage picks up new roles /
+  // staff / additions to the seed without anyone having to find a hidden
+  // reset button. Only triggers when the version key is missing or
+  // outdated (set by markSeedFresh inside seedDemoData).
+  try {
+    if (typeof localStorage !== "undefined" && isSeedStale()) {
+      seedDemoData();
+    } else if (typeof localStorage !== "undefined" && !getActiveOpsUser()) {
+      // Existing-data case: pick a default ops user so the topbar shows
+      // someone after upgrade even if the storage was already populated.
+      var def = defaultActiveOpsUser();
+      if (def) setActiveOpsUser(def.id);
+    }
+  } catch (_) { /* localStorage unavailable; the dashboard will fall back */ }
 })();
