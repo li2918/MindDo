@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MindDo 名校背景提升 · 一个项目 × 多元成果 · 初中升高中 / 高中升本科 / 本科升硕博 · From one core project to research, papers, patents, competitions, products and ventures." />
+  <meta name="theme-color" content="#7c2d12" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="MindDo" />
+  <meta property="og:title" content="名校背景提升 · MindDo Elite Admissions" />
+  <meta property="og:description" content="一个项目 × 多元成果 · 圆梦名校。Build one core project — produce research, papers, patents, products and a venture." />
+  <meta property="og:image" content="assets/favicon.svg" />
+  <link rel="canonical" href="college-prep.html" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <title>名校背景提升 · MindDo Elite Admissions</title>
+  <style>
+    :root {
+      --bg:#fff8ee; --sand:#fde9c5; --card:rgba(255,250,240,0.96);
+      --line:rgba(122,48,16,0.14); --line-strong:rgba(122,48,16,0.26);
+      --text:#1c1208; --muted:#8a6240;
+      --gold:#f59e0b; --gold-deep:#d97706; --gold-soft:#fde68a;
+      --clay:#7c2d12; --clay-deep:#5a200a; --brown:#3a1808;
+      --success:#6f8f57; --error:#c46a4d;
+      /* Dedicated indigo accent borrowed from the PDF cover so this page
+         feels like the "background-enhancement" sub-brand without
+         abandoning the warm MindDo palette below the hero. */
+      --indigo:#5b6bd9; --indigo-deep:#4751c4; --indigo-soft:#dee1f7;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
+    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
+    a { color:inherit; text-decoration:none; }
+    button { font:inherit; }
+    [data-lang] { display:none; }
+    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
+
+    .skip-link { position:absolute; left:-9999px; top:0; background:#7c2d12; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #f59e0b; outline-offset:2px; }
+
+    .navbar { position:sticky; top:0; z-index:100; background:rgba(255,250,240,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-brand img { width:44px; height:44px; object-fit:contain; }
+    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
+    .nav-menu { display:flex; align-items:center; gap:4px; list-style:none; }
+    .nav-menu a { padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600; color:var(--muted); transition:0.15s; }
+    .nav-menu a:hover, .nav-menu a.active { color:var(--clay); background:rgba(122,48,16,0.06); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .lang-btn { background:none; border:1px solid var(--line); border-radius:999px; padding:7px 14px; cursor:pointer; font-size:13px; font-weight:600; color:var(--clay); font-family:inherit; }
+    .lang-btn:hover, .lang-btn.active { background:var(--sand); border-color:var(--gold); }
+    .nav-login { background:none; border:1px solid var(--line); border-radius:999px; padding:8px 16px; cursor:pointer; font-size:13px; font-weight:700; color:var(--clay); font-family:inherit; text-decoration:none; transition:0.15s; }
+    .nav-login:hover { background:var(--sand); border-color:var(--gold); }
+
+    .btn-primary { background:linear-gradient(135deg,#fde68a,var(--gold)); color:#3a1808; border:none; border-radius:999px; padding:12px 26px; font-size:14px; font-weight:800; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(245,158,11,0.32); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(245,158,11,0.4); }
+    .btn-secondary { background:rgba(255,250,240,0.96); color:var(--clay); border:1px solid var(--line); border-radius:999px; padding:11px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:var(--gold); }
+    .btn-ghost { background:transparent; color:#fffbeb; border:1px solid rgba(254,243,199,0.32); border-radius:999px; padding:11px 22px; font-size:14px; font-weight:700; font-family:inherit; display:inline-flex; align-items:center; gap:6px; text-decoration:none; transition:0.15s; }
+    .btn-ghost:hover { background:rgba(254,243,199,0.1); border-color:var(--gold); }
+    .btn-indigo { background:linear-gradient(135deg,#fde047,#facc15); color:#312072; border:none; border-radius:999px; padding:12px 26px; font-size:14px; font-weight:800; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 6px 18px rgba(76,86,200,0.35); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-indigo:hover { transform:translateY(-2px); box-shadow:0 10px 26px rgba(76,86,200,0.45); }
+
+    /* HERO — indigo + amber arrow grid, the visual signature from the
+       PDF cover. The arrows are stenciled as inline SVG so the whole
+       hero stays one CSS background, no extra image asset. */
+    .page-hero {
+      background:linear-gradient(135deg,#4751c4 0%,#5b6bd9 60%,#6c75dd 100%);
+      padding:72px 0 60px; position:relative; overflow:hidden; color:#fffbeb;
+    }
+    .page-hero::before {
+      content:""; position:absolute; inset:0; pointer-events:none;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 84 84'><g fill='%23fde047' opacity='0.22'><path d='M14 64 L52 26 L40 26 L40 18 L66 18 L66 44 L58 44 L58 32 L20 70 Z'/></g></svg>");
+      background-size:84px 84px; opacity:0.55;
+    }
+    .page-hero::after {
+      content:""; position:absolute; inset:0; pointer-events:none;
+      background:radial-gradient(circle at 80% 0%,rgba(253,224,71,0.32) 0%,transparent 55%),
+                 radial-gradient(circle at 20% 100%,rgba(76,86,200,0.32) 0%,transparent 55%);
+    }
+    .page-hero-inner { max-width:1180px; margin:0 auto; padding:0 48px; position:relative; z-index:1; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(253,224,71,0.22); border:1px solid rgba(253,224,71,0.55); color:#fef9c3; font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:16px; }
+    .page-hero h1 { font-size:clamp(30px,4vw,46px); font-weight:900; color:#fffbeb; letter-spacing:-0.02em; line-height:1.15; margin-bottom:14px; }
+    .page-hero h1 em { color:#fde047; font-style:normal; }
+    .page-hero p.lede { font-size:16px; color:rgba(254,249,195,0.88); line-height:1.75; max-width:680px; margin-bottom:18px; }
+    .hero-tagline { display:flex; flex-wrap:wrap; gap:8px 14px; margin-bottom:22px; }
+    .hero-tag-pill { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:999px; background:rgba(253,224,71,0.18); border:1px solid rgba(253,224,71,0.45); color:#fef9c3; font-size:12.5px; font-weight:800; letter-spacing:0.04em; }
+    .hero-tag-pill::before { content:"↗"; font-weight:900; color:#fde047; }
+    .hero-actions { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .hero-actions .meta-line { font-size:12.5px; color:rgba(254,249,195,0.7); margin-left:6px; line-height:1.6; }
+    .hero-stages { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:32px; max-width:760px; }
+    .hero-stage { background:rgba(15,23,80,0.32); border:1px solid rgba(253,224,71,0.32); border-radius:14px; padding:14px 16px; }
+    .hero-stage .lvl { font-size:11px; font-weight:800; letter-spacing:0.16em; color:#fde047; text-transform:uppercase; margin-bottom:6px; }
+    .hero-stage .lab { font-size:14px; font-weight:800; color:#fffbeb; }
+
+    /* SECTION SHELL */
+    section.bg-section { padding:64px 0; }
+    section.bg-section.alt { background:linear-gradient(180deg,rgba(253,233,197,0.45),rgba(253,233,197,0.15)); }
+    section.bg-section.indigo-band { background:linear-gradient(180deg,rgba(91,107,217,0.06),rgba(91,107,217,0.0)); }
+    .section-inner { max-width:1180px; margin:0 auto; padding:0 48px; }
+    .section-head { text-align:center; max-width:760px; margin:0 auto 44px; }
+    .section-eyebrow { font-size:11.5px; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--gold-deep); margin-bottom:10px; display:block; }
+    .section-head h2 { font-size:clamp(24px,3vw,34px); font-weight:900; color:var(--clay); letter-spacing:-0.02em; margin-bottom:12px; line-height:1.25; }
+    .section-head p { font-size:14.5px; color:var(--muted); line-height:1.75; }
+
+    /* WHY — two-column "problem / solution" layout */
+    .why-split { display:grid; grid-template-columns:1.05fr 1fr; gap:24px; align-items:stretch; }
+    .why-card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:26px 24px; }
+    .why-card.dim { background:rgba(91,107,217,0.06); border-color:rgba(91,107,217,0.18); }
+    .why-card h3 { font-size:18px; font-weight:900; color:var(--clay); letter-spacing:-0.01em; margin-bottom:10px; }
+    .why-card.dim h3 { color:var(--indigo-deep); }
+    .why-card p { font-size:14px; color:var(--text); line-height:1.8; margin-bottom:10px; }
+    .why-card p:last-child { margin-bottom:0; }
+    .why-card .ic-row { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+    .why-card .ic-pill { font-size:11px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; padding:5px 10px; border-radius:999px; background:rgba(245,158,11,0.16); color:var(--gold-deep); }
+    .why-card.dim .ic-pill { background:rgba(91,107,217,0.16); color:var(--indigo-deep); }
+
+    /* TRACK RECORD — stat tiles modeled on the PDF "数据" page */
+    .stat-grid { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:12px; }
+    .stat-tile { background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px 16px; }
+    .stat-tile .num { font-size:clamp(22px,2.6vw,30px); font-weight:900; color:var(--clay); letter-spacing:-0.02em; line-height:1.05; font-variant-numeric:tabular-nums; }
+    .stat-tile .num em { color:var(--gold-deep); font-style:normal; font-size:0.7em; vertical-align:baseline; margin-left:1px; }
+    .stat-tile .lab { font-size:11.5px; font-weight:700; color:var(--muted); margin-top:6px; line-height:1.5; }
+    .stat-tile.indigo { background:linear-gradient(135deg,#5b6bd9,#4751c4); border-color:rgba(76,86,200,0.4); }
+    .stat-tile.indigo .num { color:#fef9c3; }
+    .stat-tile.indigo .lab { color:rgba(254,249,195,0.85); }
+
+    /* FRAMEWORK — 12-step pipeline matching the PDF's flow diagram */
+    .pipe-grid { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:14px; }
+    .pipe-card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 18px; position:relative; transition:0.2s; }
+    .pipe-card:hover { transform:translateY(-2px); border-color:rgba(91,107,217,0.4); box-shadow:0 14px 32px rgba(76,86,200,0.1); }
+    .pipe-card .step { position:absolute; top:-10px; left:14px; background:var(--clay); color:#fef9c3; font-size:11px; font-weight:900; padding:4px 10px; border-radius:999px; letter-spacing:0.06em; }
+    .pipe-card.indigo .step { background:var(--indigo-deep); }
+    .pipe-card .ic { font-size:22px; margin:6px 0 8px; line-height:1; }
+    .pipe-card h3 { font-size:14.5px; font-weight:800; color:var(--clay); letter-spacing:-0.01em; margin-bottom:6px; }
+    .pipe-card p { font-size:12.5px; color:var(--muted); line-height:1.65; }
+    .pipe-band { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; max-width:780px; margin:24px auto 0; }
+    .pipe-bookend { background:linear-gradient(135deg,#4751c4,#5b6bd9); color:#fef9c3; border-radius:14px; padding:14px 18px; font-size:13px; font-weight:800; letter-spacing:0.04em; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 10px 24px rgba(76,86,200,0.22); }
+
+    /* OUTCOMES — 8 deliverables grid */
+    .outcomes-grid { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:14px; }
+    .outcome-card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:20px 20px; transition:0.2s; }
+    .outcome-card:hover { transform:translateY(-2px); border-color:rgba(245,158,11,0.4); box-shadow:0 14px 32px rgba(122,48,16,0.08); }
+    .outcome-card .ic { display:inline-flex; align-items:center; justify-content:center; width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,#fde68a,var(--gold)); color:#3a1808; font-size:20px; font-weight:900; margin-bottom:14px; }
+    .outcome-card h3 { font-size:15px; font-weight:800; color:var(--clay); letter-spacing:-0.01em; margin-bottom:6px; }
+    .outcome-card p { font-size:12.5px; color:var(--muted); line-height:1.7; }
+
+    /* CASE STUDIES — wide cards with school + project + results */
+    .case-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:18px; }
+    .case-card { background:#fff; border:1px solid var(--line); border-radius:20px; padding:24px 22px; display:flex; flex-direction:column; gap:12px; transition:0.2s; }
+    .case-card:hover { transform:translateY(-2px); box-shadow:0 18px 38px rgba(122,48,16,0.1); border-color:rgba(91,107,217,0.32); }
+    .case-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+    .case-school { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; background:linear-gradient(135deg,#4751c4,#5b6bd9); color:#fef9c3; font-size:11px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; }
+    .case-major { font-size:11.5px; color:var(--muted); font-weight:700; }
+    .case-card h3 { font-size:16.5px; font-weight:900; color:var(--clay); letter-spacing:-0.01em; line-height:1.35; }
+    .case-card .summary { font-size:13px; color:var(--muted); line-height:1.7; }
+    .case-card ul { list-style:none; padding:0; margin:6px 0 0; display:grid; gap:6px; font-size:12.5px; color:var(--text); line-height:1.6; }
+    .case-card ul li { display:flex; gap:8px; align-items:flex-start; }
+    .case-card ul li::before { content:"›"; color:var(--gold-deep); font-weight:900; flex:none; }
+    .case-card ul li strong { color:var(--clay); font-weight:800; margin-right:4px; }
+
+    /* ADMITS LIST — long alphabetical list of universities */
+    .admits-grid { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:10px; }
+    .admit-tile { background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:13px; font-weight:700; color:var(--clay); letter-spacing:-0.01em; }
+    .admit-tile small { display:block; font-size:11px; font-weight:600; color:var(--muted); margin-top:3px; letter-spacing:0; }
+
+    /* MENTOR ROW — 4 highlighted advisors mapped to PDF顾问团队 */
+    .mentor-grid { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:14px; }
+    .mentor-card { background:#fff; border:1px solid var(--line); border-radius:18px; padding:20px 20px; transition:0.2s; }
+    .mentor-card:hover { transform:translateY(-2px); box-shadow:0 14px 32px rgba(76,86,200,0.12); }
+    .mentor-card .av { width:54px; height:54px; border-radius:14px; background:linear-gradient(135deg,#dee1f7,#aab1eb); color:#312072; display:inline-flex; align-items:center; justify-content:center; font-size:20px; font-weight:900; margin-bottom:12px; letter-spacing:-0.02em; }
+    .mentor-card h4 { font-size:15px; font-weight:900; color:var(--clay); margin-bottom:4px; }
+    .mentor-card .role { font-size:11.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--indigo-deep); margin-bottom:10px; }
+    .mentor-card ul { list-style:none; padding:0; display:grid; gap:5px; font-size:12px; color:var(--muted); line-height:1.55; }
+    .mentor-card ul li::before { content:"·"; color:var(--gold-deep); font-weight:900; margin-right:6px; }
+
+    /* FAQ */
+    .faq-list { display:grid; gap:10px; max-width:840px; margin:0 auto; }
+    .faq-item { background:#fff; border:1px solid var(--line); border-radius:14px; }
+    .faq-item summary { padding:16px 18px; font-size:14px; font-weight:800; color:var(--clay); cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px; border-radius:14px; }
+    .faq-item summary::-webkit-details-marker { display:none; }
+    .faq-item summary::after { content:"+"; color:var(--gold-deep); font-weight:900; font-size:18px; flex:none; }
+    .faq-item[open] summary::after { content:"−"; }
+    .faq-item[open] summary { background:rgba(253,230,138,0.32); border-radius:14px 14px 0 0; }
+    .faq-body { padding:14px 18px 18px; font-size:13px; color:var(--muted); line-height:1.75; }
+
+    /* CTA STRIP */
+    .cta-strip { background:linear-gradient(135deg,#312072 0%,#4751c4 100%); padding:60px 0; position:relative; overflow:hidden; }
+    .cta-strip::before { content:""; position:absolute; inset:0; pointer-events:none;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'><g fill='%23fde047' opacity='0.14'><path d='M12 56 L46 22 L34 22 L34 14 L58 14 L58 38 L50 38 L50 26 L18 58 Z'/></g></svg>");
+      background-size:72px 72px; }
+    .cta-inner { max-width:1180px; margin:0 auto; padding:0 48px; position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; color:#fef9c3; }
+    .cta-inner h2 { font-size:clamp(22px,2.6vw,30px); font-weight:900; color:#fef9c3; letter-spacing:-0.01em; margin-bottom:6px; }
+    .cta-inner p { font-size:14px; color:rgba(254,249,195,0.78); line-height:1.65; max-width:520px; }
+    .cta-actions { display:flex; gap:12px; flex-wrap:wrap; }
+
+    /* TOAST */
+    .toast { position:fixed; bottom:96px; right:24px; background:var(--clay); color:#fffbeb; padding:14px 20px; border-radius:14px; font-size:13.5px; font-weight:700; box-shadow:0 16px 40px rgba(42,20,8,0.32); opacity:0; transform:translateY(10px); transition:0.25s; pointer-events:none; z-index:1600; max-width:340px; line-height:1.55; }
+    .toast.show { opacity:1; transform:translateY(0); }
+
+    /* FOOTER (matches franchise.html / index.html) */
+    .footer { background:var(--brown); color:rgba(254,243,199,0.72); padding:60px 48px 32px; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:40px; margin-bottom:40px; }
+    .footer-logo-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .footer-logo-row img { width:36px; height:36px; object-fit:contain; }
+    .footer-logo-row span { font-size:18px; font-weight:800; color:#fffbeb; }
+    .footer-brand p { font-size:13px; line-height:1.7; margin-bottom:16px; }
+    .footer-col h4 { font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:rgba(254,243,199,0.5); margin-bottom:16px; }
+    .footer-col ul { list-style:none; display:grid; gap:10px; }
+    .footer-col ul a { font-size:14px; color:rgba(254,243,199,0.72); transition:0.15s; }
+    .footer-col ul a:hover { color:#fffbeb; }
+    .footer-bottom { max-width:1280px; margin:0 auto; padding-top:24px; border-top:1px solid rgba(254,243,199,0.12); display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(254,243,199,0.45); }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .why-split { grid-template-columns:1fr; }
+      .stat-grid { grid-template-columns:repeat(3, 1fr); }
+      .pipe-grid { grid-template-columns:repeat(2, 1fr); }
+      .outcomes-grid { grid-template-columns:repeat(2, 1fr); }
+      .case-grid { grid-template-columns:1fr; }
+      .admits-grid { grid-template-columns:repeat(3, 1fr); }
+      .mentor-grid { grid-template-columns:repeat(2, 1fr); }
+    }
+    @media (max-width: 720px) {
+      .navbar { padding:0 22px; }
+      .nav-menu { display:none; }
+      .page-hero-inner, .section-inner, .cta-inner { padding:0 24px; }
+      section.bg-section { padding:48px 0; }
+      .hero-stages { grid-template-columns:1fr; }
+      .stat-grid { grid-template-columns:repeat(2, 1fr); }
+      .pipe-grid, .outcomes-grid { grid-template-columns:1fr; }
+      .admits-grid { grid-template-columns:repeat(2, 1fr); }
+      .mentor-grid { grid-template-columns:1fr; }
+      .footer { padding:48px 24px 28px; }
+      .footer-inner { grid-template-columns:1fr 1fr; gap:28px; }
+      .footer-bottom { flex-direction:column; gap:8px; align-items:flex-start; }
+    }
+  </style>
+  <link rel="stylesheet" href="assets/minddo-theme.css" />
+  <link rel="stylesheet" href="assets/minddo-responsive.css" />
+</head>
+<body>
+  <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
+
+  <nav class="navbar">
+    <a class="nav-brand" href="index.html" aria-label="MindDo home">
+      <img src="assets/logo.png" alt="MindDo logo" />
+      <span class="nav-brand-name">MindDo</span>
+    </a>
+    <ul class="nav-menu">
+      <li><a href="index.html"><span data-lang="zh">首页</span><span data-lang="en">Home</span></a></li>
+      <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+      <li><a href="college-prep.html" class="active"><span data-lang="zh">名校背景提升</span><span data-lang="en">Elite Admissions</span></a></li>
+      <li><a href="franchise.html"><span data-lang="zh">招商加盟</span><span data-lang="en">Partnership</span></a></li>
+      <li><a href="contact.html"><span data-lang="zh">联系我们</span><span data-lang="en">Contact</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="lang-switcher" data-lang-switcher>
+        <button class="lang-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span class="lang-trigger-label">中文</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="lang-menu" role="listbox">
+          <button class="lang-btn active" type="button" role="option" data-set-lang="zh-CN">中文</button>
+          <button class="lang-btn" type="button" role="option" data-set-lang="en">English</button>
+        </div>
+      </div>
+      <a class="nav-login" href="login.html"><span data-lang="zh">登录</span><span data-lang="en">Log In</span></a>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- HERO -->
+    <section class="page-hero">
+      <div class="page-hero-inner">
+        <span class="page-tag"><span data-lang="zh">名校背景提升 · Elite Admissions</span><span data-lang="en">Elite Admissions Track</span></span>
+        <h1>
+          <span data-lang="zh">一个项目 × <em>多元成果</em><br/>圆梦名校</span>
+          <span data-lang="en">One core project · <em>many outcomes</em><br/>Engineered for elite admissions.</span>
+        </h1>
+        <p class="lede">
+          <span data-lang="zh">围绕一个核心项目，在科研实习、学术论文、技术专利、科技竞赛、产品落地与公益创业等多个维度产出高含金量成果。适用于全部专业方向，覆盖从初中到博士的每一个升学拐点。</span>
+          <span data-lang="en">Build one ambitious project — then turn it into research, papers, patents, competitions, a shipped product and a real venture. Works for any major and every key transition from middle school through PhD.</span>
+        </p>
+        <div class="hero-tagline">
+          <span class="hero-tag-pill" data-lang="zh">从零到一</span><span class="hero-tag-pill" data-lang="en">Zero to one</span>
+          <span class="hero-tag-pill" data-lang="zh">全程陪跑</span><span class="hero-tag-pill" data-lang="en">End-to-end mentoring</span>
+          <span class="hero-tag-pill" data-lang="zh">个性定制</span><span class="hero-tag-pill" data-lang="en">Personalised</span>
+        </div>
+        <div class="hero-actions">
+          <button type="button" class="btn-indigo" data-cs-open>
+            <span data-lang="zh">联系顾问 →</span><span data-lang="en">Talk to a counsellor →</span>
+          </button>
+          <a class="btn-ghost" href="#framework">
+            <span data-lang="zh">查看项目框架</span><span data-lang="en">See the framework</span>
+          </a>
+          <span class="meta-line">
+            <span data-lang="zh">回复时间：1 个工作日内</span>
+            <span data-lang="en">We reply within 1 business day</span>
+          </span>
+        </div>
+        <div class="hero-stages">
+          <article class="hero-stage">
+            <div class="lvl"><span data-lang="zh">阶段 1</span><span data-lang="en">Stage 1</span></div>
+            <div class="lab"><span data-lang="zh">初中 升 高中</span><span data-lang="en">Middle → High</span></div>
+          </article>
+          <article class="hero-stage">
+            <div class="lvl"><span data-lang="zh">阶段 2</span><span data-lang="en">Stage 2</span></div>
+            <div class="lab"><span data-lang="zh">高中 升 本科</span><span data-lang="en">High → Undergrad</span></div>
+          </article>
+          <article class="hero-stage">
+            <div class="lvl"><span data-lang="zh">阶段 3</span><span data-lang="en">Stage 3</span></div>
+            <div class="lab"><span data-lang="zh">本科 升 硕博</span><span data-lang="en">Undergrad → MS / PhD</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY — problem / solution -->
+    <section class="bg-section" id="why">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">为什么需要它</span><span data-lang="en">Why this exists</span></span>
+          <h2><span data-lang="zh">分数已不再是名校录取的唯一答案</span><span data-lang="en">Test scores alone no longer move the needle.</span></h2>
+          <p>
+            <span data-lang="zh">招生官比从前更看重综合素质——研究能力、创新力、领导力与社会责任感。但真正成体系、有影响力的项目，需要清晰选题、专业指导与持续陪跑。</span>
+            <span data-lang="en">Admissions officers weigh research, creativity, leadership and social impact more than ever. Building a project deep enough to count on — that takes structure, mentoring and time.</span>
+          </p>
+        </div>
+        <div class="why-split">
+          <article class="why-card dim">
+            <div class="ic-row">
+              <span class="ic-pill"><span data-lang="zh">现状</span><span data-lang="en">Current state</span></span>
+            </div>
+            <h3><span data-lang="zh">学生独自做项目，痛点很现实</span><span data-lang="en">Going it alone — the typical pitfalls</span></h3>
+            <p>
+              <span data-lang="zh">学业压力大、可投入时间被压缩；缺乏调研、立项、产出与发表的系统流程；活动堆叠没有故事主线，难以体现真实价值。</span>
+              <span data-lang="en">Heavy coursework leaves little time. Without a research-to-publication pipeline, activities pile up but never connect into a story admissions can buy.</span>
+            </p>
+          </article>
+          <article class="why-card">
+            <div class="ic-row">
+              <span class="ic-pill"><span data-lang="zh">我们的答案</span><span data-lang="en">Our answer</span></span>
+            </div>
+            <h3><span data-lang="zh">「一个项目 × 多元成果」</span><span data-lang="en">"One project, many outcomes."</span></h3>
+            <p>
+              <span data-lang="zh">兼具个性定制与系统化的背景提升项目：围绕一个核心项目，平行产出实习、论文、专利、竞赛、产品、品牌与社会应用等多维成果，让学生的成长轨迹清晰、可验证、可被招生官信服。</span>
+              <span data-lang="en">A single core project, fed through a structured pipeline that produces research, a paper, a patent, competition wins, a shipped product, a venture, and measurable social impact — a coherent admissions narrative, end to end.</span>
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRACK RECORD -->
+    <section class="bg-section alt" id="track">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">数据印证</span><span data-lang="en">Track record</span></span>
+          <h2><span data-lang="zh">9 年沉淀 · 700+ 学生 · 名校录取兑现</span><span data-lang="en">9 years in · 700+ students · admissions delivered</span></h2>
+          <p>
+            <span data-lang="zh">名校背景提升是 MindDo 旗下的升学潜力提升项目。下方数字来自累计服务记录，覆盖科研、竞赛、专利、创业等多个维度。</span>
+            <span data-lang="en">MindDo's flagship admissions track. The numbers below are cumulative deliverables across research, competitions, patents and ventures.</span>
+          </p>
+        </div>
+        <div class="stat-grid">
+          <article class="stat-tile">
+            <div class="num">2016</div>
+            <div class="lab"><span data-lang="zh">成立年份</span><span data-lang="en">Founded</span></div>
+          </article>
+          <article class="stat-tile">
+            <div class="num">700<em>+</em></div>
+            <div class="lab"><span data-lang="zh">服务学生</span><span data-lang="en">Students served</span></div>
+          </article>
+          <article class="stat-tile indigo">
+            <div class="num">90%<em>+</em></div>
+            <div class="lab"><span data-lang="zh">前 30 名校录取率</span><span data-lang="en">Top-30 admit rate</span></div>
+          </article>
+          <article class="stat-tile">
+            <div class="num">100%</div>
+            <div class="lab"><span data-lang="zh">前 50 名校录取率</span><span data-lang="en">Top-50 admit rate</span></div>
+          </article>
+          <article class="stat-tile">
+            <div class="num">500<em>+</em></div>
+            <div class="lab"><span data-lang="zh">学生项目</span><span data-lang="en">Student projects</span></div>
+          </article>
+          <article class="stat-tile">
+            <div class="num">450<em>+</em></div>
+            <div class="lab"><span data-lang="zh">科研经历</span><span data-lang="en">Research placements</span></div>
+          </article>
+          <article class="stat-tile">
+            <div class="num">450<em>+</em></div>
+            <div class="lab"><span data-lang="zh">论文发表</span><span data-lang="en">Papers published</span></div>
+          </article>
+          <article class="stat-tile">
+            <div class="num">1500<em>+</em></div>
+            <div class="lab"><span data-lang="zh">竞赛参与</span><span data-lang="en">Competitions entered</span></div>
+          </article>
+          <article class="stat-tile">
+            <div class="num">200<em>+</em></div>
+            <div class="lab"><span data-lang="zh">实习经历</span><span data-lang="en">Internships</span></div>
+          </article>
+          <article class="stat-tile">
+            <div class="num">200<em>+</em></div>
+            <div class="lab"><span data-lang="zh">专利申请</span><span data-lang="en">Patent filings</span></div>
+          </article>
+          <article class="stat-tile">
+            <div class="num">500<em>+</em></div>
+            <div class="lab"><span data-lang="zh">学生创业</span><span data-lang="en">Student ventures</span></div>
+          </article>
+          <article class="stat-tile">
+            <div class="num">100<em>+</em></div>
+            <div class="lab"><span data-lang="zh">独家课程</span><span data-lang="en">In-house courses</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FRAMEWORK — 12-step pipeline -->
+    <section class="bg-section indigo-band" id="framework">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">项目框架</span><span data-lang="en">Framework</span></span>
+          <h2><span data-lang="zh">从零 → 到一：12 步全程陪跑</span><span data-lang="en">From zero to one — a 12-step guided path</span></h2>
+          <p>
+            <span data-lang="zh">每一步都明确产出与验收标准，把模糊的「背景提升」拆解成可执行、可量化的工程。</span>
+            <span data-lang="en">Every step has a defined deliverable and acceptance criteria — what is usually a vague "enrichment" effort becomes an engineered project.</span>
+          </p>
+        </div>
+        <div class="pipe-grid">
+          <article class="pipe-card indigo"><span class="step">01</span><div class="ic">🎯</div><h3><span data-lang="zh">个性定制</span><span data-lang="en">Personalisation</span></h3><p><span data-lang="zh">了解学生未来发展方向、意向专业与兴趣爱好，画像清晰再启动。</span><span data-lang="en">Map the student's goals, intended major and interests before kicking off.</span></p></article>
+          <article class="pipe-card indigo"><span class="step">02</span><div class="ic">🎓</div><h3><span data-lang="zh">匹配专业</span><span data-lang="en">Major Fit</span></h3><p><span data-lang="zh">结合目标院校与意向专业的真实要求，规划项目方向与产出形态。</span><span data-lang="en">Align the project shape with what target schools and majors actually look for.</span></p></article>
+          <article class="pipe-card"><span class="step">03</span><div class="ic">🔍</div><h3><span data-lang="zh">开展调研</span><span data-lang="en">Research</span></h3><p><span data-lang="zh">系统收集与分析资料，撰写可行性报告，为选题打下扎实依据。</span><span data-lang="en">Survey the field, analyse prior work, ship a feasibility report.</span></p></article>
+          <article class="pipe-card"><span class="step">04</span><div class="ic">📝</div><h3><span data-lang="zh">明确选题</span><span data-lang="en">Topic Lock-in</span></h3><p><span data-lang="zh">基于调研结果定下研究方向，确保清晰、合理且具有发展潜力。</span><span data-lang="en">Choose a topic that is novel, tractable and has room to grow.</span></p></article>
+          <article class="pipe-card"><span class="step">05</span><div class="ic">🗺️</div><h3><span data-lang="zh">制定计划</span><span data-lang="en">Roadmap</span></h3><p><span data-lang="zh">分阶段实施计划与里程碑，时间节点、任务拆解和成果要求一次说清。</span><span data-lang="en">Stage-by-stage plan with milestones, owners and acceptance criteria.</span></p></article>
+          <article class="pipe-card"><span class="step">06</span><div class="ic">🧪</div><h3><span data-lang="zh">参与实习</span><span data-lang="en">Internship</span></h3><p><span data-lang="zh">匹配高效实验室进入真实科研环境，积累经验并获得正式实习证明。</span><span data-lang="en">Match into a real lab, do real research, walk away with a verified credential.</span></p></article>
+          <article class="pipe-card"><span class="step">07</span><div class="ic">📄</div><h3><span data-lang="zh">发表论文</span><span data-lang="en">Publication</span></h3><p><span data-lang="zh">协助整理研究成果完成论文撰写，并推荐合适会议或期刊投稿。</span><span data-lang="en">Help shape the manuscript and target the right venue or journal.</span></p></article>
+          <article class="pipe-card"><span class="step">08</span><div class="ic">🏆</div><h3><span data-lang="zh">参加竞赛</span><span data-lang="en">Competitions</span></h3><p><span data-lang="zh">筛选国内外权威赛事，从报名到答辩训练，把成果变成奖项。</span><span data-lang="en">Pick the right tier-1 competitions; coach from entry through pitch.</span></p></article>
+          <article class="pipe-card"><span class="step">09</span><div class="ic">🛠️</div><h3><span data-lang="zh">打造产品</span><span data-lang="en">Product</span></h3><p><span data-lang="zh">将创意落地为原型，设计、开发、测试迭代，做到真实可用。</span><span data-lang="en">Turn the idea into a working prototype — design, build, ship, iterate.</span></p></article>
+          <article class="pipe-card"><span class="step">10</span><div class="ic">📑</div><h3><span data-lang="zh">申请专利</span><span data-lang="en">Patent</span></h3><p><span data-lang="zh">提供专利检索、撰写与申请指导，让创新拿到法律与学术背书。</span><span data-lang="en">Prior-art search, drafting and filing — turn the idea into a legal record.</span></p></article>
+          <article class="pipe-card"><span class="step">11</span><div class="ic">🌱</div><h3><span data-lang="zh">创立品牌</span><span data-lang="en">Brand / Venture</span></h3><p><span data-lang="zh">将产品孵化成创业项目：定位、商业模式、市场推广、运营全套。</span><span data-lang="en">Spin the product into a real venture — positioning, model, GTM, ops.</span></p></article>
+          <article class="pipe-card"><span class="step">12</span><div class="ic">🤝</div><h3><span data-lang="zh">社会应用 + 推荐</span><span data-lang="en">Impact + Letters</span></h3><p><span data-lang="zh">在社区或真实场景中落地，申请总统义工奖；同步收获教授级推荐信。</span><span data-lang="en">Deploy into a community, apply for the President's Volunteer Service Award, secure professor-level letters of recommendation.</span></p></article>
+        </div>
+        <div class="pipe-band">
+          <div class="pipe-bookend"><span data-lang="zh">从零</span><span data-lang="en">From zero</span></div>
+          <div class="pipe-bookend"><span data-lang="zh">到一 · 全面提升 创新力 · 执行力 · 领导力</span><span data-lang="en">To one — creativity · execution · leadership</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OUTCOMES — 8 deliverables -->
+    <section class="bg-section">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">多元成果</span><span data-lang="en">Deliverables</span></span>
+          <h2><span data-lang="zh">同一个项目，八种成果同时落袋</span><span data-lang="en">One project — eight portable outcomes</span></h2>
+          <p>
+            <span data-lang="zh">每一项产出都能独立写进文书、独立支撑面试，组合起来构成完整的「研究 + 创新 + 行动」叙事。</span>
+            <span data-lang="en">Each outcome stands on its own in essays and interviews; together they form a complete research + innovation + action narrative.</span>
+          </p>
+        </div>
+        <div class="outcomes-grid">
+          <article class="outcome-card"><div class="ic">🧪</div><h3><span data-lang="zh">实习</span><span data-lang="en">Internship</span></h3><p><span data-lang="zh">匹配真实科研实验室，输出方向性课题与正式实习证明。</span><span data-lang="en">Real lab placement with a directional research topic and a verified internship record.</span></p></article>
+          <article class="outcome-card"><div class="ic">📄</div><h3><span data-lang="zh">学术</span><span data-lang="en">Academic Paper</span></h3><p><span data-lang="zh">论文撰写、投稿与会议参与，让研究在公共领域留下可查证的脚印。</span><span data-lang="en">Manuscript, submission and conference presentation — research with a public, citable footprint.</span></p></article>
+          <article class="outcome-card"><div class="ic">🏆</div><h3><span data-lang="zh">竞赛</span><span data-lang="en">Competitions</span></h3><p><span data-lang="zh">从国内地区赛到国际权威赛事，奖项可直接为申请加权。</span><span data-lang="en">From regional fairs to top international competitions — awards that meaningfully reweight an application.</span></p></article>
+          <article class="outcome-card"><div class="ic">📑</div><h3><span data-lang="zh">专利</span><span data-lang="en">Patent</span></h3><p><span data-lang="zh">美国 USPTO 临时专利申请全流程，技术原创性获法律背书。</span><span data-lang="en">USPTO provisional filing end-to-end — technical originality with legal backing.</span></p></article>
+          <article class="outcome-card"><div class="ic">📱</div><h3><span data-lang="zh">产品</span><span data-lang="en">Product</span></h3><p><span data-lang="zh">App Store / Google Play 上架，或在真实场景跑出可重现原型。</span><span data-lang="en">Shipped to App Store / Google Play, or a reproducible prototype deployed in the real world.</span></p></article>
+          <article class="outcome-card"><div class="ic">🚀</div><h3><span data-lang="zh">品牌</span><span data-lang="en">Brand / Startup</span></h3><p><span data-lang="zh">把项目孵化成可运营的品牌或公益组织，建立独立形象。</span><span data-lang="en">Spin the project into a brand or non-profit with its own identity and runway.</span></p></article>
+          <article class="outcome-card"><div class="ic">❤️</div><h3><span data-lang="zh">社会应用</span><span data-lang="en">Social Impact</span></h3><p><span data-lang="zh">部署到学校、社区、医疗、助残等真实场景；可申请总统义工奖。</span><span data-lang="en">Deployed in schools, clinics, accessibility settings — eligible for the President's Volunteer Service Award.</span></p></article>
+          <article class="outcome-card"><div class="ic">✉️</div><h3><span data-lang="zh">推荐信</span><span data-lang="en">Recommendation</span></h3><p><span data-lang="zh">协助安排教授、机构负责人级别的推荐人，强化领导力叙事。</span><span data-lang="en">Coordinate professor- and director-level recommenders that reinforce a leadership narrative.</span></p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CASE STUDIES -->
+    <section class="bg-section alt" id="cases">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">2025 精选案例</span><span data-lang="en">Class of 2025 — selected cases</span></span>
+          <h2><span data-lang="zh">真实学生 · 真实项目 · 真实录取</span><span data-lang="en">Real students · real projects · real admits</span></h2>
+          <p>
+            <span data-lang="zh">六个示例案例，覆盖工程、生命科学、商业、社会科学等不同方向，每一个都遵循同一个「一个项目 × 多元成果」框架。</span>
+            <span data-lang="en">Six examples spanning engineering, life science, business and social science — every one of them built on the same one-project-many-outcomes framework.</span>
+          </p>
+        </div>
+        <div class="case-grid">
+          <article class="case-card">
+            <div class="case-head">
+              <span class="case-school">Stanford</span>
+              <span class="case-major"><span data-lang="zh">计算机科学</span><span data-lang="en">Computer Science</span></span>
+            </div>
+            <h3><span data-lang="zh">智慧校园一体化平台</span><span data-lang="en">Smart Campus Integrated Platform</span></h3>
+            <p class="summary"><span data-lang="zh">支持校园日常运营、信息流转与家校沟通的全栈平台，已在多所学校实现真实部署。</span><span data-lang="en">A full-stack platform supporting daily campus operations, information flow and home–school communication, deployed across multiple schools.</span></p>
+            <ul>
+              <li><strong><span data-lang="zh">学术</span><span data-lang="en">Paper</span></strong> Architecting Scalable Mobile Platforms for K-12 (SIIE)</li>
+              <li><strong><span data-lang="zh">竞赛</span><span data-lang="en">Awards</span></strong> Pitch to the Future 一等奖 · OC Science Fair 二等奖</li>
+              <li><strong><span data-lang="zh">专利</span><span data-lang="en">Patent</span></strong> US 63/480,021 · App Store + Google Play</li>
+              <li><strong><span data-lang="zh">社会</span><span data-lang="en">Impact</span></strong> 8,000+ <span data-lang="zh">学生 / 家长 / 教师</span><span data-lang="en">students/parents/teachers</span> · PVSA</li>
+            </ul>
+          </article>
+          <article class="case-card">
+            <div class="case-head">
+              <span class="case-school">MIT</span>
+              <span class="case-major"><span data-lang="zh">生物医学</span><span data-lang="en">Biomedicine</span></span>
+            </div>
+            <h3><span data-lang="zh">临床试验患者匹配与招募平台</span><span data-lang="en">Clinical-Trial Matching & Recruitment Platform</span></h3>
+            <p class="summary"><span data-lang="zh">基于 AI 模型匹配适合的临床试验，解决信息不透明、渠道分散的核心问题。</span><span data-lang="en">An AI matcher that pairs patients with the right clinical trial, solving the information-asymmetry problem at the source.</span></p>
+            <ul>
+              <li><strong><span data-lang="zh">学术</span><span data-lang="en">Paper</span></strong> AI-Based Trial Matching for Underrepresented Populations (IEEE)</li>
+              <li><strong><span data-lang="zh">竞赛</span><span data-lang="en">Awards</span></strong> Google IgniteCS Expo <span data-lang="zh">优胜奖</span><span data-lang="en">Winner</span></li>
+              <li><strong><span data-lang="zh">专利</span><span data-lang="en">Patent</span></strong> US 63/584,910 · App Store + Google Play</li>
+              <li><strong><span data-lang="zh">社会</span><span data-lang="en">Impact</span></strong> ClinicalAccess Alliance · 200+ <span data-lang="zh">家庭</span><span data-lang="en">families</span> · PVSA</li>
+            </ul>
+          </article>
+          <article class="case-card">
+            <div class="case-head">
+              <span class="case-school">UPenn · Wharton</span>
+              <span class="case-major"><span data-lang="zh">商科</span><span data-lang="en">Business</span></span>
+            </div>
+            <h3><span data-lang="zh">一体化学习任务管理平台</span><span data-lang="en">All-in-One Learning Task Manager</span></h3>
+            <p class="summary"><span data-lang="zh">把碎片化的目标分解、任务清单、考试管理与习惯追踪整合到一个工具内。</span><span data-lang="en">A single tool that consolidates goal decomposition, task lists, exam tracking and habit-building.</span></p>
+            <ul>
+              <li><strong><span data-lang="zh">学术</span><span data-lang="en">Paper</span></strong> Designing Unified Productivity Platforms (ICCSIT)</li>
+              <li><strong><span data-lang="zh">竞赛</span><span data-lang="en">Awards</span></strong> Diamond Challenge <span data-lang="zh">入围</span><span data-lang="en">Finalist</span></li>
+              <li><strong><span data-lang="zh">专利</span><span data-lang="en">Patent</span></strong> US 63/494,253 · Compact Labs</li>
+              <li><strong><span data-lang="zh">社会</span><span data-lang="en">Impact</span></strong> 2,000+ <span data-lang="zh">学生</span><span data-lang="en">students</span> · PVSA</li>
+            </ul>
+          </article>
+          <article class="case-card">
+            <div class="case-head">
+              <span class="case-school">CMU</span>
+              <span class="case-major"><span data-lang="zh">艺术 + 人机交互</span><span data-lang="en">Art + HCI</span></span>
+            </div>
+            <h3><span data-lang="zh">自闭症学生艺术表达沟通平台</span><span data-lang="en">Art-based Communication Platform for ASD students</span></h3>
+            <p class="summary"><span data-lang="zh">通过绘画与图形组合表达情绪，让特殊教育现场的家长与教师真正听懂孩子的需求。</span><span data-lang="en">Children express needs through drawing and shape composition; parents and teachers finally see what they're trying to say.</span></p>
+            <ul>
+              <li><strong><span data-lang="zh">学术</span><span data-lang="en">Paper</span></strong> Visual Symbolism for ASD Communication (ACM C&amp;C)</li>
+              <li><strong><span data-lang="zh">竞赛</span><span data-lang="en">Awards</span></strong> Game Gala <span data-lang="zh">一等奖</span><span data-lang="en">First</span> · Technovation US Finalist</li>
+              <li><strong><span data-lang="zh">专利</span><span data-lang="en">Patent</span></strong> US 63/384,430 · ArtConnect Studio</li>
+              <li><strong><span data-lang="zh">社会</span><span data-lang="en">Impact</span></strong> 300+ ASD <span data-lang="zh">学生</span><span data-lang="en">students</span> · PVSA</li>
+            </ul>
+          </article>
+          <article class="case-card">
+            <div class="case-head">
+              <span class="case-school">Yale</span>
+              <span class="case-major"><span data-lang="zh">心理学</span><span data-lang="en">Psychology</span></span>
+            </div>
+            <h3><span data-lang="zh">青少年情绪互助平台</span><span data-lang="en">Teen Peer-Support Platform</span></h3>
+            <p class="summary"><span data-lang="zh">基于心理量表特征的智能匹配，让经历相似的学生彼此支持与陪伴。</span><span data-lang="en">Psychometric profiling matches teens with similar struggles so they can support one another.</span></p>
+            <ul>
+              <li><strong><span data-lang="zh">学术</span><span data-lang="en">Paper</span></strong> Peer-Matched Emotional Support Systems (SRCD)</li>
+              <li><strong><span data-lang="zh">专利</span><span data-lang="en">Patent</span></strong> US 63/555,913 · MindShare Youth</li>
+              <li><strong><span data-lang="zh">竞赛</span><span data-lang="en">Awards</span></strong> Youth Innovation in Mental Health Challenge <span data-lang="zh">入围</span><span data-lang="en">Finalist</span></li>
+              <li><strong><span data-lang="zh">社会</span><span data-lang="en">Impact</span></strong> 800+ <span data-lang="zh">学生 · 5 所学校</span><span data-lang="en">students · 5 schools</span> · PVSA</li>
+            </ul>
+          </article>
+          <article class="case-card">
+            <div class="case-head">
+              <span class="case-school">MIT</span>
+              <span class="case-major"><span data-lang="zh">应用数学</span><span data-lang="en">Applied Math</span></span>
+            </div>
+            <h3><span data-lang="zh">盲人辅助导航与障碍物检测</span><span data-lang="en">Assistive Navigation for Visually Impaired Users</span></h3>
+            <p class="summary"><span data-lang="zh">计算机视觉 + 数学建模 + 语音震动反馈，实现障碍物距离与方向的实时判断。</span><span data-lang="en">CV + spatial modelling + multimodal feedback delivers real-time distance and direction cues.</span></p>
+            <ul>
+              <li><strong><span data-lang="zh">学术</span><span data-lang="en">Paper</span></strong> Mathematical Modeling of Spatial Obstacle Estimation (SIAM)</li>
+              <li><strong><span data-lang="zh">竞赛</span><span data-lang="en">Awards</span></strong> Microsoft Imagine Cup <span data-lang="zh">美国冠军</span><span data-lang="en">US Champion</span> · Diamond Challenge <span data-lang="zh">全球第一</span><span data-lang="en">Global #1</span></li>
+              <li><strong><span data-lang="zh">专利</span><span data-lang="en">Patent</span></strong> US 63/718,568 · NavigationForAll Initiative</li>
+              <li><strong><span data-lang="zh">社会</span><span data-lang="en">Impact</span></strong> 600+ <span data-lang="zh">视障用户与志愿者</span><span data-lang="en">VI users + volunteers</span> · PVSA</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMITS LIST -->
+    <section class="bg-section" id="admits">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">2024–25 录取榜</span><span data-lang="en">Class of 2024–25 Admits</span></span>
+          <h2><span data-lang="zh">学生去向：覆盖全美 & 海外名校</span><span data-lang="en">Where students landed</span></h2>
+          <p>
+            <span data-lang="zh">部分录取院校列表（节选）。完整版本与每位学生对应的项目、成果，欢迎联系顾问获取。</span>
+            <span data-lang="en">A partial list of universities. Reach out to your counsellor for the full version with project mapping per student.</span>
+          </p>
+        </div>
+        <div class="admits-grid">
+          <div class="admit-tile">MIT<small><span data-lang="zh">麻省理工学院</span><span data-lang="en">Massachusetts Inst. of Tech</span></small></div>
+          <div class="admit-tile">Harvard<small><span data-lang="zh">哈佛大学</span><span data-lang="en">Harvard University</span></small></div>
+          <div class="admit-tile">Stanford<small><span data-lang="zh">斯坦福大学</span><span data-lang="en">Stanford University</span></small></div>
+          <div class="admit-tile">Yale<small><span data-lang="zh">耶鲁大学</span><span data-lang="en">Yale University</span></small></div>
+          <div class="admit-tile">Princeton<small><span data-lang="zh">普林斯顿大学</span><span data-lang="en">Princeton University</span></small></div>
+          <div class="admit-tile">UPenn<small><span data-lang="zh">宾夕法尼亚大学</span><span data-lang="en">Univ. of Pennsylvania</span></small></div>
+          <div class="admit-tile">Cornell<small><span data-lang="zh">康奈尔大学</span><span data-lang="en">Cornell University</span></small></div>
+          <div class="admit-tile">Columbia<small><span data-lang="zh">哥伦比亚大学</span><span data-lang="en">Columbia University</span></small></div>
+          <div class="admit-tile">Brown<small><span data-lang="zh">布朗大学</span><span data-lang="en">Brown University</span></small></div>
+          <div class="admit-tile">Dartmouth<small><span data-lang="zh">达特茅斯学院</span><span data-lang="en">Dartmouth College</span></small></div>
+          <div class="admit-tile">Duke<small><span data-lang="zh">杜克大学</span><span data-lang="en">Duke University</span></small></div>
+          <div class="admit-tile">Johns Hopkins<small><span data-lang="zh">约翰霍普金斯大学</span><span data-lang="en">Johns Hopkins University</span></small></div>
+          <div class="admit-tile">Northwestern<small><span data-lang="zh">西北大学</span><span data-lang="en">Northwestern University</span></small></div>
+          <div class="admit-tile">UChicago<small><span data-lang="zh">芝加哥大学</span><span data-lang="en">Univ. of Chicago</span></small></div>
+          <div class="admit-tile">Caltech<small><span data-lang="zh">加州理工学院</span><span data-lang="en">California Inst. of Tech</span></small></div>
+          <div class="admit-tile">CMU<small><span data-lang="zh">卡内基梅隆大学</span><span data-lang="en">Carnegie Mellon University</span></small></div>
+          <div class="admit-tile">Vanderbilt<small><span data-lang="zh">范德堡大学</span><span data-lang="en">Vanderbilt University</span></small></div>
+          <div class="admit-tile">Emory<small><span data-lang="zh">埃默里大学</span><span data-lang="en">Emory University</span></small></div>
+          <div class="admit-tile">Rice<small><span data-lang="zh">莱斯大学</span><span data-lang="en">Rice University</span></small></div>
+          <div class="admit-tile">Georgetown<small><span data-lang="zh">乔治城大学</span><span data-lang="en">Georgetown University</span></small></div>
+          <div class="admit-tile">UC Berkeley<small><span data-lang="zh">加州大学伯克利</span><span data-lang="en">UC Berkeley</span></small></div>
+          <div class="admit-tile">UCLA<small><span data-lang="zh">加州大学洛杉矶</span><span data-lang="en">UC Los Angeles</span></small></div>
+          <div class="admit-tile">UCSD<small><span data-lang="zh">加州大学圣地亚哥</span><span data-lang="en">UC San Diego</span></small></div>
+          <div class="admit-tile">Michigan<small><span data-lang="zh">密歇根大学</span><span data-lang="en">Univ. of Michigan</span></small></div>
+          <div class="admit-tile">UIUC<small><span data-lang="zh">伊利诺伊大学香槟</span><span data-lang="en">UIUC</span></small></div>
+          <div class="admit-tile">UT Austin<small><span data-lang="zh">德州大学奥斯汀</span><span data-lang="en">UT Austin</span></small></div>
+          <div class="admit-tile">USC<small><span data-lang="zh">南加州大学</span><span data-lang="en">USC</span></small></div>
+          <div class="admit-tile">NYU<small><span data-lang="zh">纽约大学</span><span data-lang="en">New York University</span></small></div>
+          <div class="admit-tile">Northeastern<small><span data-lang="zh">东北大学</span><span data-lang="en">Northeastern University</span></small></div>
+          <div class="admit-tile">Purdue<small><span data-lang="zh">普渡大学</span><span data-lang="en">Purdue University</span></small></div>
+          <div class="admit-tile">West Point<small><span data-lang="zh">西点军校</span><span data-lang="en">U.S. Military Academy</span></small></div>
+          <div class="admit-tile">Toronto<small><span data-lang="zh">多伦多大学</span><span data-lang="en">Univ. of Toronto</span></small></div>
+          <div class="admit-tile">Oxford<small><span data-lang="zh">牛津大学</span><span data-lang="en">University of Oxford</span></small></div>
+          <div class="admit-tile">Art Center<small><span data-lang="zh">艺术中心设计学院</span><span data-lang="en">Art Center College of Design</span></small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MENTORS -->
+    <section class="bg-section indigo-band" id="mentors">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">顾问团队（节选）</span><span data-lang="en">Advisory team — selected</span></span>
+          <h2><span data-lang="zh">硅谷工程师 · 名校教授 · 创业 CEO</span><span data-lang="en">Silicon Valley engineers, named-school professors, founder CEOs</span></h2>
+          <p>
+            <span data-lang="zh">20+ 位核心团队 + 20+ 位顾问，覆盖 AI、机器人、芯片、生物医药、心理、商业、设计等 20+ 专业方向。</span>
+            <span data-lang="en">20+ core team plus 20+ advisors spanning AI, robotics, chips, biomedicine, psychology, business and design — 20+ disciplines covered in-house.</span>
+          </p>
+        </div>
+        <div class="mentor-grid">
+          <article class="mentor-card">
+            <div class="av">Bo</div>
+            <h4><span data-lang="zh">Bo · AI 人工智能</span><span data-lang="en">Bo · AI</span></h4>
+            <div class="role"><span data-lang="zh">芝加哥大学 终身教授 · Virtue AI CEO</span><span data-lang="en">UChicago tenured professor · CEO, Virtue AI</span></div>
+            <ul>
+              <li><span data-lang="zh">AI 领域顶会论文数百篇</span><span data-lang="en">Hundreds of top-tier AI papers</span></li>
+              <li><span data-lang="zh">主攻可信 AI 与对抗鲁棒性</span><span data-lang="en">Trustworthy AI &amp; adversarial robustness</span></li>
+            </ul>
+          </article>
+          <article class="mentor-card">
+            <div class="av">Cs</div>
+            <h4><span data-lang="zh">Crisreal · 算法与竞赛</span><span data-lang="en">Crisreal · Algorithms</span></h4>
+            <div class="role"><span data-lang="zh">Google 资深算法工程师</span><span data-lang="en">Senior Algorithms Engineer at Google</span></div>
+            <ul>
+              <li>ACM <span data-lang="zh">国际信息学竞赛 州冠军</span><span data-lang="en">state champion</span></li>
+              <li><span data-lang="zh">SheCodes 计算机社团顾问</span><span data-lang="en">Advisor, SheCodes</span></li>
+            </ul>
+          </article>
+          <article class="mentor-card">
+            <div class="av">Lr</div>
+            <h4><span data-lang="zh">Lurong · 生物 &amp; 生命科技</span><span data-lang="en">Lurong · BioTech</span></h4>
+            <div class="role"><span data-lang="zh">Ainnocence 创始人兼 CEO</span><span data-lang="en">Founder &amp; CEO, Ainnocence</span></div>
+            <ul>
+              <li><span data-lang="zh">主导 比尔盖茨基金会 药物研发 AI 平台</span><span data-lang="en">Led Gates Foundation drug-discovery AI platform</span></li>
+              <li><span data-lang="zh">高校跨学科科研中心筹建人</span><span data-lang="en">Co-founded an interdisciplinary university research centre</span></li>
+            </ul>
+          </article>
+          <article class="mentor-card">
+            <div class="av">Tt</div>
+            <h4><span data-lang="zh">Tingting · AI 与神经科学</span><span data-lang="en">Tingting · AI &amp; Neuro</span></h4>
+            <div class="role"><span data-lang="zh">Cal Poly 终身教授 · Code the Spectrum 创始人</span><span data-lang="en">Cal Poly tenured prof · Founder, Code the Spectrum</span></div>
+            <ul>
+              <li><span data-lang="zh">为数千名自闭症青少年提供编程教育</span><span data-lang="en">Coding programs for thousands of ASD youth</span></li>
+              <li><span data-lang="zh">主攻 AI 与认知科学交叉方向</span><span data-lang="en">AI × cognitive science</span></li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="bg-section alt" id="faq">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="section-eyebrow"><span data-lang="zh">常见问题</span><span data-lang="en">FAQ</span></span>
+          <h2><span data-lang="zh">家长最常关心的几件事</span><span data-lang="en">What parents ask first</span></h2>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item" open>
+            <summary><span data-lang="zh">这个项目适合哪些孩子？</span><span data-lang="en">Who is this for?</span></summary>
+            <div class="faq-body">
+              <span data-lang="zh">从初中升高中、高中升本科到本科升硕博的所有阶段都覆盖；专业方向不限——理工科、人文社科、商科、艺术皆可。最重要的是孩子愿意围绕一个长期项目持续投入。</span>
+              <span data-lang="en">Anyone in a key transition window — middle-to-high, high-to-undergrad, undergrad-to-graduate. Open to STEM, humanities, business and the arts. The single requirement is that the student is willing to commit to one long-running project.</span>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary><span data-lang="zh">通常需要多长时间？</span><span data-lang="en">How long does it take?</span></summary>
+            <div class="faq-body">
+              <span data-lang="zh">完整 12 步框架建议 9–18 个月，按学生现有进度可以并行加速。我们会先做一次免费的 30 分钟规划诊断，再给出适合的节奏。</span>
+              <span data-lang="en">A full 12-step run typically takes 9–18 months. Depending on what the student already has, parts can run in parallel. We start with a free 30-minute diagnosis to recommend the right pace.</span>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary><span data-lang="zh">没有编程或科研基础也可以参加吗？</span><span data-lang="en">Can my child join without a coding / research background?</span></summary>
+            <div class="faq-body">
+              <span data-lang="zh">完全可以。MindDo 自有 100+ 门课程会按需补齐方法论，导师会从「调研 → 选题 → 立项」从头带。背景反而是次要因素，专注度和韧性更关键。</span>
+              <span data-lang="en">Absolutely. MindDo's 100+ in-house courses fill in any methodology gaps; mentors take the student from research → topic → project plan. Focus and grit matter more than prior credentials.</span>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary><span data-lang="zh">我能看到具体的费用吗？</span><span data-lang="en">Can I see the price?</span></summary>
+            <div class="faq-body">
+              <span data-lang="zh">每位学生的项目方向、深度与成果组合都不同，我们不公开统一报价，而是根据规划诊断后给出对应方案。点击「联系顾问」即可与我们沟通。</span>
+              <span data-lang="en">Every student's project, depth and outcome mix differs, so we quote after the diagnostic call rather than publishing a fixed list. Tap "Talk to a counsellor" to start the conversation.</span>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary><span data-lang="zh">和市面上其他「背景提升」的差别？</span><span data-lang="en">How is this different from other "enrichment" programs?</span></summary>
+            <div class="faq-body">
+              <span data-lang="zh">大多数项目是单点产品（只做竞赛、只做论文、只做实习）。MindDo 的核心是把它们串到一个项目里，让叙事自然连贯——这正是名校招生官想看到的「真实的人」。</span>
+              <span data-lang="en">Most programs are single-point products — competition only, paper only, internship only. MindDo's core idea is stringing them through one continuous project so the story holds together — exactly what admissions officers are reading for.</span>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA STRIP -->
+    <section class="cta-strip">
+      <div class="cta-inner">
+        <div>
+          <h2><span data-lang="zh">准备好和我们聊聊了吗？</span><span data-lang="en">Ready to talk?</span></h2>
+          <p>
+            <span data-lang="zh">先来一次免费规划诊断 — 顾问会根据孩子目前的画像给出最适合的项目方向与节奏建议，不收取任何费用。</span>
+            <span data-lang="en">Start with a free planning call — your counsellor maps out a fitting project and tempo for the student. No charge, no pressure.</span>
+          </p>
+        </div>
+        <div class="cta-actions">
+          <button type="button" class="btn-indigo" data-cs-open>
+            <span data-lang="zh">联系顾问 →</span><span data-lang="en">Talk to a counsellor →</span>
+          </button>
+          <a class="btn-ghost" href="trial.html">
+            <span data-lang="zh">先预约一次试课</span><span data-lang="en">Or book a trial first</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo-row"><img src="assets/logo.png" alt="MindDo" /><span>MindDo</span></div>
+        <p><span data-lang="zh">AI、编程与未来技能青少年学习中心，致力于让每个孩子都能在 AI 时代找到自己的位置。</span><span data-lang="en">AI and coding learning center for young learners.</span></p>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">课程项目</span><span data-lang="en">Programs</span></h4>
+        <ul>
+          <li><a href="course-system.html"><span data-lang="zh">课程体系</span><span data-lang="en">Curriculum</span></a></li>
+          <li><a href="college-prep.html"><span data-lang="zh">名校背景提升</span><span data-lang="en">Elite Admissions</span></a></li>
+          <li><a href="trial.html"><span data-lang="zh">预约试课</span><span data-lang="en">Book Trial</span></a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">快速入口</span><span data-lang="en">Quick Access</span></h4>
+        <ul>
+          <li><a href="signup.html"><span data-lang="zh">注册 / 登录</span><span data-lang="en">Sign Up / Login</span></a></li>
+          <li><a href="student-account.html"><span data-lang="zh">学员主页</span><span data-lang="en">My Account</span></a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4><span data-lang="zh">公司</span><span data-lang="en">Company</span></h4>
+        <ul>
+          <li><a href="franchise.html"><span data-lang="zh">招商加盟</span><span data-lang="en">Partnership</span></a></li>
+          <li><a href="about.html"><span data-lang="zh">关于我们</span><span data-lang="en">About</span></a></li>
+          <li><a href="contact.html"><span data-lang="zh">联系我们</span><span data-lang="en">Contact</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MindDo Learning Center · <span data-lang="zh">保留所有权利</span><span data-lang="en">All rights reserved</span></span>
+      <span><a href="privacy.html" style="color:inherit;"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy</span></a> · <a href="terms.html" style="color:inherit;"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a></span>
+    </div>
+  </footer>
+
+  <script src="assets/minddo-flow.js"></script>
+  <script>
+    // Wire any element marked with data-cs-open to programmatically click
+    // the floating customer-support FAB injected by customer-service.js.
+    // Also drop a soft toast confirming the panel is opening — useful on
+    // mobile where the FAB is small and easy to miss visually.
+    (function () {
+      var I18N = {
+        "zh-CN": { open: "已为你打开客服面板，顾问会尽快回复 ✦", missing: "客服面板正在加载，请稍后再试。" },
+        en:      { open: "Support panel is now open — a counsellor will reply shortly ✦", missing: "Support panel is loading — please try again in a moment." }
+      };
+      function lang() {
+        try { return localStorage.getItem("minddo_lang") === "en" ? "en" : "zh-CN"; }
+        catch (_) { return "zh-CN"; }
+      }
+      function showToast(msg) {
+        var el = document.getElementById("toast");
+        if (!el) return;
+        el.textContent = msg;
+        el.classList.add("show");
+        setTimeout(function () { el.classList.remove("show"); }, 2400);
+      }
+      document.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-cs-open]");
+        if (!btn) return;
+        e.preventDefault();
+        var fab = document.querySelector(".cs-fab");
+        var t = I18N[lang()];
+        if (fab) { fab.click(); showToast(t.open); }
+        else { showToast(t.missing); }
+      });
+    })();
+  </script>
+  <script src="assets/lang-switcher.js" defer></script>
+  <script src="assets/minddo-nav.js" defer></script>
+  <script src="assets/consent.js" defer></script>
+  <script src="assets/customer-service.js" defer></script>
+</body>
+</html>

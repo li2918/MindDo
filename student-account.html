@@ -1848,6 +1848,45 @@
             <p class="muted" data-i18n="memberAddOnsSub" style="margin-top:4px;margin-bottom:14px;"></p>
             <div class="addon-grid" id="memberAddOnsGrid"></div>
           </article>
+
+          <!-- 名校背景提升 (Elite Admissions) — separate premium track that
+               sits alongside the regular weekly-class plans + add-ons. No
+               public price; CTA opens the existing customer-service panel
+               so families talk to a counsellor before scoping the
+               engagement. Uses inline styles so we don't add page-level
+               CSS for one panel. -->
+          <article class="panel" id="memberElitePanel" style="background:linear-gradient(135deg,rgba(91,107,217,0.08),rgba(91,107,217,0.02));border:1px solid rgba(91,107,217,0.32);position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;right:0;width:180px;height:100%;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22><g fill=%22%235b6bd9%22 opacity=%220.18%22><path d=%22M10 46 L40 16 L30 16 L30 10 L48 10 L48 28 L42 28 L42 22 L16 48 Z%22/></g></svg>');background-size:60px 60px;pointer-events:none;"></div>
+            <div style="position:relative;z-index:1;">
+              <span style="display:inline-flex;padding:5px 12px;border-radius:999px;background:linear-gradient(135deg,#5b6bd9,#4751c4);color:#fef9c3;font-size:10.5px;font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;">
+                <span data-lang="zh">名校背景提升 · 定制方案</span><span data-lang="en">Elite Admissions · Custom Track</span>
+              </span>
+              <h2 style="margin:0 0 6px;color:#312072;letter-spacing:-0.01em;">
+                <span data-lang="zh">一个项目 × 多元成果 · 圆梦名校</span><span data-lang="en">One project × many outcomes — engineered for elite admissions</span>
+              </h2>
+              <p class="muted" style="line-height:1.7;max-width:680px;">
+                <span data-lang="zh">围绕一个核心项目并行产出科研实习、学术论文、技术专利、科技竞赛、产品落地与公益创业等多维成果，覆盖初中升高中、高中升本科、本科升硕博的每一个升学拐点。每位学生的方向和深度都不同，方案在规划诊断后给出，因此暂不公开统一报价。</span>
+                <span data-lang="en">Build one ambitious project — and turn it into research, papers, patents, competitions, a shipped product and a real venture. Every student's project differs in direction and depth, so we quote after a free planning call rather than publishing a single list price.</span>
+              </p>
+              <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin:12px 0 16px;">
+                <span style="font-size:11.5px;font-weight:800;color:#312072;padding:4px 10px;border-radius:999px;background:rgba(91,107,217,0.14);">🧪 <span data-lang="zh">科研实习</span><span data-lang="en">Research</span></span>
+                <span style="font-size:11.5px;font-weight:800;color:#312072;padding:4px 10px;border-radius:999px;background:rgba(91,107,217,0.14);">📄 <span data-lang="zh">学术论文</span><span data-lang="en">Paper</span></span>
+                <span style="font-size:11.5px;font-weight:800;color:#312072;padding:4px 10px;border-radius:999px;background:rgba(91,107,217,0.14);">📑 <span data-lang="zh">专利</span><span data-lang="en">Patent</span></span>
+                <span style="font-size:11.5px;font-weight:800;color:#312072;padding:4px 10px;border-radius:999px;background:rgba(91,107,217,0.14);">🏆 <span data-lang="zh">竞赛</span><span data-lang="en">Competitions</span></span>
+                <span style="font-size:11.5px;font-weight:800;color:#312072;padding:4px 10px;border-radius:999px;background:rgba(91,107,217,0.14);">📱 <span data-lang="zh">产品</span><span data-lang="en">Product</span></span>
+                <span style="font-size:11.5px;font-weight:800;color:#312072;padding:4px 10px;border-radius:999px;background:rgba(91,107,217,0.14);">🚀 <span data-lang="zh">创业品牌</span><span data-lang="en">Venture</span></span>
+                <span style="font-size:11.5px;font-weight:800;color:#312072;padding:4px 10px;border-radius:999px;background:rgba(91,107,217,0.14);">❤️ <span data-lang="zh">社会应用 + PVSA</span><span data-lang="en">Social Impact + PVSA</span></span>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button type="button" class="upgrade-cta" data-cs-open style="background:linear-gradient(135deg,#fde047,#facc15);color:#312072;border:none;border-radius:999px;padding:11px 22px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 6px 16px rgba(76,86,200,0.3);text-decoration:none;">
+                  <span data-lang="zh">联系顾问 →</span><span data-lang="en">Talk to a counsellor →</span>
+                </button>
+                <a class="upgrade-cta" href="college-prep.html" style="background:transparent;color:#312072;border:1px solid rgba(91,107,217,0.4);border-radius:999px;padding:10px 22px;font-size:13px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+                  <span data-lang="zh">了解项目详情</span><span data-lang="en">See full program</span>
+                </a>
+              </div>
+            </div>
+          </article>
         </section>
 
         <!-- 1.6. BILLING — sub-tabs split payment method (current card +
@@ -5991,6 +6030,16 @@
           e.preventDefault();
           setActiveTab(jump.getAttribute("data-jump-tab"));
           try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (_) {}
+        });
+        // Delegate any [data-cs-open] click to the customer-service FAB so
+        // the Elite Admissions panel's "Talk to a counsellor" CTA opens
+        // the existing support panel without rolling its own form.
+        document.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-cs-open]");
+          if (!btn) return;
+          e.preventDefault();
+          var fab = document.querySelector(".cs-fab");
+          if (fab) fab.click();
         });
         var saved;
         try { saved = sessionStorage.getItem(TAB_KEY); } catch (_) {}

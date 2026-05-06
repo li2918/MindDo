@@ -134,6 +134,47 @@
     .footer-bottom { max-width:1280px; margin:0 auto; padding-top:24px; border-top:1px solid rgba(254,243,199,0.1); display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(240,249,255,0.45); }
 
     @media (max-width:1000px) { .layout { grid-template-columns:1fr; } .summary-panel { position:static; } .membership-grid { grid-template-columns:1fr; } }
+
+    /* Elite admissions track — sits under the regular plan grid, styled
+       in the page's secondary indigo accent so it reads as a separate
+       premium track rather than a pricing tier. No price; opens
+       customer-service panel via [data-cs-open]. */
+    .elite-track {
+      margin-top:18px; padding:22px 24px; border-radius:18px;
+      background:linear-gradient(135deg,rgba(91,107,217,0.1),rgba(91,107,217,0.04));
+      border:1px solid rgba(91,107,217,0.32);
+      display:grid; grid-template-columns:1.4fr auto; gap:18px; align-items:center;
+      position:relative; overflow:hidden;
+    }
+    .elite-track::before {
+      content:""; position:absolute; top:0; right:0; width:160px; height:100%;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'><g fill='%235b6bd9' opacity='0.18'><path d='M10 46 L40 16 L30 16 L30 10 L48 10 L48 28 L42 28 L42 22 L16 48 Z'/></g></svg>");
+      background-size:60px 60px; pointer-events:none;
+    }
+    .elite-track .et-tag {
+      display:inline-flex; padding:5px 12px; border-radius:999px;
+      background:linear-gradient(135deg,#5b6bd9,#4751c4); color:#fef9c3;
+      font-size:10.5px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:8px;
+    }
+    .elite-track h3 { font-size:18px; font-weight:900; color:#312072; letter-spacing:-0.01em; margin-bottom:6px; }
+    .elite-track p  { font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:8px; }
+    .elite-track .et-features { display:flex; flex-wrap:wrap; gap:6px 10px; margin-top:8px; }
+    .elite-track .et-features span { font-size:11.5px; font-weight:800; color:#312072; letter-spacing:0.04em; padding:4px 10px; border-radius:999px; background:rgba(91,107,217,0.14); }
+    .elite-track .et-actions { display:flex; flex-direction:column; gap:8px; align-items:stretch; min-width:180px; position:relative; z-index:1; }
+    .elite-track .btn-elite {
+      background:linear-gradient(135deg,#fde047,#facc15); color:#312072; border:none; border-radius:999px;
+      padding:11px 22px; font-size:13.5px; font-weight:800; cursor:pointer; font-family:inherit; transition:0.2s;
+      box-shadow:0 6px 16px rgba(76,86,200,0.3); display:inline-flex; align-items:center; gap:6px;
+      text-decoration:none; justify-content:center;
+    }
+    .elite-track .btn-elite:hover { transform:translateY(-2px); box-shadow:0 10px 22px rgba(76,86,200,0.4); }
+    .elite-track .btn-elite-ghost {
+      background:transparent; color:#312072; border:1px solid rgba(91,107,217,0.4); border-radius:999px;
+      padding:10px 22px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.15s;
+      text-decoration:none; display:inline-flex; align-items:center; gap:6px; justify-content:center;
+    }
+    .elite-track .btn-elite-ghost:hover { background:rgba(91,107,217,0.08); border-color:#4751c4; }
+    @media (max-width:760px) { .elite-track { grid-template-columns:1fr; } .elite-track .et-actions { min-width:0; } }
     @media (max-width:900px) { .navbar { padding:0 24px; } .nav-menu { display:none; } .page-hero-inner,.content-inner { padding:0 24px; } .footer-inner { grid-template-columns:repeat(2,1fr); } .meta { grid-template-columns:repeat(2,1fr); } }
     @media (max-width:640px) { .footer-inner { grid-template-columns:1fr; } .footer { padding:48px 24px 28px; } .action-row { flex-direction:column-reverse; } .action-row>* { width:100%; justify-content:center; } }
   </style>
@@ -252,6 +293,39 @@
               </ul>
             </label>
           </div>
+
+          <!-- Elite Admissions track — sits below the regular plan grid.
+               Different shape because it isn't a per-week class plan: each
+               engagement is custom, scoped after a planning call, and does
+               not flow through the schedule + payment steps. CTA opens the
+               customer-service panel rather than enabling Step 2. -->
+          <aside class="elite-track" aria-label="Elite admissions track">
+            <div>
+              <span class="et-tag"><span data-lang="zh">名校背景提升 · 定制方案</span><span data-lang="en">Elite Admissions · Custom Track</span></span>
+              <h3><span data-lang="zh">一个项目 × 多元成果 · 圆梦名校</span><span data-lang="en">One project × many outcomes — engineered for elite admissions</span></h3>
+              <p>
+                <span data-lang="zh">围绕一个核心项目并行产出实习、论文、专利、竞赛、产品、品牌与社会应用等多维成果。覆盖初中升高中、高中升本科、本科升硕博的每一个升学拐点。每位学生方向不同，方案根据规划诊断后给出，不公开统一报价。</span>
+                <span data-lang="en">Build one ambitious project — and turn it into research, papers, patents, competitions, a shipped product and a real venture. Plans are tailored after a free planning call, so we don't publish a single list price.</span>
+              </p>
+              <div class="et-features">
+                <span>🧪 <span data-lang="zh">科研实习</span><span data-lang="en">Research</span></span>
+                <span>📄 <span data-lang="zh">学术论文</span><span data-lang="en">Paper</span></span>
+                <span>📑 <span data-lang="zh">专利</span><span data-lang="en">Patent</span></span>
+                <span>🏆 <span data-lang="zh">竞赛</span><span data-lang="en">Competitions</span></span>
+                <span>📱 <span data-lang="zh">产品</span><span data-lang="en">Product</span></span>
+                <span>🚀 <span data-lang="zh">创业</span><span data-lang="en">Venture</span></span>
+                <span>❤️ <span data-lang="zh">社会应用 + PVSA</span><span data-lang="en">Social Impact + PVSA</span></span>
+              </div>
+            </div>
+            <div class="et-actions">
+              <button type="button" class="btn-elite" data-cs-open>
+                <span data-lang="zh">联系顾问 →</span><span data-lang="en">Talk to a counsellor →</span>
+              </button>
+              <a class="btn-elite-ghost" href="college-prep.html">
+                <span data-lang="zh">了解项目详情</span><span data-lang="en">See full program</span>
+              </a>
+            </div>
+          </aside>
 
           <div class="action-row end">
             <a class="btn-secondary" href="student-account.html"><span data-lang="zh">稍后再选</span><span data-lang="en">Later</span></a>
@@ -530,6 +604,18 @@
         if (!state.plan) return;
         saveState(state);
         window.location.href = "course-schedule.html";
+      });
+
+      // Elite Admissions track CTA — programmatically click the customer-
+      // service FAB so parents who tap "联系顾问" land directly in the
+      // existing support panel instead of being routed to a separate
+      // form. The FAB is injected by customer-service.js (loaded below).
+      document.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-cs-open]");
+        if (!btn) return;
+        e.preventDefault();
+        var fab = document.querySelector(".cs-fab");
+        if (fab) fab.click();
       });
     })();
   </script>
