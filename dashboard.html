@@ -768,6 +768,74 @@
     .acad-seats-text { font-size: 11px; font-weight: 800; color: var(--clay); white-space: nowrap;
       font-variant-numeric: tabular-nums; }
 
+    /* Capacity-status pill rendered inline with the seats column so ops
+       can scan the table for "满员"/"紧张" without reading numbers. */
+    .acad-cap-pill { display: inline-flex; padding: 2px 8px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+      margin-left: 4px; white-space: nowrap; }
+    .acad-cap-pill.full  { color: #8e3d21; background: rgba(217,119,6,0.18); border: 1px solid rgba(217,119,6,0.4); }
+    .acad-cap-pill.tight { color: var(--gold-deep); background: rgba(245,158,11,0.16); border: 1px solid rgba(245,158,11,0.32); }
+    .acad-cap-pill.open  { color: #3f5d26; background: rgba(110,143,87,0.16); border: 1px solid rgba(110,143,87,0.3); }
+
+    /* Capacity-filter pill bar above the class table. Same shape as the
+       resched modal pills + dash-tab pills so the ops dashboard reuses
+       one visual idiom. */
+    .acad-cap-bar { display: inline-flex; gap: 6px; padding: 4px; background: rgba(122,48,16,0.06);
+      border-radius: 999px; margin-bottom: 12px; flex-wrap: wrap; }
+    .acad-cap-bar button { all: unset; cursor: pointer; padding: 6px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 700; color: var(--muted); transition: 0.15s; font-family: inherit; line-height: 1.2; }
+    .acad-cap-bar button:hover { color: var(--clay); }
+    .acad-cap-bar button.active { background: #fff; color: var(--clay); box-shadow: 0 1px 3px rgba(122,48,16,0.12); }
+
+    /* Sortable column headers. The arrow indicator only fills when this
+       header is the active sort key; direction toggles asc/desc on
+       repeat clicks. */
+    .acad-class-sort { cursor: pointer; user-select: none; }
+    .acad-class-sort .acad-sort-ind { display: inline-block; width: 8px; margin-left: 4px;
+      color: rgba(122,48,16,0.32); font-size: 10px; }
+    .acad-class-sort.sort-asc .acad-sort-ind::after  { content: "▲"; color: var(--gold-deep); }
+    .acad-class-sort.sort-desc .acad-sort-ind::after { content: "▼"; color: var(--gold-deep); }
+    .acad-class-sort:hover { color: var(--clay); }
+
+    /* Row action buttons in the class catalogue. */
+    .acad-class-actions { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+    .acad-class-actions button { all: unset; cursor: pointer; padding: 5px 11px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 700; color: var(--clay); background: rgba(245,158,11,0.12);
+      border: 1px solid rgba(217,119,6,0.28); transition: 0.15s; font-family: inherit; line-height: 1.2; }
+    .acad-class-actions button:hover { background: rgba(245,158,11,0.22); border-color: rgba(217,119,6,0.5); }
+    .acad-class-actions a { font-size: 11.5px; font-weight: 700; color: var(--clay);
+      padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line); background: #fff;
+      text-decoration: none; transition: 0.15s; line-height: 1.2; }
+    .acad-class-actions a:hover { border-color: var(--gold); color: var(--gold-deep); }
+
+    /* Class-roster modal — opened from row "Roster" button. Backdrop +
+       centered card; reuses the resched-overlay backdrop convention. */
+    .cls-roster-overlay { position: fixed; inset: 0; z-index: 2200; padding: 24px;
+      background: rgba(42,20,8,0.5); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; }
+    .cls-roster-overlay.open { display: flex; }
+    .cls-roster-card { background: #fff; border-radius: 18px; box-shadow: 0 30px 60px rgba(42,20,8,0.42);
+      width: min(720px, 100%); max-height: min(88vh, 720px); display: flex; flex-direction: column;
+      overflow: hidden; font-family: inherit; }
+    .cls-roster-head { display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; padding: 18px 22px 14px; border-bottom: 1px solid var(--line); flex: none; }
+    .cls-roster-eyebrow { display: inline-block; font-size: 10.5px; font-weight: 800;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-deep); margin-bottom: 4px; }
+    .cls-roster-head h3 { font-size: 17px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; margin: 0; }
+    .cls-roster-meta { font-size: 12px; color: var(--muted); margin: 4px 0 0; line-height: 1.55; }
+    .cls-roster-close { width: 30px; height: 30px; border-radius: 50%; background: transparent;
+      border: 1px solid var(--line); cursor: pointer; font-size: 16px; line-height: 1; color: var(--muted);
+      display: inline-flex; align-items: center; justify-content: center; transition: 0.12s; font-family: inherit; flex: none; }
+    .cls-roster-close:hover { background: #f1f5f9; color: var(--clay); }
+    .cls-roster-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 14px 22px 20px; }
+    .cls-roster-empty { padding: 28px 16px; text-align: center; color: var(--muted); font-size: 13px;
+      line-height: 1.6; background: rgba(248,250,252,0.7); border: 1px dashed var(--line); border-radius: 12px; }
+    .cls-roster-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .cls-roster-table th, .cls-roster-table td { text-align: left; padding: 10px 8px;
+      border-bottom: 1px dashed rgba(122,48,16,0.08); vertical-align: top; }
+    .cls-roster-table th { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); }
+
     /* Academic Affairs — roster table for currently-active students.
        Search input + level / grade selects in the header, level pill +
        inline level-adjust select per row. */
@@ -1686,20 +1754,31 @@
               <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
                 <h2 data-i18n="acadClassesHead" style="margin:0;"></h2>
                 <div class="acad-filters">
+                  <input type="search" class="acad-search" id="acadClassSearch" data-i18n-placeholder="acadClassSearchPlaceholder" />
                   <select id="acadClassLevelFilter" class="acad-select"></select>
                   <select id="acadClassDayFilter" class="acad-select"></select>
                 </div>
+              </div>
+              <!-- Capacity-status pill row — quick triage for ops to find
+                   classes that need attention (满员 / 紧张) without rooting
+                   through the table. Shares the .acad-cap-bar pattern. -->
+              <div class="acad-cap-bar" id="acadClassCapBar" role="group" aria-label="Capacity filter">
+                <button type="button" data-acad-class-cap="all" class="active" data-i18n="acadClassCapAll"></button>
+                <button type="button" data-acad-class-cap="full" data-i18n="acadClassCapFull"></button>
+                <button type="button" data-acad-class-cap="tight" data-i18n="acadClassCapTight"></button>
+                <button type="button" data-acad-class-cap="open" data-i18n="acadClassCapOpen"></button>
               </div>
               <div class="table-wrap">
                 <table class="acad-table">
                   <thead>
                     <tr>
-                      <th data-i18n="acadClassColCourse"></th>
-                      <th data-i18n="acadClassColLevel"></th>
-                      <th data-i18n="acadClassColTeacher"></th>
+                      <th class="acad-class-sort" data-acad-class-sort="course"><span data-i18n="acadClassColCourse"></span><span class="acad-sort-ind"></span></th>
+                      <th class="acad-class-sort" data-acad-class-sort="level"><span data-i18n="acadClassColLevel"></span><span class="acad-sort-ind"></span></th>
+                      <th class="acad-class-sort" data-acad-class-sort="teacher"><span data-i18n="acadClassColTeacher"></span><span class="acad-sort-ind"></span></th>
                       <th data-i18n="acadClassColMode"></th>
-                      <th data-i18n="acadClassColTime"></th>
-                      <th data-i18n="acadClassColSeats"></th>
+                      <th class="acad-class-sort" data-acad-class-sort="time"><span data-i18n="acadClassColTime"></span><span class="acad-sort-ind"></span></th>
+                      <th class="acad-class-sort" data-acad-class-sort="util"><span data-i18n="acadClassColSeats"></span><span class="acad-sort-ind"></span></th>
+                      <th data-i18n="acadClassColAction"></th>
                     </tr>
                   </thead>
                   <tbody id="acadClassBody"></tbody>
@@ -2248,6 +2327,24 @@
     </main>
   </div>
 
+  <!-- Class roster modal — opens when a class row's "查看名册" action is
+       clicked. Lists students with an active membership session whose
+       offeringId matches the clicked class. Read-only; closes on ✕ /
+       backdrop / Esc. -->
+  <div class="cls-roster-overlay" id="clsRosterOverlay" role="dialog" aria-modal="true" aria-labelledby="clsRosterTitle" aria-hidden="true">
+    <div class="cls-roster-card">
+      <header class="cls-roster-head">
+        <div>
+          <span class="cls-roster-eyebrow" id="clsRosterEyebrow"></span>
+          <h3 id="clsRosterTitle"></h3>
+          <p class="cls-roster-meta" id="clsRosterMeta"></p>
+        </div>
+        <button type="button" class="cls-roster-close" id="clsRosterCloseBtn" aria-label="Close">×</button>
+      </header>
+      <div class="cls-roster-body" id="clsRosterBody"></div>
+    </div>
+  </div>
+
   <!-- Eval modal — captures trial level + notes after a trial is marked done -->
   <div class="eval-overlay" id="mktEvalOverlay" role="dialog" aria-modal="true" aria-labelledby="mktEvalTitle" aria-hidden="true">
     <div class="eval-modal">
@@ -2648,6 +2745,25 @@
           acadClassColMode: "课型",
           acadClassColTime: "时段",
           acadClassColSeats: "上座",
+          acadClassColAction: "操作",
+          acadClassSearchPlaceholder: "搜索 课程 / 教师",
+          acadClassCapAll: "全部",
+          acadClassCapFull: "满员 ≥ 90%",
+          acadClassCapTight: "紧张 60–89%",
+          acadClassCapOpen: "空缺 < 60%",
+          acadClassCapStatusFull: "满员",
+          acadClassCapStatusTight: "紧张",
+          acadClassCapStatusOpen: "空缺",
+          acadClassActionRoster: "名册",
+          acadClassActionContact: "联系教师",
+          clsRosterEyebrow: "班级名册",
+          clsRosterMetaFmt: "{taken} / {total} 学员 · {teacher} · {time}",
+          clsRosterColStudent: "学员",
+          clsRosterColGrade: "年级",
+          clsRosterColPlan: "套餐",
+          clsRosterColEnrolled: "入学",
+          clsRosterEmpty: "暂无在读学员。可能是种子数据未录入对应订单，或刚刚开放报名。",
+          clsRosterMixedNote: "已读: {n} 名学员的会员订单含本班次。",
           acadClassModeOneOnOne: "1 v 1",
           acadClassModeSmall: "小组课",
           acadClassFilterAllDays: "全部时段",
@@ -3210,6 +3326,25 @@
           acadClassColMode: "Mode",
           acadClassColTime: "Time",
           acadClassColSeats: "Seats",
+          acadClassColAction: "Action",
+          acadClassSearchPlaceholder: "Search course / teacher",
+          acadClassCapAll: "All",
+          acadClassCapFull: "Full ≥ 90%",
+          acadClassCapTight: "Tight 60–89%",
+          acadClassCapOpen: "Open < 60%",
+          acadClassCapStatusFull: "Full",
+          acadClassCapStatusTight: "Tight",
+          acadClassCapStatusOpen: "Open",
+          acadClassActionRoster: "Roster",
+          acadClassActionContact: "Contact",
+          clsRosterEyebrow: "Class Roster",
+          clsRosterMetaFmt: "{taken} / {total} students · {teacher} · {time}",
+          clsRosterColStudent: "Student",
+          clsRosterColGrade: "Grade",
+          clsRosterColPlan: "Plan",
+          clsRosterColEnrolled: "Enrolled",
+          clsRosterEmpty: "No students enrolled in this class yet — could be a fresh slot or seed data without orders.",
+          clsRosterMixedNote: "Showing students whose memberships include this offering (matched {n} order(s)).",
           acadClassModeOneOnOne: "1:1",
           acadClassModeSmall: "Small Group",
           acadClassFilterAllDays: "All days",
@@ -4322,13 +4457,29 @@
 
       // 班级管理 — class catalog table. Reads flow.getClassOfferings()
       // (the seeded weekly slots: 4 per level × 5 levels = 20 rows) and
-      // renders a filterable list with mode pill, time, and seats bar.
+      // renders a filterable, searchable, sortable list with capacity-
+      // status pills and per-row actions (open roster, contact teacher).
       var __acadClassLevelFilter = "";
       var __acadClassDayFilter = "";
+      var __acadClassSearch = "";
+      var __acadClassCapFilter = "all";   // all | full | tight | open
+      var __acadClassSort = { key: "time", dir: "asc" };
       var DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
       function dayLabel(t, dayKey) {
         var k = (dayKey || "").toLowerCase();
         return t["acadClassDay" + k.charAt(0).toUpperCase() + k.slice(1)] || k;
+      }
+      function classCapacityKey(pct) {
+        if (pct >= 90) return "full";
+        if (pct >= 60) return "tight";
+        return "open";
+      }
+      function teacherEmailFor(name) {
+        // Mock: derive a stable email from the teacher's display name so
+        // the "Contact" link has somewhere to point. Real backend would
+        // store this on the offering record.
+        var slug = String(name || "").toLowerCase().replace(/[^a-z]+/g, ".").replace(/^\.|\.$/g, "");
+        return slug ? slug + "@minddo.com" : "";
       }
       function renderAcademicClasses(t) {
         var f = window.MindDoFlow;
@@ -4367,6 +4518,65 @@
         }
         if (daySel) daySel.value = __acadClassDayFilter;
 
+        // Search input — debounced on input.
+        var searchEl = document.getElementById("acadClassSearch");
+        if (searchEl && !searchEl.dataset.hydrated) {
+          searchEl.dataset.hydrated = "1";
+          var debounceT;
+          searchEl.addEventListener("input", function () {
+            clearTimeout(debounceT);
+            debounceT = setTimeout(function () {
+              __acadClassSearch = String(searchEl.value || "").trim().toLowerCase();
+              renderAcademicClasses(t);
+            }, 180);
+          });
+        }
+        if (searchEl) searchEl.value = __acadClassSearch;
+
+        // Capacity-status pill row — sets a global filter; render reads
+        // it and keeps the active pill highlighted.
+        var capBar = document.getElementById("acadClassCapBar");
+        if (capBar && !capBar.dataset.hydrated) {
+          capBar.dataset.hydrated = "1";
+          capBar.addEventListener("click", function (e) {
+            var b = e.target.closest("[data-acad-class-cap]");
+            if (!b) return;
+            __acadClassCapFilter = b.getAttribute("data-acad-class-cap");
+            renderAcademicClasses(t);
+          });
+        }
+        if (capBar) {
+          capBar.querySelectorAll("[data-acad-class-cap]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-acad-class-cap") === __acadClassCapFilter);
+          });
+        }
+
+        // Sort — clickable column headers cycle asc / desc.
+        var classTable = capBar && capBar.parentElement && capBar.parentElement.querySelector(".table-wrap .acad-table");
+        if (classTable && !classTable.dataset.sortHydrated) {
+          classTable.dataset.sortHydrated = "1";
+          classTable.querySelectorAll("[data-acad-class-sort]").forEach(function (th) {
+            th.addEventListener("click", function () {
+              var key = th.getAttribute("data-acad-class-sort");
+              if (__acadClassSort.key === key) {
+                __acadClassSort.dir = __acadClassSort.dir === "asc" ? "desc" : "asc";
+              } else {
+                __acadClassSort.key = key;
+                __acadClassSort.dir = "asc";
+              }
+              renderAcademicClasses(t);
+            });
+          });
+        }
+        // Refresh sort indicators on every render.
+        if (classTable) {
+          classTable.querySelectorAll("[data-acad-class-sort]").forEach(function (th) {
+            var key = th.getAttribute("data-acad-class-sort");
+            th.classList.toggle("sort-asc",  __acadClassSort.key === key && __acadClassSort.dir === "asc");
+            th.classList.toggle("sort-desc", __acadClassSort.key === key && __acadClassSort.dir === "desc");
+          });
+        }
+
         // KPI tiles — total classes, total seats, seats taken, utilisation.
         var kpiEl = document.getElementById("acadClassKpiMetrics");
         if (kpiEl) {
@@ -4382,24 +4592,49 @@
           ]);
         }
 
-        // Filter + render rows.
+        // Filter pipeline: level → day → search → capacity-status.
         var filtered = all.filter(function (o) {
           if (__acadClassLevelFilter && (!o.level || o.level.en !== __acadClassLevelFilter)) return false;
           if (__acadClassDayFilter && o.dayKey !== __acadClassDayFilter) return false;
+          if (__acadClassSearch) {
+            var courseZh = (o.courseName && o.courseName.zh) || "";
+            var courseEn = (o.courseName && o.courseName.en) || "";
+            var hay = (courseZh + " " + courseEn + " " + (o.teacher || "")).toLowerCase();
+            if (hay.indexOf(__acadClassSearch) < 0) return false;
+          }
+          if (__acadClassCapFilter && __acadClassCapFilter !== "all") {
+            var t2 = o.seatsTotal || 0;
+            var pct = t2 ? Math.round(((o.seatsTaken || 0) / t2) * 100) : 0;
+            if (classCapacityKey(pct) !== __acadClassCapFilter) return false;
+          }
           return true;
         });
 
         var tBody = document.getElementById("acadClassBody");
         if (!tBody) return;
         if (!filtered.length) {
-          tBody.innerHTML = "<tr><td colspan='6'><div class='acad-empty'>" + escHTML(t.acadEmptyFiltered) + "</div></td></tr>";
+          tBody.innerHTML = "<tr><td colspan='7'><div class='acad-empty'>" + escHTML(t.acadEmptyFiltered) + "</div></td></tr>";
           return;
         }
-        // Sort by day then time so the table reads chronologically.
+
+        // Apply the active sort. "time" composes day-of-week + slot;
+        // "util" sorts by current utilisation %.
+        function sortKey(o) {
+          var pct = (o.seatsTotal ? ((o.seatsTaken || 0) / o.seatsTotal) : 0);
+          switch (__acadClassSort.key) {
+            case "course":  return (o.courseName && o.courseName[k]) || (o.courseName && o.courseName.en) || "";
+            case "level":   return (o.level && o.level.en) || "";
+            case "teacher": return o.teacher || "";
+            case "util":    return pct;
+            case "time":
+            default:        return DAY_KEYS.indexOf(o.dayKey) * 100 + parseInt((o.timeSlot || "").slice(0, 2), 10) || 0;
+          }
+        }
         filtered.sort(function (a, b) {
-          var dA = DAY_KEYS.indexOf(a.dayKey), dB = DAY_KEYS.indexOf(b.dayKey);
-          if (dA !== dB) return dA - dB;
-          return String(a.timeSlot || "").localeCompare(String(b.timeSlot || ""));
+          var ka = sortKey(a), kb = sortKey(b);
+          if (ka < kb) return __acadClassSort.dir === "asc" ? -1 : 1;
+          if (ka > kb) return __acadClassSort.dir === "asc" ? 1 : -1;
+          return 0;
         });
 
         tBody.innerHTML = filtered.map(function (o) {
@@ -4413,6 +4648,14 @@
           var total = o.seatsTotal || 0;
           var pct = total ? Math.round((taken / total) * 100) : 0;
           var fillCls = pct >= 90 ? "full" : pct >= 60 ? "mid" : "low";
+          var capKey = classCapacityKey(pct);
+          var capLabel = capKey === "full" ? t.acadClassCapStatusFull
+                       : capKey === "tight" ? t.acadClassCapStatusTight
+                       : t.acadClassCapStatusOpen;
+          var teacherMail = teacherEmailFor(o.teacher);
+          var contactLink = teacherMail
+            ? "<a href='mailto:" + escHTML(teacherMail) + "' title='" + escHTML(teacherMail) + "'>" + escHTML(t.acadClassActionContact || "Contact") + "</a>"
+            : "";
           return "<tr>"
             + "<td><strong style='color:var(--clay);'>" + escHTML(courseName) + "</strong></td>"
             + "<td><span class='acad-level-pill " + levelClass + "'>" + escHTML(levelText) + "</span></td>"
@@ -4422,10 +4665,127 @@
             + "<td><div class='acad-seats'>"
             +   "<div class='acad-seats-track'><div class='acad-seats-fill " + fillCls + "' style='width:" + Math.max(2, pct) + "%'></div></div>"
             +   "<span class='acad-seats-text'>" + taken + " / " + total + "</span>"
+            +   "<span class='acad-cap-pill " + capKey + "'>" + escHTML(capLabel) + "</span>"
+            + "</div></td>"
+            + "<td><div class='acad-class-actions'>"
+            +   "<button type='button' data-acad-class-action='roster' data-offering-id='" + escHTML(o.id || "") + "'>" + escHTML(t.acadClassActionRoster || "Roster") + "</button>"
+            +   contactLink
             + "</div></td>"
             + "</tr>";
         }).join("");
       }
+
+      // Class-roster modal — opens when a row's "查看名册" is clicked.
+      // Inspects every membership order's sessions for matching offeringId
+      // and lists the enrolled students. Read-only. Uses the same fade
+      // backdrop as the reschedule modal.
+      (function () {
+        var overlay = document.getElementById("clsRosterOverlay");
+        var titleEl = document.getElementById("clsRosterTitle");
+        var eyebrowEl = document.getElementById("clsRosterEyebrow");
+        var metaEl = document.getElementById("clsRosterMeta");
+        var bodyEl = document.getElementById("clsRosterBody");
+        var closeBtn = document.getElementById("clsRosterCloseBtn");
+        if (!overlay) return;
+
+        function dictNow() {
+          return I18N[(state && state.lang) === "en" ? "en" : "zh-CN"] || I18N["zh-CN"];
+        }
+        function langNow() {
+          return (state && state.lang) === "en" ? "en" : "zh";
+        }
+        function close() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+        function open(offeringId) {
+          var t = dictNow();
+          var k = langNow();
+          var f = window.MindDoFlow;
+          if (!f || !f.getClassOfferings) return;
+          var off = (f.getClassOfferings() || []).filter(function (o) { return o.id === offeringId; })[0];
+          if (!off) return;
+          var courseName = (off.courseName && off.courseName[k]) || (off.courseName && off.courseName.en) || "";
+          var dayText = (off.weekday && off.weekday[k]) || dayLabel(t, off.dayKey);
+          var meta = (t.clsRosterMetaFmt || "{taken} / {total} · {teacher} · {time}")
+            .replace("{taken}", off.seatsTaken || 0)
+            .replace("{total}", off.seatsTotal || 0)
+            .replace("{teacher}", off.teacher || "—")
+            .replace("{time}", dayText + " · " + (off.timeSlot || ""));
+          eyebrowEl.textContent = t.clsRosterEyebrow || "Class Roster";
+          titleEl.textContent = courseName;
+          metaEl.textContent = meta;
+
+          // Match memberships whose session list includes this offering.
+          var memberships = (f.readJson && f.keys && f.keys.memberships)
+            ? (f.readJson(f.keys.memberships) || [])
+            : [];
+          var roster = [];
+          var seen = {};
+          memberships.forEach(function (m) {
+            if (!m || !m.sessions || !m.sessions.length) return;
+            var hit = m.sessions.some(function (s) { return s && s.offeringId === offeringId; });
+            if (!hit) return;
+            var sid = m.studentId || m.email || "";
+            if (seen[sid]) return;
+            seen[sid] = true;
+            var stu = (f.findStudentById && m.studentId) ? (f.findStudentById(m.studentId) || {}) : {};
+            roster.push({
+              name: stu.name || m.studentName || "—",
+              sid: m.studentId || "—",
+              grade: stu.grade || m.grade || "—",
+              plan: m.planLabel || m.plan || "—",
+              enrolledAt: m.createdAt || ""
+            });
+          });
+
+          if (!roster.length) {
+            bodyEl.innerHTML = "<div class='cls-roster-empty'>" + escHTML(t.clsRosterEmpty || "No students enrolled.") + "</div>";
+          } else {
+            var rows = roster.map(function (r) {
+              var d = r.enrolledAt ? new Date(r.enrolledAt) : null;
+              var dStr = (d && !isNaN(d.getTime()))
+                ? d.toLocaleDateString(k === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "short", day: "numeric" })
+                : "—";
+              return "<tr>"
+                + "<td><strong>" + escHTML(r.name) + "</strong>"
+                +   (r.sid && r.sid !== "—" ? "<div class='sid' style='font-size:11px;color:var(--muted);font-family:ui-monospace,Menlo,Consolas,monospace;'>" + escHTML(r.sid) + "</div>" : "")
+                + "</td>"
+                + "<td>" + escHTML(r.grade) + "</td>"
+                + "<td>" + escHTML(r.plan) + "</td>"
+                + "<td>" + escHTML(dStr) + "</td>"
+                + "</tr>";
+            }).join("");
+            bodyEl.innerHTML = "<table class='cls-roster-table'>"
+              + "<thead><tr>"
+              +   "<th>" + escHTML(t.clsRosterColStudent || "Student") + "</th>"
+              +   "<th>" + escHTML(t.clsRosterColGrade   || "Grade")   + "</th>"
+              +   "<th>" + escHTML(t.clsRosterColPlan    || "Plan")    + "</th>"
+              +   "<th>" + escHTML(t.clsRosterColEnrolled|| "Enrolled")+ "</th>"
+              + "</tr></thead><tbody>" + rows + "</tbody></table>";
+          }
+
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+
+        document.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-acad-class-action='roster']");
+          if (!btn) return;
+          e.preventDefault();
+          var oid = btn.getAttribute("data-offering-id");
+          if (oid) open(oid);
+        });
+        if (closeBtn) closeBtn.addEventListener("click", close);
+        overlay.addEventListener("click", function (e) {
+          if (e.target === overlay) close();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && overlay.classList.contains("open")) close();
+        });
+      })();
 
       // 课表 — Mon→Sun × time-slot grid view of every offering. Time
       // slots are derived from the offerings' slotKey (t09…t20) so the
