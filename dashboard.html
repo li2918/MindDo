@@ -666,6 +666,7 @@
       font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; flex-shrink: 0; }
     .int-role-cat.academic { background: rgba(245,158,11,0.16); color: var(--gold-deep); border: 1px solid rgba(245,158,11,0.3); }
     .int-role-cat.ops      { background: rgba(110,143,87,0.18); color: #3f5d26; border: 1px solid rgba(110,143,87,0.4); }
+    .int-role-cat.admin    { background: rgba(124,45,18,0.14);  color: var(--clay);     border: 1px solid rgba(124,45,18,0.3); }
     .int-role-desc { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
     .int-role-perms { display: flex; flex-wrap: wrap; gap: 5px; }
     .int-role-perm { font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
@@ -2616,11 +2617,13 @@
           intRolesKpiTotal: "角色总数",
           intRolesKpiAcademic: "教学岗",
           intRolesKpiOps: "运营岗",
+          intRolesKpiAdmin: "管理岗",
           intRolesKpiUnassigned: "未分配人员",
           intRolesMembersFmt: "{n} 人",
           intRolesPermsHead: "权限",
           intRoleCategoryAcademic: "教学",
           intRoleCategoryOps: "运营",
+          intRoleCategoryAdmin: "管理",
           intRoleEditAction: "编辑权限",
           // ---- Finance sub-tabs ----
           finSubtabOrders: "订单管理",
@@ -3205,11 +3208,13 @@
           intRolesKpiTotal: "Total roles",
           intRolesKpiAcademic: "Academic",
           intRolesKpiOps: "Operations",
+          intRolesKpiAdmin: "Admin",
           intRolesKpiUnassigned: "Unassigned",
           intRolesMembersFmt: "{n} member(s)",
           intRolesPermsHead: "Permissions",
           intRoleCategoryAcademic: "Academic",
           intRoleCategoryOps: "Operations",
+          intRoleCategoryAdmin: "Admin",
           intRoleEditAction: "Edit permissions",
           acadSubtabRoster: "Students",
           acadSubtabClasses: "Classes",
@@ -5479,15 +5484,21 @@
         // KPI tiles
         var academicCount = roles.filter(function (r) { return r.category === "academic"; }).length;
         var opsCount = roles.filter(function (r) { return r.category === "ops"; }).length;
+        var adminCount = roles.filter(function (r) { return r.category === "admin"; }).length;
         var unassigned = roles.filter(function (r) { return !counts[r.id]; }).length;
         var kpiEl = document.getElementById("intRolesKpi");
         if (kpiEl) {
-          renderMetricCards(kpiEl, [
+          // If there are no admin roles seeded yet, fall back to the
+          // legacy 4-tile layout so older datasets don't render an
+          // empty column.
+          var tiles = [
             { label: t.intRolesKpiTotal, value: roles.length, sub: "" },
             { label: t.intRolesKpiAcademic, value: academicCount, sub: "" },
-            { label: t.intRolesKpiOps, value: opsCount, sub: "" },
-            { label: t.intRolesKpiUnassigned, value: unassigned, sub: "" }
-          ]);
+            { label: t.intRolesKpiOps, value: opsCount, sub: "" }
+          ];
+          if (adminCount > 0) tiles.push({ label: t.intRolesKpiAdmin, value: adminCount, sub: "" });
+          tiles.push({ label: t.intRolesKpiUnassigned, value: unassigned, sub: "" });
+          renderMetricCards(kpiEl, tiles);
         }
 
         // Card grid
@@ -5500,7 +5511,9 @@
         grid.innerHTML = roles.map(function (r) {
           var name = lang === "en" ? (r.nameEn || r.name) : r.name;
           var desc = lang === "en" ? (r.descEn || r.desc) : r.desc;
-          var catLabel = r.category === "academic" ? t.intRoleCategoryAcademic : t.intRoleCategoryOps;
+          var catLabel = r.category === "academic" ? t.intRoleCategoryAcademic
+                       : r.category === "admin"    ? t.intRoleCategoryAdmin
+                       : t.intRoleCategoryOps;
           var memberLabel = (t.intRolesMembersFmt || "{n} member(s)").replace("{n}", counts[r.id] || 0);
           var perms = (r.permissions || []).map(function (p) {
             return "<span class='int-role-perm'>" + escHTML(p) + "</span>";

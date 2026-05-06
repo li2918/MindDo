@@ -2087,15 +2087,30 @@
       { id: "EM007", name: "Kevin Wu",        roleId: "marketing",         department: "市场部", email: "kevin@minddo.local",  phone: "626-555-0210", status: "active",  joinedAt: daysAgo(180) },
       { id: "EM008", name: "Iris Yang",       roleId: "finance",           department: "财务部", email: "iris@minddo.local",   phone: "626-555-0225", status: "leave",   joinedAt: daysAgo(420) },
       { id: "EM009", name: "Lily Hsu",        roleId: "frontdesk",         department: "运营部", email: "lily@minddo.local",   phone: "626-555-0246", status: "active",  joinedAt: daysAgo(150) },
-      { id: "EM010", name: "Tom Liu",         roleId: "marketing",         department: "市场部", email: "tom@minddo.local",    phone: "626-555-0262", status: "inactive",joinedAt: daysAgo(540) }
+      { id: "EM010", name: "Tom Liu",         roleId: "marketing",         department: "市场部", email: "tom@minddo.local",    phone: "626-555-0262", status: "inactive",joinedAt: daysAgo(540) },
+      { id: "EM011", name: "Alex Chen",       roleId: "owner",             department: "管理层", email: "alex@minddo.local",   phone: "626-555-0301", status: "active",  joinedAt: daysAgo(900) },
+      { id: "EM012", name: "Grace Wang",      roleId: "admin",             department: "管理层", email: "grace@minddo.local",  phone: "626-555-0312", status: "active",  joinedAt: daysAgo(720) },
+      { id: "EM013", name: "Sophia Lee",      roleId: "operations",        department: "运营部", email: "sophia@minddo.local", phone: "626-555-0324", status: "active",  joinedAt: daysAgo(280) },
+      { id: "EM014", name: "Daniel Liu",      roleId: "counselor",         department: "运营部", email: "daniel@minddo.local", phone: "626-555-0335", status: "active",  joinedAt: daysAgo(200) },
+      { id: "EM015", name: "Rachel Kim",      roleId: "homeroom",          department: "教学部", email: "rachel@minddo.local", phone: "626-555-0347", status: "active",  joinedAt: daysAgo(310) }
     ]);
 
     writeJson(KEYS.roles, [
+      // ---- Admin / Management ----
+      { id: "owner",              name: "超级管理员", nameEn: "Owner",            category: "admin",    desc: "系统所有者，拥有全部权限，可配置角色与计费。", descEn: "System owner — full permissions across all modules; can manage roles and billing.", permissions: ["*.write", "staff.write", "billing.write", "academic.write", "marketing.write", "approvals.approve"] },
+      { id: "admin",              name: "管理员",     nameEn: "Admin",            category: "admin",    desc: "日常系统管理：员工 / 角色 / 校区 / 配置。",    descEn: "Day-to-day system administration — staff, roles, campuses, configuration.",        permissions: ["staff.write", "roles.write", "campuses.write", "settings.write", "reports.view"] },
+
+      // ---- Academic ----
       { id: "academic-lead",      name: "教学主管",   nameEn: "Academic Lead",    category: "academic", desc: "统筹课程体系、教师培训与教研活动。",        descEn: "Owns curriculum, teacher training, and pedagogical R&D.", permissions: ["academic.write", "staff.view", "approvals.approve", "reports.view"] },
       { id: "instructor-senior",  name: "高级讲师",   nameEn: "Senior Instructor",category: "academic", desc: "可独立授课、负责竞赛 / 项目营核心班次。",     descEn: "Independent classroom + competition / project-camp lead.",   permissions: ["academic.write", "students.view", "feedback.write"] },
       { id: "instructor",         name: "讲师",       nameEn: "Instructor",       category: "academic", desc: "负责常规班级授课与课堂反馈。",              descEn: "Standard class delivery + feedback authoring.",             permissions: ["students.view", "feedback.write"] },
       { id: "instructor-intern",  name: "实习讲师",   nameEn: "Intern Instructor",category: "academic", desc: "在导师指导下完成助教与试课带班。",          descEn: "Mentored TA + trial-class delivery.",                       permissions: ["students.view"] },
+      { id: "homeroom",           name: "班主任",     nameEn: "Homeroom Teacher", category: "academic", desc: "对接学生与家长，跟进学习进度与课堂出勤。",   descEn: "Owns the student–parent relationship, tracks progress and attendance.",             permissions: ["students.write", "feedback.write", "requests.approve"] },
+
+      // ---- Operations ----
       { id: "campus-manager",     name: "校区经理",   nameEn: "Campus Manager",   category: "ops",      desc: "校区运营、师资排班、家校沟通的负责人。",     descEn: "Owns campus ops, scheduling, parent comms.",                permissions: ["staff.view", "academic.view", "billing.view", "approvals.approve"] },
+      { id: "operations",         name: "运营专员",   nameEn: "Operations",       category: "ops",      desc: "日常运营执行：排课、活动、家长沟通与跟进。", descEn: "Day-to-day operations: scheduling, events, parent follow-up.",                       permissions: ["academic.view", "leads.view", "requests.approve", "reports.view"] },
+      { id: "counselor",          name: "学习顾问",   nameEn: "Education Counselor", category: "ops",   desc: "面向家长的咨询、试课跟进与升学规划建议。",  descEn: "Parent-facing consultation: trial follow-up + admissions planning.",                  permissions: ["leads.write", "students.view", "marketing.view"] },
       { id: "marketing",          name: "市场专员",   nameEn: "Marketing",        category: "ops",      desc: "招生渠道维护、试听跟进与品牌物料。",        descEn: "Channel growth, trial follow-up, brand assets.",            permissions: ["leads.write", "marketing.write"] },
       { id: "finance",            name: "财务",       nameEn: "Finance",          category: "ops",      desc: "订单 / 账单 / 工资 / 报销审批。",            descEn: "Orders, billing, payroll, expense approvals.",              permissions: ["billing.write", "payroll.write", "approvals.approve"] },
       { id: "frontdesk",          name: "前台",       nameEn: "Front Desk",       category: "ops",      desc: "试听签到、家长接待、日程协助。",            descEn: "Trial check-in, parent reception, scheduling support.",     permissions: ["students.view", "leads.view"] }
