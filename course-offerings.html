@@ -78,6 +78,73 @@
     .col-action { width:80px; text-align:right; }
     .btn-remove { background:rgba(196,106,77,0.1); color:var(--danger); border:1px solid rgba(196,106,77,0.28); border-radius:999px; padding:5px 10px; font:inherit; font-size:11px; font-weight:700; cursor:pointer; transition:0.15s; }
     .btn-remove:hover { background:rgba(196,106,77,0.2); }
+    .btn-dup { background:rgba(245,158,11,0.12); color:var(--gold-deep); border:1px solid rgba(217,119,6,0.28); border-radius:999px;
+      padding:5px 10px; font:inherit; font-size:11px; font-weight:700; cursor:pointer; transition:0.15s; margin-right:4px; }
+    .btn-dup:hover { background:rgba(245,158,11,0.22); border-color:rgba(217,119,6,0.5); }
+
+    /* Batch-add modal — opens from action bar. Shared course attributes
+       on top, day checkboxes + time-slot textarea below, live preview
+       at the bottom. Generates the day × slot cartesian product as new
+       rows in the working list. */
+    .batch-overlay { position:fixed; inset:0; z-index:2000; padding:24px;
+      background:rgba(42,20,8,0.5); backdrop-filter:blur(4px);
+      display:none; align-items:center; justify-content:center; }
+    .batch-overlay.open { display:flex; animation:batchFade 0.18s ease-out; }
+    @keyframes batchFade { from { opacity:0; } to { opacity:1; } }
+    .batch-card { background:#fff; border-radius:18px; box-shadow:0 30px 60px rgba(42,20,8,0.42);
+      width:min(720px, 100%); max-height:min(90vh, 820px); display:flex; flex-direction:column;
+      overflow:hidden; font-family:inherit; }
+    .batch-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      padding:18px 22px 14px; border-bottom:1px solid var(--line); flex:none; }
+    .batch-head h3 { font-size:17px; font-weight:800; color:var(--clay); letter-spacing:-0.01em; margin:0 0 4px; }
+    .batch-head p { font-size:12.5px; color:var(--muted); margin:0; line-height:1.55; }
+    .batch-close { width:30px; height:30px; border-radius:50%; background:transparent;
+      border:1px solid var(--line); cursor:pointer; font-size:16px; line-height:1; color:var(--muted);
+      display:inline-flex; align-items:center; justify-content:center; transition:0.12s; font-family:inherit; flex:none; }
+    .batch-close:hover { background:#f1f5f9; color:var(--clay); }
+    .batch-body { flex:1 1 auto; min-height:0; overflow:auto; padding:18px 22px 6px; }
+    .batch-section { margin-bottom:18px; }
+    .batch-section h4 { font-size:11.5px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase;
+      color:var(--muted); margin-bottom:10px; }
+    .batch-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; }
+    .batch-field { display:flex; flex-direction:column; }
+    .batch-field.span-2 { grid-column:1 / -1; }
+    .batch-field label { font-size:11px; font-weight:700; color:var(--muted); margin-bottom:4px; letter-spacing:0.04em; }
+    .batch-field input, .batch-field select, .batch-field textarea {
+      width:100%; border:1px solid var(--line); background:#fef9ec; color:var(--text);
+      padding:8px 10px; border-radius:10px; font:inherit; font-size:13px; outline:none; transition:0.15s;
+      font-family:inherit; }
+    .batch-field textarea { min-height:90px; resize:vertical; line-height:1.5;
+      font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace; }
+    .batch-field input:focus, .batch-field select:focus, .batch-field textarea:focus {
+      border-color:var(--gold); box-shadow:0 0 0 2px rgba(245,158,11,0.16); }
+    .batch-field .hint { font-size:11px; color:var(--muted); margin-top:4px; line-height:1.5; }
+    .batch-day-row { display:flex; flex-wrap:wrap; gap:6px; }
+    .batch-day-row label { display:inline-flex; align-items:center; gap:4px; padding:6px 12px;
+      border:1px solid var(--line); border-radius:999px; cursor:pointer; font-size:12.5px; font-weight:700;
+      color:var(--muted); background:#fff; transition:0.12s; user-select:none; }
+    .batch-day-row label:hover { border-color:rgba(245,158,11,0.4); color:var(--clay); }
+    .batch-day-row label.selected { background:linear-gradient(135deg,#fde68a,var(--gold));
+      border-color:var(--gold-deep); color:#3a1808; box-shadow:0 4px 12px rgba(245,158,11,0.18); }
+    .batch-day-row input { display:none; }
+    .batch-preview { background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2);
+      border-radius:12px; padding:12px 14px; }
+    .batch-preview-head { font-size:12.5px; font-weight:800; color:var(--clay); margin-bottom:8px; }
+    .batch-preview-list { display:grid; gap:4px; max-height:160px; overflow:auto;
+      font-size:12px; font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace; color:var(--text); }
+    .batch-preview-list .row { display:flex; gap:8px; align-items:center; }
+    .batch-preview-list .row::before { content:"•"; color:var(--gold-deep); font-weight:900; }
+    .batch-preview-empty { font-size:12px; color:var(--muted); font-style:italic; }
+    .batch-foot { padding:14px 22px 18px; border-top:1px solid var(--line);
+      display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; flex:none; }
+    .batch-foot .count { font-size:13px; color:var(--clay); font-weight:700; }
+    .batch-foot .count strong { color:var(--gold-deep); font-size:16px; }
+    .batch-msg { font-size:12px; color:var(--danger); min-height:14px; line-height:1.4; }
+    @media (max-width:640px) {
+      .batch-grid { grid-template-columns:1fr; }
+      .batch-overlay { padding:0; }
+      .batch-card { height:100vh; max-height:100vh; width:100%; border-radius:0; }
+    }
 
     .toast { position:fixed; bottom:24px; right:24px; background:var(--clay); color:#fffbeb; padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:0 12px 28px rgba(122,48,16,0.3); opacity:0; transform:translateY(10px); transition:0.25s; pointer-events:none; z-index:2000; }
     .toast.show { opacity:1; transform:translateY(0); }
@@ -138,7 +205,10 @@
         <p class="desc"><span data-lang="zh">在下表中直接编辑班次信息，完成后点击「保存变更」。家长端的课程筛选会根据学员等级与以下班次的等级字段进行匹配。</span><span data-lang="en">Edit rows inline and click "Save Changes". The parent-side schedule page filters by matching student level to the English level below.</span></p>
         <div class="action-bar">
           <button type="button" class="btn-primary" id="saveBtn"><span data-lang="zh">保存变更</span><span data-lang="en">Save Changes</span></button>
-          <button type="button" class="btn-secondary" id="addBtn"><span data-lang="zh">+ 新增班次</span><span data-lang="en">+ Add Class</span></button>
+          <button type="button" class="btn-primary" id="batchBtn" style="background:linear-gradient(135deg,#a3c374,#6e8b58);">
+            <span data-lang="zh">⚡ 批量新增班次</span><span data-lang="en">⚡ Batch Add</span>
+          </button>
+          <button type="button" class="btn-secondary" id="addBtn"><span data-lang="zh">+ 新增单条</span><span data-lang="en">+ Add Class</span></button>
           <button type="button" class="btn-secondary" id="resetBtn"><span data-lang="zh">恢复默认</span><span data-lang="en">Reset to Defaults</span></button>
         </div>
         <div class="table-wrap">
@@ -165,6 +235,98 @@
       </article>
     </div>
   </section>
+
+  <!-- Batch-add modal: shared course attributes + multi-day + multi-slot
+       generates the cartesian product of selected days × time slots so
+       ops can lay out a whole weekly schedule for one course in one go. -->
+  <div class="batch-overlay" id="batchOverlay" role="dialog" aria-modal="true" aria-labelledby="batchTitle" aria-hidden="true">
+    <div class="batch-card">
+      <header class="batch-head">
+        <div>
+          <h3 id="batchTitle"><span data-lang="zh">批量新增班次</span><span data-lang="en">Batch Add Class Sessions</span></h3>
+          <p>
+            <span data-lang="zh">填一次课程信息，勾选上课日并列出时段，自动生成 N 个班次（不同日期 × 不同时段的所有组合）。</span>
+            <span data-lang="en">Fill in the course details once, pick weekdays and list time slots — we'll generate every combination as a separate class.</span>
+          </p>
+        </div>
+        <button type="button" class="batch-close" id="batchCloseBtn" aria-label="Close">×</button>
+      </header>
+      <div class="batch-body">
+        <div class="batch-section">
+          <h4><span data-lang="zh">课程信息（共享）</span><span data-lang="en">Course Details (shared)</span></h4>
+          <div class="batch-grid">
+            <div class="batch-field">
+              <label><span data-lang="zh">课程 (中)</span><span data-lang="en">Course (ZH)</span></label>
+              <input type="text" id="batchCourseZh" placeholder="AI 启蒙入门" />
+            </div>
+            <div class="batch-field">
+              <label><span data-lang="zh">课程 (英)</span><span data-lang="en">Course (EN)</span></label>
+              <input type="text" id="batchCourseEn" placeholder="AI Fundamentals" />
+            </div>
+            <div class="batch-field">
+              <label><span data-lang="zh">等级 (中)</span><span data-lang="en">Level (ZH)</span></label>
+              <input type="text" id="batchLevelZh" placeholder="入门" />
+            </div>
+            <div class="batch-field">
+              <label><span data-lang="zh">等级 (英)</span><span data-lang="en">Level (EN)</span></label>
+              <input type="text" id="batchLevelEn" placeholder="Beginner" />
+            </div>
+            <div class="batch-field">
+              <label><span data-lang="zh">老师</span><span data-lang="en">Teacher</span></label>
+              <input type="text" id="batchTeacher" placeholder="Dr. Sarah Chen" />
+            </div>
+            <div class="batch-field">
+              <label><span data-lang="zh">课型</span><span data-lang="en">Mode</span></label>
+              <select id="batchMode">
+                <option value="small"><span data-lang="zh">小组课</span><span data-lang="en">Group</span></option>
+                <option value="1v1">1 v 1</option>
+              </select>
+            </div>
+            <div class="batch-field">
+              <label><span data-lang="zh">默认席位</span><span data-lang="en">Default Seats</span></label>
+              <input type="number" id="batchSeats" min="1" value="6" />
+            </div>
+            <div class="batch-field">
+              <label><span data-lang="zh">课程 ID 前缀</span><span data-lang="en">ID prefix</span></label>
+              <input type="text" id="batchIdPrefix" placeholder="ai-fund" />
+              <span class="hint"><span data-lang="zh">最终 ID 形如 <code>{前缀}-{day}-{HH}</code>。留空将根据英文课程名自动生成。</span><span data-lang="en">Final IDs read as <code>{prefix}-{day}-{HH}</code>. Leave blank to auto-derive from course (EN).</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="batch-section">
+          <h4><span data-lang="zh">上课日（多选）</span><span data-lang="en">Weekdays (multi-select)</span></h4>
+          <div class="batch-day-row" id="batchDayRow"></div>
+        </div>
+
+        <div class="batch-section">
+          <h4><span data-lang="zh">时段（每行一个）</span><span data-lang="en">Time Slots (one per line)</span></h4>
+          <div class="batch-field">
+            <textarea id="batchSlots" placeholder="16:00 – 17:00&#10;17:00 – 18:00&#10;18:00 – 19:00"></textarea>
+            <span class="hint"><span data-lang="zh">每行一个时段，例如 <code>16:00 – 17:00</code>。系统会按「每个上课日 × 每个时段」全排列生成班次。</span><span data-lang="en">One slot per line, e.g. <code>16:00 – 17:00</code>. We generate one class per (day × slot) pair.</span></span>
+          </div>
+        </div>
+
+        <div class="batch-section">
+          <h4><span data-lang="zh">预览</span><span data-lang="en">Preview</span></h4>
+          <div class="batch-preview">
+            <div class="batch-preview-head" id="batchPreviewHead"></div>
+            <div class="batch-preview-list" id="batchPreviewList"></div>
+          </div>
+        </div>
+      </div>
+      <footer class="batch-foot">
+        <div>
+          <div class="count" id="batchCount"></div>
+          <div class="batch-msg" id="batchMsg"></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="btn-secondary" id="batchCancelBtn"><span data-lang="zh">取消</span><span data-lang="en">Cancel</span></button>
+          <button type="button" class="btn-primary" id="batchGenerateBtn"><span data-lang="zh">生成班次</span><span data-lang="en">Generate</span></button>
+        </div>
+      </footer>
+    </div>
+  </div>
 
   <div class="toast" id="toast"></div>
 
@@ -258,7 +420,10 @@
             "<td><input data-f='timeSlot' value=\"" + escapeAttr(o.timeSlot) + "\" placeholder='16:00 – 17:00' /></td>" +
             "<td><input data-f='seatsTotal' type='number' min='0' value=\"" + o.seatsTotal + "\" /></td>" +
             "<td><input data-f='seatsTaken' type='number' min='0' value=\"" + o.seatsTaken + "\" /></td>" +
-            "<td class='col-action'><button type='button' class='btn-remove' data-remove>" + (k() === "zh" ? "删除" : "Remove") + "</button></td>" +
+            "<td class='col-action'>" +
+              "<button type='button' class='btn-dup' data-dup title='" + (k() === "zh" ? "复制为新班次" : "Duplicate") + "'>" + (k() === "zh" ? "复制" : "Dup") + "</button>" +
+              "<button type='button' class='btn-remove' data-remove>" + (k() === "zh" ? "删除" : "Remove") + "</button>" +
+            "</td>" +
             "</tr>";
         }).join("");
       }
@@ -293,13 +458,40 @@
       }
 
       rowsContainer.addEventListener("click", function (e) {
-        var btn = e.target.closest("[data-remove]");
-        if (!btn) return;
-        var tr = btn.closest("tr");
-        if (!tr) return;
-        syncFromDOM();
-        working.splice(Number(tr.getAttribute("data-idx")), 1);
-        renderRows();
+        var removeBtn = e.target.closest("[data-remove]");
+        if (removeBtn) {
+          var tr1 = removeBtn.closest("tr");
+          if (!tr1) return;
+          syncFromDOM();
+          working.splice(Number(tr1.getAttribute("data-idx")), 1);
+          renderRows();
+          return;
+        }
+        // Duplicate — clone the row's current values, blank the day so
+        // the user picks a different one, and append. Faster than typing
+        // the whole shared course/level/teacher trio twice.
+        var dupBtn = e.target.closest("[data-dup]");
+        if (dupBtn) {
+          var tr2 = dupBtn.closest("tr");
+          if (!tr2) return;
+          syncFromDOM();
+          var src = working[Number(tr2.getAttribute("data-idx"))];
+          if (!src) return;
+          working.push({
+            id: nextId(),
+            courseName: { zh: src.courseName.zh, en: src.courseName.en },
+            level: { zh: src.level.zh, en: src.level.en },
+            teacher: src.teacher,
+            classMode: src.classMode,
+            dayKey: src.dayKey,
+            weekday: { zh: src.weekday.zh, en: src.weekday.en },
+            slotKey: src.slotKey,
+            timeSlot: src.timeSlot,
+            seatsTotal: src.seatsTotal,
+            seatsTaken: 0
+          });
+          renderRows();
+        }
       });
 
       document.getElementById("addBtn").addEventListener("click", function () {
@@ -344,10 +536,229 @@
           btn.classList.toggle("active", btn.getAttribute("data-set-lang") === l);
         });
         renderRows();
+        // Day-pill labels in the batch modal track the language.
+        renderBatchDays();
+        refreshBatchPreview();
       }
 
       langButtons.forEach(function (btn) {
         btn.addEventListener("click", function () { setLang(btn.getAttribute("data-set-lang")); });
+      });
+
+      // ============================================================
+      // Batch-add modal — fills in a course header once and generates
+      // (selected days × parsed time slots) rows. Each generated row
+      // gets an auto-derived ID like "ai-fund-mon-16" so the IDs stay
+      // human-readable. Already-existing IDs are skipped (no clobber).
+      // ============================================================
+      var batchOverlay = document.getElementById("batchOverlay");
+      var batchDayRow = document.getElementById("batchDayRow");
+      var batchInputs = {
+        courseZh: document.getElementById("batchCourseZh"),
+        courseEn: document.getElementById("batchCourseEn"),
+        levelZh:  document.getElementById("batchLevelZh"),
+        levelEn:  document.getElementById("batchLevelEn"),
+        teacher:  document.getElementById("batchTeacher"),
+        mode:     document.getElementById("batchMode"),
+        seats:    document.getElementById("batchSeats"),
+        prefix:   document.getElementById("batchIdPrefix"),
+        slots:    document.getElementById("batchSlots")
+      };
+      var batchPreviewHead = document.getElementById("batchPreviewHead");
+      var batchPreviewList = document.getElementById("batchPreviewList");
+      var batchCountEl = document.getElementById("batchCount");
+      var batchMsgEl = document.getElementById("batchMsg");
+      var DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+      var batchSelectedDays = ["mon", "wed"];   // sensible default
+
+      function renderBatchDays() {
+        if (!batchDayRow) return;
+        var labels = I18N[lang].dayOptions;
+        batchDayRow.innerHTML = DAY_KEYS.map(function (d) {
+          var checked = batchSelectedDays.indexOf(d) >= 0;
+          return "<label class=\"" + (checked ? "selected" : "") + "\">"
+            +   "<input type=\"checkbox\" data-batch-day=\"" + d + "\"" + (checked ? " checked" : "") + " />"
+            +   "<span>" + labels[d] + "</span>"
+            + "</label>";
+        }).join("");
+      }
+
+      function parseSlots() {
+        var raw = (batchInputs.slots && batchInputs.slots.value) || "";
+        return raw.split(/\n+/)
+          .map(function (s) { return s.trim(); })
+          .filter(function (s) { return s.length > 0; });
+      }
+
+      function slugifyForId(s) {
+        return String(s || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "")
+          .slice(0, 24);
+      }
+
+      function buildPreviewRows() {
+        var courseZh = batchInputs.courseZh.value.trim();
+        var courseEn = batchInputs.courseEn.value.trim();
+        var levelZh = batchInputs.levelZh.value.trim();
+        var levelEn = batchInputs.levelEn.value.trim();
+        var teacher = batchInputs.teacher.value.trim();
+        var mode = batchInputs.mode.value || "small";
+        var seats = Number(batchInputs.seats.value) || 0;
+        var prefix = (batchInputs.prefix.value.trim() || slugifyForId(courseEn) || "class");
+        var slots = parseSlots();
+        var rows = [];
+        if (!batchSelectedDays.length || !slots.length) return { rows: rows };
+
+        // De-dup against working's existing IDs so we don't clobber
+        // existing rows when ID derivation collides.
+        var existingIds = {};
+        working.forEach(function (o) { if (o.id) existingIds[o.id] = true; });
+
+        batchSelectedDays.forEach(function (dayKey) {
+          slots.forEach(function (slot) {
+            var hh = (slot.match(/\b(\d{1,2})\b/) || [])[1] || "00";
+            var idBase = prefix + "-" + dayKey + "-" + (hh.length === 1 ? "0" + hh : hh);
+            var id = idBase;
+            var n = 2;
+            while (existingIds[id]) { id = idBase + "-" + n; n++; }
+            existingIds[id] = true;
+            rows.push({
+              id: id,
+              courseName: { zh: courseZh, en: courseEn },
+              level: { zh: levelZh, en: levelEn },
+              teacher: teacher,
+              classMode: mode,
+              dayKey: dayKey,
+              weekday: { zh: I18N["zh-CN"].dayOptions[dayKey] || "", en: I18N.en.dayOptions[dayKey] || "" },
+              slotKey: "t" + (hh.length === 1 ? "0" + hh : hh),
+              timeSlot: slot,
+              seatsTotal: seats,
+              seatsTaken: 0
+            });
+          });
+        });
+        return { rows: rows };
+      }
+
+      function refreshBatchPreview() {
+        if (!batchOverlay || !batchOverlay.classList.contains("open")) return;
+        var courseZh = batchInputs.courseZh.value.trim();
+        var courseEn = batchInputs.courseEn.value.trim();
+        var teacher = batchInputs.teacher.value.trim();
+        var slots = parseSlots();
+        var dayLabels = I18N[lang].dayOptions;
+
+        // Validate inputs and collect a friendly message.
+        var problems = [];
+        if (!courseZh && !courseEn) problems.push(lang === "en" ? "Course (ZH or EN)" : "课程 (中或英)");
+        if (!teacher) problems.push(lang === "en" ? "Teacher" : "老师");
+        if (!batchSelectedDays.length) problems.push(lang === "en" ? "Pick at least one weekday" : "至少勾选一个上课日");
+        if (!slots.length) problems.push(lang === "en" ? "At least one time slot" : "至少一个时段");
+        batchMsgEl.textContent = problems.length
+          ? (lang === "en" ? "Missing: " : "缺少: ") + problems.join(" · ")
+          : "";
+
+        var preview = buildPreviewRows().rows;
+        batchPreviewHead.textContent = lang === "en"
+          ? batchSelectedDays.length + " day(s) × " + slots.length + " slot(s)"
+          : batchSelectedDays.length + " 个上课日 × " + slots.length + " 个时段";
+        if (!preview.length) {
+          batchPreviewList.innerHTML = "<div class=\"batch-preview-empty\">"
+            + (lang === "en" ? "Fill in the fields above to see the generated rows." : "填写上方字段后会预览将要生成的班次。")
+            + "</div>";
+        } else {
+          batchPreviewList.innerHTML = preview.map(function (r) {
+            return "<div class=\"row\">"
+              + "<span style=\"color:var(--clay);font-weight:700;\">" + dayLabels[r.dayKey] + "</span>"
+              + " · <span>" + r.timeSlot + "</span>"
+              + " · <span style=\"color:var(--muted);\">" + r.id + "</span>"
+              + "</div>";
+          }).join("");
+        }
+        batchCountEl.innerHTML = lang === "en"
+          ? ("Will create <strong>" + preview.length + "</strong> class session(s).")
+          : ("即将生成 <strong>" + preview.length + "</strong> 个班次。");
+      }
+
+      function openBatch() {
+        // Reset to sensible defaults each time so previous run state
+        // doesn't bleed in (Most users want a fresh form).
+        batchInputs.courseZh.value = "";
+        batchInputs.courseEn.value = "";
+        batchInputs.levelZh.value = "";
+        batchInputs.levelEn.value = "";
+        batchInputs.teacher.value = "";
+        batchInputs.mode.value = "small";
+        batchInputs.seats.value = "6";
+        batchInputs.prefix.value = "";
+        batchInputs.slots.value = "16:00 – 17:00\n17:00 – 18:00";
+        batchSelectedDays = ["mon", "wed"];
+        renderBatchDays();
+        batchOverlay.classList.add("open");
+        batchOverlay.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        refreshBatchPreview();
+        setTimeout(function () { batchInputs.courseZh.focus(); }, 60);
+      }
+      function closeBatch() {
+        batchOverlay.classList.remove("open");
+        batchOverlay.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+
+      document.getElementById("batchBtn").addEventListener("click", openBatch);
+      document.getElementById("batchCloseBtn").addEventListener("click", closeBatch);
+      document.getElementById("batchCancelBtn").addEventListener("click", closeBatch);
+      batchOverlay.addEventListener("click", function (e) {
+        if (e.target === batchOverlay) closeBatch();
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && batchOverlay.classList.contains("open")) closeBatch();
+      });
+
+      // Day-pill toggling — sync the selected list and re-render so the
+      // pill highlight follows.
+      batchDayRow.addEventListener("click", function (e) {
+        var input = e.target.closest("[data-batch-day]");
+        if (!input) return;
+        var d = input.getAttribute("data-batch-day");
+        var idx = batchSelectedDays.indexOf(d);
+        if (idx >= 0) batchSelectedDays.splice(idx, 1);
+        else batchSelectedDays.push(d);
+        renderBatchDays();
+        refreshBatchPreview();
+      });
+
+      // Live preview on every input.
+      Object.keys(batchInputs).forEach(function (k2) {
+        var el = batchInputs[k2];
+        if (!el) return;
+        el.addEventListener("input", refreshBatchPreview);
+        if (el.tagName === "SELECT") el.addEventListener("change", refreshBatchPreview);
+      });
+
+      // Generate — append all preview rows to working list, close modal,
+      // and toast the count.
+      document.getElementById("batchGenerateBtn").addEventListener("click", function () {
+        var courseZh = batchInputs.courseZh.value.trim();
+        var courseEn = batchInputs.courseEn.value.trim();
+        var teacher = batchInputs.teacher.value.trim();
+        if ((!courseZh && !courseEn) || !teacher || !batchSelectedDays.length || !parseSlots().length) {
+          // Validation message already shown in batchMsgEl by refreshBatchPreview.
+          refreshBatchPreview();
+          return;
+        }
+        syncFromDOM();
+        var generated = buildPreviewRows().rows;
+        if (!generated.length) return;
+        Array.prototype.push.apply(working, generated);
+        renderRows();
+        closeBatch();
+        showToast(lang === "en"
+          ? ("Generated " + generated.length + " class session(s). Click Save to publish.")
+          : ("已生成 " + generated.length + " 个班次，记得点「保存变更」发布。"));
       });
 
       setLang(lang);
