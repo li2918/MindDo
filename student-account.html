@@ -1386,6 +1386,31 @@
       display: none; align-items: center; justify-content: center; }
     .resched-overlay.open { display: flex; animation: reschedFade 0.18s ease-out; }
     @keyframes reschedFade { from { opacity: 0; } to { opacity: 1; } }
+
+    /* Family-settings iframe dialog. Bigger than the reschedule card
+       since the embedded pages (add-child / account-settings / add-
+       coparent) bring their own form layouts and hero. */
+    .fam-modal-overlay { position: fixed; inset: 0; z-index: 2100; padding: 24px;
+      background: rgba(42,20,8,0.5); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; }
+    .fam-modal-overlay.open { display: flex; animation: reschedFade 0.18s ease-out; }
+    .fam-modal-card { background: var(--bg, #fff8ee); border-radius: 18px;
+      box-shadow: 0 30px 60px rgba(42,20,8,0.42);
+      width: min(960px, 100%); height: min(86vh, 760px); display: flex; flex-direction: column;
+      overflow: hidden; font-family: inherit; }
+    .fam-modal-head { display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 16px 22px; background: #fff; border-bottom: 1px solid var(--line); flex: none; }
+    .fam-modal-head h3 { font-size: 17px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; margin: 0; }
+    .fam-modal-close { width: 32px; height: 32px; border-radius: 50%; background: transparent;
+      border: 1px solid var(--line); cursor: pointer; font-size: 18px; line-height: 1; color: var(--muted);
+      display: inline-flex; align-items: center; justify-content: center; transition: 0.12s; font-family: inherit; flex: none; }
+    .fam-modal-close:hover { background: #f1f5f9; color: var(--clay); }
+    .fam-modal-body { flex: 1 1 auto; min-height: 0; background: var(--bg, #fff8ee); }
+    .fam-modal-body iframe { width: 100%; height: 100%; border: 0; display: block; background: transparent; }
+    @media (max-width: 720px) {
+      .fam-modal-overlay { padding: 0; }
+      .fam-modal-card { height: 100vh; max-height: 100vh; width: 100%; border-radius: 0; }
+    }
     .resched-card { background: #fff; border-radius: 18px; box-shadow: 0 30px 60px rgba(42,20,8,0.32);
       width: min(480px, 100%); padding: 26px 28px; position: relative; font-family: inherit; }
     .resched-card h3 { font-size: 18px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; margin-bottom: 6px; }
@@ -2364,27 +2389,30 @@
                 </div>
                 <article class="set-card">
                   <div class="set-actions">
-                    <a class="set-action" href="add-child.html" id="setActionAddChild">
+                    <button type="button" class="set-action" id="setActionAddChild"
+                      data-fam-modal-src="add-child.html" data-fam-modal-title-i18n="setAddChildTitle">
                       <div class="set-action-text">
                         <span class="set-action-title" data-i18n="setAddChildTitle"></span>
                         <span class="set-action-sub" data-i18n="setAddChildSub"></span>
                       </div>
                       <span class="set-action-arrow" aria-hidden="true">→</span>
-                    </a>
-                    <a class="set-action" href="account-settings.html" id="setActionManageLogins">
+                    </button>
+                    <button type="button" class="set-action" id="setActionManageLogins"
+                      data-fam-modal-src="account-settings.html" data-fam-modal-title-i18n="setManageLoginsTitle">
                       <div class="set-action-text">
                         <span class="set-action-title" data-i18n="setManageLoginsTitle"></span>
                         <span class="set-action-sub" data-i18n="setManageLoginsSub"></span>
                       </div>
                       <span class="set-action-arrow" aria-hidden="true">→</span>
-                    </a>
-                    <a class="set-action" href="add-coparent.html" id="setActionInviteCoparent">
+                    </button>
+                    <button type="button" class="set-action" id="setActionInviteCoparent"
+                      data-fam-modal-src="add-coparent.html" data-fam-modal-title-i18n="setInviteCoparentTitle">
                       <div class="set-action-text">
                         <span class="set-action-title" data-i18n="setInviteCoparentTitle"></span>
                         <span class="set-action-sub" data-i18n="setInviteCoparentSub"></span>
                       </div>
                       <span class="set-action-arrow" aria-hidden="true">→</span>
-                    </a>
+                    </button>
                   </div>
                 </article>
               </div>
@@ -2472,6 +2500,22 @@
       </div>
     </div>
   </main>
+  </div>
+
+  <!-- Family-settings dialog modal — wraps add-child.html /
+       account-settings.html / add-coparent.html in an iframe so the
+       parent stays on the Settings page. The embedded pages detect
+       iframe context and hide their nav/footer chrome themselves. -->
+  <div class="fam-modal-overlay" id="famModalOverlay" role="dialog" aria-modal="true" aria-labelledby="famModalTitle" aria-hidden="true">
+    <div class="fam-modal-card">
+      <header class="fam-modal-head">
+        <h3 id="famModalTitle"></h3>
+        <button type="button" class="fam-modal-close" id="famModalCloseBtn" aria-label="Close">×</button>
+      </header>
+      <div class="fam-modal-body">
+        <iframe id="famModalIframe" title="Family settings dialog" src="about:blank"></iframe>
+      </div>
+    </div>
   </div>
 
   <!-- Reschedule modal — opens when a class chip / row is tapped. -->
@@ -6901,6 +6945,74 @@
         if (!btn) return;
         btn.addEventListener("click", logout);
       });
+
+      // Family-settings dialog modal — turns the three Settings → Family
+      // entries into in-page dialogs. Each button advertises its target
+      // page via data-fam-modal-src; the overlay loads it in an iframe
+      // and the embedded page hides its own nav/footer in iframe context.
+      // When the iframe navigates back to student-account.html (the
+      // post-success destination for add-child), the modal auto-closes
+      // and the outer page re-renders so the new child appears in the
+      // family panel.
+      (function () {
+        var overlay = document.getElementById("famModalOverlay");
+        var iframe = document.getElementById("famModalIframe");
+        var titleEl = document.getElementById("famModalTitle");
+        var closeBtn = document.getElementById("famModalCloseBtn");
+        if (!overlay || !iframe || !titleEl) return;
+
+        function curLang() {
+          return html.getAttribute("lang") === "en" ? "en" : "zh-CN";
+        }
+        function open(src, titleKey) {
+          var dict = I18N[curLang()] || I18N["zh-CN"];
+          titleEl.textContent = (titleKey && dict[titleKey]) ? dict[titleKey] : "";
+          iframe.src = src;
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+        function close() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+          // Blank the iframe so the next open starts fresh (avoids the
+          // previous form's transient state from leaking into the new
+          // dialog when reopening the same modal twice).
+          setTimeout(function () { iframe.src = "about:blank"; }, 200);
+          // Re-render so any data the iframe wrote (a new child, a
+          // co-parent invite, an account update) shows up immediately.
+          if (typeof render === "function") {
+            try { render(curLang()); } catch (_) {}
+          }
+        }
+
+        document.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-fam-modal-src]");
+          if (!btn) return;
+          e.preventDefault();
+          open(btn.getAttribute("data-fam-modal-src"),
+               btn.getAttribute("data-fam-modal-title-i18n"));
+        });
+        if (closeBtn) closeBtn.addEventListener("click", close);
+        overlay.addEventListener("click", function (e) {
+          // Click on the dim backdrop closes; clicks inside .fam-modal-card
+          // are filtered out by checking if the target is the overlay itself.
+          if (e.target === overlay) close();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && overlay.classList.contains("open")) close();
+        });
+
+        // Auto-close when the embedded page redirects back to the parent
+        // (e.g. add-child.html success goes to student-account.html).
+        iframe.addEventListener("load", function () {
+          try {
+            var path = iframe.contentWindow.location.pathname || "";
+            if (/student-account\.html$/i.test(path)) close();
+          } catch (_) { /* cross-origin guard — same-origin in practice */ }
+        });
+      })();
 
       // Billing sub-tabs — Payment Method / Past Payments. Same pattern
       // as Settings sub-tabs but scoped via [data-bill-subtab] /

@@ -133,6 +133,18 @@
   <link rel="stylesheet" href="assets/minddo-responsive.css" />
 </head>
 <body>
+  <style>
+    body.is-embedded .navbar,
+    body.is-embedded .footer,
+    body.is-embedded .skip-link,
+    body.is-embedded .cs-fab,
+    body.is-embedded .cs-panel { display: none !important; }
+    body.is-embedded { background: transparent; }
+    body.is-embedded .page-hero { padding-top: 24px; }
+  </style>
+  <script>(function () {
+    try { if (window.self !== window.top) document.body.classList.add("is-embedded"); } catch (_) {}
+  })();</script>
   <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
 
   <nav class="navbar">
