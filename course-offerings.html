@@ -82,6 +82,64 @@
       padding:5px 10px; font:inherit; font-size:11px; font-weight:700; cursor:pointer; transition:0.15s; margin-right:4px; }
     .btn-dup:hover { background:rgba(245,158,11,0.22); border-color:rgba(217,119,6,0.5); }
 
+    /* Conflict banner — shows above the offerings table when the working
+       list has any teacher double-bookings or out-of-hours sessions. */
+    .conflict-banner { padding:14px 18px; border-radius:14px; margin-bottom:14px;
+      background:linear-gradient(135deg,rgba(196,106,77,0.14),rgba(196,106,77,0.06));
+      border:1px solid rgba(196,106,77,0.42); color:#7a2f1c; font-size:13px; line-height:1.6; display:none; }
+    .conflict-banner.has-issues { display:block; animation:cflFade 0.18s ease-out; }
+    .conflict-banner.ok-state { display:block; background:linear-gradient(135deg,rgba(110,143,87,0.14),rgba(110,143,87,0.04));
+      border-color:rgba(110,143,87,0.42); color:#3f5d26; }
+    @keyframes cflFade { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+    .conflict-banner h3 { font-size:13.5px; font-weight:800; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+    .conflict-banner ul { padding-left:18px; margin-top:6px; }
+    .conflict-banner li { font-size:12.5px; line-height:1.7; }
+    .conflict-banner li code { font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+      background:rgba(196,106,77,0.12); padding:1px 6px; border-radius:6px; font-size:11.5px; }
+
+    /* Per-row conflict markers. Two types: overlap (red) and outside
+       teacher availability (amber). The whole row gets a left border. */
+    tr.cfl-overlap td { background:rgba(196,106,77,0.08) !important; }
+    tr.cfl-overlap td:first-child { box-shadow:inset 3px 0 0 #c46a4d; }
+    tr.cfl-out td { background:rgba(245,158,11,0.08) !important; }
+    tr.cfl-out td:first-child { box-shadow:inset 3px 0 0 var(--gold-deep); }
+    .cfl-tag { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
+      font-size:10.5px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; margin-left:6px; vertical-align:middle; }
+    .cfl-tag.overlap { background:rgba(196,106,77,0.18); color:#7a2f1c; border:1px solid rgba(196,106,77,0.36); }
+    .cfl-tag.out     { background:rgba(245,158,11,0.18); color:var(--gold-deep); border:1px solid rgba(217,119,6,0.36); }
+
+    /* Teacher availability panel — collapsible, table-style. One row per
+       teacher (auto-detected from offerings); per-weekday checkbox plus
+       start/end inputs. Saved to localStorage on Save Changes. */
+    .avail-panel { margin-bottom:20px; }
+    .avail-panel summary { cursor:pointer; list-style:none; padding:0; display:flex;
+      align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+    .avail-panel summary::-webkit-details-marker { display:none; }
+    .avail-panel summary h2 { margin:0; }
+    .avail-panel summary .toggle-hint { font-size:12px; color:var(--muted); font-weight:700; }
+    .avail-panel summary::after { content:"▾"; color:var(--gold-deep); font-weight:900; font-size:15px;
+      transition:0.15s; margin-left:6px; }
+    .avail-panel[open] summary::after { transform:rotate(180deg); }
+    .avail-table-wrap { margin-top:14px; overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:#fff; }
+    .avail-table { width:100%; border-collapse:collapse; min-width:980px; font-size:12.5px; }
+    .avail-table th, .avail-table td { padding:8px 10px; border-bottom:1px solid var(--line);
+      text-align:left; vertical-align:middle; }
+    .avail-table th { background:rgba(245,158,11,0.08); color:var(--clay); font-weight:700;
+      font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap; }
+    .avail-table tbody td:first-child { font-weight:700; color:var(--clay); white-space:nowrap; }
+    .avail-day-cell { display:flex; align-items:center; gap:6px; }
+    .avail-day-cell input[type="checkbox"] { width:16px; height:16px; accent-color:var(--gold-deep); cursor:pointer; }
+    .avail-day-cell .avail-times { display:flex; gap:4px; align-items:center; }
+    .avail-day-cell .avail-times input[type="time"] { width:78px; border:1px solid var(--line);
+      background:#fef9ec; padding:4px 6px; border-radius:8px; font:inherit; font-size:11.5px; }
+    .avail-day-cell .avail-times input:disabled { opacity:0.4; pointer-events:none; }
+    .avail-actions { padding:10px 14px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      border-top:1px solid var(--line); background:rgba(245,158,11,0.04); }
+    .avail-actions .hint { font-size:11.5px; color:var(--muted); margin-left:6px; }
+    .btn-mini { background:#fff; color:var(--clay); border:1px solid var(--line); border-radius:999px;
+      padding:5px 12px; font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; transition:0.15s; font-family:inherit; }
+    .btn-mini:hover { border-color:var(--gold); color:var(--gold-deep); }
+
     /* Batch-add modal — opens from action bar. Shared course attributes
        on top, day checkboxes + time-slot textarea below, live preview
        at the bottom. Generates the day × slot cartesian product as new
@@ -200,9 +258,47 @@
 
   <section class="page-content">
     <div class="content-inner">
+      <details class="panel avail-panel" id="availPanel">
+        <summary>
+          <h2><span data-lang="zh">老师可用时段</span><span data-lang="en">Teacher Availability</span></h2>
+          <span class="toggle-hint"><span data-lang="zh">点击展开 · 设置每位老师的工作时段，用于检测排课冲突</span><span data-lang="en">Tap to expand · Set each teacher's working hours; used to flag conflicts</span></span>
+        </summary>
+        <p class="desc" style="margin-top:10px;">
+          <span data-lang="zh">勾选老师在每个工作日可用，并设置起止时间。班次落在勾选范围之外会被标记为「超时排课」。</span>
+          <span data-lang="en">Tick the weekdays each teacher is available and set the time window. Classes outside that window are flagged as "out of hours".</span>
+        </p>
+        <div class="avail-table-wrap">
+          <table class="avail-table">
+            <thead>
+              <tr>
+                <th><span data-lang="zh">老师</span><span data-lang="en">Teacher</span></th>
+                <th><span data-lang="zh">周一</span><span data-lang="en">Mon</span></th>
+                <th><span data-lang="zh">周二</span><span data-lang="en">Tue</span></th>
+                <th><span data-lang="zh">周三</span><span data-lang="en">Wed</span></th>
+                <th><span data-lang="zh">周四</span><span data-lang="en">Thu</span></th>
+                <th><span data-lang="zh">周五</span><span data-lang="en">Fri</span></th>
+                <th><span data-lang="zh">周六</span><span data-lang="en">Sat</span></th>
+                <th><span data-lang="zh">周日</span><span data-lang="en">Sun</span></th>
+              </tr>
+            </thead>
+            <tbody id="availRows"></tbody>
+          </table>
+        </div>
+        <div class="avail-actions">
+          <button type="button" class="btn-mini" id="availResetBtn"><span data-lang="zh">恢复默认</span><span data-lang="en">Reset</span></button>
+          <span class="hint"><span data-lang="zh">默认：工作日 14:00–21:00 / 周末 09:00–21:00。修改后自动保存。</span><span data-lang="en">Default: weekdays 14:00–21:00 / weekends 09:00–21:00. Changes auto-save.</span></span>
+        </div>
+      </details>
+
       <article class="panel">
         <h2><span data-lang="zh">课程时段列表</span><span data-lang="en">Offerings List</span></h2>
         <p class="desc"><span data-lang="zh">在下表中直接编辑班次信息，完成后点击「保存变更」。家长端的课程筛选会根据学员等级与以下班次的等级字段进行匹配。</span><span data-lang="en">Edit rows inline and click "Save Changes". The parent-side schedule page filters by matching student level to the English level below.</span></p>
+
+        <!-- Conflict banner — fills with details from findConflicts() on
+             every renderRows() pass. Rows that participate in a conflict
+             also get a .cfl-overlap or .cfl-out class for visual call-out. -->
+        <div class="conflict-banner" id="conflictBanner"></div>
+
         <div class="action-bar">
           <button type="button" class="btn-primary" id="saveBtn"><span data-lang="zh">保存变更</span><span data-lang="en">Save Changes</span></button>
           <button type="button" class="btn-primary" id="batchBtn" style="background:linear-gradient(135deg,#a3c374,#6e8b58);">
@@ -399,8 +495,244 @@
         return "custom-" + n;
       }
 
+      // ============================================================
+      // Teacher availability + conflict detection
+      // ============================================================
+      var AVAIL_KEY = "minddo_teacher_availability";
+      var DAY_KEYS_ORDER = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+      function defaultAvailability() {
+        // Sensible default: weekdays 14:00-21:00 (after-school window)
+        // and weekends 09:00-21:00 — covers every seeded class time.
+        var byDay = {};
+        DAY_KEYS_ORDER.forEach(function (d) {
+          var weekend = d === "sat" || d === "sun";
+          byDay[d] = { enabled: true, start: weekend ? "09:00" : "14:00", end: "21:00" };
+        });
+        return byDay;
+      }
+      function readAvailability() {
+        try { return JSON.parse(localStorage.getItem(AVAIL_KEY) || "null") || {}; }
+        catch (_) { return {}; }
+      }
+      function writeAvailability(data) {
+        try { localStorage.setItem(AVAIL_KEY, JSON.stringify(data)); } catch (_) {}
+      }
+      function uniqueTeachers() {
+        var seen = {};
+        var list = [];
+        working.forEach(function (o) {
+          var t = (o.teacher || "").trim();
+          if (!t || seen[t]) return;
+          seen[t] = true;
+          list.push(t);
+        });
+        return list.sort(function (a, b) { return a.localeCompare(b); });
+      }
+      // Make sure every teacher in the working list has an availability
+      // record. Called whenever the working list mutates so newly-typed
+      // teachers get a default record without overwriting existing ones.
+      function syncAvailabilityList() {
+        var data = readAvailability();
+        var changed = false;
+        uniqueTeachers().forEach(function (t) {
+          if (!data[t]) { data[t] = defaultAvailability(); changed = true; }
+        });
+        // Also drop records for teachers no longer present so the list
+        // stays clean — but only when working has at least one teacher
+        // (otherwise we'd nuke everything during a transient empty state).
+        if (Object.keys(data).length && uniqueTeachers().length) {
+          var alive = {};
+          uniqueTeachers().forEach(function (t) { alive[t] = true; });
+          Object.keys(data).forEach(function (t) {
+            if (!alive[t]) { delete data[t]; changed = true; }
+          });
+        }
+        if (changed) writeAvailability(data);
+        return data;
+      }
+
+      function parseHHMM(s) {
+        var m = String(s || "").match(/(\d{1,2}):(\d{2})/);
+        if (!m) return NaN;
+        return Number(m[1]) * 60 + Number(m[2]);
+      }
+      // Time-slot string like "16:00 – 17:00" or "16:00-17:00" → [startMin, endMin]
+      function parseSlotRange(slot) {
+        var s = String(slot || "");
+        var times = s.match(/\d{1,2}:\d{2}/g) || [];
+        if (times.length < 2) return null;
+        var start = parseHHMM(times[0]);
+        var end = parseHHMM(times[1]);
+        if (!isFinite(start) || !isFinite(end)) return null;
+        return { start: start, end: end };
+      }
+      function rangesOverlap(a, b) {
+        return a && b && a.start < b.end && b.start < a.end;
+      }
+
+      // Conflict types:
+      //  - "overlap":  same teacher + same dayKey + overlapping time range
+      //                across two different rows in the working list.
+      //  - "out":      row's time range falls outside the teacher's
+      //                availability for that day (or the day is disabled).
+      // Returns: { perRow: [{ idx, types:["overlap"|"out"], partners:[idx,...] }, ...],
+      //            overlapPairs: [{aIdx,bIdx,teacher,day,timeSlot}],
+      //            outRows: [{idx,teacher,day,timeSlot,window}] }
+      function findConflicts() {
+        var avail = readAvailability();
+        var perRow = working.map(function () { return { types: [], partners: [] }; });
+        var overlapPairs = [];
+        var outRows = [];
+        for (var i = 0; i < working.length; i++) {
+          var oi = working[i];
+          var teacher = (oi.teacher || "").trim();
+          var day = oi.dayKey;
+          var ri = parseSlotRange(oi.timeSlot);
+          if (!teacher || !day || !ri) continue;
+          // 1) overlap with later rows
+          for (var j = i + 1; j < working.length; j++) {
+            var oj = working[j];
+            if ((oj.teacher || "").trim() !== teacher) continue;
+            if (oj.dayKey !== day) continue;
+            var rj = parseSlotRange(oj.timeSlot);
+            if (!rj) continue;
+            if (rangesOverlap(ri, rj)) {
+              if (perRow[i].types.indexOf("overlap") < 0) perRow[i].types.push("overlap");
+              if (perRow[j].types.indexOf("overlap") < 0) perRow[j].types.push("overlap");
+              perRow[i].partners.push(j);
+              perRow[j].partners.push(i);
+              overlapPairs.push({ aIdx: i, bIdx: j, teacher: teacher, day: day, timeSlot: oi.timeSlot, otherSlot: oj.timeSlot });
+            }
+          }
+          // 2) out-of-hours vs availability
+          var win = avail[teacher] && avail[teacher][day];
+          if (win && win.enabled) {
+            var winRange = { start: parseHHMM(win.start), end: parseHHMM(win.end) };
+            if (isFinite(winRange.start) && isFinite(winRange.end)) {
+              if (ri.start < winRange.start || ri.end > winRange.end) {
+                if (perRow[i].types.indexOf("out") < 0) perRow[i].types.push("out");
+                outRows.push({ idx: i, teacher: teacher, day: day, timeSlot: oi.timeSlot,
+                  window: win.start + "–" + win.end });
+              }
+            }
+          } else if (win && win.enabled === false) {
+            if (perRow[i].types.indexOf("out") < 0) perRow[i].types.push("out");
+            outRows.push({ idx: i, teacher: teacher, day: day, timeSlot: oi.timeSlot, window: lang === "en" ? "Day off" : "全天休息" });
+          }
+        }
+        return { perRow: perRow, overlapPairs: overlapPairs, outRows: outRows };
+      }
+
+      function renderConflictBanner(conflicts) {
+        var bn = document.getElementById("conflictBanner");
+        if (!bn) return;
+        var dayLabels = I18N[lang].dayOptions;
+        bn.classList.remove("has-issues", "ok-state");
+        if (!conflicts.overlapPairs.length && !conflicts.outRows.length) {
+          bn.classList.add("ok-state");
+          bn.innerHTML = "<h3>✓ "
+            + (lang === "en" ? "No teacher time conflicts." : "未检测到老师时段冲突。")
+            + "</h3>";
+          return;
+        }
+        bn.classList.add("has-issues");
+        var lines = [];
+        if (conflicts.overlapPairs.length) {
+          lines.push("<h3>⚠️ "
+            + (lang === "en"
+              ? ("Time conflicts (" + conflicts.overlapPairs.length + ")")
+              : ("时间冲突 · " + conflicts.overlapPairs.length + " 处"))
+            + "</h3><ul>");
+          conflicts.overlapPairs.slice(0, 8).forEach(function (p) {
+            var dayName = dayLabels[p.day] || p.day;
+            lines.push("<li>" + escapeAttr(p.teacher)
+              + " · " + dayName
+              + " · <code>" + escapeAttr(p.timeSlot) + "</code> "
+              + (lang === "en" ? "vs" : "与") + " "
+              + "<code>" + escapeAttr(p.otherSlot) + "</code></li>");
+          });
+          if (conflicts.overlapPairs.length > 8) {
+            lines.push("<li>" + (lang === "en"
+              ? ("+ " + (conflicts.overlapPairs.length - 8) + " more")
+              : ("还有 " + (conflicts.overlapPairs.length - 8) + " 处")) + "</li>");
+          }
+          lines.push("</ul>");
+        }
+        if (conflicts.outRows.length) {
+          lines.push("<h3>⏰ "
+            + (lang === "en"
+              ? ("Out-of-hours sessions (" + conflicts.outRows.length + ")")
+              : ("超时排课 · " + conflicts.outRows.length + " 节"))
+            + "</h3><ul>");
+          conflicts.outRows.slice(0, 8).forEach(function (r) {
+            var dayName = dayLabels[r.day] || r.day;
+            lines.push("<li>" + escapeAttr(r.teacher)
+              + " · " + dayName
+              + " · <code>" + escapeAttr(r.timeSlot) + "</code> "
+              + (lang === "en" ? "outside" : "超出") + " "
+              + "<code>" + escapeAttr(r.window) + "</code></li>");
+          });
+          if (conflicts.outRows.length > 8) {
+            lines.push("<li>" + (lang === "en"
+              ? ("+ " + (conflicts.outRows.length - 8) + " more")
+              : ("还有 " + (conflicts.outRows.length - 8) + " 节")) + "</li>");
+          }
+          lines.push("</ul>");
+        }
+        bn.innerHTML = lines.join("");
+      }
+
+      function renderAvailabilityPanel() {
+        var rowsEl = document.getElementById("availRows");
+        if (!rowsEl) return;
+        var data = syncAvailabilityList();
+        var teachers = uniqueTeachers();
+        if (!teachers.length) {
+          rowsEl.innerHTML = "<tr><td colspan='8' style='text-align:center;color:var(--muted);font-style:italic;padding:18px;'>"
+            + (lang === "en" ? "No teachers configured yet." : "尚未配置老师。")
+            + "</td></tr>";
+          return;
+        }
+        rowsEl.innerHTML = teachers.map(function (t) {
+          var rec = data[t] || defaultAvailability();
+          var cells = DAY_KEYS_ORDER.map(function (d) {
+            var w = rec[d] || { enabled: false, start: "14:00", end: "21:00" };
+            return "<td>"
+              + "<div class='avail-day-cell'>"
+              +   "<input type='checkbox' data-avail-en data-teacher=\"" + escapeAttr(t) + "\" data-day=\"" + d + "\"" + (w.enabled ? " checked" : "") + " />"
+              +   "<div class='avail-times'>"
+              +     "<input type='time' data-avail-start data-teacher=\"" + escapeAttr(t) + "\" data-day=\"" + d + "\" value=\"" + escapeAttr(w.start || "14:00") + "\"" + (w.enabled ? "" : " disabled") + " />"
+              +     "<span style='color:var(--muted);font-size:11px;'>–</span>"
+              +     "<input type='time' data-avail-end data-teacher=\"" + escapeAttr(t) + "\" data-day=\"" + d + "\" value=\"" + escapeAttr(w.end || "21:00") + "\"" + (w.enabled ? "" : " disabled") + " />"
+              +   "</div>"
+              + "</div>"
+              + "</td>";
+          }).join("");
+          return "<tr><td>" + escapeAttr(t) + "</td>" + cells + "</tr>";
+        }).join("");
+      }
+
+      function refreshConflicts() {
+        var c = findConflicts();
+        // Apply per-row CSS classes.
+        var rows = rowsContainer.querySelectorAll("tr");
+        rows.forEach(function (tr, i) {
+          tr.classList.remove("cfl-overlap", "cfl-out");
+          var info = c.perRow[i];
+          if (!info) return;
+          if (info.types.indexOf("overlap") >= 0) tr.classList.add("cfl-overlap");
+          if (info.types.indexOf("out") >= 0) tr.classList.add("cfl-out");
+        });
+        renderConflictBanner(c);
+      }
+
       function renderRows() {
         var dayLabels = I18N[lang].dayOptions;
+        // Keep the availability panel up-to-date with the teacher list,
+        // and recompute conflicts after every render. Order matters:
+        // sync first (so newly-typed teachers get a default record),
+        // render rows, then mark conflict CSS classes.
+        syncAvailabilityList();
         rowsContainer.innerHTML = working.map(function (o, i) {
           var dayOptions = Object.keys(dayLabels).map(function (key) {
             return "<option value=\"" + key + "\"" + (o.dayKey === key ? " selected" : "") + ">" + dayLabels[key] + "</option>";
@@ -426,6 +758,8 @@
             "</td>" +
             "</tr>";
         }).join("");
+        renderAvailabilityPanel();
+        refreshConflicts();
       }
 
       function escapeAttr(s) { return String(s || "").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
@@ -539,6 +873,65 @@
         renderRows();
         showToast(I18N[lang].toastReset);
       });
+
+      // Inline cell edits — re-run conflict detection so the banner +
+       // row highlighting update without waiting for save / add. Throttle
+       // a touch so typing through a long string doesn't spam syncs.
+      (function () {
+        if (!rowsContainer) return;
+        var debounceT;
+        var handler = function () {
+          clearTimeout(debounceT);
+          debounceT = setTimeout(function () {
+            syncFromDOM();
+            refreshConflicts();
+          }, 220);
+        };
+        rowsContainer.addEventListener("input", handler);
+        rowsContainer.addEventListener("change", handler);
+      })();
+
+      // Availability editor — delegated input handler. Updates localStorage
+      // immediately (auto-save) and re-runs conflict detection.
+      var availRowsEl = document.getElementById("availRows");
+      if (availRowsEl) {
+        availRowsEl.addEventListener("change", function (e) {
+          var t = e.target;
+          if (!t || !t.dataset || !t.dataset.teacher || !t.dataset.day) return;
+          var data = readAvailability();
+          var teacher = t.dataset.teacher;
+          var day = t.dataset.day;
+          if (!data[teacher]) data[teacher] = defaultAvailability();
+          if (!data[teacher][day]) data[teacher][day] = { enabled: true, start: "14:00", end: "21:00" };
+          var rec = data[teacher][day];
+          if ("availEn" in t.dataset) {
+            rec.enabled = !!t.checked;
+            // Toggle the start/end inputs in the same cell.
+            var cell = t.closest("td");
+            if (cell) cell.querySelectorAll("input[type='time']").forEach(function (i) { i.disabled = !rec.enabled; });
+          } else if ("availStart" in t.dataset) {
+            rec.start = t.value || "14:00";
+          } else if ("availEnd" in t.dataset) {
+            rec.end = t.value || "21:00";
+          }
+          writeAvailability(data);
+          refreshConflicts();
+        });
+      }
+      var availResetBtn = document.getElementById("availResetBtn");
+      if (availResetBtn) {
+        availResetBtn.addEventListener("click", function () {
+          if (!confirm(lang === "en"
+            ? "Reset every teacher's availability to the default working hours?"
+            : "将所有老师的可用时段恢复为默认值？")) return;
+          var data = {};
+          uniqueTeachers().forEach(function (t) { data[t] = defaultAvailability(); });
+          writeAvailability(data);
+          renderAvailabilityPanel();
+          refreshConflicts();
+          showToast(lang === "en" ? "Availability reset." : "可用时段已恢复默认。");
+        });
+      }
 
       function setLang(l) {
         lang = l;
