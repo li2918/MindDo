@@ -1817,10 +1817,13 @@
 
       <div class="dash-stack">
 
-        <!-- 1. AT-A-GLANCE — parent dashboard. Surfaces per-student
-             learning data (metric tiles, growth-score line chart, per-
-             skill bars) above the existing per-kid schedule cards. -->
+        <!-- 1. AT-A-GLANCE — parent overview. Per-kid "today's schedule"
+             cards lead so parents see what's next at a glance, then the
+             learning dashboard (metric tiles + growth-score line chart +
+             achievement badges) sits below. -->
         <section class="dash-section active" data-tab-panel="overview" role="tabpanel" aria-label="Overview">
+          <div class="kids-stack" id="kidsScheduleStack"></div>
+
           <article class="panel" id="dashPanel">
             <div class="panel-head-row">
               <div>
@@ -1853,8 +1856,6 @@
               </div>
             </div>
           </article>
-
-          <div class="kids-stack" id="kidsScheduleStack"></div>
 
           <!-- Legacy nodes kept hidden for back-compat with code paths that
                still write to nextLessonText/Meta and the flow-progress list. -->
