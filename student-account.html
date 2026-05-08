@@ -1485,7 +1485,7 @@
       font-size: 11.5px; font-weight: 800; letter-spacing: 0.04em; }
     .dash-student-chip::before { content: ""; width: 6px; height: 6px; border-radius: 999px;
       background: var(--gold-deep); box-shadow: 0 0 0 3px rgba(245,158,11,0.18); }
-    .dash-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .dash-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
     .dash-tile { background: linear-gradient(180deg,#fff,rgba(248,250,252,0.96));
       border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px;
       display: flex; flex-direction: column; gap: 4px; transition: 0.15s; }
@@ -1565,6 +1565,9 @@
       .dash-badge-grid { grid-template-columns: 1fr; }
     }
 
+    @media (max-width: 1380px) {
+      .dash-tiles { grid-template-columns: repeat(3, 1fr); }
+    }
     @media (max-width: 1100px) {
       .dash-grid { grid-template-columns: 1fr; }
       .dash-tiles { grid-template-columns: repeat(2, 1fr); }
@@ -2683,12 +2686,16 @@
           dashTileProjectsIcon: "🛠",
           dashTileRatingLabel: "课堂评分",
           dashTileRatingIcon: "★",
+          dashTileCompsLabel: "已参与竞赛",
+          dashTileCompsIcon: "🏆",
           dashTileFootClassesFmt: "近 30 天 +{n} 节",
           dashTileFootClassesEmpty: "等待开课",
           dashTileFootProjectsFmt: "已发布 {n} 件",
           dashTileFootProjectsEmpty: "暂无作品",
           dashTileFootRatingFmt: "基于 {n} 条反馈",
           dashTileFootRatingEmpty: "暂无评分",
+          dashTileFootCompsFmt: "{n} 项即将开赛",
+          dashTileFootCompsEmpty: "暂无竞赛记录",
           dashChartTitle: "成长曲线",
           dashChartMetaFmt: "近 {n} 月 · 综合分 0–100",
           dashChartEmpty: "暂无成长记录。完成首次能力评估后，数据会显示在这里。",
@@ -3195,12 +3202,16 @@
           dashTileProjectsIcon: "🛠",
           dashTileRatingLabel: "Avg Rating",
           dashTileRatingIcon: "★",
+          dashTileCompsLabel: "Competitions",
+          dashTileCompsIcon: "🏆",
           dashTileFootClassesFmt: "+{n} in last 30 days",
           dashTileFootClassesEmpty: "Awaiting first class",
           dashTileFootProjectsFmt: "{n} shipped",
           dashTileFootProjectsEmpty: "No projects yet",
           dashTileFootRatingFmt: "From {n} reviews",
           dashTileFootRatingEmpty: "No ratings yet",
+          dashTileFootCompsFmt: "{n} upcoming",
+          dashTileFootCompsEmpty: "No competitions yet",
           dashChartTitle: "Growth Curve",
           dashChartMetaFmt: "Last {n} months · composite 0–100",
           dashChartEmpty: "No growth records yet — data will appear once the first evaluation is in.",
@@ -5503,6 +5514,26 @@
           });
           recentClasses = Math.min(recentClasses, metrics.classesCompleted);
 
+          // ---- Competitions joined / completed ----
+          // The competitions catalog has a registrationDeadline per row;
+          // we treat any contest whose deadline is in the past as one
+          // the student has already gone through (joined / completed).
+          // "Upcoming" entries with an open deadline are surfaced as the
+          // foot text so parents see what's still ahead.
+          var compsForStudent = (flow && flow.getCompetitionsForStudent && sid)
+            ? (flow.getCompetitionsForStudent(sid) || [])
+            : (flow && flow.getCompetitions ? (flow.getCompetitions() || []) : []);
+          var todayMs = new Date(); todayMs.setHours(0, 0, 0, 0);
+          todayMs = todayMs.getTime();
+          var compsCompleted = 0, compsUpcoming = 0;
+          compsForStudent.forEach(function (c) {
+            if (!c.registrationDeadline) return;
+            var d = new Date(c.registrationDeadline).getTime();
+            if (!isFinite(d)) return;
+            if (d < todayMs) compsCompleted++;
+            else compsUpcoming++;
+          });
+
           function tile(opts) {
             var foot = opts.foot ? "<div class=\"dash-tile-foot " + (opts.footUp ? "up" : "") + "\">" + escHTML(opts.foot) + "</div>" : "";
             var unit = opts.unit ? "<span class=\"unit\">" + escHTML(opts.unit) + "</span>" : "";
@@ -5541,6 +5572,14 @@
                 ? (t.dashTileFootRatingFmt || "{n}").replace("{n}", metrics.feedbackCount)
                 : t.dashTileFootRatingEmpty,
               footUp: metrics.feedbackCount > 0 && metrics.avgRating >= 4
+            }),
+            tile({
+              icon: t.dashTileCompsIcon, label: t.dashTileCompsLabel,
+              value: String(compsCompleted),
+              foot: compsUpcoming
+                ? (t.dashTileFootCompsFmt || "+{n}").replace("{n}", compsUpcoming)
+                : t.dashTileFootCompsEmpty,
+              footUp: compsCompleted > 0
             })
           ].join("");
 
