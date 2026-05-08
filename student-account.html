@@ -971,6 +971,47 @@
       color: var(--clay); cursor: pointer; text-decoration: none; transition: 0.12s; font-family: inherit;
       display: inline-flex; align-items: center; gap: 6px; }
     .ref-share-btn:hover { border-color: var(--gold); background: rgba(253,230,138,0.4); transform: translateY(-1px); }
+    .ref-share-btn.wechat { background: linear-gradient(135deg,#dcfce7,#bbf7d0); border-color: #4ade80; color: #166534; }
+    .ref-share-btn.wechat:hover { background: linear-gradient(135deg,#bbf7d0,#86efac); border-color: #16a34a; }
+
+    /* WeChat share modal — QR + copy-link + customer-service handle.
+       Backdrop click / ✕ / Esc all close. Reuses the resched-overlay
+       backdrop convention from elsewhere in this page. */
+    .wx-overlay { position: fixed; inset: 0; z-index: 2200; padding: 24px;
+      background: rgba(20,30,16,0.5); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; }
+    .wx-overlay.open { display: flex; animation: wxFade 0.18s ease-out; }
+    @keyframes wxFade { from { opacity: 0; } to { opacity: 1; } }
+    .wx-card { background: #fff; border-radius: 18px; box-shadow: 0 30px 60px rgba(15,30,15,0.4);
+      width: min(420px, 100%); padding: 24px 26px 20px; position: relative; font-family: inherit; text-align: center; }
+    .wx-card h3 { font-size: 17px; font-weight: 800; color: #166534; letter-spacing: -0.01em; margin-bottom: 6px; display: inline-flex; align-items: center; gap: 6px; }
+    .wx-card .wx-sub { font-size: 12.5px; color: #4b5563; line-height: 1.6; margin-bottom: 16px; }
+    .wx-close { position: absolute; top: 12px; right: 14px; width: 30px; height: 30px;
+      border-radius: 50%; background: transparent; border: 1px solid var(--line);
+      cursor: pointer; font-size: 16px; line-height: 1; color: var(--muted);
+      display: inline-flex; align-items: center; justify-content: center; transition: 0.12s; font-family: inherit; }
+    .wx-close:hover { background: #f1f5f9; color: var(--clay); }
+    .wx-qr-frame { display: inline-block; padding: 12px; border-radius: 14px;
+      background: linear-gradient(135deg,#f0fdf4,#dcfce7); border: 1px solid #86efac;
+      margin-bottom: 14px; }
+    .wx-qr-frame img { display: block; width: 220px; height: 220px; image-rendering: pixelated; background: #fff; border-radius: 8px; }
+    .wx-qr-frame .wx-qr-fallback { width: 220px; height: 220px; background: #fff; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; padding: 16px;
+      font-size: 11px; line-height: 1.5; color: #4b5563; word-break: break-all; }
+    .wx-link-row { display: flex; gap: 6px; margin-bottom: 14px; }
+    .wx-link-row input { flex: 1 1 auto; min-width: 0; padding: 9px 12px; border: 1px solid var(--line);
+      background: #f0fdf4; border-radius: 10px; font: inherit; font-size: 12px; color: #166534;
+      font-family: "SFMono-Regular",ui-monospace,Menlo,Consolas,monospace; }
+    .wx-link-row button { background: linear-gradient(135deg,#4ade80,#22c55e); color: #fff; border: none;
+      border-radius: 10px; padding: 0 16px; font: inherit; font-size: 12.5px; font-weight: 800;
+      cursor: pointer; font-family: inherit; transition: 0.12s; white-space: nowrap; }
+    .wx-link-row button:hover { background: linear-gradient(135deg,#22c55e,#16a34a); }
+    .wx-link-row button.copied { background: #166534; }
+    .wx-tip { font-size: 11.5px; color: #4b5563; line-height: 1.65; padding: 10px 12px;
+      background: #f9fafb; border-radius: 10px; border: 1px solid var(--line); text-align: left; }
+    .wx-tip strong { color: #166534; font-weight: 800; display: block; margin-bottom: 2px; }
+    .wx-tip code { font-family: "SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+      font-size: 11px; color: #166534; background: #dcfce7; padding: 1px 6px; border-radius: 5px; }
 
     .ref-invite-details { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
     .ref-invite-details summary { cursor: pointer; font-size: 13px; font-weight: 700; color: var(--clay); padding: 6px 0; }
@@ -2239,6 +2280,9 @@
               </div>
             </div>
             <div class="ref-share-actions">
+              <button type="button" class="ref-share-btn wechat" id="refShareWeChat">
+                <span aria-hidden="true">💬</span><span data-i18n="refShareWeChat"></span>
+              </button>
               <a class="ref-share-btn" id="refShareEmail" target="_blank" rel="noopener" data-i18n="refShareEmail"></a>
               <a class="ref-share-btn" id="refShareSms" target="_blank" rel="noopener" data-i18n="refShareSms"></a>
               <button type="button" class="ref-share-btn" id="refShareNative" data-i18n="refShareNative"></button>
@@ -2504,6 +2548,34 @@
       </header>
       <div class="fam-modal-body">
         <iframe id="famModalIframe" title="Family settings dialog" src="about:blank"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- WeChat referral modal — opened from refShareWeChat. Renders a QR
+       of the student's referral link via a free QR-code endpoint, with
+       a fallback that shows the raw link if the request fails. Also
+       offers copy-to-clipboard and the customer-service WeChat handle. -->
+  <div class="wx-overlay" id="wxOverlay" role="dialog" aria-modal="true" aria-labelledby="wxTitle" aria-hidden="true">
+    <div class="wx-card">
+      <button type="button" class="wx-close" id="wxCloseBtn" aria-label="Close">×</button>
+      <h3 id="wxTitle">
+        <span aria-hidden="true">💬</span>
+        <span data-i18n="wxModalTitle"></span>
+      </h3>
+      <p class="wx-sub" data-i18n="wxModalSub"></p>
+      <div class="wx-qr-frame">
+        <img id="wxQrImage" alt="WeChat QR code" />
+        <div class="wx-qr-fallback" id="wxQrFallback" hidden></div>
+      </div>
+      <div class="wx-link-row">
+        <input type="text" id="wxLinkInput" readonly />
+        <button type="button" id="wxCopyBtn" data-i18n="wxModalCopy"></button>
+      </div>
+      <div class="wx-tip">
+        <strong data-i18n="wxModalTipTitle"></strong>
+        <span data-i18n="wxModalTipBody"></span>
+        <span style="display:block;margin-top:6px;"><span data-i18n="wxModalServiceLabel"></span> <code>MindDo-Service</code></span>
       </div>
     </div>
   </div>
@@ -2824,6 +2896,14 @@
           refShareEmail: "邮件邀请",
           refShareSms: "短信邀请",
           refShareNative: "更多分享方式",
+          refShareWeChat: "微信邀请",
+          wxModalTitle: "微信邀请好友",
+          wxModalSub: "用微信扫描下方二维码，或复制链接发到微信对话框，朋友打开后即可注册并自动绑定你的推荐码。",
+          wxModalCopy: "复制链接",
+          wxModalCopied: "已复制",
+          wxModalTipTitle: "小贴士",
+          wxModalTipBody: "建议先复制链接，再粘贴到微信好友 / 朋友圈 / 微信群，朋友点开就直接进入注册页。如有疑问可加官方客服微信：",
+          wxModalServiceLabel: "官方微信：",
           refInviteSummary: "通过邮箱直接邀请",
           refInviteName: "朋友的姓名（可选）",
           refInviteEmail: "朋友的邮箱",
@@ -3338,6 +3418,14 @@
           refShareEmail: "Email",
           refShareSms: "SMS",
           refShareNative: "More",
+          refShareWeChat: "WeChat",
+          wxModalTitle: "Share to WeChat",
+          wxModalSub: "Scan the QR with WeChat, or copy the link and paste it into a chat. Tapping the link opens the signup page with your code pre-filled.",
+          wxModalCopy: "Copy link",
+          wxModalCopied: "Copied",
+          wxModalTipTitle: "Tip",
+          wxModalTipBody: "Easiest path: copy the link and paste it into a WeChat chat / Moments / group. Friends just tap to open and register. Need help? Add our service WeChat: ",
+          wxModalServiceLabel: "Service WeChat:",
           refInviteSummary: "Invite by email",
           refInviteName: "Friend's name (optional)",
           refInviteEmail: "Friend's email",
@@ -6655,6 +6743,80 @@
           } else {
             copyText(link, "refCopyLinkBtn");
           }
+        });
+
+        // WeChat share — opens an in-page modal with a QR code of the
+        // referral link plus a copy button. WeChat's web SDK only works
+        // inside the WeChat in-app browser, so for everyone else we fall
+        // back to "scan or paste". The QR is rendered via a free public
+        // QR endpoint; a text fallback shows if the request fails.
+        var wxOverlay = document.getElementById("wxOverlay");
+        var wxBtn = document.getElementById("refShareWeChat");
+        var wxClose = document.getElementById("wxCloseBtn");
+        var wxImg = document.getElementById("wxQrImage");
+        var wxFallback = document.getElementById("wxQrFallback");
+        var wxLinkInput = document.getElementById("wxLinkInput");
+        var wxCopyBtn = document.getElementById("wxCopyBtn");
+        function openWxModal() {
+          var link = (document.getElementById("refLinkText") || {}).value || "";
+          if (wxLinkInput) wxLinkInput.value = link;
+          if (wxImg && wxFallback) {
+            if (link) {
+              wxFallback.hidden = true;
+              wxImg.hidden = false;
+              wxImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=" + encodeURIComponent(link);
+              wxImg.onerror = function () {
+                // Network blocked / endpoint down — show the raw link
+                // so the user can still copy / paste manually.
+                wxImg.hidden = true;
+                wxFallback.hidden = false;
+                wxFallback.textContent = link;
+              };
+            } else {
+              wxImg.hidden = true;
+              wxFallback.hidden = false;
+              var ln0 = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+              wxFallback.textContent = ln0 === "en"
+                ? "Sign in to load your referral link."
+                : "请先登录后加载你的专属推荐链接。";
+            }
+          }
+          wxOverlay.classList.add("open");
+          wxOverlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+        function closeWxModal() {
+          wxOverlay.classList.remove("open");
+          wxOverlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+        if (wxBtn) wxBtn.addEventListener("click", openWxModal);
+        if (wxClose) wxClose.addEventListener("click", closeWxModal);
+        if (wxOverlay) wxOverlay.addEventListener("click", function (e) {
+          if (e.target === wxOverlay) closeWxModal();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && wxOverlay && wxOverlay.classList.contains("open")) closeWxModal();
+        });
+        if (wxCopyBtn) wxCopyBtn.addEventListener("click", function () {
+          var link = wxLinkInput ? wxLinkInput.value : "";
+          if (!link) return;
+          var ln1 = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+          var t1 = I18N[ln1] || I18N["zh-CN"];
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(link).catch(function () {});
+          } else {
+            try {
+              wxLinkInput.removeAttribute("readonly");
+              wxLinkInput.select();
+              document.execCommand && document.execCommand("copy");
+              wxLinkInput.setAttribute("readonly", "true");
+            } catch (_) {}
+          }
+          var orig = wxCopyBtn.textContent;
+          wxCopyBtn.textContent = t1.wxModalCopied || "Copied";
+          wxCopyBtn.classList.add("copied");
+          setTimeout(function () { wxCopyBtn.textContent = orig; wxCopyBtn.classList.remove("copied"); }, 1600);
         });
         var inviteForm = document.getElementById("refInviteForm");
         if (inviteForm) {
