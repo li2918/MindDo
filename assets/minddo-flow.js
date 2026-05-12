@@ -336,6 +336,51 @@
     localStorage.setItem(key, JSON.stringify(value));
   }
 
+  // ---- CSV helpers (Excel-safe, BOM, RFC-4180 quoting) ------------
+  // Used by the dashboard's "导出 CSV" buttons. Headers is an array of
+  // [{ key, label }] objects describing which row props to project and
+  // what to call them in the file. Empty/null are emitted as blanks.
+  function csvEscape(v) {
+    if (v == null) return "";
+    var s = String(v);
+    // Wrap in quotes if any special char; double internal quotes.
+    if (/[",\r\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+  function toCsv(rows, headers) {
+    if (!Array.isArray(rows)) rows = [];
+    if (!Array.isArray(headers) || !headers.length) {
+      // No headers supplied — derive from the first row's keys.
+      var keys = rows[0] ? Object.keys(rows[0]) : [];
+      headers = keys.map(function (k) { return { key: k, label: k }; });
+    }
+    var lines = [];
+    lines.push(headers.map(function (h) { return csvEscape(h.label || h.key); }).join(","));
+    rows.forEach(function (r) {
+      lines.push(headers.map(function (h) {
+        var v = (typeof h.value === "function") ? h.value(r) : r[h.key];
+        return csvEscape(v);
+      }).join(","));
+    });
+    return lines.join("\r\n");
+  }
+  function downloadCsv(filename, rows, headers) {
+    var csv = toCsv(rows, headers);
+    // BOM so Excel + WPS detect UTF-8 instead of mangling Chinese.
+    var blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename || ("minddo-export-" + Date.now() + ".csv");
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 0);
+  }
+
   function norm(v) {
     return String(v || "").trim().toLowerCase();
   }
@@ -2957,7 +3002,10 @@
     setActiveOpsUser: setActiveOpsUser,
     loginAsRole: loginAsRole,
     defaultActiveOpsUser: defaultActiveOpsUser,
-    runMigrations: runMigrations
+    runMigrations: runMigrations,
+    // CSV export helpers (used by dashboard "导出 CSV" buttons)
+    toCsv: toCsv,
+    downloadCsv: downloadCsv
   };
 
   // =================================================================

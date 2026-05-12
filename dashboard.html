@@ -786,6 +786,14 @@
     .acad-seats-text { font-size: 11px; font-weight: 800; color: var(--clay); white-space: nowrap;
       font-variant-numeric: tabular-nums; }
 
+    /* "Export CSV" buttons live in panel head-rows next to filters.
+       Quiet outlined style so they don't compete with primary CTAs. */
+    .csv-export-btn { background: #fff; color: var(--clay); border: 1px solid var(--line);
+      border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 12.5px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: 0.15s; display: inline-flex; align-items: center; gap: 5px; }
+    .csv-export-btn::before { content: "⬇"; font-size: 11px; color: var(--gold-deep); }
+    .csv-export-btn:hover { border-color: var(--gold); color: var(--gold-deep); background: rgba(254,243,199,0.4); }
+
     /* Capacity-status pill rendered inline with the seats column so ops
        can scan the table for "满员"/"紧张" without reading numbers. */
     .acad-cap-pill { display: inline-flex; padding: 2px 8px; border-radius: 999px;
@@ -1636,12 +1644,15 @@
             <article class="panel">
               <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
                 <h2 data-i18n="mktCrmHead" style="margin:0;"></h2>
-                <div class="mkt-crm-filters" id="mktCrmFilters" role="group" aria-label="CRM filter">
-                  <button type="button" data-mkt-crm-filter="all" class="active" data-i18n="mktCrmFilterAll"></button>
-                  <button type="button" data-mkt-crm-filter="new" data-i18n="mktCrmFilterNew"></button>
-                  <button type="button" data-mkt-crm-filter="follow" data-i18n="mktCrmFilterFollow"></button>
-                  <button type="button" data-mkt-crm-filter="won" data-i18n="mktCrmFilterWon"></button>
-                  <button type="button" data-mkt-crm-filter="lost" data-i18n="mktCrmFilterLost"></button>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                  <div class="mkt-crm-filters" id="mktCrmFilters" role="group" aria-label="CRM filter">
+                    <button type="button" data-mkt-crm-filter="all" class="active" data-i18n="mktCrmFilterAll"></button>
+                    <button type="button" data-mkt-crm-filter="new" data-i18n="mktCrmFilterNew"></button>
+                    <button type="button" data-mkt-crm-filter="follow" data-i18n="mktCrmFilterFollow"></button>
+                    <button type="button" data-mkt-crm-filter="won" data-i18n="mktCrmFilterWon"></button>
+                    <button type="button" data-mkt-crm-filter="lost" data-i18n="mktCrmFilterLost"></button>
+                  </div>
+                  <button type="button" class="csv-export-btn" data-csv-export="mkt-leads" data-i18n="csvExport"></button>
                 </div>
               </div>
               <div id="mktCrmList"></div>
@@ -1740,6 +1751,7 @@
                   <input type="search" class="acad-search" id="acadSearch" data-i18n-placeholder="acadSearchPlaceholder" />
                   <select id="acadLevelFilter" class="acad-select"></select>
                   <select id="acadGradeFilter" class="acad-select"></select>
+                  <button type="button" class="csv-export-btn" data-csv-export="acad-roster" data-i18n="csvExport"></button>
                 </div>
               </div>
               <div class="table-wrap">
@@ -1785,6 +1797,7 @@
                   <input type="search" class="acad-search" id="acadClassSearch" data-i18n-placeholder="acadClassSearchPlaceholder" />
                   <select id="acadClassLevelFilter" class="acad-select"></select>
                   <select id="acadClassDayFilter" class="acad-select"></select>
+                  <button type="button" class="csv-export-btn" data-csv-export="acad-classes" data-i18n="csvExport"></button>
                 </div>
               </div>
               <!-- Capacity-status pill row — quick triage for ops to find
@@ -1891,6 +1904,7 @@
                 <h2 data-i18n="finOrdersHead" style="margin:0;"></h2>
                 <div class="acad-filters">
                   <select id="finOrderStatusFilter" class="acad-select"></select>
+                  <button type="button" class="csv-export-btn" data-csv-export="fin-orders" data-i18n="csvExport"></button>
                 </div>
               </div>
               <div class="table-wrap">
@@ -2263,6 +2277,7 @@
                   <input type="search" class="acad-search" id="intStaffSearch" data-i18n-placeholder="intStaffSearchPlaceholder" />
                   <select id="intStaffRoleFilter" class="acad-select"></select>
                   <select id="intStaffStatusFilter" class="acad-select"></select>
+                  <button type="button" class="csv-export-btn" data-csv-export="int-staff" data-i18n="csvExport"></button>
                 </div>
               </div>
               <div class="table-wrap">
@@ -2815,6 +2830,9 @@
           zoneAcadStudentTitle: "学员管理",
           zoneAcadStudentSub: "目前正在上课的学员总览，可按等级 / 年级筛选并就地调整等级。",
           acadCourseLink: "课程目录",
+          csvExport: "导出 CSV",
+          csvExportToast: "已导出 {n} 行 → {filename}",
+          csvExportEmpty: "暂无可导出的数据。",
           acadRosterHead: "在读学员",
           acadSearchPlaceholder: "搜索 姓名 / 邮箱",
           acadFilterAllLevels: "全部等级",
@@ -3396,6 +3414,9 @@
           zoneAcadStudentTitle: "Student Management",
           zoneAcadStudentSub: "Currently-active students. Filter by level / grade and adjust placements inline.",
           acadCourseLink: "Course Catalog",
+          csvExport: "Export CSV",
+          csvExportToast: "Exported {n} row(s) → {filename}",
+          csvExportEmpty: "Nothing to export yet.",
           acadRosterHead: "Active students",
           acadSearchPlaceholder: "Search name / email",
           acadFilterAllLevels: "All levels",
@@ -6543,6 +6564,188 @@
         });
         setActiveTab(savedTab);
       }
+
+      // ---- CSV export — delegated handler for every [data-csv-export] ----
+      // Each table type knows how to project its own row shape into a flat
+      // CSV. Picks the live working set off the dashboard's KEYS so the
+      // export reflects current filtering whenever possible.
+      (function () {
+        var f = window.MindDoFlow;
+        if (!f || !f.downloadCsv) return;
+        function stamp() {
+          var d = new Date();
+          var p = function (n) { return n < 10 ? "0" + n : "" + n; };
+          return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes());
+        }
+        function langLabel(zh, en) { return (state.lang === "en") ? en : zh; }
+
+        function buildExport(kind) {
+          var lang = state.lang === "en" ? "en" : "zh";
+          switch (kind) {
+            case "mkt-leads": {
+              var leads = f.readJson(f.keys.leads) || [];
+              return {
+                filename: "minddo-leads-" + stamp() + ".csv",
+                rows: leads,
+                headers: [
+                  { key: "studentName", label: langLabel("学员", "Student") },
+                  { key: "grade",       label: langLabel("年级", "Grade") },
+                  { key: "parentName",  label: langLabel("家长", "Parent") },
+                  { key: "phone",       label: langLabel("电话", "Phone") },
+                  { key: "email",       label: langLabel("邮箱", "Email") },
+                  { key: "city",        label: langLabel("城市", "City") },
+                  { key: "subjectLabel",label: langLabel("意向", "Interest") },
+                  { key: "trialDate",   label: langLabel("试听日期", "Trial date") },
+                  { key: "trialTime",   label: langLabel("试听时段", "Trial time") },
+                  { key: "channelLabel",label: langLabel("渠道", "Channel") },
+                  { key: "crmStatus",   label: langLabel("CRM 状态", "CRM status") },
+                  { key: "trialStatus", label: langLabel("试听状态", "Trial status") },
+                  { key: "createdAt",   label: langLabel("创建时间", "Created at") }
+                ]
+              };
+            }
+            case "acad-roster": {
+              var memberships = (f.readJson(f.keys.memberships) || []);
+              var byStudent = {};
+              memberships.forEach(function (m) {
+                if (!m || !m.studentId) return;
+                if (!byStudent[m.studentId] || new Date(m.createdAt || 0) > new Date(byStudent[m.studentId].createdAt || 0)) {
+                  byStudent[m.studentId] = m;
+                }
+              });
+              var rows = Object.keys(byStudent).map(function (sid) {
+                var m = byStudent[sid];
+                var stu = (f.findStudentById && f.findStudentById(sid)) || {};
+                var level = (f.getStudentLevel && f.getStudentLevel(sid)) || "";
+                return {
+                  studentId: sid,
+                  name: stu.name || m.studentName || "",
+                  grade: stu.grade || m.grade || "",
+                  level: level,
+                  plan: m.planLabel || m.plan || "",
+                  email: stu.email || m.email || "",
+                  phone: stu.phone || m.phone || "",
+                  parent: m.parentName || stu.parentName || "",
+                  enrolledAt: m.createdAt || ""
+                };
+              });
+              return {
+                filename: "minddo-roster-" + stamp() + ".csv",
+                rows: rows,
+                headers: [
+                  { key: "studentId", label: langLabel("学员 ID", "Student ID") },
+                  { key: "name",      label: langLabel("姓名", "Name") },
+                  { key: "grade",     label: langLabel("年级", "Grade") },
+                  { key: "level",     label: langLabel("等级", "Level") },
+                  { key: "plan",      label: langLabel("套餐", "Plan") },
+                  { key: "email",     label: langLabel("邮箱", "Email") },
+                  { key: "phone",     label: langLabel("电话", "Phone") },
+                  { key: "parent",    label: langLabel("家长", "Parent") },
+                  { key: "enrolledAt",label: langLabel("入学日期", "Enrolled at") }
+                ]
+              };
+            }
+            case "acad-classes": {
+              var offerings = (f.getClassOfferings && f.getClassOfferings()) || [];
+              var rows = offerings.map(function (o) {
+                return {
+                  id: o.id,
+                  courseZh: (o.courseName && o.courseName.zh) || "",
+                  courseEn: (o.courseName && o.courseName.en) || "",
+                  levelEn: (o.level && o.level.en) || "",
+                  teacher: o.teacher || "",
+                  mode: o.classMode === "1v1" ? "1v1" : "group",
+                  dayKey: o.dayKey || "",
+                  timeSlot: o.timeSlot || "",
+                  seatsTotal: o.seatsTotal || 0,
+                  seatsTaken: o.seatsTaken || 0,
+                  utilisation: o.seatsTotal ? Math.round((o.seatsTaken || 0) / o.seatsTotal * 100) + "%" : ""
+                };
+              });
+              return {
+                filename: "minddo-classes-" + stamp() + ".csv",
+                rows: rows,
+                headers: [
+                  { key: "id",         label: "ID" },
+                  { key: "courseZh",   label: langLabel("课程 (中)", "Course (ZH)") },
+                  { key: "courseEn",   label: langLabel("课程 (英)", "Course (EN)") },
+                  { key: "levelEn",    label: langLabel("等级", "Level") },
+                  { key: "teacher",    label: langLabel("教师", "Teacher") },
+                  { key: "mode",       label: langLabel("课型", "Mode") },
+                  { key: "dayKey",     label: langLabel("上课日", "Day") },
+                  { key: "timeSlot",   label: langLabel("时段", "Time") },
+                  { key: "seatsTotal", label: langLabel("总席位", "Seats") },
+                  { key: "seatsTaken", label: langLabel("已占", "Taken") },
+                  { key: "utilisation",label: langLabel("上座率", "Utilisation") }
+                ]
+              };
+            }
+            case "fin-orders": {
+              var payments = f.readJson(f.keys.payments) || [];
+              return {
+                filename: "minddo-orders-" + stamp() + ".csv",
+                rows: payments,
+                headers: [
+                  { key: "studentId", label: langLabel("学员 ID", "Student ID") },
+                  { key: "email",     label: langLabel("邮箱", "Email") },
+                  { key: "amount",    label: langLabel("金额", "Amount") },
+                  { key: "method",    label: langLabel("付款方式", "Method") },
+                  { key: "status",    label: langLabel("状态", "Status") },
+                  { key: "source",    label: langLabel("来源", "Source") },
+                  { key: "createdAt", label: langLabel("时间", "Created at") }
+                ]
+              };
+            }
+            case "int-staff": {
+              var staff = f.readJson(f.keys.staff) || [];
+              var roles = f.readJson(f.keys.roles) || [];
+              var byRole = {};
+              roles.forEach(function (r) { byRole[r.id] = r; });
+              var rows = staff.map(function (s) {
+                var role = byRole[s.roleId] || {};
+                return {
+                  id: s.id,
+                  name: s.name,
+                  role: lang === "en" ? (role.nameEn || role.name || "") : (role.name || role.nameEn || ""),
+                  department: s.department || "",
+                  email: s.email || "",
+                  phone: s.phone || "",
+                  status: s.status || "",
+                  joinedAt: s.joinedAt || ""
+                };
+              });
+              return {
+                filename: "minddo-staff-" + stamp() + ".csv",
+                rows: rows,
+                headers: [
+                  { key: "id",         label: langLabel("员工 ID", "Staff ID") },
+                  { key: "name",       label: langLabel("姓名", "Name") },
+                  { key: "role",       label: langLabel("角色", "Role") },
+                  { key: "department", label: langLabel("部门", "Department") },
+                  { key: "email",      label: langLabel("邮箱", "Email") },
+                  { key: "phone",      label: langLabel("电话", "Phone") },
+                  { key: "status",     label: langLabel("状态", "Status") },
+                  { key: "joinedAt",   label: langLabel("入职日期", "Joined") }
+                ]
+              };
+            }
+            default:
+              return null;
+          }
+        }
+
+        document.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-csv-export]");
+          if (!btn) return;
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          var spec = buildExport(btn.getAttribute("data-csv-export"));
+          if (!spec || !spec.rows || !spec.rows.length) {
+            alert(t.csvExportEmpty || "Nothing to export.");
+            return;
+          }
+          f.downloadCsv(spec.filename, spec.rows, spec.headers);
+        });
+      })();
 
       // Top-right user dropdown — toggle on click, close on outside / Esc.
       (function () {
