@@ -1547,6 +1547,9 @@
           <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="contracts" role="tab">
             <span class="ms-icon" aria-hidden="true">📝</span><span class="ms-label" data-i18n="finSubtabContracts"></span>
           </button>
+          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="renewals" role="tab">
+            <span class="ms-icon" aria-hidden="true">🔁</span><span class="ms-label" data-i18n="finSubtabRenewals"></span>
+          </button>
         </div>
         <button type="button" class="sidebar-item" data-tab="data" role="tab">
           <span class="si-icon" aria-hidden="true">📈</span><span class="si-label" data-i18n="navData"></span>
@@ -2280,6 +2283,52 @@
           </section>
         </div>
 
+        <!-- Sub-panel 6: Renewal pipeline — memberships ending within
+             30/60/90 days, parent contact + last feedback rating for
+             retention calls. -->
+        <div class="fin-subpanel" data-fin-subpanel="renewals" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneFinRenewalsTitle"></h3>
+                <p data-i18n="zoneFinRenewalsSub"></p>
+              </div>
+            </div>
+            <section class="grid" id="finRenewalsKpi"></section>
+          </section>
+
+          <section class="dash-zone">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                <h2 data-i18n="finRenewalsHead" style="margin:0;"></h2>
+                <div class="acad-cap-bar" id="finRenewalsBucketFilter" role="group" aria-label="Bucket filter">
+                  <button type="button" data-renewal-bucket="all" class="active" data-i18n="finRenewalsBucketAll"></button>
+                  <button type="button" data-renewal-bucket="overdue" data-i18n="finRenewalsBucketOverdue"></button>
+                  <button type="button" data-renewal-bucket="30" data-i18n="finRenewalsBucket30"></button>
+                  <button type="button" data-renewal-bucket="60" data-i18n="finRenewalsBucket60"></button>
+                  <button type="button" data-renewal-bucket="90" data-i18n="finRenewalsBucket90"></button>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="acad-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="finRenewalsColStudent"></th>
+                      <th data-i18n="finRenewalsColPlan"></th>
+                      <th data-i18n="finRenewalsColCycle"></th>
+                      <th data-i18n="finRenewalsColEnds"></th>
+                      <th data-i18n="finRenewalsColDays"></th>
+                      <th data-i18n="finRenewalsColFeedback"></th>
+                      <th data-i18n="finRenewalsColAction"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="finRenewalsBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </div>
+
       </section>
 
       <!-- ========== Data Center — 4 sub-tabs (wall / enroll / academic / finance) ========== -->
@@ -2931,6 +2980,31 @@
           finSubtabBilling: "账单管理",
           finSubtabPayroll: "工资管理",
           finSubtabContracts: "电子合同",
+          finSubtabRenewals: "续费看板",
+          zoneFinRenewalsTitle: "续费看板",
+          zoneFinRenewalsSub: "按到期日期排列的会员订单，提前打电话续费、防止流失。",
+          finRenewalsHead: "即将到期 / 已到期",
+          finRenewalsKpiTotal: "活跃会员",
+          finRenewalsKpiSoon: "30 天内到期",
+          finRenewalsKpiOverdue: "已到期未续",
+          finRenewalsKpiAnnual: "年付会员",
+          finRenewalsBucketAll: "全部",
+          finRenewalsBucketOverdue: "已到期",
+          finRenewalsBucket30: "30 天内",
+          finRenewalsBucket60: "60 天内",
+          finRenewalsBucket90: "90 天内",
+          finRenewalsColStudent: "学员 / 家长",
+          finRenewalsColPlan: "套餐",
+          finRenewalsColCycle: "周期",
+          finRenewalsColEnds: "到期日",
+          finRenewalsColDays: "剩余",
+          finRenewalsColFeedback: "近期反馈",
+          finRenewalsColAction: "操作",
+          finRenewalsActionContact: "联系",
+          finRenewalsActionUpgrade: "续费",
+          finRenewalsOverdueLabel: "已过期 {n} 天",
+          finRenewalsDaysLabel: "{n} 天",
+          finRenewalsEmpty: "暂无即将到期的会员订单。",
           // 订单管理
           zoneFinOrdersTitle: "订单列表",
           zoneFinOrdersSub: "全部会员订单（含付款 / 退款 / 取消），按状态筛选。",
@@ -3603,6 +3677,31 @@
           finSubtabBilling: "Billing",
           finSubtabPayroll: "Payroll",
           finSubtabContracts: "E-Contracts",
+          finSubtabRenewals: "Renewals",
+          zoneFinRenewalsTitle: "Renewal Pipeline",
+          zoneFinRenewalsSub: "Membership orders by upcoming end date — book retention calls before they lapse.",
+          finRenewalsHead: "Ending soon / overdue",
+          finRenewalsKpiTotal: "Active",
+          finRenewalsKpiSoon: "Ending in 30d",
+          finRenewalsKpiOverdue: "Overdue",
+          finRenewalsKpiAnnual: "Annual plans",
+          finRenewalsBucketAll: "All",
+          finRenewalsBucketOverdue: "Overdue",
+          finRenewalsBucket30: "30d",
+          finRenewalsBucket60: "60d",
+          finRenewalsBucket90: "90d",
+          finRenewalsColStudent: "Student / Parent",
+          finRenewalsColPlan: "Plan",
+          finRenewalsColCycle: "Cycle",
+          finRenewalsColEnds: "End date",
+          finRenewalsColDays: "Days left",
+          finRenewalsColFeedback: "Latest rating",
+          finRenewalsColAction: "Action",
+          finRenewalsActionContact: "Contact",
+          finRenewalsActionUpgrade: "Renew",
+          finRenewalsOverdueLabel: "{n}d overdue",
+          finRenewalsDaysLabel: "{n}d",
+          finRenewalsEmpty: "No memberships ending soon.",
           zoneFinOrdersTitle: "Orders",
           zoneFinOrdersSub: "Every membership order with payment / refund / cancel status.",
           finOrdersHead: "Order ledger",
@@ -5652,6 +5751,146 @@
       })();
 
       // ============================================================
+      // 续费看板 (Renewal pipeline)
+      // ============================================================
+      var __renewalBucket = "all";
+
+      function computeRenewalEntries() {
+        var f = window.MindDoFlow;
+        if (!f) return [];
+        var memberships = (f.readJson(f.keys.memberships) || []).filter(function (m) { return m && m.studentId; });
+        // De-dup by studentId — keep the latest membership per kid.
+        var byStudent = {};
+        memberships.forEach(function (m) {
+          if (!byStudent[m.studentId] || new Date(m.createdAt || 0) > new Date(byStudent[m.studentId].createdAt || 0)) {
+            byStudent[m.studentId] = m;
+          }
+        });
+        var feedbacks = f.readJson(f.keys.feedback) || [];
+        var feedbackByStudent = {};
+        feedbacks.forEach(function (r) {
+          if (!r || !r.studentId) return;
+          var cur = feedbackByStudent[r.studentId];
+          if (!cur || new Date(r.createdAt || 0) > new Date(cur.createdAt || 0)) feedbackByStudent[r.studentId] = r;
+        });
+        var nowMs = Date.now();
+        var entries = Object.keys(byStudent).map(function (sid) {
+          var m = byStudent[sid];
+          var startMs = m.createdAt ? new Date(m.createdAt).getTime() : nowMs;
+          var cycleDays = (m.billingCycle === "annual") ? 365 : 30;
+          var endMs = startMs + cycleDays * 86400000;
+          var diffDays = Math.round((endMs - nowMs) / 86400000);
+          var stu = (f.findStudentById && f.findStudentById(sid)) || {};
+          var fb = feedbackByStudent[sid];
+          return {
+            studentId: sid,
+            studentName: stu.name || m.studentName || sid,
+            parentName: m.parentName || stu.parentName || "",
+            email: m.email || stu.email || "",
+            phone: m.phone || stu.phone || "",
+            plan: m.planLabel || m.plan || "",
+            cycle: m.billingCycle || "monthly",
+            endMs: endMs,
+            diffDays: diffDays,
+            lastRating: fb ? (fb.rating || "") : "",
+            lastFeedbackAt: fb ? fb.createdAt : null
+          };
+        });
+        entries.sort(function (a, b) { return a.endMs - b.endMs; });
+        return entries;
+      }
+
+      function renewalBucketOf(entry) {
+        if (entry.diffDays < 0) return "overdue";
+        if (entry.diffDays <= 30) return "30";
+        if (entry.diffDays <= 60) return "60";
+        if (entry.diffDays <= 90) return "90";
+        return "later";
+      }
+
+      function renderRenewalPipeline(t) {
+        var f = window.MindDoFlow;
+        if (!f) return;
+        var entries = computeRenewalEntries();
+
+        var kpiEl = document.getElementById("finRenewalsKpi");
+        if (kpiEl) {
+          var soon = entries.filter(function (e) { return e.diffDays >= 0 && e.diffDays <= 30; }).length;
+          var overdue = entries.filter(function (e) { return e.diffDays < 0; }).length;
+          var annual = entries.filter(function (e) { return e.cycle === "annual"; }).length;
+          renderMetricCards(kpiEl, [
+            { label: t.finRenewalsKpiTotal, value: entries.length, sub: "" },
+            { label: t.finRenewalsKpiSoon, value: soon, sub: "" },
+            { label: t.finRenewalsKpiOverdue, value: overdue, sub: "" },
+            { label: t.finRenewalsKpiAnnual, value: annual, sub: "" }
+          ]);
+        }
+
+        var bar = document.getElementById("finRenewalsBucketFilter");
+        if (bar) {
+          bar.querySelectorAll("[data-renewal-bucket]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-renewal-bucket") === __renewalBucket);
+          });
+        }
+
+        var filtered = entries.filter(function (e) {
+          if (__renewalBucket === "all") return true;
+          if (__renewalBucket === "overdue") return e.diffDays < 0;
+          if (__renewalBucket === "30") return e.diffDays >= 0 && e.diffDays <= 30;
+          if (__renewalBucket === "60") return e.diffDays >= 0 && e.diffDays <= 60;
+          if (__renewalBucket === "90") return e.diffDays >= 0 && e.diffDays <= 90;
+          return true;
+        });
+
+        var tBody = document.getElementById("finRenewalsBody");
+        if (!tBody) return;
+        if (!filtered.length) {
+          tBody.innerHTML = "<tr><td colspan='7'><div class='acad-empty'>" + escHTML(t.finRenewalsEmpty) + "</div></td></tr>";
+          return;
+        }
+        function fmtDate(ms) {
+          var d = new Date(ms);
+          return state.lang === "en"
+            ? d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+            : (d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate());
+        }
+        tBody.innerHTML = filtered.map(function (e) {
+          var daysLabel = e.diffDays < 0
+            ? (t.finRenewalsOverdueLabel || "{n}d overdue").replace("{n}", -e.diffDays)
+            : (t.finRenewalsDaysLabel || "{n}d").replace("{n}", e.diffDays);
+          var cap = renewalBucketOf(e);
+          var capCls = cap === "overdue" ? "full" : (cap === "30" ? "tight" : "open");
+          var nameCell = "<strong data-student-drawer='" + escHTML(e.studentId) + "'>" + escHTML(e.studentName) + "</strong>"
+            + (e.parentName ? "<div class='sid' style='font-size:11px;color:var(--muted);font-weight:600;'>" + escHTML(e.parentName) + "</div>" : "");
+          var mailto = e.email
+            ? "<a href='mailto:" + encodeURIComponent(e.email) + "?subject=" + encodeURIComponent("MindDo " + (state.lang === "en" ? "renewal reminder" : "续费提醒")) + "'>" + escHTML(t.finRenewalsActionContact) + "</a>"
+            : "";
+          var tel = e.phone ? "<a href='tel:" + encodeURIComponent(e.phone) + "'>" + escHTML(e.phone) + "</a>" : "";
+          return "<tr>"
+            + "<td>" + nameCell + "</td>"
+            + "<td>" + escHTML(e.plan) + "</td>"
+            + "<td>" + (e.cycle === "annual" ? (state.lang === "en" ? "Annual" : "年付") : (state.lang === "en" ? "Monthly" : "月付")) + "</td>"
+            + "<td>" + fmtDate(e.endMs) + "</td>"
+            + "<td><span class='acad-cap-pill " + capCls + "'>" + escHTML(daysLabel) + "</span></td>"
+            + "<td>" + escHTML(e.lastRating || "—") + "</td>"
+            + "<td><div class='acad-row-actions'>" + mailto + (tel ? " " + tel : "") + "</div></td>"
+            + "</tr>";
+        }).join("");
+      }
+
+      // Renewal bucket filter delegation
+      (function () {
+        var bar = document.getElementById("finRenewalsBucketFilter");
+        if (!bar) return;
+        bar.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-renewal-bucket]");
+          if (!b) return;
+          __renewalBucket = b.getAttribute("data-renewal-bucket");
+          renderRenewalPipeline(I18N[state.lang]);
+        });
+      })();
+
+      // ============================================================
       // 待办收件箱 (Approvals inbox)
       // ============================================================
       var __inboxKindFilter = "all";
@@ -6279,7 +6518,7 @@
         var bar = document.getElementById("finSubtabs");
         if (!bar) return;
         var KEY = "minddo_dash_fin_subtab";
-        var KNOWN = ["orders", "approvals", "billing", "payroll", "contracts"];
+        var KNOWN = ["orders", "approvals", "billing", "payroll", "contracts", "renewals"];
         function applySub(key) {
           if (KNOWN.indexOf(key) === -1) key = "orders";
           bar.querySelectorAll("[data-fin-subtab]").forEach(function (b) {
@@ -7270,6 +7509,7 @@
         renderFinanceBilling(paymentsAll, t);
         renderFinancePayroll(t);
         renderFinanceContracts(t);
+        renderRenewalPipeline(t);
 
         // ---- Internal Management: staff + roles ----
         renderInternalStaff(t);
