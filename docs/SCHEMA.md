@@ -251,6 +251,31 @@ Newsletter subscriber emails captured on `index.html`.
   permissions: ["*.write" | "staff.write" | ...] }
 ```
 
+### `minddo_audit_log` 🟢 (array, bounded to 500)
+Append-only history of ops-side state changes (currently: student
+profile edits via the detail-drawer editor; more callsites to follow).
+
+```js
+{
+  id,                       // "AU-<ts>-<random>"
+  at,                       // ISO timestamp
+  actor,                    // staff id or "ops" (mock auth)
+  kind,                     // e.g. "student.update"
+  target,                   // entity id this entry is about
+  summary,                  // human-readable one-liner
+  before, after             // full snapshots for diffing
+}
+```
+
+Helpers: `appendAudit(entry)`, `getAuditLog({kind, target})`. The
+log is capped at 500 rows — older rows drop off so demo storage stays
+bounded.
+
+> **Note on `minddo_students` schema**: rows now optionally carry a
+> `status` field ∈ `"active" | "paused" | "withdrawn"` set by the
+> student-detail drawer's editor. Older records without `status` are
+> treated as `"active"`.
+
 ### `minddo_attendance` 🟢 (array)
 Class attendance records, one row per (student × class session).
 Multiple records per session — one row per enrolled student.

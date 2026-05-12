@@ -869,6 +869,44 @@
     [data-student-drawer] { cursor: pointer; }
     [data-student-drawer]:hover { text-decoration: underline; }
 
+    /* Edit mode for the drawer's overview tab — converts the .sd-row
+       pairs into label / input pairs while staying within the same
+       grid so the layout doesn't shift between modes. */
+    .sd-edit-btn { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line);
+      background: #fff; cursor: pointer; font: inherit; font-size: 12px; font-weight: 800;
+      color: var(--clay); font-family: inherit; transition: 0.12s; }
+    .sd-edit-btn:hover { border-color: var(--gold); color: var(--gold-deep); background: rgba(254,243,199,0.4); }
+    .sd-edit-btn.active { background: linear-gradient(135deg,#fde68a,var(--gold)); border-color: var(--gold-deep); color: #3a1808; }
+    .sd-form-row { display: grid; grid-template-columns: 110px 1fr; gap: 8px 12px; align-items: center;
+      padding: 6px 0; border-bottom: 1px dashed rgba(122,48,16,0.08); }
+    .sd-form-row:last-child { border-bottom: none; }
+    .sd-form-row label { font-size: 12px; color: var(--muted); font-weight: 700; }
+    .sd-form-row input, .sd-form-row select, .sd-form-row textarea {
+      width: 100%; padding: 7px 10px; border: 1px solid var(--line); background: #fef9ec;
+      border-radius: 8px; font: inherit; font-size: 13px; color: var(--text);
+      font-family: inherit; outline: none; transition: 0.15s; }
+    .sd-form-row input:focus, .sd-form-row select:focus, .sd-form-row textarea:focus {
+      border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,158,11,0.18); }
+    .sd-form-row textarea { min-height: 64px; resize: vertical; }
+    .sd-form-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      padding-top: 14px; margin-top: 14px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+    .sd-form-foot .msg { font-size: 12px; color: var(--muted); line-height: 1.5; min-height: 14px; }
+    .sd-form-foot .msg.err { color: var(--danger, #c46a4d); }
+    .sd-form-foot .msg.ok  { color: var(--success, #6f8f57); }
+    .sd-form-foot .actions { display: inline-flex; gap: 8px; }
+    .sd-form-foot button { padding: 8px 18px; border-radius: 999px; cursor: pointer;
+      font: inherit; font-size: 13px; font-weight: 800; font-family: inherit; transition: 0.15s; border: none; }
+    .sd-form-foot .save { background: linear-gradient(135deg,#fde68a,var(--gold)); color: #3a1808; }
+    .sd-form-foot .save:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(245,158,11,0.32); }
+    .sd-form-foot .cancel { background: rgba(122,48,16,0.06); color: var(--clay); }
+    .sd-form-foot .cancel:hover { background: rgba(122,48,16,0.12); }
+    /* Status pill displayed read-only in the overview when not editing. */
+    .sd-status-pill { display: inline-flex; padding: 2px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+    .sd-status-pill.active  { background: rgba(110,143,87,0.18); color: #3f5d26; border: 1px solid rgba(110,143,87,0.36); }
+    .sd-status-pill.paused  { background: rgba(245,158,11,0.18); color: var(--gold-deep); border: 1px solid rgba(245,158,11,0.36); }
+    .sd-status-pill.withdrawn { background: rgba(196,106,77,0.16); color: #8e3d21; border: 1px solid rgba(196,106,77,0.36); }
+
     @media (max-width: 720px) {
       .sd-panel { width: 100vw; }
     }
@@ -2633,6 +2671,7 @@
           <h3 id="sdTitle">—</h3>
           <div class="sd-meta" id="sdMeta">—</div>
         </div>
+        <button type="button" class="sd-edit-btn" id="sdEditBtn" data-i18n="sdEditCta"></button>
         <button type="button" class="sd-close" id="sdCloseBtn" aria-label="Close">×</button>
       </header>
       <div class="sd-quick" id="sdQuick"></div>
@@ -3219,6 +3258,27 @@
           sdAttendanceAbsent: "缺勤",
           sdAttendanceLate: "迟到",
           sdAttendanceExcused: "请假",
+          sdEditCta: "✎ 编辑",
+          sdEditCancel: "取消",
+          sdEditSave: "保存",
+          sdEditSaving: "保存中…",
+          sdEditSaved: "已保存 · {time}",
+          sdEditError: "保存失败 — 请检查输入。",
+          sdFieldName: "中文姓名",
+          sdFieldGrade: "年级",
+          sdFieldBirthday: "生日",
+          sdFieldEmail: "学员邮箱",
+          sdFieldPhone: "学员电话",
+          sdFieldParentName: "家长姓名",
+          sdFieldGoal: "学习目标",
+          sdFieldLevel: "等级",
+          sdFieldStatus: "状态",
+          sdStatusActive: "在读",
+          sdStatusPaused: "暂停",
+          sdStatusWithdrawn: "退出",
+          sdEditValidEmail: "邮箱格式不正确。",
+          sdEditValidName: "姓名不能为空。",
+          sdEditEmailMigrated: "邮箱已更新，相关历史记录已同步迁移。",
           acadRosterHead: "在读学员",
           acadSearchPlaceholder: "搜索 姓名 / 邮箱",
           acadFilterAllLevels: "全部等级",
@@ -3904,6 +3964,27 @@
           sdAttendanceAbsent: "Absent",
           sdAttendanceLate: "Late",
           sdAttendanceExcused: "Excused",
+          sdEditCta: "✎ Edit",
+          sdEditCancel: "Cancel",
+          sdEditSave: "Save",
+          sdEditSaving: "Saving…",
+          sdEditSaved: "Saved · {time}",
+          sdEditError: "Save failed — please check the inputs.",
+          sdFieldName: "Name",
+          sdFieldGrade: "Grade",
+          sdFieldBirthday: "Birthday",
+          sdFieldEmail: "Student email",
+          sdFieldPhone: "Student phone",
+          sdFieldParentName: "Parent name",
+          sdFieldGoal: "Goal",
+          sdFieldLevel: "Level",
+          sdFieldStatus: "Status",
+          sdStatusActive: "Active",
+          sdStatusPaused: "Paused",
+          sdStatusWithdrawn: "Withdrawn",
+          sdEditValidEmail: "Email format looks off.",
+          sdEditValidName: "Name can't be empty.",
+          sdEditEmailMigrated: "Email updated — history records have been migrated.",
           acadRosterHead: "Active students",
           acadSearchPlaceholder: "Search name / email",
           acadFilterAllLevels: "All levels",
@@ -7736,13 +7817,15 @@
         var closeBtn = document.getElementById("sdCloseBtn");
         if (!overlay) return;
 
-        var __sdState = { studentId: "", tab: "overview" };
+        var __sdState = { studentId: "", tab: "overview", editing: false, draft: null, lastSavedAt: null };
 
         function dictNow() { return I18N[state.lang] || I18N["zh-CN"]; }
         function close() {
           overlay.classList.remove("open");
           overlay.setAttribute("aria-hidden", "true");
           document.body.style.overflow = "";
+          __sdState.editing = false;
+          __sdState.draft = null;
         }
         function initials(name) {
           if (!name) return "—";
@@ -7837,15 +7920,20 @@
         }
 
         function tabOverview(bundle) {
+          if (__sdState.editing) return tabOverviewEdit(bundle);
           var t = dictNow();
           var stu = bundle.student || {};
           var m = bundle.membership || {};
           var latestFb = bundle.feedback[0];
+          var statusKey = stu.status || "active";
+          var statusLabel = t["sdStatus" + statusKey.charAt(0).toUpperCase() + statusKey.slice(1)] || statusKey;
+          var statusPill = "<span class='sd-status-pill " + statusKey + "'>" + escHTML(statusLabel) + "</span>";
           var profileRows = [
             { k: t.sdOverviewGrade,    v: stu.grade || "—" },
             { k: t.sdOverviewBirthday, v: stu.birthday || "—" },
             { k: t.sdOverviewParent,   v: m.parentName || stu.parentName || "—" },
-            { k: t.sdOverviewGoal,     v: stu.goal || "—" }
+            { k: t.sdOverviewGoal,     v: stu.goal || "—" },
+            { k: t.sdFieldStatus,      v: statusPill, html: true }
           ];
           var memberRows = [
             { k: t.sdOverviewLevel,      v: bundle.level || "—" },
@@ -7855,8 +7943,17 @@
           ];
           function rows(list) {
             return list.map(function (r) {
-              return "<div class='sd-row'><span class='k'>" + escHTML(r.k) + "</span><span class='v'>" + escHTML(r.v) + "</span></div>";
+              var cell = r.html ? r.v : escHTML(r.v);
+              return "<div class='sd-row'><span class='k'>" + escHTML(r.k) + "</span><span class='v'>" + cell + "</span></div>";
             }).join("");
+          }
+          var savedNote = "";
+          if (__sdState.lastSavedAt) {
+            var d = new Date(__sdState.lastSavedAt);
+            savedNote = "<p class='muted' style='font-size:11.5px;margin-top:8px;'>"
+              + escHTML((t.sdEditSaved || "Saved").replace("{time}",
+                  d.toLocaleTimeString(state.lang === "en" ? "en-US" : "zh-CN", { hour: "2-digit", minute: "2-digit" })))
+              + "</p>";
           }
           return "<section class='sd-section'>"
               + "<h4>" + escHTML(t.sdOverviewProfile) + "</h4>"
@@ -7865,7 +7962,74 @@
             + "<section class='sd-section'>"
               + "<h4>" + escHTML(t.sdOverviewMembership) + "</h4>"
               + rows(memberRows)
+              + savedNote
             + "</section>";
+        }
+
+        // Editable form variant of the overview tab. Hydrates from
+        // student + latest membership; on save runs validation, then
+        // updateStudentProfile + email migration via flow.js.
+        function tabOverviewEdit(bundle) {
+          var t = dictNow();
+          var stu = bundle.student || {};
+          var m = bundle.membership || {};
+          var draft = __sdState.draft || {
+            name: stu.name || "",
+            grade: stu.grade || "",
+            birthday: stu.birthday || "",
+            email: stu.email || m.email || "",
+            phone: stu.phone || m.phone || "",
+            parentName: m.parentName || stu.parentName || "",
+            goal: stu.goal || "",
+            level: bundle.level || "",
+            status: stu.status || "active"
+          };
+          __sdState.draft = draft;
+
+          var levelOptions = ["", "Beginner", "Intermediate", "Advanced", "Project Camp", "Competition"]
+            .map(function (lv) {
+              return "<option value=\"" + escHTML(lv) + "\"" + (draft.level === lv ? " selected" : "") + ">"
+                + escHTML(lv || "—") + "</option>";
+            }).join("");
+          var gradeOptions = ["", "一年级", "二年级", "三年级", "四年级", "五年级", "六年级",
+                              "初一", "初二", "初三", "高一", "高二", "高三"]
+            .map(function (g) {
+              return "<option value=\"" + escHTML(g) + "\"" + (draft.grade === g ? " selected" : "") + ">"
+                + escHTML(g || "—") + "</option>";
+            }).join("");
+          var statusOptions = ["active", "paused", "withdrawn"].map(function (s) {
+            var lbl = t["sdStatus" + s.charAt(0).toUpperCase() + s.slice(1)] || s;
+            return "<option value=\"" + s + "\"" + (draft.status === s ? " selected" : "") + ">" + escHTML(lbl) + "</option>";
+          }).join("");
+
+          function row(label, inputHtml) {
+            return "<div class='sd-form-row'><label>" + escHTML(label) + "</label>" + inputHtml + "</div>";
+          }
+          var profileHtml = ""
+            + row(t.sdFieldName,       "<input type='text' data-sd-field='name' value='" + escHTML(draft.name) + "' />")
+            + row(t.sdFieldGrade,      "<select data-sd-field='grade'>" + gradeOptions + "</select>")
+            + row(t.sdFieldBirthday,   "<input type='date' data-sd-field='birthday' value='" + escHTML(draft.birthday) + "' />")
+            + row(t.sdFieldEmail,      "<input type='email' data-sd-field='email' value='" + escHTML(draft.email) + "' />")
+            + row(t.sdFieldPhone,      "<input type='tel' data-sd-field='phone' value='" + escHTML(draft.phone) + "' />")
+            + row(t.sdFieldParentName, "<input type='text' data-sd-field='parentName' value='" + escHTML(draft.parentName) + "' />")
+            + row(t.sdFieldGoal,       "<textarea data-sd-field='goal'>" + escHTML(draft.goal) + "</textarea>");
+          var enrollHtml = ""
+            + row(t.sdFieldLevel,  "<select data-sd-field='level'>" + levelOptions + "</select>")
+            + row(t.sdFieldStatus, "<select data-sd-field='status'>" + statusOptions + "</select>");
+
+          return "<section class='sd-section'>"
+              + "<h4>" + escHTML(t.sdOverviewProfile) + "</h4>" + profileHtml
+            + "</section>"
+            + "<section class='sd-section'>"
+              + "<h4>" + escHTML(t.sdOverviewMembership) + "</h4>" + enrollHtml
+            + "</section>"
+            + "<div class='sd-form-foot'>"
+              + "<span class='msg' id='sdEditMsg'></span>"
+              + "<div class='actions'>"
+                + "<button type='button' class='cancel' data-sd-edit-cancel>" + escHTML(t.sdEditCancel) + "</button>"
+                + "<button type='button' class='save' data-sd-edit-save>" + escHTML(t.sdEditSave) + "</button>"
+              + "</div>"
+            + "</div>";
         }
 
         function tabAttendance(bundle) {
@@ -7981,6 +8145,101 @@
           document.body.style.overflow = "hidden";
         }
 
+        // Helper to update the edit button's label / active state.
+        function refreshEditBtn() {
+          var t = dictNow();
+          var btn = document.getElementById("sdEditBtn");
+          if (!btn) return;
+          // Hide entirely when not on the overview tab — edit only
+          // makes sense there for now.
+          btn.style.display = (__sdState.tab === "overview") ? "" : "none";
+          if (__sdState.editing) {
+            btn.textContent = t.sdEditCancel || "Cancel";
+            btn.classList.add("active");
+          } else {
+            btn.textContent = t.sdEditCta || "✎ Edit";
+            btn.classList.remove("active");
+          }
+        }
+
+        function setEditing(on) {
+          __sdState.editing = !!on;
+          if (!on) __sdState.draft = null;
+          renderTab();
+          refreshEditBtn();
+        }
+
+        function readDraftFromDOM() {
+          var draft = __sdState.draft || {};
+          ["name", "grade", "birthday", "email", "phone", "parentName", "goal", "level", "status"].forEach(function (key) {
+            var el = bodyEl.querySelector("[data-sd-field='" + key + "']");
+            if (el) draft[key] = el.value;
+          });
+          __sdState.draft = draft;
+          return draft;
+        }
+
+        function setEditMsg(text, kind) {
+          var el = document.getElementById("sdEditMsg");
+          if (!el) return;
+          el.textContent = text || "";
+          el.className = "msg" + (kind ? " " + kind : "");
+        }
+
+        function saveEdit() {
+          var t = dictNow();
+          var f = window.MindDoFlow;
+          if (!f || !f.updateStudentProfile) return;
+          var draft = readDraftFromDOM();
+
+          // Validation
+          if (!String(draft.name || "").trim()) {
+            setEditMsg(t.sdEditValidName, "err");
+            return;
+          }
+          var emailTrim = String(draft.email || "").trim();
+          if (emailTrim && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)) {
+            setEditMsg(t.sdEditValidEmail, "err");
+            return;
+          }
+          setEditMsg(t.sdEditSaving || "Saving…");
+
+          // Detect email change for friendly toast.
+          var before = (f.findStudentById && f.findStudentById(__sdState.studentId)) || {};
+          var emailChanged = emailTrim && before.email && before.email !== emailTrim;
+
+          var actor = (f.getActiveOpsUser && f.getActiveOpsUser() && f.getActiveOpsUser().staff && f.getActiveOpsUser().staff.id) || "ops";
+          try {
+            f.updateStudentProfile(__sdState.studentId, {
+              name: String(draft.name || "").trim(),
+              grade: draft.grade || "",
+              birthday: draft.birthday || "",
+              email: emailTrim,
+              phone: String(draft.phone || "").trim(),
+              parentName: String(draft.parentName || "").trim(),
+              goal: String(draft.goal || "").trim(),
+              level: draft.level || "",
+              status: draft.status || "active"
+            }, { actor: actor, summary: "学员档案编辑 · " + (draft.name || __sdState.studentId) });
+            __sdState.lastSavedAt = new Date().toISOString();
+            __sdState.editing = false;
+            __sdState.draft = null;
+            renderHeader(gatherBundle(__sdState.studentId));
+            renderTab();
+            refreshEditBtn();
+            if (emailChanged && t.sdEditEmailMigrated) {
+              setEditMsg(t.sdEditEmailMigrated, "ok");
+            }
+            // Re-render the broader dashboard so list views pick up the
+            // change (the roster, attendance, renewals etc).
+            if (typeof render === "function") {
+              try { render(); } catch (_) {}
+            }
+          } catch (err) {
+            setEditMsg(t.sdEditError + " " + (err && err.message ? err.message : ""), "err");
+          }
+        }
+
         // Delegated click handler — opens for any [data-student-drawer] attribute.
         document.addEventListener("click", function (e) {
           var sw = e.target.closest("[data-student-drawer]");
@@ -7996,16 +8255,51 @@
             close();
             return;
           }
+          if (e.target.closest("#sdEditBtn")) {
+            // Toggle. If currently on a non-overview tab, force back to overview first.
+            if (__sdState.tab !== "overview") __sdState.tab = "overview";
+            setEditing(!__sdState.editing);
+            return;
+          }
+          if (e.target.closest("[data-sd-edit-cancel]")) {
+            setEditing(false);
+            return;
+          }
+          if (e.target.closest("[data-sd-edit-save]")) {
+            saveEdit();
+            return;
+          }
           var tabBtn = e.target.closest("[data-sd-tab]");
           if (tabBtn) {
+            // Switching tabs cancels in-progress edit.
+            if (__sdState.editing) setEditing(false);
             __sdState.tab = tabBtn.getAttribute("data-sd-tab");
             renderTab();
+            refreshEditBtn();
           }
+        });
+        // Keep the live draft in sync as ops types.
+        document.addEventListener("input", function (e) {
+          if (!overlay.classList.contains("open") || !__sdState.editing) return;
+          if (!e.target.matches("[data-sd-field]")) return;
+          readDraftFromDOM();
         });
         if (closeBtn) closeBtn.addEventListener("click", close);
         document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape" && overlay.classList.contains("open")) close();
+          if (e.key === "Escape" && overlay.classList.contains("open")) {
+            if (__sdState.editing) setEditing(false);
+            else close();
+          }
         });
+
+        // Hook into open() to refresh the edit button visibility/label.
+        var prevOpen = open;
+        open = function (sid) {
+          __sdState.editing = false;
+          __sdState.draft = null;
+          prevOpen(sid);
+          refreshEditBtn();
+        };
       })();
 
       // ---- CSV export — delegated handler for every [data-csv-export] ----

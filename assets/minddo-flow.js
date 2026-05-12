@@ -29,7 +29,8 @@
     approvals: "minddo_approvals",
     staff: "minddo_staff",
     roles: "minddo_roles",
-    attendance: "minddo_attendance"
+    attendance: "minddo_attendance",
+    auditLog: "minddo_audit_log"
   };
 
   // Billing profile — per-family record carrying the payment method on
@@ -2440,6 +2441,101 @@
     writeJson(KEYS.students, list);
     return list[idx >= 0 ? idx : list.length - 1];
   }
+
+  // ---- Audit log ------------------------------------------------------
+  // Append-only history of meaningful ops actions. Each entry:
+  //   { id, at, actor, kind, target, summary, before, after }
+  // Caller passes a "summary" string so the log is readable without
+  // diffing JSON in DevTools.
+  function appendAudit(entry) {
+    if (!entry) return;
+    var list = readJson(KEYS.auditLog, []) || [];
+    var row = Object.assign({
+      id: "AU-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
+      at: new Date().toISOString()
+    }, entry);
+    // Keep the log bounded so demo storage doesn't grow unbounded.
+    list.push(row);
+    if (list.length > 500) list = list.slice(list.length - 500);
+    writeJson(KEYS.auditLog, list);
+    return row;
+  }
+  function getAuditLog(filter) {
+    var rows = readJson(KEYS.auditLog, []) || [];
+    if (!filter) return rows.slice();
+    return rows.filter(function (r) {
+      if (filter.kind && r.kind !== filter.kind) return false;
+      if (filter.target && r.target !== filter.target) return false;
+      return true;
+    });
+  }
+
+  // ---- updateStudentProfile -------------------------------------------
+  // One-stop save used by the dashboard's student-detail drawer. Handles:
+  //   - upsertStudent (the per-student record)
+  //   - latest membership's parent contact fields (parentName/phone/email)
+  //   - currentStudent mirror (if this is the active one)
+  //   - setStudentLevel
+  //   - email migration across leads/payments/feedback when changed
+  //   - audit log entry with a friendly summary
+  function updateStudentProfile(studentId, patch, opts) {
+    if (!studentId || !patch) return null;
+    var before = findStudentById(studentId) || {};
+    var prevEmail = norm(before.email);
+    var nextEmail = patch.email != null ? norm(patch.email) : prevEmail;
+
+    // 1. Upsert the student record itself.
+    var saved = upsertStudent(Object.assign({}, before, patch, { studentId: studentId }));
+
+    // 2. Mirror to currentStudent if same id.
+    try {
+      var cur = getCurrentStudent();
+      if (cur && cur.studentId === studentId) {
+        writeJson(KEYS.currentStudent, Object.assign({}, cur, saved));
+      }
+    } catch (_) {}
+
+    // 3. Update the parent-contact fields on the latest membership for
+    //    this student (those are what the schedule / dashboard reads).
+    try {
+      var mems = readJson(KEYS.memberships, []) || [];
+      var changed = false;
+      mems.forEach(function (m) {
+        if (m && m.studentId === studentId) {
+          if (patch.parentName != null) { m.parentName = patch.parentName; changed = true; }
+          if (patch.phone != null)      { m.phone = patch.phone; changed = true; }
+          if (patch.email != null)      { m.email = patch.email; changed = true; }
+          if (patch.name != null)       { m.studentName = patch.name; changed = true; }
+          if (patch.grade != null)      { m.grade = patch.grade; changed = true; }
+        }
+      });
+      if (changed) writeJson(KEYS.memberships, mems);
+    } catch (_) {}
+
+    // 4. Email change → propagate join-key changes across legacy records.
+    if (prevEmail && nextEmail && prevEmail !== nextEmail) {
+      try { migrateEmailAcrossRecords(prevEmail, nextEmail, studentId); } catch (_) {}
+    }
+
+    // 5. Level — separate setter that maintains canonical-level map.
+    if (patch.level != null) {
+      try { setStudentLevel(studentId, patch.level); } catch (_) {}
+    }
+
+    // 6. Audit entry.
+    var summary = (opts && opts.summary) || ("Updated profile for " + (saved.name || studentId));
+    appendAudit({
+      actor: (opts && opts.actor) || "ops",
+      kind: "student.update",
+      target: studentId,
+      summary: summary,
+      before: before,
+      after: saved
+    });
+
+    return saved;
+  }
+
   function upsertAccount(account) {
     var list = getAccounts();
     var idx = list.findIndex(function (a) { return a.accountId === account.accountId; });
@@ -3083,7 +3179,11 @@
     ATTENDANCE_STATUSES: ATTENDANCE_STATUSES,
     getAttendance: getAttendance,
     recordAttendance: recordAttendance,
-    getStudentAttendanceSummary: getStudentAttendanceSummary
+    getStudentAttendanceSummary: getStudentAttendanceSummary,
+    // Student edit + audit log
+    updateStudentProfile: updateStudentProfile,
+    appendAudit: appendAudit,
+    getAuditLog: getAuditLog
   };
 
   // =================================================================
