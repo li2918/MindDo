@@ -1641,6 +1641,24 @@
     return pickByRoleId("owner") || pickByRoleId("admin") || pickByRoleId("campus-manager") || staff[0];
   }
 
+  // =================================================================
+  // seedDemoData — full demo bootstrap. Wipes localStorage and reseeds
+  // every namespace from scratch. Used only on first-time visits or
+  // when ops explicitly hits "重置示例数据". For schema upgrades on
+  // returning visitors, prefer adding a MIGRATIONS entry instead so
+  // user progress isn't lost.
+  //
+  // Sections (in execution order):
+  //   1. STUDENT JOURNEY  — currentStudent, leads, assessments,
+  //                         signups, payments, memberships,
+  //                         feedback, requests
+  //   2. ACADEMIC         — portfolio, growth records, assignments,
+  //                         student levels (canonical)
+  //   3. MARKETING        — referrals
+  //   4. FINANCE          — payroll, contracts, approvals
+  //   5. INTERNAL         — staff + roles (with sensible defaults)
+  //   6. ACTIVATION       — markSeedFresh + pick default ops user
+  // =================================================================
   function seedDemoData() {
     clearFlowData();
 
@@ -1651,6 +1669,7 @@
       return d.toISOString();
     }
 
+    // ---- Section 1: STUDENT JOURNEY ----
     var student = setCurrentStudent({
       studentName: "李若安",
       name: "李若安",
@@ -1851,6 +1870,7 @@
       });
     }
 
+    // ---- Section 2: ACADEMIC ----
     writeJson(KEYS.portfolio, [
       {
         studentId: student.studentId,
@@ -2068,6 +2088,7 @@
       }
     ]);
 
+    // ---- Section 3: MARKETING ----
     // Sample referrals: one paid (reward earned), one signed up (pending),
     // one still in "sent" status. Bound to the demo account provisioned
     // above so the parent hub can resolve them by accountId.
@@ -2107,7 +2128,8 @@
       }
     ]);
 
-    // ---- Finance Center seed: payroll, e-contracts, approvals ----
+    // ---- Section 4: FINANCE ----
+    // Finance Center seed: payroll, e-contracts, approvals.
     // Mock data so the new finance sub-tabs render with visible variety;
     // each entry is shaped like what an LMS-style ops product would
     // expect, so the demo reads as plausible rather than placeholder.
@@ -2140,7 +2162,8 @@
       { id: "AP-2026-006", type: "refund",   requester: "周先生",         detail: "孩子不再上课，申请退余额",   amount: 580,  submittedAt: daysAgo(9),  status: "rejected" }
     ]);
 
-    // ---- Internal Management seed: staff + roles ----
+    // ---- Section 5: INTERNAL ----
+    // Internal Management seed: staff + roles.
     // Staff list spans teaching, ops, and operations roles so the
     // 内部管理 → 员工 view shows real variety. Each staff entry
     // carries a roleId that joins to the roles seed below.
@@ -2183,6 +2206,7 @@
       { id: "frontdesk",          name: "前台",       nameEn: "Front Desk",       category: "ops",      desc: "试听签到、家长接待、日程协助。",            descEn: "Trial check-in, parent reception, scheduling support.",     permissions: ["students.view", "leads.view"] }
     ]);
 
+    // ---- Section 6: ACTIVATION ----
     // Stamp the seed version + pick a default ops user (owner) so the
     // dashboard topbar lights up with the highest-privilege identity
     // straight after a fresh seed.
@@ -2216,7 +2240,19 @@
     return (a + b + c).toUpperCase();
   }
   // Demo-grade password storage. Real apps: replace with server-side bcrypt/argon2.
-  function hashPassword(plain) { return "plain:" + String(plain || ""); }
+  // 🔴 DEMO ONLY: stores the password verbatim with a "plain:" prefix.
+  // The frontend prototype has no server / hashing infrastructure; a real
+  // deployment must replace this with a salted KDF behind a backend API.
+  // We warn loudly the first time we hash so anyone exploring the code
+  // in DevTools sees this isn't production behaviour.
+  var __pwWarned = false;
+  function hashPassword(plain) {
+    if (!__pwWarned && typeof console !== "undefined" && console.warn) {
+      __pwWarned = true;
+      console.warn("[MindDo demo] passwords are stored unhashed in localStorage. Do not deploy this build.");
+    }
+    return "plain:" + String(plain || "");
+  }
   function checkPassword(plain, stored) { return hashPassword(plain) === stored; }
 
   function getFamilies() { return readJson(KEYS.families, []); }
@@ -2920,22 +2956,102 @@
     getActiveOpsUser: getActiveOpsUser,
     setActiveOpsUser: setActiveOpsUser,
     loginAsRole: loginAsRole,
-    defaultActiveOpsUser: defaultActiveOpsUser
+    defaultActiveOpsUser: defaultActiveOpsUser,
+    runMigrations: runMigrations
   };
 
-  // Auto-reseed once when the seed schema bumps. We run lazily on the
-  // very next page load so existing demo storage picks up new roles /
-  // staff / additions to the seed without anyone having to find a hidden
-  // reset button. Only triggers when the version key is missing or
-  // outdated (set by markSeedFresh inside seedDemoData).
-  try {
-    if (typeof localStorage !== "undefined" && isSeedStale()) {
-      seedDemoData();
-    } else if (typeof localStorage !== "undefined" && !getActiveOpsUser()) {
-      // Existing-data case: pick a default ops user so the topbar shows
-      // someone after upgrade even if the storage was already populated.
-      var def = defaultActiveOpsUser();
-      if (def) setActiveOpsUser(def.id);
+  // =================================================================
+  // Bootstrap — incremental, non-destructive
+  // -----------------------------------------------------------------
+  // First-time visitor (no current student) → run full seedDemoData.
+  // Returning visitor → walk MIGRATIONS, applying only ones that
+  // haven't run yet. This replaces the previous SEED_VERSION-wipe
+  // approach so user edits / progress survive demo upgrades.
+  // =================================================================
+  var KEY_MIGRATIONS_APPLIED = "minddo_migrations_applied";
+
+  var MIGRATIONS = [
+    {
+      id: "2026-05-roles-extend",
+      description: "Append owner / admin / homeroom / operations / counselor roles + EM011-EM015 staff if missing",
+      run: function () {
+        // Roles — append only the ones that don't already exist.
+        var roles = readJson(KEYS.roles) || [];
+        var have = {};
+        roles.forEach(function (r) { if (r && r.id) have[r.id] = true; });
+        var NEW_ROLES = [
+          { id: "owner",       name: "超级管理员", nameEn: "Owner",               category: "admin",    desc: "系统所有者，拥有全部权限，可配置角色与计费。", descEn: "System owner — full permissions across all modules; can manage roles and billing.", permissions: ["*.write", "staff.write", "billing.write", "academic.write", "marketing.write", "approvals.approve"] },
+          { id: "admin",       name: "管理员",     nameEn: "Admin",               category: "admin",    desc: "日常系统管理：员工 / 角色 / 校区 / 配置。",    descEn: "Day-to-day system administration — staff, roles, campuses, configuration.",        permissions: ["staff.write", "roles.write", "campuses.write", "settings.write", "reports.view"] },
+          { id: "homeroom",    name: "班主任",     nameEn: "Homeroom Teacher",    category: "academic", desc: "对接学生与家长，跟进学习进度与课堂出勤。",   descEn: "Owns the student–parent relationship, tracks progress and attendance.",             permissions: ["students.write", "feedback.write", "requests.approve"] },
+          { id: "operations",  name: "运营专员",   nameEn: "Operations",          category: "ops",      desc: "日常运营执行：排课、活动、家长沟通与跟进。", descEn: "Day-to-day operations: scheduling, events, parent follow-up.",                       permissions: ["academic.view", "leads.view", "requests.approve", "reports.view"] },
+          { id: "counselor",   name: "学习顾问",   nameEn: "Education Counselor", category: "ops",      desc: "面向家长的咨询、试课跟进与升学规划建议。",   descEn: "Parent-facing consultation: trial follow-up + admissions planning.",                  permissions: ["leads.write", "students.view", "marketing.view"] }
+        ];
+        var toAdd = NEW_ROLES.filter(function (r) { return !have[r.id]; });
+        if (toAdd.length) writeJson(KEYS.roles, toAdd.concat(roles));
+
+        // Staff — same de-dup by id.
+        var staff = readJson(KEYS.staff) || [];
+        var haveStaff = {};
+        staff.forEach(function (s) { if (s && s.id) haveStaff[s.id] = true; });
+        var NEW_STAFF = [
+          { id: "EM011", name: "Alex Chen",  roleId: "owner",      department: "管理层", email: "alex@minddo.local",   phone: "626-555-0301", status: "active", joinedAt: new Date(Date.now() - 900 * 86400000).toISOString() },
+          { id: "EM012", name: "Grace Wang", roleId: "admin",      department: "管理层", email: "grace@minddo.local",  phone: "626-555-0312", status: "active", joinedAt: new Date(Date.now() - 720 * 86400000).toISOString() },
+          { id: "EM013", name: "Sophia Lee", roleId: "operations", department: "运营部", email: "sophia@minddo.local", phone: "626-555-0324", status: "active", joinedAt: new Date(Date.now() - 280 * 86400000).toISOString() },
+          { id: "EM014", name: "Daniel Liu", roleId: "counselor",  department: "运营部", email: "daniel@minddo.local", phone: "626-555-0335", status: "active", joinedAt: new Date(Date.now() - 200 * 86400000).toISOString() },
+          { id: "EM015", name: "Rachel Kim", roleId: "homeroom",   department: "教学部", email: "rachel@minddo.local", phone: "626-555-0347", status: "active", joinedAt: new Date(Date.now() - 310 * 86400000).toISOString() }
+        ].filter(function (s) { return !haveStaff[s.id]; });
+        if (NEW_STAFF.length) writeJson(KEYS.staff, staff.concat(NEW_STAFF));
+      }
     }
-  } catch (_) { /* localStorage unavailable; the dashboard will fall back */ }
+  ];
+
+  function readMigrationsApplied() {
+    try { return JSON.parse(localStorage.getItem(KEY_MIGRATIONS_APPLIED) || "[]") || []; }
+    catch (_) { return []; }
+  }
+  function writeMigrationsApplied(list) {
+    try { localStorage.setItem(KEY_MIGRATIONS_APPLIED, JSON.stringify(list)); } catch (_) {}
+  }
+  function runMigrations() {
+    var applied = readMigrationsApplied();
+    var appliedSet = {};
+    applied.forEach(function (id) { appliedSet[id] = true; });
+    var ran = [];
+    MIGRATIONS.forEach(function (m) {
+      if (appliedSet[m.id]) return;
+      try {
+        m.run();
+        applied.push(m.id);
+        ran.push(m.id);
+      } catch (e) {
+        if (typeof console !== "undefined" && console.warn) {
+          console.warn("[MindDo] migration failed:", m.id, e && e.message);
+        }
+      }
+    });
+    if (ran.length) writeMigrationsApplied(applied);
+    return ran;
+  }
+
+  try {
+    if (typeof localStorage !== "undefined") {
+      var hasStudent = !!getCurrentStudent();
+      if (!hasStudent) {
+        // True first-time visitor — full seed (includes the new roles).
+        seedDemoData();
+        // Mark every existing migration as already-applied: the seed
+        // already contains their effects, no need to re-run.
+        var initialApplied = MIGRATIONS.map(function (m) { return m.id; });
+        writeMigrationsApplied(initialApplied);
+      } else {
+        // Returning visitor — apply incremental migrations without
+        // touching their existing data.
+        runMigrations();
+        if (!getActiveOpsUser()) {
+          var def = defaultActiveOpsUser();
+          if (def) setActiveOpsUser(def.id);
+        }
+      }
+    }
+  } catch (_) { /* localStorage unavailable; pages will fall back */ }
 })();

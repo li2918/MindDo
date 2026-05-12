@@ -1,0 +1,10 @@
+{
+  "name": "minddo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MindDo — AI/coding learning center · frontend-only prototype (HTML + CSS + vanilla JS, all state in localStorage)",
+  "scripts": {
+    "smoke": "node tools/smoke.js",
+    "serve": "python -m http.server 8765"
+  }
+}
