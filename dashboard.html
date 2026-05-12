@@ -786,6 +786,69 @@
     .acad-seats-text { font-size: 11px; font-weight: 800; color: var(--clay); white-space: nowrap;
       font-variant-numeric: tabular-nums; }
 
+    /* Student-detail drawer — slides in from the right with a tabbed
+       single-student dossier (概览 / 出勤 / 付费 / 反馈 / 请求 / 作品).
+       Triggered from any [data-student-drawer] click in the dashboard. */
+    .sd-overlay { position: fixed; inset: 0; z-index: 2300; pointer-events: none; }
+    .sd-overlay.open { pointer-events: auto; }
+    .sd-backdrop { position: absolute; inset: 0; background: rgba(20,12,5,0.4);
+      opacity: 0; transition: opacity 0.2s ease; }
+    .sd-overlay.open .sd-backdrop { opacity: 1; }
+    .sd-panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(640px, 100vw);
+      background: var(--bg, #fff8ee); display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform 0.22s cubic-bezier(0.32, 0.72, 0.45, 1);
+      box-shadow: -20px 0 60px rgba(20,12,5,0.32); font-family: inherit; }
+    .sd-overlay.open .sd-panel { transform: translateX(0); }
+    .sd-head { padding: 18px 22px 14px; border-bottom: 1px solid var(--line); background: #fff;
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex: none; }
+    .sd-head .sd-avatar { width: 48px; height: 48px; border-radius: 50%;
+      background: linear-gradient(135deg, #fde68a, var(--gold)); color: #3a1808;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 16px; flex: none; }
+    .sd-head .sd-info { flex: 1 1 auto; min-width: 0; }
+    .sd-head h3 { font-size: 18px; font-weight: 900; color: var(--clay); margin: 0; letter-spacing: -0.01em; }
+    .sd-head .sd-meta { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.55; }
+    .sd-head .sd-close { width: 30px; height: 30px; border-radius: 50%; background: transparent;
+      border: 1px solid var(--line); cursor: pointer; font-size: 18px; line-height: 1; color: var(--muted);
+      display: inline-flex; align-items: center; justify-content: center; transition: 0.12s; font-family: inherit; flex: none; }
+    .sd-head .sd-close:hover { background: #f1f5f9; color: var(--clay); }
+    .sd-quick { padding: 10px 22px; background: rgba(254,243,199,0.5); border-bottom: 1px solid var(--line);
+      display: flex; gap: 10px; flex-wrap: wrap; font-size: 12.5px; color: var(--clay); }
+    .sd-quick span strong { font-weight: 800; color: var(--clay); }
+    .sd-quick span { display: inline-flex; align-items: center; gap: 4px; }
+    .sd-tabs { padding: 0 22px; background: #fff; border-bottom: 1px solid var(--line);
+      display: flex; gap: 4px; overflow-x: auto; flex: none; }
+    .sd-tabs button { all: unset; cursor: pointer; padding: 12px 14px; font-size: 13px; font-weight: 700;
+      color: var(--muted); border-bottom: 2px solid transparent; transition: 0.12s; font-family: inherit; white-space: nowrap; }
+    .sd-tabs button:hover { color: var(--clay); }
+    .sd-tabs button.active { color: var(--gold-deep); border-bottom-color: var(--gold-deep); }
+    .sd-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 18px 22px; }
+    .sd-section { margin-bottom: 18px; }
+    .sd-section h4 { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px; }
+    .sd-row { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: baseline;
+      padding: 6px 0; border-bottom: 1px dashed rgba(122,48,16,0.08); font-size: 13px; }
+    .sd-row:last-child { border-bottom: none; }
+    .sd-row .k { color: var(--muted); font-weight: 600; }
+    .sd-row .v { color: var(--clay); font-weight: 700; }
+    .sd-empty { padding: 16px; text-align: center; color: var(--muted); font-size: 12.5px; line-height: 1.6;
+      background: rgba(248,250,252,0.7); border: 1px dashed var(--line); border-radius: 12px; }
+    .sd-list { display: grid; gap: 8px; }
+    .sd-list-item { padding: 10px 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px;
+      font-size: 12.5px; color: var(--text); display: grid; gap: 4px; }
+    .sd-list-item .head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+    .sd-list-item .head strong { color: var(--clay); font-weight: 800; }
+    .sd-list-item .head .when { color: var(--muted); font-size: 11px; }
+    .sd-list-item .body { color: var(--muted); line-height: 1.55; }
+
+    /* Make student-name spans clickable wherever the drawer is wired. */
+    [data-student-drawer] { cursor: pointer; }
+    [data-student-drawer]:hover { text-decoration: underline; }
+
+    @media (max-width: 720px) {
+      .sd-panel { width: 100vw; }
+    }
+
     /* Generic "mini" pill — used by attendance recorder secondary action. */
     .btn-mini { background: #fff; color: var(--clay); border: 1px solid var(--line);
       border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 12.5px; font-weight: 700;
@@ -2450,6 +2513,33 @@
     </div>
   </div>
 
+  <!-- Student detail drawer — opens whenever ops clicks a student name
+       anywhere on the dashboard. Self-contained: hydrates from
+       MindDoFlow on every open so it always reflects current data. -->
+  <div class="sd-overlay" id="studentDrawerOverlay" role="dialog" aria-modal="true" aria-labelledby="sdTitle" aria-hidden="true">
+    <div class="sd-backdrop" data-sd-close></div>
+    <div class="sd-panel">
+      <header class="sd-head">
+        <span class="sd-avatar" id="sdAvatar">—</span>
+        <div class="sd-info">
+          <h3 id="sdTitle">—</h3>
+          <div class="sd-meta" id="sdMeta">—</div>
+        </div>
+        <button type="button" class="sd-close" id="sdCloseBtn" aria-label="Close">×</button>
+      </header>
+      <div class="sd-quick" id="sdQuick"></div>
+      <div class="sd-tabs" id="sdTabs">
+        <button type="button" data-sd-tab="overview" class="active" data-i18n="sdTabOverview"></button>
+        <button type="button" data-sd-tab="attendance" data-i18n="sdTabAttendance"></button>
+        <button type="button" data-sd-tab="payments" data-i18n="sdTabPayments"></button>
+        <button type="button" data-sd-tab="feedback" data-i18n="sdTabFeedback"></button>
+        <button type="button" data-sd-tab="requests" data-i18n="sdTabRequests"></button>
+        <button type="button" data-sd-tab="portfolio" data-i18n="sdTabPortfolio"></button>
+      </div>
+      <div class="sd-body" id="sdBody"></div>
+    </div>
+  </div>
+
   <!-- Attendance recorder — opens from 教务中心 → 出勤. Reads the
        offering's roster (memberships keyed by offeringId), pre-selects
        "present" for every student, and writes a flat list of records
@@ -2944,6 +3034,36 @@
           attRecentEmpty: "暂无出勤记录。选择班次和日期后录入第一次。",
           attRecentFmt: "{course} · {day} · {time}",
           attDeleteRecord: "删除",
+          sdTabOverview: "概览",
+          sdTabAttendance: "出勤",
+          sdTabPayments: "付费",
+          sdTabFeedback: "反馈",
+          sdTabRequests: "请求",
+          sdTabPortfolio: "作品",
+          sdQuickLevel: "等级",
+          sdQuickPlan: "套餐",
+          sdQuickParent: "家长",
+          sdQuickPhone: "电话",
+          sdQuickEmail: "邮箱",
+          sdQuickAttendance: "近 30 天出勤率",
+          sdOverviewProfile: "基本信息",
+          sdOverviewMembership: "当前会员",
+          sdOverviewGoal: "学习目标",
+          sdOverviewLevel: "等级",
+          sdOverviewGrade: "年级",
+          sdOverviewBirthday: "生日",
+          sdOverviewParent: "家长",
+          sdOverviewEnrolled: "入学日期",
+          sdOverviewLastFeedback: "最近反馈",
+          sdEmptyAttendance: "暂无出勤记录。",
+          sdEmptyPayments: "暂无付费记录。",
+          sdEmptyFeedback: "暂无反馈记录。",
+          sdEmptyRequests: "暂无请求。",
+          sdEmptyPortfolio: "暂无作品。",
+          sdAttendancePresent: "出勤",
+          sdAttendanceAbsent: "缺勤",
+          sdAttendanceLate: "迟到",
+          sdAttendanceExcused: "请假",
           acadRosterHead: "在读学员",
           acadSearchPlaceholder: "搜索 姓名 / 邮箱",
           acadFilterAllLevels: "全部等级",
@@ -3552,6 +3672,36 @@
           attRecentEmpty: "No attendance recorded yet. Pick a class + date and record your first session.",
           attRecentFmt: "{course} · {day} · {time}",
           attDeleteRecord: "Delete",
+          sdTabOverview: "Overview",
+          sdTabAttendance: "Attendance",
+          sdTabPayments: "Payments",
+          sdTabFeedback: "Feedback",
+          sdTabRequests: "Requests",
+          sdTabPortfolio: "Portfolio",
+          sdQuickLevel: "Level",
+          sdQuickPlan: "Plan",
+          sdQuickParent: "Parent",
+          sdQuickPhone: "Phone",
+          sdQuickEmail: "Email",
+          sdQuickAttendance: "30-day presence",
+          sdOverviewProfile: "Profile",
+          sdOverviewMembership: "Current Membership",
+          sdOverviewGoal: "Goal",
+          sdOverviewLevel: "Level",
+          sdOverviewGrade: "Grade",
+          sdOverviewBirthday: "Birthday",
+          sdOverviewParent: "Parent",
+          sdOverviewEnrolled: "Enrolled",
+          sdOverviewLastFeedback: "Latest feedback",
+          sdEmptyAttendance: "No attendance yet.",
+          sdEmptyPayments: "No payments yet.",
+          sdEmptyFeedback: "No feedback yet.",
+          sdEmptyRequests: "No requests.",
+          sdEmptyPortfolio: "No portfolio items yet.",
+          sdAttendancePresent: "Present",
+          sdAttendanceAbsent: "Absent",
+          sdAttendanceLate: "Late",
+          sdAttendanceExcused: "Excused",
           acadRosterHead: "Active students",
           acadSearchPlaceholder: "Search name / email",
           acadFilterAllLevels: "All levels",
@@ -4569,7 +4719,7 @@
           var initial = (r.name || "—").slice(0, 1);
           return "<tr>"
             + "<td><div class='acad-name'>"
-            +   "<span style='display:inline-flex;align-items:center;gap:8px;'>"
+            +   "<span style='display:inline-flex;align-items:center;gap:8px;' data-student-drawer='" + escHTML(r.sid) + "'>"
             +     "<span class='greet-avatar' style='width:28px;height:28px;font-size:11px;'>" + escHTML(initial) + "</span>"
             +     escHTML(r.name)
             +   "</span>"
@@ -4584,7 +4734,7 @@
             + "<td>" + escHTML(enrolled) + "</td>"
             + "<td>" + escHTML(contact) + "</td>"
             + "<td><div class='acad-row-actions'>"
-            +   "<a href='student-account.html?sid=" + encodeURIComponent(r.sid) + "'>" + escHTML(t.acadActionDetail) + "</a>"
+            +   "<a href='#' data-student-drawer='" + escHTML(r.sid) + "'>" + escHTML(t.acadActionDetail) + "</a>"
             +   (r.email ? "<a href='mailto:" + escHTML(r.email) + "'>" + escHTML(t.acadActionContact) + "</a>" : "")
             + "</div></td>"
             + "</tr>";
@@ -4937,7 +5087,7 @@
                 ? d.toLocaleDateString(k === "en" ? "en-US" : "zh-CN", { year: "numeric", month: "short", day: "numeric" })
                 : "—";
               return "<tr>"
-                + "<td><strong>" + escHTML(r.name) + "</strong>"
+                + "<td><strong" + (r.sid && r.sid !== "—" ? " data-student-drawer='" + escHTML(r.sid) + "'" : "") + ">" + escHTML(r.name) + "</strong>"
                 +   (r.sid && r.sid !== "—" ? "<div class='sid' style='font-size:11px;color:var(--muted);font-family:ui-monospace,Menlo,Consolas,monospace;'>" + escHTML(r.sid) + "</div>" : "")
                 + "</td>"
                 + "<td>" + escHTML(r.grade) + "</td>"
@@ -6997,6 +7147,294 @@
         });
         setActiveTab(savedTab);
       }
+
+      // ============================================================
+      // Student detail drawer — one-click dossier opened from any
+      // student-name reference across the dashboard. Hydrates from
+      // MindDoFlow on every open so it reflects current data.
+      // ============================================================
+      (function () {
+        var overlay = document.getElementById("studentDrawerOverlay");
+        var avatarEl = document.getElementById("sdAvatar");
+        var titleEl = document.getElementById("sdTitle");
+        var metaEl = document.getElementById("sdMeta");
+        var quickEl = document.getElementById("sdQuick");
+        var tabsEl = document.getElementById("sdTabs");
+        var bodyEl = document.getElementById("sdBody");
+        var closeBtn = document.getElementById("sdCloseBtn");
+        if (!overlay) return;
+
+        var __sdState = { studentId: "", tab: "overview" };
+
+        function dictNow() { return I18N[state.lang] || I18N["zh-CN"]; }
+        function close() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+        function initials(name) {
+          if (!name) return "—";
+          var s = String(name).trim();
+          if (!s) return "—";
+          // First two characters work for both Chinese (single CJK char per slot)
+          // and English (first letter of first two words).
+          var parts = s.split(/\s+/);
+          if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+          return s.slice(0, 2).toUpperCase();
+        }
+        function fmtDate(iso) {
+          if (!iso) return "—";
+          try {
+            var d = new Date(iso);
+            return state.lang === "en"
+              ? d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+              : (d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate());
+          } catch (_) { return iso; }
+        }
+        function fmtMoney(n) {
+          var num = Number(n);
+          return isFinite(num) ? "$" + num.toFixed(2) : (n || "—");
+        }
+
+        // Resolve a "student bundle" — student record + active membership
+        // + recent feedback + recent payments + requests + attendance.
+        // Centralised here so every tab pulls from one snapshot.
+        function gatherBundle(sid) {
+          var f = window.MindDoFlow;
+          if (!f) return null;
+          var stu = (f.findStudentById && f.findStudentById(sid)) || null;
+          var memberships = (f.readJson(f.keys.memberships) || [])
+            .filter(function (m) { return m && m.studentId === sid; })
+            .sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
+          var payments = (f.readJson(f.keys.payments) || [])
+            .filter(function (p) {
+              if (!p) return false;
+              if (p.studentId && p.studentId === sid) return true;
+              // Loose match by email (legacy records sometimes have email but no studentId).
+              if (!stu) return false;
+              return p.email && stu.email && p.email.toLowerCase() === stu.email.toLowerCase();
+            })
+            .sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
+          var feedback = (f.readJson(f.keys.feedback) || [])
+            .filter(function (r) { return r && (r.studentId === sid || (stu && r.email && stu.email && r.email.toLowerCase() === stu.email.toLowerCase())); })
+            .sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
+          var requests = (f.readJson(f.keys.requests) || [])
+            .filter(function (r) { return r && (r.studentId === sid || (stu && r.email && stu.email && r.email.toLowerCase() === stu.email.toLowerCase())); })
+            .sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
+          var portfolio = (f.getPortfolioForStudent && f.getPortfolioForStudent(sid)) || [];
+          var attSummary = (f.getStudentAttendanceSummary && f.getStudentAttendanceSummary(sid, 30)) || null;
+          var attAll = (f.getStudentAttendanceSummary && f.getStudentAttendanceSummary(sid)) || null;
+          var level = (f.getStudentLevel && f.getStudentLevel(sid)) || "";
+          return {
+            sid: sid,
+            student: stu,
+            level: level,
+            membership: memberships[0] || null,
+            allMemberships: memberships,
+            payments: payments,
+            feedback: feedback,
+            requests: requests,
+            portfolio: portfolio,
+            attendance30: attSummary,
+            attendanceAll: attAll
+          };
+        }
+
+        function renderHeader(bundle) {
+          var t = dictNow();
+          var stu = bundle.student || {};
+          var name = stu.name || stu.studentName || bundle.sid;
+          avatarEl.textContent = initials(name);
+          titleEl.textContent = name;
+          var bits = [];
+          if (stu.grade) bits.push(stu.grade);
+          if (bundle.level) bits.push(bundle.level);
+          bits.push(bundle.sid);
+          metaEl.textContent = bits.join(" · ");
+
+          var m = bundle.membership || {};
+          var att = bundle.attendance30;
+          var quickRows = [];
+          if (bundle.level) quickRows.push("<span><strong>" + escHTML(t.sdQuickLevel) + ":</strong> " + escHTML(bundle.level) + "</span>");
+          if (m.planLabel || m.plan) quickRows.push("<span><strong>" + escHTML(t.sdQuickPlan) + ":</strong> " + escHTML(m.planLabel || m.plan) + "</span>");
+          if (m.parentName || stu.parentName) quickRows.push("<span><strong>" + escHTML(t.sdQuickParent) + ":</strong> " + escHTML(m.parentName || stu.parentName) + "</span>");
+          if (m.phone || stu.phone) quickRows.push("<span><strong>" + escHTML(t.sdQuickPhone) + ":</strong> <a href='tel:" + encodeURIComponent(m.phone || stu.phone) + "'>" + escHTML(m.phone || stu.phone) + "</a></span>");
+          if (m.email || stu.email) quickRows.push("<span><strong>" + escHTML(t.sdQuickEmail) + ":</strong> <a href='mailto:" + encodeURIComponent(m.email || stu.email) + "'>" + escHTML(m.email || stu.email) + "</a></span>");
+          if (att && att.presenceRate != null) quickRows.push("<span><strong>" + escHTML(t.sdQuickAttendance) + ":</strong> " + att.presenceRate + "%</span>");
+          quickEl.innerHTML = quickRows.join("");
+        }
+
+        function tabOverview(bundle) {
+          var t = dictNow();
+          var stu = bundle.student || {};
+          var m = bundle.membership || {};
+          var latestFb = bundle.feedback[0];
+          var profileRows = [
+            { k: t.sdOverviewGrade,    v: stu.grade || "—" },
+            { k: t.sdOverviewBirthday, v: stu.birthday || "—" },
+            { k: t.sdOverviewParent,   v: m.parentName || stu.parentName || "—" },
+            { k: t.sdOverviewGoal,     v: stu.goal || "—" }
+          ];
+          var memberRows = [
+            { k: t.sdOverviewLevel,      v: bundle.level || "—" },
+            { k: t.sdQuickPlan,          v: m.planLabel || m.plan || "—" },
+            { k: t.sdOverviewEnrolled,   v: m.createdAt ? fmtDate(m.createdAt) : "—" },
+            { k: t.sdOverviewLastFeedback, v: latestFb ? ((latestFb.rating || "—") + " · " + fmtDate(latestFb.createdAt)) : "—" }
+          ];
+          function rows(list) {
+            return list.map(function (r) {
+              return "<div class='sd-row'><span class='k'>" + escHTML(r.k) + "</span><span class='v'>" + escHTML(r.v) + "</span></div>";
+            }).join("");
+          }
+          return "<section class='sd-section'>"
+              + "<h4>" + escHTML(t.sdOverviewProfile) + "</h4>"
+              + rows(profileRows)
+            + "</section>"
+            + "<section class='sd-section'>"
+              + "<h4>" + escHTML(t.sdOverviewMembership) + "</h4>"
+              + rows(memberRows)
+            + "</section>";
+        }
+
+        function tabAttendance(bundle) {
+          var t = dictNow();
+          var att = bundle.attendanceAll;
+          if (!att || !att.rows.length) {
+            return "<div class='sd-empty'>" + escHTML(t.sdEmptyAttendance) + "</div>";
+          }
+          var rows = att.rows
+            .slice()
+            .sort(function (a, b) { return (b.classDate || "").localeCompare(a.classDate || ""); })
+            .slice(0, 30);
+          var statusLabel = function (s) {
+            return t["sdAttendance" + s.charAt(0).toUpperCase() + s.slice(1)] || s;
+          };
+          var summary = "<div class='sd-row'><span class='k'>" + escHTML(t.sdQuickAttendance) + "</span>"
+            + "<span class='v'>" + (att.presenceRate != null ? att.presenceRate + "%" : "—") + "</span></div>";
+          var list = rows.map(function (r) {
+            var off = ((window.MindDoFlow.getClassOfferings && window.MindDoFlow.getClassOfferings()) || [])
+              .filter(function (o) { return o.id === r.offeringId; })[0] || {};
+            var k = state.lang === "en" ? "en" : "zh";
+            var name = (off.courseName && off.courseName[k]) || (off.courseName && off.courseName.en) || r.offeringId;
+            return "<div class='sd-list-item'>"
+              + "<div class='head'><strong>" + escHTML(name) + "</strong>"
+              + "<span class='when'>" + escHTML(r.classDate) + "</span></div>"
+              + "<div class='body'><span class='att-stat-chip " + r.status + "'>" + escHTML(statusLabel(r.status)) + "</span></div>"
+              + "</div>";
+          }).join("");
+          return "<section class='sd-section'>" + summary + "</section>"
+            + "<section class='sd-section'><div class='sd-list'>" + list + "</div></section>";
+        }
+
+        function tabPayments(bundle) {
+          var t = dictNow();
+          if (!bundle.payments.length) return "<div class='sd-empty'>" + escHTML(t.sdEmptyPayments) + "</div>";
+          return "<div class='sd-list'>" + bundle.payments.map(function (p) {
+            return "<div class='sd-list-item'>"
+              + "<div class='head'><strong>" + escHTML(fmtMoney(p.amount)) + "</strong>"
+              +   "<span class='when'>" + escHTML(fmtDate(p.createdAt)) + "</span></div>"
+              + "<div class='body'>" + escHTML((p.method || p.source || "—") + " · " + (p.status || "—") + (p.invoiceNo ? " · #" + p.invoiceNo : "")) + "</div>"
+              + "</div>";
+          }).join("") + "</div>";
+        }
+
+        function tabFeedback(bundle) {
+          var t = dictNow();
+          if (!bundle.feedback.length) return "<div class='sd-empty'>" + escHTML(t.sdEmptyFeedback) + "</div>";
+          return "<div class='sd-list'>" + bundle.feedback.map(function (r) {
+            return "<div class='sd-list-item'>"
+              + "<div class='head'><strong>" + escHTML(r.rating || "—") + "</strong>"
+              +   "<span class='when'>" + escHTML(fmtDate(r.createdAt)) + "</span></div>"
+              + "<div class='body'>"
+              +   (r.highlights ? escHTML(r.highlights) : "")
+              +   (r.suggestion ? "<br><em>" + escHTML(r.suggestion) + "</em>" : "")
+              + "</div>"
+              + "</div>";
+          }).join("") + "</div>";
+        }
+
+        function tabRequests(bundle) {
+          var t = dictNow();
+          if (!bundle.requests.length) return "<div class='sd-empty'>" + escHTML(t.sdEmptyRequests) + "</div>";
+          return "<div class='sd-list'>" + bundle.requests.map(function (r) {
+            return "<div class='sd-list-item'>"
+              + "<div class='head'><strong>" + escHTML((r.type || "—") + " · " + (r.status || "—")) + "</strong>"
+              +   "<span class='when'>" + escHTML(fmtDate(r.createdAt)) + "</span></div>"
+              + "<div class='body'>" + escHTML((r.targetLabel || "") + (r.reason ? " · " + r.reason : "")) + "</div>"
+              + "</div>";
+          }).join("") + "</div>";
+        }
+
+        function tabPortfolio(bundle) {
+          var t = dictNow();
+          if (!bundle.portfolio.length) return "<div class='sd-empty'>" + escHTML(t.sdEmptyPortfolio) + "</div>";
+          return "<div class='sd-list'>" + bundle.portfolio.map(function (p) {
+            return "<div class='sd-list-item'>"
+              + "<div class='head'><strong>" + escHTML(p.title || "—") + "</strong>"
+              +   "<span class='when'>" + escHTML(fmtDate(p.completedAt || p.createdAt)) + "</span></div>"
+              + "<div class='body'>" + escHTML(p.summary || p.description || "") + "</div>"
+              + "</div>";
+          }).join("") + "</div>";
+        }
+
+        var TAB_RENDERERS = {
+          overview: tabOverview,
+          attendance: tabAttendance,
+          payments: tabPayments,
+          feedback: tabFeedback,
+          requests: tabRequests,
+          portfolio: tabPortfolio
+        };
+
+        function renderTab() {
+          var bundle = gatherBundle(__sdState.studentId);
+          if (!bundle) return;
+          tabsEl.querySelectorAll("[data-sd-tab]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-sd-tab") === __sdState.tab);
+          });
+          var renderer = TAB_RENDERERS[__sdState.tab] || tabOverview;
+          bodyEl.innerHTML = renderer(bundle);
+        }
+
+        function open(sid) {
+          if (!sid) return;
+          __sdState.studentId = sid;
+          __sdState.tab = "overview";
+          var bundle = gatherBundle(sid);
+          if (!bundle) return;
+          renderHeader(bundle);
+          renderTab();
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+
+        // Delegated click handler — opens for any [data-student-drawer] attribute.
+        document.addEventListener("click", function (e) {
+          var sw = e.target.closest("[data-student-drawer]");
+          if (sw) {
+            var sid = sw.getAttribute("data-student-drawer");
+            if (sid) {
+              e.preventDefault();
+              open(sid);
+            }
+            return;
+          }
+          if (e.target.closest("[data-sd-close]") || e.target.closest("#sdCloseBtn")) {
+            close();
+            return;
+          }
+          var tabBtn = e.target.closest("[data-sd-tab]");
+          if (tabBtn) {
+            __sdState.tab = tabBtn.getAttribute("data-sd-tab");
+            renderTab();
+          }
+        });
+        if (closeBtn) closeBtn.addEventListener("click", close);
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && overlay.classList.contains("open")) close();
+        });
+      })();
 
       // ---- CSV export — delegated handler for every [data-csv-export] ----
       // Each table type knows how to project its own row shape into a flat
