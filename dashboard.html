@@ -786,6 +786,30 @@
     .acad-seats-text { font-size: 11px; font-weight: 800; color: var(--clay); white-space: nowrap;
       font-variant-numeric: tabular-nums; }
 
+    /* Inbox — unified pending-work queue. Each row is a card with a
+       kind-tag chip + short detail + inline approve/reject + jump button. */
+    .inbox-row { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+      padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 14px;
+      margin-bottom: 8px; transition: 0.12s; }
+    .inbox-row:hover { border-color: rgba(245,158,11,0.4); box-shadow: 0 6px 16px rgba(122,48,16,0.06); }
+    .inbox-row .inbox-kind { display: inline-flex; padding: 4px 10px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+    .inbox-row .inbox-kind.request  { background: rgba(245,158,11,0.16); color: var(--gold-deep); }
+    .inbox-row .inbox-kind.approval { background: rgba(196,106,77,0.16); color: #8e3d21; }
+    .inbox-row .inbox-kind.contract { background: rgba(110,143,87,0.18); color: #3f5d26; }
+    .inbox-row .inbox-kind.trial    { background: rgba(91,107,217,0.16); color: #312072; }
+    .inbox-row .inbox-info { min-width: 0; }
+    .inbox-row .inbox-info strong { font-size: 13.5px; color: var(--clay); font-weight: 800; display: block; margin-bottom: 2px; }
+    .inbox-row .inbox-info span { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .inbox-row .inbox-info .when { font-size: 11px; color: var(--muted); margin-top: 4px; display: block; }
+    .inbox-row .inbox-actions { display: inline-flex; gap: 6px; flex-wrap: nowrap; }
+    .inbox-row .inbox-actions button { all: unset; cursor: pointer; padding: 6px 12px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 800; font-family: inherit; transition: 0.12s; }
+    .inbox-row .inbox-actions .approve { background: rgba(110,143,87,0.16); color: #3f5d26; border: 1px solid rgba(110,143,87,0.36); }
+    .inbox-row .inbox-actions .approve:hover { background: rgba(110,143,87,0.28); }
+    .inbox-row .inbox-actions .reject { background: rgba(196,106,77,0.16); color: #8e3d21; border: 1px solid rgba(196,106,77,0.36); }
+    .inbox-row .inbox-actions .reject:hover { background: rgba(196,106,77,0.28); }
+
     /* Student-detail drawer — slides in from the right with a tabbed
        single-student dossier (概览 / 出勤 / 付费 / 反馈 / 请求 / 作品).
        Triggered from any [data-student-drawer] click in the dashboard. */
@@ -1444,6 +1468,11 @@
           <span class="si-icon" aria-hidden="true">🏠</span><span class="si-label" data-i18n="tabOverview"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
+        <button type="button" class="sidebar-item" data-tab="inbox" role="tab">
+          <span class="si-icon" aria-hidden="true">📥</span><span class="si-label" data-i18n="tabInbox"></span>
+          <span class="tab-pill" id="inboxBadge" hidden>0</span>
+          <span class="si-arrow" aria-hidden="true">▸</span>
+        </button>
         <button type="button" class="sidebar-item" data-tab="enrollment" role="tab">
           <span class="si-icon" aria-hidden="true">📣</span><span class="si-label" data-i18n="navMarketing"></span>
           <span class="tab-pill" id="enrollmentBadge" hidden>0</span>
@@ -1707,6 +1736,36 @@
              guards. The Quick Apps row above is the new entry point. -->
         <section id="opsWorkspace" hidden>
           <div class="workspace-grid" id="workspaceGrid"></div>
+        </section>
+      </section>
+
+      <!-- ========== Inbox / 待办 — unified pending-work queue ========== -->
+      <section class="dash-panel" data-tab-panel="inbox" role="tabpanel" hidden>
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="zoneInboxTitle"></h3>
+              <p data-i18n="zoneInboxSub"></p>
+            </div>
+          </div>
+          <section class="grid" id="inboxKpiMetrics"></section>
+        </section>
+
+        <section class="dash-zone">
+          <article class="panel">
+            <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+              <h2 data-i18n="inboxHead" style="margin:0;"></h2>
+              <div class="acad-cap-bar" id="inboxKindFilter" role="group" aria-label="Inbox filter">
+                <button type="button" data-inbox-kind="all" class="active" data-i18n="inboxFilterAll"></button>
+                <button type="button" data-inbox-kind="request" data-i18n="inboxFilterRequests"></button>
+                <button type="button" data-inbox-kind="approval" data-i18n="inboxFilterApprovals"></button>
+                <button type="button" data-inbox-kind="contract" data-i18n="inboxFilterContracts"></button>
+                <button type="button" data-inbox-kind="trial" data-i18n="inboxFilterTrials"></button>
+              </div>
+            </div>
+            <p class="muted" style="font-size:12.5px;margin-bottom:10px;" data-i18n="inboxHint"></p>
+            <div id="inboxList"></div>
+          </article>
         </section>
       </section>
 
@@ -2796,6 +2855,28 @@
           zoneAdminOpsTitle: "管理员手动操作",
           zoneAdminOpsSub: "应急 / 离线场景使用，平时折叠隐藏",
           tabOverview: "首页",
+          tabInbox: "待办",
+          zoneInboxTitle: "待办工作台",
+          zoneInboxSub: "所有待审批的请假、改期、退款、报销、合同等集中在这里，一键通过 / 驳回。",
+          inboxHead: "全部待办",
+          inboxHint: "点击「✓ 通过」/「✗ 驳回」即时改写状态；点行可定位到原数据所在面板。",
+          inboxFilterAll: "全部",
+          inboxFilterRequests: "请假改期",
+          inboxFilterApprovals: "退费/报销",
+          inboxFilterContracts: "合同到期",
+          inboxFilterTrials: "试听评估",
+          inboxKpiTotal: "待办总数",
+          inboxKpiRequests: "请假改期",
+          inboxKpiApprovals: "财务审批",
+          inboxKpiContracts: "合同到期",
+          inboxApprove: "✓ 通过",
+          inboxReject: "✗ 驳回",
+          inboxOpenSource: "前往",
+          inboxEmpty: "暂无待办事项 — 收件箱清空 ✨",
+          inboxKindRequest: "请假/改期",
+          inboxKindApproval: "财务审批",
+          inboxKindContract: "合同",
+          inboxKindTrial: "试听评估",
           tabEnrollment: "市场中心",
           tabAcademic: "教务中心",
           tabTeaching: "教学",
@@ -3447,6 +3528,28 @@
           zoneAdminOpsTitle: "Admin Operations",
           zoneAdminOpsSub: "Manual recovery tools, collapsed by default",
           tabOverview: "Home",
+          tabInbox: "Inbox",
+          zoneInboxTitle: "Pending Inbox",
+          zoneInboxSub: "Leave / reschedule, refunds, expense approvals, contracts — every pending action in one place with one-click approve/reject.",
+          inboxHead: "All pending",
+          inboxHint: "Tap «✓ Approve» or «✗ Reject» to update status inline; click the row to jump to the original source.",
+          inboxFilterAll: "All",
+          inboxFilterRequests: "Leave/Reschedule",
+          inboxFilterApprovals: "Approvals",
+          inboxFilterContracts: "Contracts",
+          inboxFilterTrials: "Trial Evals",
+          inboxKpiTotal: "Total",
+          inboxKpiRequests: "Leave/Resched.",
+          inboxKpiApprovals: "Finance",
+          inboxKpiContracts: "Contracts",
+          inboxApprove: "✓ Approve",
+          inboxReject: "✗ Reject",
+          inboxOpenSource: "Open",
+          inboxEmpty: "Inbox zero — nothing pending ✨",
+          inboxKindRequest: "Leave/Resched.",
+          inboxKindApproval: "Approval",
+          inboxKindContract: "Contract",
+          inboxKindTrial: "Trial Eval",
           tabEnrollment: "Marketing Center",
           tabAcademic: "Academic",
           tabTeaching: "Teaching",
@@ -5548,6 +5651,232 @@
         });
       })();
 
+      // ============================================================
+      // 待办收件箱 (Approvals inbox)
+      // ============================================================
+      var __inboxKindFilter = "all";
+
+      function gatherInboxItems() {
+        var f = window.MindDoFlow;
+        if (!f) return [];
+        var items = [];
+
+        // Schedule requests (leave / reschedule) — pending
+        var reqs = f.readJson(f.keys.requests) || [];
+        reqs.forEach(function (r) {
+          if ((r.status || "pending") !== "pending") return;
+          items.push({
+            kind: "request",
+            id: r.createdAt || ("req-" + Math.random()),
+            studentId: r.studentId || "",
+            title: (r.type === "leave" ? "请假" : "改期") + " · " + (r.studentName || "—"),
+            detail: (r.targetLabel || "") + (r.reason ? " · " + r.reason : ""),
+            when: r.createdAt,
+            sourceTab: "requests",
+            raw: r
+          });
+        });
+
+        // Finance approvals — pending
+        var apps = f.readJson(f.keys.approvals) || [];
+        apps.forEach(function (a) {
+          if ((a.status || "pending") !== "pending") return;
+          items.push({
+            kind: "approval",
+            id: a.id || ("ap-" + Math.random()),
+            title: (a.type || "审批") + " · " + (a.requester || "—") + (a.amount != null ? " · $" + a.amount : ""),
+            detail: a.detail || "",
+            when: a.submittedAt,
+            sourceTab: "finance",
+            raw: a
+          });
+        });
+
+        // Contracts expiring within 30 days OR awaiting signature
+        var contracts = f.readJson(f.keys.contracts) || [];
+        var nowMs = Date.now();
+        var soon = 30 * 24 * 3600 * 1000;
+        contracts.forEach(function (c) {
+          var st = c.status || "";
+          var expiry = c.expiresAt ? new Date(c.expiresAt).getTime() : null;
+          var diff = expiry ? (expiry - nowMs) : null;
+          var isPending = st === "pending";
+          var isExpiringSoon = st === "signed" && diff != null && diff > 0 && diff <= soon;
+          if (!isPending && !isExpiringSoon) return;
+          items.push({
+            kind: "contract",
+            id: c.id || ("ct-" + Math.random()),
+            title: (c.type || "contract") + " · " + (c.party || "—") + (isExpiringSoon ? " · 即将到期" : ""),
+            detail: (c.expiresAt ? "到期: " + c.expiresAt : ""),
+            when: c.submittedAt || c.signedAt,
+            sourceTab: "finance",
+            raw: c
+          });
+        });
+
+        // Trial completions awaiting an eval (best-effort heuristic)
+        var trialCompletions = (f.getTrialCompletions && f.getTrialCompletions()) || [];
+        var evalIndex = {};
+        ((f.getTrialEvaluations && f.getTrialEvaluations()) || []).forEach(function (e) {
+          var key = (e.email || "") + "|" + (e.studentName || "");
+          evalIndex[key] = true;
+        });
+        trialCompletions.forEach(function (c) {
+          var key = (c.email || "") + "|" + (c.studentName || "");
+          if (evalIndex[key]) return;
+          items.push({
+            kind: "trial",
+            id: "trial-" + (c.createdAt || c.email || Math.random()),
+            title: "试听评估 · " + (c.studentName || c.email || "—"),
+            detail: "已完成试听 — 等待录入评估",
+            when: c.createdAt,
+            sourceTab: "enrollment",
+            raw: c
+          });
+        });
+
+        // Sort newest first.
+        items.sort(function (a, b) {
+          return new Date(b.when || 0) - new Date(a.when || 0);
+        });
+        return items;
+      }
+
+      function renderInboxPanel(t) {
+        var items = gatherInboxItems();
+        // Apply filter
+        var visible = items.filter(function (it) {
+          return __inboxKindFilter === "all" || it.kind === __inboxKindFilter;
+        });
+
+        // KPI tiles
+        var counts = { request: 0, approval: 0, contract: 0, trial: 0 };
+        items.forEach(function (it) { if (counts[it.kind] != null) counts[it.kind]++; });
+        var kpiEl = document.getElementById("inboxKpiMetrics");
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.inboxKpiTotal, value: items.length, sub: "" },
+            { label: t.inboxKpiRequests, value: counts.request, sub: "" },
+            { label: t.inboxKpiApprovals, value: counts.approval, sub: "" },
+            { label: t.inboxKpiContracts, value: counts.contract, sub: "" }
+          ]);
+        }
+
+        // Sidebar badge
+        var badge = document.getElementById("inboxBadge");
+        if (badge) {
+          if (items.length > 0) {
+            badge.textContent = items.length;
+            badge.hidden = false;
+          } else {
+            badge.hidden = true;
+          }
+        }
+
+        // Filter pills
+        var bar = document.getElementById("inboxKindFilter");
+        if (bar) {
+          bar.querySelectorAll("[data-inbox-kind]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-inbox-kind") === __inboxKindFilter);
+          });
+        }
+
+        var listEl = document.getElementById("inboxList");
+        if (!listEl) return;
+        if (!visible.length) {
+          listEl.innerHTML = "<div class='acad-empty'>" + escHTML(t.inboxEmpty) + "</div>";
+          return;
+        }
+        var kindLabels = {
+          request: t.inboxKindRequest,
+          approval: t.inboxKindApproval,
+          contract: t.inboxKindContract,
+          trial: t.inboxKindTrial
+        };
+        function fmtWhen(iso) {
+          if (!iso) return "";
+          try {
+            var d = new Date(iso);
+            return state.lang === "en"
+              ? d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
+              : (d.getMonth() + 1) + "/" + d.getDate() + " " + (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes();
+          } catch (_) { return iso; }
+        }
+        listEl.innerHTML = visible.map(function (it) {
+          var canActOn = it.kind === "request" || it.kind === "approval";
+          var actions = "";
+          if (canActOn) {
+            actions = "<div class='inbox-actions'>"
+              + "<button type='button' class='approve' data-inbox-action='approve' data-kind='" + it.kind + "' data-id='" + escHTML(it.id) + "'>" + escHTML(t.inboxApprove) + "</button>"
+              + "<button type='button' class='reject' data-inbox-action='reject' data-kind='" + it.kind + "' data-id='" + escHTML(it.id) + "'>" + escHTML(t.inboxReject) + "</button>"
+              + "</div>";
+          } else {
+            actions = "<div class='inbox-actions'>"
+              + "<button type='button' class='approve' data-inbox-jump='" + escHTML(it.sourceTab) + "'>" + escHTML(t.inboxOpenSource) + "</button>"
+              + "</div>";
+          }
+          var nameClickable = it.studentId
+            ? "<strong data-student-drawer='" + escHTML(it.studentId) + "'>" + escHTML(it.title) + "</strong>"
+            : "<strong>" + escHTML(it.title) + "</strong>";
+          return "<div class='inbox-row'>"
+            + "<span class='inbox-kind " + it.kind + "'>" + escHTML(kindLabels[it.kind] || it.kind) + "</span>"
+            + "<div class='inbox-info'>"
+            +   nameClickable
+            +   (it.detail ? "<span>" + escHTML(it.detail) + "</span>" : "")
+            +   (it.when ? "<span class='when'>" + escHTML(fmtWhen(it.when)) + "</span>" : "")
+            + "</div>"
+            + actions
+            + "</div>";
+        }).join("");
+      }
+
+      // Inbox click delegation: filter pills, approve / reject, jump-to-source.
+      (function () {
+        var bar = document.getElementById("inboxKindFilter");
+        if (bar) {
+          bar.addEventListener("click", function (e) {
+            var b = e.target.closest("[data-inbox-kind]");
+            if (!b) return;
+            __inboxKindFilter = b.getAttribute("data-inbox-kind");
+            renderInboxPanel(I18N[state.lang]);
+          });
+        }
+        document.addEventListener("click", function (e) {
+          var jumpBtn = e.target.closest("[data-inbox-jump]");
+          if (jumpBtn) {
+            var dt = jumpBtn.getAttribute("data-inbox-jump");
+            if (dt && typeof setActiveTab === "function") setActiveTab(dt);
+            return;
+          }
+          var actBtn = e.target.closest("[data-inbox-action]");
+          if (!actBtn) return;
+          var action = actBtn.getAttribute("data-inbox-action");
+          var kind = actBtn.getAttribute("data-kind");
+          var id = actBtn.getAttribute("data-id");
+          var f = window.MindDoFlow;
+          if (!f) return;
+          if (kind === "request") {
+            // id is the createdAt timestamp of the request record.
+            var list = f.readJson(f.keys.requests) || [];
+            var found = list.filter(function (r) { return (r.createdAt || "") === id; })[0];
+            if (found) {
+              found.status = action === "approve" ? "approved" : "rejected";
+              found.updatedAt = new Date().toISOString();
+              f.writeJson(f.keys.requests, list);
+            }
+          } else if (kind === "approval") {
+            var apps = f.readJson(f.keys.approvals) || [];
+            var hit = apps.filter(function (a) { return a.id === id; })[0];
+            if (hit) {
+              hit.status = action === "approve" ? "approved" : "rejected";
+              hit.updatedAt = new Date().toISOString();
+              f.writeJson(f.keys.approvals, apps);
+            }
+          }
+          renderInboxPanel(I18N[state.lang]);
+        });
+      })();
+
       // 订单管理 — every membership order plus loose payments.
       function renderFinanceOrders(paymentsAll, t) {
         var f = window.MindDoFlow;
@@ -6925,6 +7254,9 @@
 
         // ---- Marketing Center: CRM lead list + trial table + brand grid ----
         renderMarketingCenter(leadsAll, t);
+
+        // ---- Inbox: aggregated pending work + sidebar badge ----
+        renderInboxPanel(t);
 
         // ---- Academic Affairs: roster + class catalog + weekly schedule + attendance ----
         renderAcademicCenter(t);
