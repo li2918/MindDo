@@ -786,6 +786,35 @@
     .acad-seats-text { font-size: 11px; font-weight: 800; color: var(--clay); white-space: nowrap;
       font-variant-numeric: tabular-nums; }
 
+    /* Generic "mini" pill — used by attendance recorder secondary action. */
+    .btn-mini { background: #fff; color: var(--clay); border: 1px solid var(--line);
+      border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 12.5px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: 0.15s; }
+    .btn-mini:hover { border-color: var(--gold); color: var(--gold-deep); }
+
+    /* Attendance recorder — table of enrolled students × 4-button status. */
+    .att-grid { display: grid; gap: 8px; padding: 14px 22px; }
+    .att-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;
+      padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .att-row .att-name { font-weight: 800; color: var(--clay); font-size: 13px; }
+    .att-row .att-name small { display: block; font-size: 11px; color: var(--muted); font-weight: 600; font-family: ui-monospace, monospace; margin-top: 2px; }
+    .att-row .att-status-row { display: inline-flex; gap: 4px; padding: 3px; background: rgba(122,48,16,0.06); border-radius: 999px; }
+    .att-row .att-status-row button { all: unset; cursor: pointer; padding: 5px 12px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 700; color: var(--muted); font-family: inherit; transition: 0.12s; }
+    .att-row .att-status-row button:hover { color: var(--clay); }
+    .att-row .att-status-row button.active.present { background: #fff; color: #3f5d26; box-shadow: 0 1px 3px rgba(110,143,87,0.18); }
+    .att-row .att-status-row button.active.absent  { background: #fff; color: #8e3d21; box-shadow: 0 1px 3px rgba(196,106,77,0.2); }
+    .att-row .att-status-row button.active.late    { background: #fff; color: var(--gold-deep); box-shadow: 0 1px 3px rgba(217,119,6,0.2); }
+    .att-row .att-status-row button.active.excused { background: #fff; color: var(--clay); box-shadow: 0 1px 3px rgba(124,45,18,0.18); }
+
+    /* Compact attendance summary chips for the recent-session table. */
+    .att-stat-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px;
+      font-size: 11px; font-weight: 800; margin-right: 4px; }
+    .att-stat-chip.present { color: #3f5d26; background: rgba(110,143,87,0.16); }
+    .att-stat-chip.absent  { color: #8e3d21; background: rgba(196,106,77,0.16); }
+    .att-stat-chip.late    { color: var(--gold-deep); background: rgba(245,158,11,0.16); }
+    .att-stat-chip.excused { color: var(--clay); background: rgba(124,45,18,0.12); }
+
     /* "Export CSV" buttons live in panel head-rows next to filters.
        Quiet outlined style so they don't compete with primary CTAs. */
     .csv-export-btn { background: #fff; color: var(--clay); border: 1px solid var(--line);
@@ -1392,6 +1421,9 @@
           <button type="button" class="sidebar-subitem acad-subtab" data-acad-subtab="schedule" role="tab">
             <span class="ms-icon" aria-hidden="true">📅</span><span class="ms-label" data-i18n="acadSubtabSchedule"></span>
           </button>
+          <button type="button" class="sidebar-subitem acad-subtab" data-acad-subtab="attendance" role="tab">
+            <span class="ms-icon" aria-hidden="true">✅</span><span class="ms-label" data-i18n="acadSubtabAttendance"></span>
+          </button>
         </div>
         <button type="button" class="sidebar-item" data-tab="teaching" role="tab">
           <span class="si-icon" aria-hidden="true">📊</span><span class="si-label" data-i18n="navTeaching"></span>
@@ -1845,6 +1877,36 @@
               <div class="acad-grid-wrap">
                 <div class="acad-grid" id="acadScheduleGrid"></div>
               </div>
+            </article>
+          </section>
+        </div>
+
+        <!-- Sub-panel 4: Attendance — pick a class + date, record P/A/L/E
+             per enrolled student. Recent-sessions table lists the last
+             rounds so ops can drill back in. -->
+        <div class="acad-subpanel" data-acad-subpanel="attendance" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneAcadAttendanceTitle"></h3>
+                <p data-i18n="zoneAcadAttendanceSub"></p>
+              </div>
+            </div>
+            <section class="grid" id="attKpiMetrics"></section>
+          </section>
+
+          <section class="dash-zone">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                <h2 data-i18n="attRecordHead" style="margin:0;"></h2>
+                <div class="acad-filters">
+                  <select id="attOfferingFilter" class="acad-select"></select>
+                  <input type="date" id="attDateInput" class="acad-select" />
+                  <button type="button" class="btn-primary" id="attOpenRecorderBtn" data-i18n="attRecordCta"></button>
+                </div>
+              </div>
+              <p class="muted" data-i18n="attRecordHint" style="font-size:12.5px;margin-bottom:10px;"></p>
+              <div id="attRecentBody"></div>
             </article>
           </section>
         </div>
@@ -2388,6 +2450,31 @@
     </div>
   </div>
 
+  <!-- Attendance recorder — opens from 教务中心 → 出勤. Reads the
+       offering's roster (memberships keyed by offeringId), pre-selects
+       "present" for every student, and writes a flat list of records
+       via flow.recordAttendance(). Closes on ✕ / backdrop / Esc. -->
+  <div class="cls-roster-overlay" id="attRecorderOverlay" role="dialog" aria-modal="true" aria-labelledby="attRecorderTitle" aria-hidden="true">
+    <div class="cls-roster-card" style="width:min(640px,100%);">
+      <header class="cls-roster-head">
+        <div>
+          <span class="cls-roster-eyebrow" data-i18n="attRecorderEyebrow"></span>
+          <h3 id="attRecorderTitle"></h3>
+          <p class="cls-roster-meta" id="attRecorderMeta"></p>
+        </div>
+        <button type="button" class="cls-roster-close" id="attRecorderCloseBtn" aria-label="Close">×</button>
+      </header>
+      <div class="cls-roster-body" id="attRecorderBody"></div>
+      <div style="padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#fafafa;">
+        <span class="muted" id="attRecorderMsg" style="font-size:12px;"></span>
+        <div style="display:flex;gap:10px;">
+          <button type="button" class="btn-mini" id="attMarkAllPresentBtn" data-i18n="attMarkAllPresent"></button>
+          <button type="button" class="btn-primary" id="attRecorderSaveBtn" data-i18n="attSave"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Eval modal — captures trial level + notes after a trial is marked done -->
   <div class="eval-overlay" id="mktEvalOverlay" role="dialog" aria-modal="true" aria-labelledby="mktEvalTitle" aria-hidden="true">
     <div class="eval-modal">
@@ -2833,6 +2920,30 @@
           csvExport: "导出 CSV",
           csvExportToast: "已导出 {n} 行 → {filename}",
           csvExportEmpty: "暂无可导出的数据。",
+          acadSubtabAttendance: "出勤",
+          zoneAcadAttendanceTitle: "出勤记录",
+          zoneAcadAttendanceSub: "选择班次和日期后录入每位学员的出勤状态；可在学员详情中追溯出勤率。",
+          attKpiSessions: "已记录课节",
+          attKpiRate: "近 30 天出勤率",
+          attKpiAbsent: "缺勤记录",
+          attKpiAtRisk: "出勤率 < 80%",
+          attRecordHead: "录入出勤",
+          attRecordHint: "选择班次 + 日期 → 点「录入出勤」打开学员勾选表。本班次已有记录会覆盖。",
+          attRecordCta: "录入出勤",
+          attRecorderEyebrow: "出勤录入",
+          attMarkAllPresent: "全标已到",
+          attSave: "保存",
+          attSaveSuccess: "已保存 {n} 条出勤记录。",
+          attStatusPresent: "出勤",
+          attStatusAbsent: "缺勤",
+          attStatusLate: "迟到",
+          attStatusExcused: "请假",
+          attNoOfferingPicked: "请选择班次。",
+          attNoStudents: "该班次目前无在读学员。",
+          attRecentHead: "最近 8 次课程",
+          attRecentEmpty: "暂无出勤记录。选择班次和日期后录入第一次。",
+          attRecentFmt: "{course} · {day} · {time}",
+          attDeleteRecord: "删除",
           acadRosterHead: "在读学员",
           acadSearchPlaceholder: "搜索 姓名 / 邮箱",
           acadFilterAllLevels: "全部等级",
@@ -3417,6 +3528,30 @@
           csvExport: "Export CSV",
           csvExportToast: "Exported {n} row(s) → {filename}",
           csvExportEmpty: "Nothing to export yet.",
+          acadSubtabAttendance: "Attendance",
+          zoneAcadAttendanceTitle: "Class Attendance",
+          zoneAcadAttendanceSub: "Pick a class + date, record P/A/L/E per student. Per-student attendance shows up in the student detail drawer.",
+          attKpiSessions: "Sessions logged",
+          attKpiRate: "30-day presence rate",
+          attKpiAbsent: "Absences",
+          attKpiAtRisk: "Below 80%",
+          attRecordHead: "Record Attendance",
+          attRecordHint: "Pick the class + date, then click \"Record\" to open the per-student grid. Existing entries for this session get replaced.",
+          attRecordCta: "Record",
+          attRecorderEyebrow: "Attendance",
+          attMarkAllPresent: "Mark all present",
+          attSave: "Save",
+          attSaveSuccess: "Saved {n} attendance record(s).",
+          attStatusPresent: "Present",
+          attStatusAbsent: "Absent",
+          attStatusLate: "Late",
+          attStatusExcused: "Excused",
+          attNoOfferingPicked: "Pick a class first.",
+          attNoStudents: "No active students enrolled in this class yet.",
+          attRecentHead: "Last 8 sessions",
+          attRecentEmpty: "No attendance recorded yet. Pick a class + date and record your first session.",
+          attRecentFmt: "{course} · {day} · {time}",
+          attDeleteRecord: "Delete",
           acadRosterHead: "Active students",
           acadSearchPlaceholder: "Search name / email",
           acadFilterAllLevels: "All levels",
@@ -4966,6 +5101,303 @@
       var __finContractStatusFilter = "";
       var __finContractTypeFilter = "";
 
+      // ============================================================
+      // 出勤记录 (Class attendance)
+      // ============================================================
+      var __attUiState = { offeringId: "", classDate: "" };
+
+      // Build the today date string in YYYY-MM-DD (local tz).
+      function todayLocalDateStr() {
+        var d = new Date();
+        var p = function (n) { return n < 10 ? "0" + n : "" + n; };
+        return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+      }
+
+      function listEnrolledStudentsForOffering(offeringId) {
+        var f = window.MindDoFlow;
+        if (!f || !offeringId) return [];
+        var memberships = (f.readJson && f.keys && f.keys.memberships)
+          ? (f.readJson(f.keys.memberships) || []) : [];
+        var seen = {};
+        var out = [];
+        memberships.forEach(function (m) {
+          if (!m || !m.sessions || !m.sessions.length) return;
+          var hit = m.sessions.some(function (s) { return s && s.offeringId === offeringId; });
+          if (!hit) return;
+          var sid = m.studentId;
+          if (!sid || seen[sid]) return;
+          seen[sid] = true;
+          var stu = (f.findStudentById && f.findStudentById(sid)) || {};
+          out.push({
+            studentId: sid,
+            name: stu.name || m.studentName || sid,
+            grade: stu.grade || m.grade || ""
+          });
+        });
+        return out;
+      }
+
+      function renderAttendancePanel(t) {
+        var f = window.MindDoFlow;
+        if (!f || !f.getClassOfferings) return;
+        var offerings = f.getClassOfferings() || [];
+        var attendance = f.getAttendance ? f.getAttendance() : [];
+
+        // Hydrate the offering dropdown once with the canonical list.
+        var sel = document.getElementById("attOfferingFilter");
+        if (sel && !sel.dataset.hydrated) {
+          sel.innerHTML = "<option value=''>" + escHTML(t.acadFilterAllLevels || "—") + "</option>"
+            + offerings.map(function (o) {
+                var k = state.lang === "en" ? "en" : "zh";
+                var name = (o.courseName && o.courseName[k]) || (o.courseName && o.courseName.en) || o.id;
+                var day = (o.weekday && o.weekday[k]) || (o.weekday && o.weekday.en) || o.dayKey || "";
+                return "<option value='" + escHTML(o.id) + "'>"
+                  + escHTML(name + " · " + day + " · " + (o.timeSlot || ""))
+                  + "</option>";
+              }).join("");
+          sel.dataset.hydrated = "1";
+          sel.addEventListener("change", function () {
+            __attUiState.offeringId = sel.value;
+          });
+        }
+        if (sel) sel.value = __attUiState.offeringId;
+
+        var dateEl = document.getElementById("attDateInput");
+        if (dateEl && !dateEl.dataset.hydrated) {
+          dateEl.dataset.hydrated = "1";
+          dateEl.value = todayLocalDateStr();
+          __attUiState.classDate = dateEl.value;
+          dateEl.addEventListener("change", function () {
+            __attUiState.classDate = dateEl.value;
+          });
+        }
+
+        // KPI tiles — sessions tracked, 30-day presence rate, absences, # students below 80%.
+        var kpiEl = document.getElementById("attKpiMetrics");
+        if (kpiEl) {
+          var sessionsCount = {};
+          attendance.forEach(function (r) { sessionsCount[r.offeringId + "|" + r.classDate] = true; });
+          var sessions = Object.keys(sessionsCount).length;
+          var thirtyAgo = Date.now() - 30 * 24 * 3600 * 1000;
+          var recent = attendance.filter(function (r) {
+            var ts = new Date(r.classDate || r.recordedAt || 0).getTime();
+            return ts >= thirtyAgo;
+          });
+          var attended = recent.filter(function (r) { return r.status === "present" || r.status === "late"; }).length;
+          var rate = recent.length ? Math.round((attended / recent.length) * 100) + "%" : "—";
+          var absences = attendance.filter(function (r) { return r.status === "absent"; }).length;
+
+          // Per-student presence rate < 80% in last 30 days.
+          var byStudent = {};
+          recent.forEach(function (r) {
+            if (!byStudent[r.studentId]) byStudent[r.studentId] = { total: 0, ok: 0 };
+            byStudent[r.studentId].total++;
+            if (r.status === "present" || r.status === "late") byStudent[r.studentId].ok++;
+          });
+          var atRisk = Object.keys(byStudent).filter(function (sid) {
+            var s = byStudent[sid];
+            return s.total >= 3 && (s.ok / s.total) < 0.8;
+          }).length;
+
+          renderMetricCards(kpiEl, [
+            { label: t.attKpiSessions, value: sessions, sub: "" },
+            { label: t.attKpiRate, value: rate, sub: "" },
+            { label: t.attKpiAbsent, value: absences, sub: "" },
+            { label: t.attKpiAtRisk, value: atRisk, sub: "" }
+          ]);
+        }
+
+        // Recent sessions list — last 8 (offering, date) pairs.
+        var recentBody = document.getElementById("attRecentBody");
+        if (recentBody) {
+          var byPair = {};
+          attendance.forEach(function (r) {
+            var key = r.offeringId + "|" + r.classDate;
+            if (!byPair[key]) byPair[key] = { offeringId: r.offeringId, classDate: r.classDate, rows: [] };
+            byPair[key].rows.push(r);
+          });
+          var pairs = Object.values(byPair).sort(function (a, b) {
+            return (b.classDate || "").localeCompare(a.classDate || "");
+          }).slice(0, 8);
+          if (!pairs.length) {
+            recentBody.innerHTML = "<div class='acad-empty'>" + escHTML(t.attRecentEmpty) + "</div>";
+          } else {
+            var k = state.lang === "en" ? "en" : "zh";
+            recentBody.innerHTML = "<div class='table-wrap'><table class='acad-table'>"
+              + "<thead><tr>"
+              +   "<th>" + escHTML(t.attRecentHead) + "</th>"
+              +   "<th>" + escHTML(t.acadClassColTime) + "</th>"
+              +   "<th>" + escHTML(t.attRecorderEyebrow) + "</th>"
+              +   "<th></th>"
+              + "</tr></thead><tbody>"
+              + pairs.map(function (p) {
+                  var off = offerings.filter(function (o) { return o.id === p.offeringId; })[0] || {};
+                  var name = (off.courseName && off.courseName[k]) || (off.courseName && off.courseName.en) || p.offeringId;
+                  var day = (off.weekday && off.weekday[k]) || (off.weekday && off.weekday.en) || off.dayKey || "";
+                  var counts = { present: 0, absent: 0, late: 0, excused: 0 };
+                  p.rows.forEach(function (r) { if (counts[r.status] != null) counts[r.status]++; });
+                  var chips = "";
+                  ["present", "absent", "late", "excused"].forEach(function (s) {
+                    if (counts[s] > 0) {
+                      var lbl = t["attStatus" + s.charAt(0).toUpperCase() + s.slice(1)] || s;
+                      chips += "<span class='att-stat-chip " + s + "'>" + counts[s] + " " + escHTML(lbl) + "</span>";
+                    }
+                  });
+                  return "<tr>"
+                    + "<td><strong>" + escHTML(name) + "</strong><div class='sid' style='font-size:11px;color:var(--muted);'>" + escHTML(p.classDate) + "</div></td>"
+                    + "<td>" + escHTML(day + " · " + (off.timeSlot || "")) + "</td>"
+                    + "<td>" + chips + "</td>"
+                    + "<td><button type='button' class='btn-mini' data-att-reopen='" + escHTML(p.offeringId) + "|" + escHTML(p.classDate) + "'>" + escHTML(t.attRecordCta) + "</button></td>"
+                    + "</tr>";
+                }).join("")
+              + "</tbody></table></div>";
+          }
+        }
+      }
+
+      // Attendance recorder — modal open / save flow.
+      (function () {
+        var overlay = document.getElementById("attRecorderOverlay");
+        var titleEl = document.getElementById("attRecorderTitle");
+        var metaEl = document.getElementById("attRecorderMeta");
+        var bodyEl = document.getElementById("attRecorderBody");
+        var msgEl = document.getElementById("attRecorderMsg");
+        var closeBtn = document.getElementById("attRecorderCloseBtn");
+        var saveBtn = document.getElementById("attRecorderSaveBtn");
+        var allBtn = document.getElementById("attMarkAllPresentBtn");
+        var openBtn = document.getElementById("attOpenRecorderBtn");
+        if (!overlay) return;
+
+        var __recState = { offeringId: "", classDate: "", students: [] };
+
+        function dictNow() { return I18N[state.lang] || I18N["zh-CN"]; }
+        function langKey() { return state.lang === "en" ? "en" : "zh"; }
+
+        function close() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+        function open(offeringId, classDate) {
+          if (!offeringId || !classDate) return;
+          var t = dictNow();
+          var f = window.MindDoFlow;
+          var off = ((f.getClassOfferings && f.getClassOfferings()) || []).filter(function (o) { return o.id === offeringId; })[0] || null;
+          if (!off) return;
+          var k = langKey();
+          var name = (off.courseName && off.courseName[k]) || (off.courseName && off.courseName.en) || off.id;
+          var day = (off.weekday && off.weekday[k]) || off.dayKey || "";
+          titleEl.textContent = name;
+          metaEl.textContent = (t.attRecentFmt || "{course} · {day} · {time}")
+            .replace("{course}", classDate)
+            .replace("{day}", day)
+            .replace("{time}", off.timeSlot || "");
+          var students = listEnrolledStudentsForOffering(offeringId);
+          // Pre-fill from existing records if any.
+          var prior = (f.getAttendance && f.getAttendance({ offeringId: offeringId, classDate: classDate })) || [];
+          var priorMap = {};
+          prior.forEach(function (r) { priorMap[r.studentId] = r.status; });
+          __recState = {
+            offeringId: offeringId,
+            classDate: classDate,
+            students: students.map(function (s) {
+              return { studentId: s.studentId, name: s.name, grade: s.grade, status: priorMap[s.studentId] || "present" };
+            })
+          };
+          msgEl.textContent = "";
+          renderBody();
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+        function renderBody() {
+          var t = dictNow();
+          if (!__recState.students.length) {
+            bodyEl.innerHTML = "<div class='cls-roster-empty' style='margin:18px 22px;'>"
+              + escHTML(t.attNoStudents) + "</div>";
+            return;
+          }
+          bodyEl.innerHTML = "<div class='att-grid'>"
+            + __recState.students.map(function (s) {
+                return "<div class='att-row' data-sid='" + escHTML(s.studentId) + "'>"
+                  +   "<div class='att-name'>" + escHTML(s.name)
+                  +     "<small>" + escHTML(s.studentId) + "</small>"
+                  +   "</div>"
+                  +   "<div class='att-status-row'>"
+                  +     ["present", "late", "absent", "excused"].map(function (st) {
+                          var label = t["attStatus" + st.charAt(0).toUpperCase() + st.slice(1)] || st;
+                          return "<button type='button' data-att-status='" + st + "'"
+                            + (s.status === st ? " class='active " + st + "'" : "")
+                            + ">" + escHTML(label) + "</button>";
+                        }).join("")
+                  +   "</div>"
+                  + "</div>";
+              }).join("")
+            + "</div>";
+        }
+
+        // Click delegation: status pill, mark-all-present, save, close.
+        bodyEl.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-att-status]");
+          if (!b) return;
+          var row = b.closest(".att-row");
+          if (!row) return;
+          var sid = row.getAttribute("data-sid");
+          var st = b.getAttribute("data-att-status");
+          var rec = __recState.students.filter(function (s) { return s.studentId === sid; })[0];
+          if (!rec) return;
+          rec.status = st;
+          row.querySelectorAll("[data-att-status]").forEach(function (bb) {
+            bb.classList.remove("active", "present", "absent", "late", "excused");
+          });
+          b.classList.add("active", st);
+        });
+        if (allBtn) allBtn.addEventListener("click", function () {
+          __recState.students.forEach(function (s) { s.status = "present"; });
+          renderBody();
+        });
+        if (saveBtn) saveBtn.addEventListener("click", function () {
+          var t = dictNow();
+          var f = window.MindDoFlow;
+          if (!f.recordAttendance) return;
+          var saved = f.recordAttendance(__recState.offeringId, __recState.classDate,
+            __recState.students.map(function (s) {
+              return { studentId: s.studentId, status: s.status };
+            }),
+            { recordedBy: ((f.getActiveOpsUser && f.getActiveOpsUser() && f.getActiveOpsUser().staff && f.getActiveOpsUser().staff.id) || "ops") });
+          msgEl.textContent = (t.attSaveSuccess || "Saved {n}.")
+            .replace("{n}", (saved || []).length);
+          setTimeout(function () {
+            close();
+            // Re-render the attendance panel so the recent-sessions
+            // list and KPI tiles reflect the new record.
+            renderAttendancePanel(I18N[state.lang]);
+          }, 700);
+        });
+        if (closeBtn) closeBtn.addEventListener("click", close);
+        overlay.addEventListener("click", function (e) {
+          if (e.target === overlay) close();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && overlay.classList.contains("open")) close();
+        });
+
+        // Open button — uses the panel's offering + date inputs.
+        if (openBtn) openBtn.addEventListener("click", function () {
+          var t = dictNow();
+          if (!__attUiState.offeringId) { alert(t.attNoOfferingPicked); return; }
+          var date = __attUiState.classDate || todayLocalDateStr();
+          open(__attUiState.offeringId, date);
+        });
+        // Re-open from a recent-session row.
+        document.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-att-reopen]");
+          if (!b) return;
+          var parts = b.getAttribute("data-att-reopen").split("|");
+          if (parts.length === 2) open(parts[0], parts[1]);
+        });
+      })();
+
       // 订单管理 — every membership order plus loose payments.
       function renderFinanceOrders(paymentsAll, t) {
         var f = window.MindDoFlow;
@@ -6344,10 +6776,11 @@
         // ---- Marketing Center: CRM lead list + trial table + brand grid ----
         renderMarketingCenter(leadsAll, t);
 
-        // ---- Academic Affairs: roster + class catalog + weekly schedule ----
+        // ---- Academic Affairs: roster + class catalog + weekly schedule + attendance ----
         renderAcademicCenter(t);
         renderAcademicClasses(t);
         renderAcademicSchedule(t);
+        renderAttendancePanel(t);
 
         // ---- Finance: orders + approvals + billing + payroll + contracts ----
         renderFinanceOrders(paymentsAll, t);

@@ -28,7 +28,8 @@
     contracts: "minddo_contracts",
     approvals: "minddo_approvals",
     staff: "minddo_staff",
-    roles: "minddo_roles"
+    roles: "minddo_roles",
+    attendance: "minddo_attendance"
   };
 
   // Billing profile — per-family record carrying the payment method on
@@ -334,6 +335,78 @@
 
   function writeJson(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  // ---- Class attendance helpers ----------------------------------
+  // Records live in KEYS.attendance as an array of:
+  //   { id, offeringId, classDate, studentId, status, recordedBy, recordedAt, note }
+  // status ∈ "present" | "absent" | "late" | "excused"
+  // Roll-up reads compute per-student presence% across selected windows.
+  var ATTENDANCE_STATUSES = ["present", "absent", "late", "excused"];
+
+  function getAttendance(filter) {
+    var rows = readJson(KEYS.attendance, []) || [];
+    if (!filter) return rows.slice();
+    return rows.filter(function (r) {
+      if (filter.offeringId && r.offeringId !== filter.offeringId) return false;
+      if (filter.classDate && r.classDate !== filter.classDate) return false;
+      if (filter.studentId && r.studentId !== filter.studentId) return false;
+      return true;
+    });
+  }
+  // Replace every record for a given (offeringId, classDate) with the
+  // supplied list. Callers pass the full set for that session, so this
+  // is upsert-with-replace semantics — simpler than per-row diffing.
+  function recordAttendance(offeringId, classDate, records, opts) {
+    if (!offeringId || !classDate || !Array.isArray(records)) return null;
+    var existing = readJson(KEYS.attendance, []) || [];
+    // Drop any prior rows for this offering+date.
+    var kept = existing.filter(function (r) {
+      return !(r.offeringId === offeringId && r.classDate === classDate);
+    });
+    var nowIso = new Date().toISOString();
+    var recordedBy = (opts && opts.recordedBy) || "ops";
+    var stamped = records
+      .filter(function (r) { return r && r.studentId; })
+      .map(function (r) {
+        var status = ATTENDANCE_STATUSES.indexOf(r.status) >= 0 ? r.status : "present";
+        return {
+          id: r.id || ("AT-" + offeringId + "-" + classDate + "-" + r.studentId),
+          offeringId: offeringId,
+          classDate: classDate,
+          studentId: r.studentId,
+          status: status,
+          note: r.note || "",
+          recordedBy: recordedBy,
+          recordedAt: nowIso
+        };
+      });
+    var next = kept.concat(stamped);
+    writeJson(KEYS.attendance, next);
+    return stamped;
+  }
+  // Per-student summary: total sessions tracked + count by status.
+  // Optional `sinceDays` to restrict (e.g. last 30 days for parent view).
+  function getStudentAttendanceSummary(studentId, sinceDays) {
+    if (!studentId) return null;
+    var sinceMs = null;
+    if (sinceDays) sinceMs = Date.now() - sinceDays * 24 * 3600 * 1000;
+    var rows = (readJson(KEYS.attendance, []) || []).filter(function (r) {
+      if (r.studentId !== studentId) return false;
+      if (sinceMs) {
+        var t = new Date(r.classDate || r.recordedAt || 0).getTime();
+        if (t < sinceMs) return false;
+      }
+      return true;
+    });
+    var counts = { present: 0, absent: 0, late: 0, excused: 0 };
+    rows.forEach(function (r) {
+      if (counts[r.status] != null) counts[r.status]++;
+    });
+    var total = rows.length;
+    var attended = counts.present + counts.late;
+    var rate = total ? Math.round((attended / total) * 100) : null;
+    return { total: total, counts: counts, presenceRate: rate, rows: rows };
   }
 
   // ---- CSV helpers (Excel-safe, BOM, RFC-4180 quoting) ------------
@@ -3005,7 +3078,12 @@
     runMigrations: runMigrations,
     // CSV export helpers (used by dashboard "导出 CSV" buttons)
     toCsv: toCsv,
-    downloadCsv: downloadCsv
+    downloadCsv: downloadCsv,
+    // Class attendance
+    ATTENDANCE_STATUSES: ATTENDANCE_STATUSES,
+    getAttendance: getAttendance,
+    recordAttendance: recordAttendance,
+    getStudentAttendanceSummary: getStudentAttendanceSummary
   };
 
   // =================================================================

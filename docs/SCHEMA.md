@@ -251,6 +251,27 @@ Newsletter subscriber emails captured on `index.html`.
   permissions: ["*.write" | "staff.write" | ...] }
 ```
 
+### `minddo_attendance` 🟢 (array)
+Class attendance records, one row per (student × class session).
+Multiple records per session — one row per enrolled student.
+
+```js
+{
+  id,                       // "AT-<offeringId>-<classDate>-<studentId>"
+  offeringId,               // matches minddo_class_offerings.id
+  classDate,                // "YYYY-MM-DD"
+  studentId,
+  status,                   // "present" | "absent" | "late" | "excused"
+  note,
+  recordedBy,               // staff id or "ops"
+  recordedAt                // ISO timestamp
+}
+```
+
+Helpers: `getAttendance({offeringId, classDate, studentId})`,
+`recordAttendance(offeringId, classDate, records, opts)` (replace-set
+semantics), `getStudentAttendanceSummary(studentId, sinceDays)`.
+
 ### `minddo_teacher_availability` 🟢 (object, keyed by teacher name)
 Used by `course-offerings.html` conflict detection.
 
