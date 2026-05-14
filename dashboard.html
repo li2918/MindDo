@@ -2401,12 +2401,6 @@
         <!-- Sub-tab 1: KPIs -->
         <div class="mkt-subpanel active" data-mkt-subpanel="kpi" role="tabpanel">
           <section class="dash-zone">
-            <div class="dash-zone-head">
-              <div class="dash-zone-text">
-                <h3 data-i18n="zoneMktKpiTitle"></h3>
-                <p data-i18n="zoneMktKpiSub"></p>
-              </div>
-            </div>
             <section class="grid" id="enrollmentMetrics"></section>
           </section>
         </div>
@@ -2414,12 +2408,6 @@
         <!-- Sub-tab 2: CRM -->
         <div class="mkt-subpanel" data-mkt-subpanel="crm" role="tabpanel" hidden>
           <section class="dash-zone">
-            <div class="dash-zone-head">
-              <div class="dash-zone-text">
-                <h3 data-i18n="zoneMktCrmTitle"></h3>
-                <p data-i18n="zoneMktCrmSub"></p>
-              </div>
-            </div>
             <article class="panel">
               <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
                 <h2 data-i18n="mktCrmHead" style="margin:0;"></h2>
@@ -2444,11 +2432,7 @@
         <!-- Sub-tab 3: Trial management -->
         <div class="mkt-subpanel" data-mkt-subpanel="trial" role="tabpanel" hidden>
           <section class="dash-zone">
-            <div class="dash-zone-head">
-              <div class="dash-zone-text">
-                <h3 data-i18n="zoneMktTrialTitle"></h3>
-                <p data-i18n="zoneMktTrialSub"></p>
-              </div>
+            <div class="dash-zone-head" style="justify-content:flex-end;">
               <div class="dash-zone-actions">
                 <a class="bm-edit-btn" href="email-outbox.html" data-i18n="mktTrialOutboxLink"></a>
               </div>
@@ -2481,11 +2465,7 @@
              Data Center / other callers keep working. -->
         <div class="mkt-subpanel" data-mkt-subpanel="channel" role="tabpanel" hidden>
           <section class="dash-zone">
-            <div class="dash-zone-head">
-              <div class="dash-zone-text">
-                <h3 data-i18n="zoneMktChannelTitle"></h3>
-                <p data-i18n="zoneMktChannelSub"></p>
-              </div>
+            <div class="dash-zone-head" style="justify-content:flex-end;">
               <div class="dash-zone-actions">
                 <div class="range-pill-bar ch-range-bar" id="chRangeBar" role="group" aria-label="Channel range">
                   <button type="button" class="range-pill" data-ch-range="week"     data-i18n="chRangeWeek"></button>
@@ -2547,12 +2527,6 @@
         <!-- Sub-tab 5: Brand assets -->
         <div class="mkt-subpanel" data-mkt-subpanel="brand" role="tabpanel" hidden>
           <section class="dash-zone">
-            <div class="dash-zone-head">
-              <div class="dash-zone-text">
-                <h3 data-i18n="zoneMktBrandTitle"></h3>
-                <p data-i18n="zoneMktBrandSub"></p>
-              </div>
-            </div>
             <div class="mkt-brand-grid" id="mktBrandGrid"></div>
           </section>
         </div>
@@ -4183,14 +4157,6 @@
           mktSubtabTrial: "试课",
           mktSubtabChannel: "渠道",
           mktSubtabBrand: "品牌",
-          zoneMktKpiTitle: "市场核心指标",
-          zoneMktKpiSub: "",
-          zoneMktCrmTitle: "CRM 客户管理",
-          zoneMktCrmSub: "",
-          zoneMktTrialTitle: "试课管理",
-          zoneMktTrialSub: "",
-          zoneMktChannelTitle: "渠道效果",
-          zoneMktChannelSub: "",
           chRangeWeek: "本周",
           chRangeMonth: "本月",
           chRangeLastMonth: "上月",
@@ -4220,8 +4186,6 @@
           chLeaderCol4: "试课促成",
           chEmpty: "本期没有匹配的渠道数据。",
           chLeaderEmpty: "本期暂无成员转化记录。",
-          zoneMktBrandTitle: "品牌物料",
-          zoneMktBrandSub: "",
           mktCrmHead: "线索管理",
           mktCrmEmpty: "暂无线索 — 试课报名后会自动出现在这里。",
           mktCrmFilterAll: "全部",
@@ -5052,14 +5016,6 @@
           mktSubtabTrial: "Trials",
           mktSubtabChannel: "Channels",
           mktSubtabBrand: "Brand",
-          zoneMktKpiTitle: "Marketing KPIs",
-          zoneMktKpiSub: "",
-          zoneMktCrmTitle: "CRM — Lead Pipeline",
-          zoneMktCrmSub: "",
-          zoneMktTrialTitle: "Trial Management",
-          zoneMktTrialSub: "",
-          zoneMktChannelTitle: "Channel Performance",
-          zoneMktChannelSub: "",
           chRangeWeek: "This Week",
           chRangeMonth: "This Month",
           chRangeLastMonth: "Last Month",
@@ -5089,8 +5045,6 @@
           chLeaderCol4: "Trials",
           chEmpty: "No channel data for this period.",
           chLeaderEmpty: "No member conversions yet.",
-          zoneMktBrandTitle: "Brand Assets",
-          zoneMktBrandSub: "",
           mktCrmHead: "Leads",
           mktCrmEmpty: "No leads yet — they'll show up here as trial bookings come in.",
           mktCrmFilterAll: "All",
