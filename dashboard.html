@@ -315,7 +315,76 @@
       margin-bottom: 14px;
     }
 
-    .range-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .range-group {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .range-group .range-label {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    /* Segmented pill control — single rounded container with internal
+       dividers and a single active highlight. Replaces the older list of
+       independent buttons so the range picker reads as one control. */
+    .range-pill-bar {
+      display: inline-flex;
+      background: var(--surface, #fff);
+      border: 1px solid var(--line, #e4ddd4);
+      border-radius: 999px;
+      padding: 3px;
+      gap: 2px;
+      box-shadow: 0 1px 2px rgba(122, 48, 16, 0.04);
+    }
+    .range-pill {
+      appearance: none;
+      background: transparent;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 14px;
+      font: inherit; font-size: 12.5px; font-weight: 700;
+      color: var(--muted, #6b7280);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .range-pill:hover { color: var(--text, #1f2937); }
+    .range-pill.active {
+      background: var(--brand, #d8551c);
+      color: #fff;
+      box-shadow: 0 1px 3px rgba(216, 85, 28, 0.25);
+    }
+    .range-pill:focus-visible {
+      outline: 2px solid var(--brand, #d8551c);
+      outline-offset: 2px;
+    }
+    .range-updated {
+      font-size: 11.5px; color: var(--muted, #9ca3af);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.01em;
+    }
+    .range-updated::before {
+      content: "•"; margin-right: 6px; color: #94d49a;
+    }
+    .range-custom {
+      display: flex; align-items: center; gap: 10px;
+      flex-basis: 100%;
+      margin-top: 4px;
+      padding: 8px 12px;
+      background: rgba(216, 85, 28, 0.04);
+      border: 1px dashed rgba(216, 85, 28, 0.3);
+      border-radius: 10px;
+    }
+    .range-custom[hidden] { display: none; }
+    .range-custom .rc-field {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--muted, #6b7280);
+    }
+    .range-custom .rc-field input[type="date"] {
+      border: 1px solid var(--line, #e4ddd4);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font: inherit; font-size: 12.5px;
+      background: #fff;
+    }
 
     /* Active-campus chip — sits at the top of the hero so it reads as the
        dashboard context (which campus you're managing) rather than as a
@@ -1950,7 +2019,6 @@
 
         <div class="ops-toolbar" role="region" aria-label="Filters">
           <div class="range-group" id="rangeGroup"></div>
-          <button class="btn btn-refresh" id="refreshBtn" data-i18n="refresh" aria-label="Refresh"></button>
         </div>
 
       <!-- ========== Overview — 2-column: main stack + right rail ========== -->
@@ -3372,8 +3440,18 @@
           ranges: [
             { key: "7", text: "近7天" },
             { key: "30", text: "近30天" },
-            { key: "all", text: "全部" }
+            { key: "month", text: "本月" },
+            { key: "lastMonth", text: "上月" },
+            { key: "custom", text: "自定义" }
           ],
+          rangeLabel: "时段",
+          rangeFromLabel: "起",
+          rangeToLabel: "止",
+          rangeApply: "应用",
+          updatedJustNow: "刚刚更新",
+          updatedSecondsAgo: "{n} 秒前更新",
+          updatedMinutesAgo: "{n} 分钟前更新",
+          updatedHoursAgo: "{n} 小时前更新",
           metrics: {
             registered: "注册人数",
             paid: "付费人数",
@@ -4195,8 +4273,18 @@
           ranges: [
             { key: "7", text: "Last 7 Days" },
             { key: "30", text: "Last 30 Days" },
-            { key: "all", text: "All" }
+            { key: "month", text: "This Month" },
+            { key: "lastMonth", text: "Last Month" },
+            { key: "custom", text: "Custom" }
           ],
+          rangeLabel: "Range",
+          rangeFromLabel: "From",
+          rangeToLabel: "To",
+          rangeApply: "Apply",
+          updatedJustNow: "updated just now",
+          updatedSecondsAgo: "updated {n}s ago",
+          updatedMinutesAgo: "updated {n}m ago",
+          updatedHoursAgo: "updated {n}h ago",
           metrics: {
             registered: "Registrations",
             paid: "Paid Students",
@@ -4972,7 +5060,6 @@
       var paymentTable = document.getElementById("paymentTable");
       var requestTable = document.getElementById("requestTable");
       var rangeGroup = document.getElementById("rangeGroup");
-      var refreshBtn = document.getElementById("refreshBtn");
       var paymentForm = document.getElementById("paymentForm");
       var paymentStatus = document.getElementById("paymentStatus");
       var campusFilter = document.getElementById("campusFilter");
@@ -4982,10 +5069,23 @@
       // round-trips keep ops on the same campus they were managing.
       var savedCampus = "all";
       try { savedCampus = localStorage.getItem("minddo_dashboard_campus") || "all"; } catch (_) {}
+      var savedRange = "30";
+      var savedRangeFrom = "";
+      var savedRangeTo = "";
+      try {
+        savedRange = localStorage.getItem("minddo_dashboard_range") || "30";
+        savedRangeFrom = localStorage.getItem("minddo_dashboard_range_from") || "";
+        savedRangeTo = localStorage.getItem("minddo_dashboard_range_to") || "";
+      } catch (_) {}
+      // Legacy "all" got dropped in favor of month/lastMonth/custom — fall back.
+      if (savedRange === "all") savedRange = "30";
       var state = {
         lang: "zh-CN",
-        range: "30",
-        campus: savedCampus
+        range: savedRange,
+        rangeFrom: savedRangeFrom,
+        rangeTo: savedRangeTo,
+        campus: savedCampus,
+        lastRenderedAt: 0
       };
 
       function readJson(key) {
@@ -5005,8 +5105,32 @@
         if (rangeKey === "all") return true;
         var d = safeDate(item.createdAt);
         if (!d) return false;
+        var now = new Date();
+        var from, to;
+        if (rangeKey === "month") {
+          from = new Date(now.getFullYear(), now.getMonth(), 1);
+          to = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          return d >= from && d < to;
+        }
+        if (rangeKey === "lastMonth") {
+          from = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          to = new Date(now.getFullYear(), now.getMonth(), 1);
+          return d >= from && d < to;
+        }
+        if (rangeKey === "custom") {
+          // Need both endpoints to filter; otherwise show all.
+          if (!state.rangeFrom || !state.rangeTo) return true;
+          from = safeDate(state.rangeFrom + "T00:00:00");
+          to = safeDate(state.rangeTo + "T00:00:00");
+          if (!from || !to) return true;
+          // Inclusive end-of-day on the "to" side.
+          to = new Date(to.getTime() + 24 * 60 * 60 * 1000);
+          return d >= from && d < to;
+        }
+        // Default — rolling N-day window keyed by digit string.
         var days = parseInt(rangeKey, 10);
-        var from = new Date();
+        if (!days || days <= 0) return true;
+        from = new Date();
         from.setHours(0, 0, 0, 0);
         from.setDate(from.getDate() - days + 1);
         return d >= from;
@@ -5044,20 +5168,81 @@
 
       function byCountDesc(a, b) { return b[1] - a[1]; }
 
+      function persistRangeState() {
+        try {
+          localStorage.setItem("minddo_dashboard_range", state.range || "30");
+          localStorage.setItem("minddo_dashboard_range_from", state.rangeFrom || "");
+          localStorage.setItem("minddo_dashboard_range_to", state.rangeTo || "");
+        } catch (_) {}
+      }
+
       function renderRangeButtons() {
         var t = I18N[state.lang];
-        rangeGroup.innerHTML = t.ranges.map(function (r) {
-          var cls = "btn" + (state.range === r.key ? " active" : "");
-          return "<button class='" + cls + "' data-range='" + r.key + "' type='button'>" + r.text + "</button>";
+        var pills = t.ranges.map(function (r) {
+          var active = state.range === r.key;
+          return "<button class='range-pill" + (active ? " active" : "") + "'"
+            + " data-range='" + r.key + "' type='button'"
+            + " aria-pressed='" + (active ? "true" : "false") + "'>"
+            + r.text + "</button>";
         }).join("");
+
+        var customOpen = state.range === "custom";
+        var customBlock = "<div class='range-custom' id='rangeCustom'"
+          + (customOpen ? "" : " hidden") + ">"
+          + "<label class='rc-field'><span>" + t.rangeFromLabel + "</span>"
+          + "<input type='date' id='rangeFromInput' value='" + (state.rangeFrom || "") + "'></label>"
+          + "<label class='rc-field'><span>" + t.rangeToLabel + "</span>"
+          + "<input type='date' id='rangeToInput' value='" + (state.rangeTo || "") + "'></label>"
+          + "</div>";
+
+        rangeGroup.innerHTML = "<span class='range-label'>" + t.rangeLabel + "</span>"
+          + "<div class='range-pill-bar' role='group'>" + pills + "</div>"
+          + "<span class='range-updated' id='rangeUpdated' aria-live='polite'></span>"
+          + customBlock;
 
         rangeGroup.querySelectorAll("[data-range]").forEach(function (btn) {
           btn.addEventListener("click", function () {
             state.range = btn.getAttribute("data-range");
+            persistRangeState();
             render();
           });
         });
+
+        var fromInput = document.getElementById("rangeFromInput");
+        var toInput = document.getElementById("rangeToInput");
+        function onCustomChange() {
+          state.rangeFrom = fromInput ? fromInput.value : "";
+          state.rangeTo = toInput ? toInput.value : "";
+          persistRangeState();
+          render();
+        }
+        if (fromInput) fromInput.addEventListener("change", onCustomChange);
+        if (toInput) toInput.addEventListener("change", onCustomChange);
+
+        updateRangeTimestamp();
       }
+
+      function formatUpdatedAgo(ms) {
+        var t = I18N[state.lang];
+        if (!ms) return t.updatedJustNow;
+        var s = Math.round((Date.now() - ms) / 1000);
+        if (s < 5) return t.updatedJustNow;
+        if (s < 60) return t.updatedSecondsAgo.replace("{n}", s);
+        var m = Math.round(s / 60);
+        if (m < 60) return t.updatedMinutesAgo.replace("{n}", m);
+        var h = Math.round(m / 60);
+        return t.updatedHoursAgo.replace("{n}", h);
+      }
+
+      function updateRangeTimestamp() {
+        var el = document.getElementById("rangeUpdated");
+        if (!el) return;
+        el.textContent = formatUpdatedAgo(state.lastRenderedAt);
+      }
+      // Refresh the "updated N seconds ago" label periodically so it never
+      // sits stale. The full render() is cheap but unnecessary just for
+      // ticking the clock.
+      setInterval(updateRangeTimestamp, 15 * 1000);
 
       // Build the campus dropdown. Always show every campus from the
       // canonical list (so the picker is meaningful even before any leads
@@ -8969,6 +9154,7 @@
 
       function render() {
         var t = I18N[state.lang];
+        state.lastRenderedAt = Date.now();
         html.setAttribute("lang", state.lang);
         localStorage.setItem("minddo_lang", state.lang);
 
@@ -9281,8 +9467,6 @@
           render();
         });
       });
-
-      refreshBtn.addEventListener("click", render);
 
       if (campusFilter) {
         campusFilter.addEventListener("change", function () {
