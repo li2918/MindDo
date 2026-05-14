@@ -43,8 +43,14 @@ Trial-class lead funnel. Each row represents one parent who booked a trial.
   channel, channelLabel,
   goal, timeNote, consent,
   createdAt,                       // ISO timestamp
-  crmStatus,                       // "new" | "contacted" | "won" | "lost"
-  trialStatus                      // "scheduled" | "completed" | "noshow"
+  crmStatus,                       // "new" | "contacted" | "follow" | "won" | "lost"
+  trialStatus,                     // "scheduled" | "completed" | "noshow"
+  // Marketing CRM extensions (all optional — older rows lack them):
+  lastContactAt,                   // ISO of most recent contact
+  nextContactAt,                   // "YYYY-MM-DD" — scheduled next callback
+  tags,                            // array of strings, e.g. ["高意向", "中文家长"]
+  contactLog,                      // array of {at, by, channel, note}
+  note                             // free-text marketing note
 }
 ```
 

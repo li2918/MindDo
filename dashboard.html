@@ -1991,6 +1991,125 @@
     @media (max-width: 640px) {
       .lead-detail-grid { grid-template-columns: 1fr; }
       .lead-detail-edit { grid-template-columns: 1fr; }
+      .lead-tag-row { grid-template-columns: 1fr !important; }
+    }
+
+    /* Tags + next-contact row + contact log — appended to the lead detail
+       modal between readonly fields and the status/note editor. */
+    .lead-edit-label {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+      display: block; margin-bottom: 6px;
+    }
+    .lead-tag-row {
+      display: grid; grid-template-columns: 1fr 200px; gap: 16px;
+      padding: 12px 0;
+      border-top: 1px dashed rgba(122,48,16,0.12);
+    }
+    .lead-tag-chips {
+      display: flex; flex-wrap: wrap; gap: 6px; min-height: 24px;
+      margin-bottom: 6px;
+    }
+    .lead-tag-chips:empty::before {
+      content: attr(data-empty);
+      font-size: 11.5px; color: var(--muted); font-style: italic;
+    }
+    .lead-tag-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 4px 3px 10px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 700; color: var(--clay);
+      background: rgba(254,243,199,0.7);
+      border: 1px solid rgba(245,158,11,0.32);
+    }
+    .lead-tag-chip button {
+      all: unset; cursor: pointer; padding: 0 6px;
+      color: var(--muted); font-weight: 900; font-size: 13px;
+      line-height: 1; border-radius: 999px;
+    }
+    .lead-tag-chip button:hover { color: var(--danger, #c46a4d); }
+    .lead-tag-input-row { display: flex; gap: 6px; }
+    .lead-tag-input-row input {
+      flex: 1; border: 1px solid var(--line); border-radius: 8px;
+      padding: 6px 10px; font: inherit; font-size: 12.5px; background: #fff;
+    }
+    .lead-tag-input-row button { padding: 6px 12px !important; font-size: 12px !important; }
+    .lead-tag-suggest { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .lead-tag-suggest button {
+      all: unset; cursor: pointer; padding: 3px 8px; border-radius: 999px;
+      font-size: 11px; color: var(--muted); border: 1px dashed var(--line);
+      background: transparent;
+    }
+    .lead-tag-suggest button:hover { color: var(--clay); border-color: var(--gold); }
+    .lead-next-block input[type="date"] {
+      width: 100%; border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 10px; font: inherit; font-size: 13px; background: #fff;
+    }
+
+    .lead-log-section {
+      padding-top: 16px; margin-top: 12px;
+      border-top: 1px dashed rgba(122,48,16,0.12);
+    }
+    .lead-log-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .lead-log-head h4 {
+      margin: 0; font-size: 13px; font-weight: 800; color: var(--clay);
+      letter-spacing: -0.005em;
+    }
+    .lead-log-count { font-size: 11.5px; color: var(--muted); }
+    .lead-log-list {
+      max-height: 180px; overflow-y: auto;
+      border: 1px solid var(--line); border-radius: 10px;
+      background: rgba(248,250,252,0.55);
+      padding: 8px 10px; margin-bottom: 10px;
+    }
+    .lead-log-list:empty::before {
+      content: attr(data-empty);
+      display: block; text-align: center; padding: 14px 0;
+      font-size: 12px; color: var(--muted); font-style: italic;
+    }
+    .lead-log-row {
+      display: grid; grid-template-columns: 110px 50px 1fr;
+      gap: 10px; padding: 6px 0; font-size: 12px;
+      border-bottom: 1px dashed rgba(122,48,16,0.06);
+    }
+    .lead-log-row:last-child { border-bottom: none; }
+    .lead-log-row .ll-time { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .lead-log-row .ll-ch {
+      font-size: 10.5px; font-weight: 800;
+      padding: 1px 7px; border-radius: 999px; align-self: start;
+      background: rgba(122,48,16,0.08); color: var(--clay); text-align: center;
+    }
+    .lead-log-row .ll-note { color: var(--text, #1f2937); word-break: break-word; }
+    .lead-log-add {
+      display: grid; grid-template-columns: 110px 1fr auto; gap: 6px;
+    }
+    .lead-log-add select, .lead-log-add input {
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 7px 10px; font: inherit; font-size: 12.5px; background: #fff;
+    }
+    .lead-log-add button { padding: 7px 14px !important; font-size: 12px !important; }
+
+    /* Per-row CRM extras (tags chips + next-contact badge) */
+    .mkt-crm-info .crm-tags {
+      display: inline-flex; flex-wrap: wrap; gap: 4px; margin-left: 6px;
+      vertical-align: middle;
+    }
+    .mkt-crm-info .crm-tag {
+      font-size: 10.5px; font-weight: 700; padding: 1px 7px;
+      border-radius: 999px; background: rgba(254,243,199,0.7);
+      border: 1px solid rgba(245,158,11,0.32); color: var(--clay);
+    }
+    .mkt-crm-info .crm-next {
+      font-size: 11px; font-weight: 700; padding: 2px 8px;
+      border-radius: 999px; margin-left: 6px;
+      background: rgba(110,143,87,0.16); color: #3f5d26;
+      border: 1px solid rgba(110,143,87,0.32);
+    }
+    .mkt-crm-info .crm-next.overdue {
+      background: rgba(196,106,77,0.16); color: #8c3c20;
+      border-color: rgba(196,106,77,0.32);
     }
   </style>
   <link rel="stylesheet" href="assets/minddo-theme.css" />
@@ -3349,8 +3468,28 @@
         </div>
         <button type="button" class="mo-lead-close" id="leadDetailCloseBtn" aria-label="Close">×</button>
       </header>
-      <div class="mo-lead-form" style="padding:0 22px 22px;">
+      <div class="mo-lead-form" style="padding:0 22px 22px; overflow-y:auto;">
         <div class="lead-detail-grid" id="leadDetailFields"></div>
+
+        <!-- Tags + next-contact row — sit between the readonly fields and
+             the status/note editor so the most-used flow (set callback +
+             tag the lead) is at the top of the editing area. -->
+        <div class="lead-tag-row">
+          <div class="lead-tag-block">
+            <span class="lead-edit-label" data-i18n="leadDetailTagsLabel"></span>
+            <div class="lead-tag-chips" id="leadDetailTagChips"></div>
+            <div class="lead-tag-input-row">
+              <input type="text" id="leadDetailTagInput" placeholder="" autocomplete="off" />
+              <button type="button" id="leadDetailTagAddBtn" class="mo-lead-secondary" data-i18n="leadDetailTagAdd"></button>
+            </div>
+            <div class="lead-tag-suggest" id="leadDetailTagSuggest"></div>
+          </div>
+          <div class="lead-next-block">
+            <label class="lead-edit-label" for="leadDetailNextAt" data-i18n="leadDetailNextLabel"></label>
+            <input type="date" id="leadDetailNextAt" />
+          </div>
+        </div>
+
         <div class="lead-detail-edit">
           <label class="mo-field span-1">
             <span data-i18n="leadDetailStatusLabel"></span>
@@ -3367,6 +3506,29 @@
             <textarea id="leadDetailNote" rows="3"></textarea>
           </label>
         </div>
+
+        <!-- Contact log — append-only history of contacts. The "Add follow-up"
+             form below appends a row; the list above shows every entry,
+             newest first. -->
+        <section class="lead-log-section">
+          <header class="lead-log-head">
+            <h4 data-i18n="leadDetailLogHead"></h4>
+            <span class="lead-log-count" id="leadDetailLogCount"></span>
+          </header>
+          <div class="lead-log-list" id="leadDetailLogList"></div>
+          <div class="lead-log-add">
+            <select id="leadDetailLogChannel">
+              <option value="call" data-i18n="leadDetailLogChCall"></option>
+              <option value="wechat" data-i18n="leadDetailLogChWechat"></option>
+              <option value="email" data-i18n="leadDetailLogChEmail"></option>
+              <option value="visit" data-i18n="leadDetailLogChVisit"></option>
+              <option value="other" data-i18n="leadDetailLogChOther"></option>
+            </select>
+            <input type="text" id="leadDetailLogNote" placeholder="" autocomplete="off" />
+            <button type="button" id="leadDetailLogAddBtn" class="mo-lead-secondary" data-i18n="leadDetailLogAdd"></button>
+          </div>
+        </section>
+
         <div class="mo-lead-foot">
           <span id="leadDetailMsg" class="mo-lead-msg"></span>
           <div style="display:flex;gap:8px;">
@@ -4196,6 +4358,26 @@
           leadDetailSave: "保存",
           leadDetailSaved: "已保存",
           leadDetailNoData: "—",
+          leadDetailTagsLabel: "客户标签",
+          leadDetailTagsEmpty: "暂无标签",
+          leadDetailTagAdd: "添加",
+          leadDetailTagInputPlaceholder: "输入标签，回车添加",
+          leadDetailTagSuggestLabel: "常用：",
+          leadDetailNextLabel: "下次跟进",
+          leadDetailLogHead: "联系历史",
+          leadDetailLogEmpty: "暂无联系记录",
+          leadDetailLogCountFmt: "{n} 条记录",
+          leadDetailLogAdd: "添加跟进",
+          leadDetailLogNotePlaceholder: "本次跟进备注（可选）",
+          leadDetailLogChCall: "电话",
+          leadDetailLogChWechat: "微信",
+          leadDetailLogChEmail: "邮件",
+          leadDetailLogChVisit: "到访",
+          leadDetailLogChOther: "其他",
+          leadDetailNextOverdueFmt: "已逾期 {n} 天",
+          leadDetailNextTodayLabel: "今日到期",
+          leadDetailNextFutureFmt: "{n} 天后",
+          crmTagSuggestions: ["高意向", "中意向", "低意向", "需家长决策", "时间冲突", "重新联系"],
           mktCrmCreatedFmt: "{n} 天前进入",
           mktCrmTodayLabel: "今天",
           mktCrmYesterdayLabel: "昨天",
@@ -5048,6 +5230,26 @@
           leadDetailSave: "Save",
           leadDetailSaved: "Saved",
           leadDetailNoData: "—",
+          leadDetailTagsLabel: "Tags",
+          leadDetailTagsEmpty: "No tags yet",
+          leadDetailTagAdd: "Add",
+          leadDetailTagInputPlaceholder: "Type a tag and press Enter",
+          leadDetailTagSuggestLabel: "Common:",
+          leadDetailNextLabel: "Next Contact",
+          leadDetailLogHead: "Contact Log",
+          leadDetailLogEmpty: "No contacts logged yet",
+          leadDetailLogCountFmt: "{n} entries",
+          leadDetailLogAdd: "Add Entry",
+          leadDetailLogNotePlaceholder: "Optional note about this contact",
+          leadDetailLogChCall: "Call",
+          leadDetailLogChWechat: "WeChat",
+          leadDetailLogChEmail: "Email",
+          leadDetailLogChVisit: "Visit",
+          leadDetailLogChOther: "Other",
+          leadDetailNextOverdueFmt: "{n}d overdue",
+          leadDetailNextTodayLabel: "Due today",
+          leadDetailNextFutureFmt: "in {n}d",
+          crmTagSuggestions: ["High Intent", "Medium Intent", "Low Intent", "Needs Parent OK", "Time Conflict", "Recontact"],
           mktCrmCreatedFmt: "Entered {n}d ago",
           mktCrmTodayLabel: "Today",
           mktCrmYesterdayLabel: "Yesterday",
@@ -6177,9 +6379,15 @@
             if (__mktCrmFilter === "today-follow") {
               var st = l.crmStatus || "new";
               if (st === "won" || st === "lost") return false;
+              var day0 = new Date(); day0.setHours(0, 0, 0, 0);
+              // Prefer explicit schedule when set; otherwise fall back to
+              // staleness so we don't drop pre-batch-A rows.
+              if (l.nextContactAt) {
+                var nd = new Date(l.nextContactAt + "T00:00:00");
+                return isFinite(nd.getTime()) && nd <= day0;
+              }
               var ref = new Date(l.lastContactAt || l.createdAt || 0);
               if (Number.isNaN(ref.getTime())) return false;
-              var day0 = new Date(); day0.setHours(0, 0, 0, 0);
               var ref0 = new Date(ref); ref0.setHours(0, 0, 0, 0);
               var days = Math.round((day0.getTime() - ref0.getTime()) / 86400000);
               return days >= 1;
@@ -6221,10 +6429,35 @@
               var emailBtn = l.email
                 ? "<a href='mailto:" + escHTML(l.email) + "' class='crm-act'>" + escHTML(t.mktCrmActionEmail) + "</a>"
                 : "<button type='button' disabled>" + escHTML(t.mktCrmActionEmail) + "</button>";
+              // Tags as small chips inline with the name; next-contact
+              // badge next to it (green if upcoming, red if overdue).
+              var tagsHtml = "";
+              if (Array.isArray(l.tags) && l.tags.length) {
+                tagsHtml = "<span class='crm-tags'>"
+                  + l.tags.slice(0, 4).map(function (tg) {
+                      return "<span class='crm-tag'>" + escHTML(tg) + "</span>";
+                    }).join("")
+                  + "</span>";
+              }
+              var nextHtml = "";
+              if (l.nextContactAt) {
+                var nd = new Date(l.nextContactAt + "T00:00:00");
+                var today0 = new Date(); today0.setHours(0, 0, 0, 0);
+                var diff = isFinite(nd.getTime())
+                  ? Math.round((nd.getTime() - today0.getTime()) / 86400000)
+                  : null;
+                if (diff !== null) {
+                  var label = diff === 0 ? t.leadDetailNextTodayLabel
+                    : diff < 0 ? t.leadDetailNextOverdueFmt.replace("{n}", Math.abs(diff))
+                    : t.leadDetailNextFutureFmt.replace("{n}", diff);
+                  var overdueCls = diff < 0 ? " overdue" : "";
+                  nextHtml = "<span class='crm-next" + overdueCls + "'>📅 " + escHTML(label) + "</span>";
+                }
+              }
               return "<div class='mkt-crm-row' data-lead-id='" + leadId + "'>"
                 + "<div class='mkt-crm-avatar'>" + escHTML(initial) + "</div>"
                 + "<div class='mkt-crm-info'>"
-                +   "<div class='name'>" + escHTML(name) + "</div>"
+                +   "<div class='name'>" + escHTML(name) + tagsHtml + nextHtml + "</div>"
                 +   "<div class='meta'>"
                 +     "<span class='channel'>" + escHTML(channelLabel) + "</span>"
                 +     escHTML(contact) + " · " + escHTML(ago)
@@ -7418,10 +7651,19 @@
         startOfWeek.setDate(startOfWeek.getDate() - ((startOfWeek.getDay() || 7) - 1));
         var startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
+        // 今日待跟进 — prefer the explicit nextContactAt schedule when the
+        // marketer has set one (today or earlier counts). When no schedule
+        // is on file, fall back to the staleness signal: contact ≥ 1 day
+        // ago means the lead has gone cold and needs a touch.
+        var today0 = new Date(); today0.setHours(0, 0, 0, 0);
         var todayFollow = leads.filter(function (l) {
           if ((l.crmStatus || "new") === "won" || l.crmStatus === "lost") return false;
+          if (l.nextContactAt) {
+            var nd = new Date(l.nextContactAt + "T00:00:00");
+            return isFinite(nd.getTime()) && nd <= today0;
+          }
           var days = moDaysSince(l.lastContactAt || l.createdAt);
-          return days != null && days >= 1;            // contacted ≥ 1 day ago counts as "to follow up"
+          return days != null && days >= 1;
         }).length;
         var weekNew = leads.filter(function (l) {
           var ts = new Date(l.createdAt || 0).getTime();
@@ -7611,6 +7853,20 @@
         var cancelBtn = document.getElementById("leadDetailCancelBtn");
         var saveBtn = document.getElementById("leadDetailSaveBtn");
         var markBtn = document.getElementById("leadDetailMarkBtn");
+        // Batch A extensions — tags, next-contact, contact log
+        var tagChipsEl = document.getElementById("leadDetailTagChips");
+        var tagInputEl = document.getElementById("leadDetailTagInput");
+        var tagAddBtn = document.getElementById("leadDetailTagAddBtn");
+        var tagSuggestEl = document.getElementById("leadDetailTagSuggest");
+        var nextAtEl = document.getElementById("leadDetailNextAt");
+        var logListEl = document.getElementById("leadDetailLogList");
+        var logCountEl = document.getElementById("leadDetailLogCount");
+        var logChannelEl = document.getElementById("leadDetailLogChannel");
+        var logNoteEl = document.getElementById("leadDetailLogNote");
+        var logAddBtn = document.getElementById("leadDetailLogAddBtn");
+        // Local state — the lead's tags as we edit them. Tag/log changes
+        // write to `current.contactLog` / `.tags` in memory until save.
+        var workingTags = [];
         var current = null;
 
         function fmtDate(iso) {
@@ -7620,6 +7876,79 @@
           var p = function (n) { return n < 10 ? "0" + n : "" + n; };
           return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate())
             + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+        }
+
+        function renderTagChips() {
+          if (!tagChipsEl) return;
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          tagChipsEl.setAttribute("data-empty", t.leadDetailTagsEmpty);
+          tagChipsEl.innerHTML = workingTags.map(function (tag, i) {
+            return "<span class='lead-tag-chip'>" + escHTML(tag)
+              + "<button type='button' data-tag-remove='" + i + "' aria-label='remove'>×</button></span>";
+          }).join("");
+        }
+
+        function renderTagSuggestions() {
+          if (!tagSuggestEl) return;
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          var suggestions = (t.crmTagSuggestions || []).filter(function (s) {
+            return workingTags.indexOf(s) === -1;
+          });
+          if (!suggestions.length) { tagSuggestEl.innerHTML = ""; return; }
+          tagSuggestEl.innerHTML = "<span style='font-size:11px;color:var(--muted);margin-right:4px;'>"
+            + escHTML(t.leadDetailTagSuggestLabel) + "</span>"
+            + suggestions.map(function (s) {
+                return "<button type='button' data-tag-add='" + escHTML(s) + "'>+ " + escHTML(s) + "</button>";
+              }).join("");
+        }
+
+        function addTag(value) {
+          var v = String(value || "").trim();
+          if (!v) return;
+          if (workingTags.indexOf(v) !== -1) return;
+          workingTags.push(v);
+          renderTagChips();
+          renderTagSuggestions();
+        }
+
+        function renderLogList(log) {
+          if (!logListEl) return;
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          logListEl.setAttribute("data-empty", t.leadDetailLogEmpty);
+          var entries = (log || []).slice().sort(function (a, b) {
+            return new Date(b.at || 0) - new Date(a.at || 0);
+          });
+          if (logCountEl) {
+            logCountEl.textContent = entries.length
+              ? t.leadDetailLogCountFmt.replace("{n}", entries.length)
+              : "";
+          }
+          var chLabel = {
+            call: t.leadDetailLogChCall,
+            wechat: t.leadDetailLogChWechat,
+            email: t.leadDetailLogChEmail,
+            visit: t.leadDetailLogChVisit,
+            other: t.leadDetailLogChOther
+          };
+          logListEl.innerHTML = entries.map(function (e) {
+            return "<div class='lead-log-row'>"
+              + "<span class='ll-time'>" + escHTML(fmtDate(e.at) || "") + "</span>"
+              + "<span class='ll-ch'>" + escHTML(chLabel[e.channel] || e.channel || t.leadDetailLogChOther) + "</span>"
+              + "<span class='ll-note'>" + escHTML(e.note || "—") + "</span>"
+              + "</div>";
+          }).join("");
+        }
+
+        function nextContactLabel(dateStr) {
+          if (!dateStr) return "";
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          var d = new Date(dateStr + "T00:00:00");
+          if (!isFinite(d.getTime())) return dateStr;
+          var today = new Date(); today.setHours(0, 0, 0, 0);
+          var diff = Math.round((d.getTime() - today.getTime()) / 86400000);
+          if (diff === 0) return t.leadDetailNextTodayLabel;
+          if (diff < 0) return t.leadDetailNextOverdueFmt.replace("{n}", Math.abs(diff));
+          return t.leadDetailNextFutureFmt.replace("{n}", diff);
         }
 
         function findLeadById(id) {
@@ -7662,6 +7991,20 @@
             + "</dl>";
           if (statusSel) statusSel.value = lead.crmStatus || "new";
           if (noteEl) noteEl.value = lead.note || "";
+          workingTags = Array.isArray(lead.tags) ? lead.tags.slice() : [];
+          renderTagChips();
+          renderTagSuggestions();
+          if (tagInputEl) {
+            tagInputEl.value = "";
+            tagInputEl.placeholder = t.leadDetailTagInputPlaceholder;
+          }
+          if (nextAtEl) nextAtEl.value = lead.nextContactAt || "";
+          renderLogList(lead.contactLog);
+          if (logNoteEl) {
+            logNoteEl.value = "";
+            logNoteEl.placeholder = t.leadDetailLogNotePlaceholder;
+          }
+          if (logChannelEl) logChannelEl.value = "call";
           if (msgEl) { msgEl.textContent = ""; msgEl.className = "mo-lead-msg"; }
           overlay.classList.add("open");
           overlay.setAttribute("aria-hidden", "false");
@@ -7688,6 +8031,10 @@
           var before = Object.assign({}, hit);
           hit.crmStatus = statusSel ? statusSel.value : hit.crmStatus;
           hit.note = noteEl ? noteEl.value.trim() : hit.note;
+          hit.tags = workingTags.slice();
+          hit.nextContactAt = nextAtEl ? (nextAtEl.value || "") : (hit.nextContactAt || "");
+          // contactLog stays untouched here — entries are appended only
+          // via the dedicated "Add" button which calls persist() too.
           if (extraPatch) Object.assign(hit, extraPatch);
           flow.writeJson(flow.keys.leads, leads);
           if (flow.appendAudit) {
@@ -7744,6 +8091,89 @@
             // Re-open with refreshed values so the user sees the new
             // last-contact timestamp without leaving the modal.
             openDetail(current.createdAt);
+            var t = I18N[state.lang] || I18N["zh-CN"];
+            if (msgEl) {
+              msgEl.textContent = t.leadDetailSaved;
+              msgEl.className = "mo-lead-msg ok";
+            }
+          });
+        }
+
+        // Tag chip add / remove + suggestion click.
+        if (tagAddBtn) {
+          tagAddBtn.addEventListener("click", function () {
+            if (!tagInputEl) return;
+            addTag(tagInputEl.value);
+            tagInputEl.value = "";
+            tagInputEl.focus();
+          });
+        }
+        if (tagInputEl) {
+          tagInputEl.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addTag(tagInputEl.value);
+              tagInputEl.value = "";
+            }
+          });
+        }
+        if (tagChipsEl) {
+          tagChipsEl.addEventListener("click", function (e) {
+            var btn = e.target.closest("[data-tag-remove]");
+            if (!btn) return;
+            var idx = parseInt(btn.getAttribute("data-tag-remove"), 10);
+            if (isNaN(idx)) return;
+            workingTags.splice(idx, 1);
+            renderTagChips();
+            renderTagSuggestions();
+          });
+        }
+        if (tagSuggestEl) {
+          tagSuggestEl.addEventListener("click", function (e) {
+            var btn = e.target.closest("[data-tag-add]");
+            if (!btn) return;
+            addTag(btn.getAttribute("data-tag-add"));
+          });
+        }
+
+        // Add a contact-log entry. Stamps now, appends to the lead's
+        // contactLog, also bumps lastContactAt + persists. Re-opens the
+        // modal so the user sees the new entry without losing context.
+        if (logAddBtn) {
+          logAddBtn.addEventListener("click", function () {
+            if (!current) return;
+            var flow = window.MindDoFlow;
+            if (!flow) return;
+            var leads = flow.readJson(flow.keys.leads) || [];
+            var hit = null;
+            for (var i = 0; i < leads.length; i++) {
+              if (leads[i] && leads[i].createdAt === current.createdAt) { hit = leads[i]; break; }
+            }
+            if (!hit) return;
+            var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+            var actorId = (active && active.staff && active.staff.id) || "ops";
+            var entry = {
+              at: new Date().toISOString(),
+              by: actorId,
+              channel: logChannelEl ? logChannelEl.value : "other",
+              note: logNoteEl ? logNoteEl.value.trim() : ""
+            };
+            hit.contactLog = Array.isArray(hit.contactLog) ? hit.contactLog : [];
+            hit.contactLog.push(entry);
+            hit.lastContactAt = entry.at;
+            if ((hit.crmStatus || "new") === "new") hit.crmStatus = "contacted";
+            flow.writeJson(flow.keys.leads, leads);
+            if (flow.appendAudit) {
+              flow.appendAudit({
+                actor: actorId, kind: "lead.contact",
+                target: hit.createdAt,
+                summary: "记录跟进 · " + (hit.studentName || hit.parentName || hit.createdAt) + " · " + entry.channel,
+                before: null, after: entry
+              });
+            }
+            current = hit;
+            openDetail(hit.createdAt);
+            if (typeof render === "function") render();
             var t = I18N[state.lang] || I18N["zh-CN"];
             if (msgEl) {
               msgEl.textContent = t.leadDetailSaved;
