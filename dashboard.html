@@ -1252,11 +1252,20 @@
     .mkt-crm-filters button:not(.active):hover { background: #fff; color: var(--clay); }
 
     .mkt-crm-list { display: grid; gap: 8px; }
-    .mkt-crm-row { display: grid; grid-template-columns: 36px 1fr auto auto; gap: 12px;
+    .mkt-crm-row { display: grid; grid-template-columns: 22px 36px 1fr auto auto; gap: 12px;
       align-items: center; padding: 12px 14px; background: #fff; border: 1px solid var(--line);
       border-radius: 12px; transition: 0.15s; }
     .mkt-crm-row:hover { transform: translateY(-1px); border-color: rgba(245,158,11,0.32);
       box-shadow: 0 6px 16px rgba(122,48,16,0.06); }
+    .mkt-crm-row.is-selected {
+      background: linear-gradient(135deg, rgba(254,243,199,0.55), rgba(254,243,199,0.18));
+      border-color: rgba(245,158,11,0.5);
+    }
+    .mkt-crm-pick { width: 16px; height: 16px; cursor: pointer; accent-color: var(--brand, #d8551c); }
+    .mkt-crm-select-all { display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+      color: var(--muted); font-weight: 700; cursor: pointer; user-select: none;
+      padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: #fff; }
+    .mkt-crm-select-all input { accent-color: var(--brand, #d8551c); }
     .mkt-crm-avatar { width: 36px; height: 36px; border-radius: 999px;
       background: linear-gradient(135deg,#fde68a,var(--gold)); color: #3a1808;
       display: inline-flex; align-items: center; justify-content: center;
@@ -1283,9 +1292,43 @@
     .mkt-crm-empty { padding: 30px 16px; text-align: center; color: var(--muted); font-size: 13px;
       background: rgba(254,243,199,0.32); border: 1px dashed rgba(245,158,11,0.32); border-radius: 12px; }
     @media (max-width: 720px) {
-      .mkt-crm-row { grid-template-columns: 36px 1fr; }
-      .mkt-crm-status, .mkt-crm-actions { grid-column: 2; justify-self: start; }
+      .mkt-crm-row { grid-template-columns: 22px 36px 1fr; }
+      .mkt-crm-status, .mkt-crm-actions { grid-column: 3; justify-self: start; }
     }
+
+    /* CRM bulk action bar — sticks to the bottom of the viewport when one
+       or more leads are selected. Looks like a floating toolbar with a
+       row count + the action buttons. */
+    .crm-bulk-bar {
+      position: sticky; bottom: 12px; z-index: 50;
+      margin-top: 14px;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(122,48,16,0.12);
+    }
+    .crm-bulk-bar[hidden] { display: none; }
+    .crm-bulk-bar .cbb-count {
+      font-weight: 800; color: var(--clay); font-size: 13px;
+      padding: 4px 10px; background: rgba(254,243,199,0.6);
+      border: 1px solid rgba(245,158,11,0.4); border-radius: 999px;
+    }
+    .crm-bulk-bar .cbb-divider { color: var(--muted); }
+    .crm-bulk-bar button, .crm-bulk-bar select, .crm-bulk-bar input {
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 6px 12px; font: inherit; font-size: 12.5px;
+      background: #fff; color: var(--clay); cursor: pointer;
+    }
+    .crm-bulk-bar button:hover { border-color: var(--gold); }
+    .crm-bulk-bar button.primary {
+      background: var(--brand, #d8551c); color: #fff; border-color: transparent;
+    }
+    .crm-bulk-bar .cbb-group {
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .crm-bulk-bar .cbb-clear { margin-left: auto; }
 
     .mkt-trial-table { width: 100%; border-collapse: collapse; }
     .mkt-trial-table th, .mkt-trial-table td { padding: 10px 12px; text-align: left;
@@ -2567,6 +2610,10 @@
               <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
                 <h2 data-i18n="mktCrmHead" style="margin:0;"></h2>
                 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                  <label class="mkt-crm-select-all">
+                    <input type="checkbox" id="mktCrmSelectAll" />
+                    <span data-i18n="crmBulkSelectAll"></span>
+                  </label>
                   <div class="mkt-crm-filters" id="mktCrmFilters" role="group" aria-label="CRM filter">
                     <button type="button" data-mkt-crm-filter="all" class="active" data-i18n="mktCrmFilterAll"></button>
                     <button type="button" data-mkt-crm-filter="today-follow" data-i18n="mktCrmFilterTodayFollow"></button>
@@ -2580,6 +2627,28 @@
                 </div>
               </div>
               <div id="mktCrmList"></div>
+              <!-- Bulk action bar — appears when 1+ rows are selected. -->
+              <div class="crm-bulk-bar" id="crmBulkBar" hidden>
+                <span class="cbb-count" id="crmBulkCount"></span>
+                <span class="cbb-divider">·</span>
+                <button type="button" id="crmBulkMarkContacted" data-i18n="crmBulkMarkContacted"></button>
+                <div class="cbb-group">
+                  <select id="crmBulkStatus">
+                    <option value="" data-i18n="crmBulkStatusPlaceholder"></option>
+                    <option value="new" data-i18n="mktCrmStatusNew"></option>
+                    <option value="contacted" data-i18n="leadDetailStatusContacted"></option>
+                    <option value="follow" data-i18n="mktCrmStatusFollow"></option>
+                    <option value="won" data-i18n="mktCrmStatusWon"></option>
+                    <option value="lost" data-i18n="mktCrmStatusLost"></option>
+                  </select>
+                  <button type="button" id="crmBulkApplyStatus" class="primary" data-i18n="crmBulkApply"></button>
+                </div>
+                <div class="cbb-group">
+                  <input type="text" id="crmBulkTagInput" placeholder="" />
+                  <button type="button" id="crmBulkAddTag" data-i18n="crmBulkAddTag"></button>
+                </div>
+                <button type="button" id="crmBulkClear" class="cbb-clear" data-i18n="crmBulkClear"></button>
+              </div>
             </article>
           </section>
         </div>
@@ -4594,6 +4663,17 @@
           leadDupOpenExisting: "查看已有线索",
           leadDupCreateAnyway: "仍然新建",
           leadDupCancel: "取消",
+          crmBulkSelectAll: "本页全选",
+          crmBulkCountFmt: "已选 {n} 条",
+          crmBulkMarkContacted: "标记已联系",
+          crmBulkStatusPlaceholder: "改状态…",
+          crmBulkApply: "应用",
+          crmBulkAddTag: "添加标签",
+          crmBulkTagPlaceholder: "标签名",
+          crmBulkClear: "取消选择",
+          crmBulkNoSelection: "请先勾选线索",
+          crmBulkConfirmFmt: "确定对 {n} 条线索执行此操作？",
+          crmBulkDoneFmt: "已更新 {n} 条线索",
           moLeadMissing: "请填写学员姓名和电话。",
           zoneDataWallSub: "校区核心数据一屏总览，适合大屏展示与早会讲数。",
           dataWallTopChannelHead: "Top 渠道",
@@ -5473,6 +5553,17 @@
           leadDupOpenExisting: "Open existing",
           leadDupCreateAnyway: "Create anyway",
           leadDupCancel: "Cancel",
+          crmBulkSelectAll: "Select all",
+          crmBulkCountFmt: "{n} selected",
+          crmBulkMarkContacted: "Mark contacted",
+          crmBulkStatusPlaceholder: "Change status…",
+          crmBulkApply: "Apply",
+          crmBulkAddTag: "Add tag",
+          crmBulkTagPlaceholder: "Tag name",
+          crmBulkClear: "Clear selection",
+          crmBulkNoSelection: "Select leads first",
+          crmBulkConfirmFmt: "Apply this action to {n} leads?",
+          crmBulkDoneFmt: "Updated {n} leads",
           moLeadMissing: "Student name and phone are required.",
           zoneDataWallSub: "All-in-one snapshot for the campus — perfect for the lobby screen / morning standup.",
           dataWallTopChannelHead: "Top Channels",
@@ -6520,7 +6611,9 @@
                   nextHtml = "<span class='crm-next" + overdueCls + "'>📅 " + escHTML(label) + "</span>";
                 }
               }
-              return "<div class='mkt-crm-row' data-lead-id='" + leadId + "'>"
+              var selectedAttr = (window.__crmSelection && window.__crmSelection[l.createdAt]) ? " checked" : "";
+              return "<div class='mkt-crm-row" + (selectedAttr ? " is-selected" : "") + "' data-lead-id='" + leadId + "'>"
+                + "<input type='checkbox' class='mkt-crm-pick' data-bulk-select='" + leadId + "'" + selectedAttr + " aria-label='select' />"
                 + "<div class='mkt-crm-avatar'>" + escHTML(initial) + "</div>"
                 + "<div class='mkt-crm-info'>"
                 +   "<div class='name'>" + escHTML(name) + tagsHtml + nextHtml + "</div>"
@@ -10241,6 +10334,156 @@
         };
       })();
 
+      // CRM bulk actions — multi-select rows + sticky action bar with
+      // mark-contacted / change-status / add-tag operations. Selection
+      // state lives on window.__crmSelection so the row renderer can
+      // restore checkbox state across re-renders without an extra lookup.
+      window.__crmSelection = window.__crmSelection || {};
+      (function () {
+        var listContainer = document.getElementById("mktCrmList");
+        var bar = document.getElementById("crmBulkBar");
+        var countEl = document.getElementById("crmBulkCount");
+        var selectAllEl = document.getElementById("mktCrmSelectAll");
+        var markBtn = document.getElementById("crmBulkMarkContacted");
+        var statusSel = document.getElementById("crmBulkStatus");
+        var applyStatusBtn = document.getElementById("crmBulkApplyStatus");
+        var tagInputEl = document.getElementById("crmBulkTagInput");
+        var addTagBtn = document.getElementById("crmBulkAddTag");
+        var clearBtn = document.getElementById("crmBulkClear");
+        if (!listContainer || !bar) return;
+
+        function selectedIds() {
+          var sel = window.__crmSelection || {};
+          return Object.keys(sel).filter(function (k) { return sel[k]; });
+        }
+        function syncBar() {
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          var ids = selectedIds();
+          if (!ids.length) { bar.hidden = true; }
+          else {
+            bar.hidden = false;
+            countEl.textContent = (t.crmBulkCountFmt || "{n} selected").replace("{n}", ids.length);
+          }
+          // Sync "select all" against the currently-rendered rows.
+          if (selectAllEl) {
+            var rows = listContainer.querySelectorAll("[data-bulk-select]");
+            var n = rows.length, hit = 0;
+            rows.forEach(function (r) {
+              if (window.__crmSelection[r.getAttribute("data-bulk-select")]) hit++;
+            });
+            selectAllEl.checked = n > 0 && hit === n;
+            selectAllEl.indeterminate = hit > 0 && hit < n;
+          }
+          if (tagInputEl) tagInputEl.placeholder = t.crmBulkTagPlaceholder || "Tag name";
+        }
+        // Re-bind syncBar after every render so the bar count is fresh.
+        window.__crmSyncBulkBar = syncBar;
+
+        listContainer.addEventListener("change", function (e) {
+          var cb = e.target.closest("[data-bulk-select]");
+          if (!cb) return;
+          var id = cb.getAttribute("data-bulk-select");
+          if (cb.checked) window.__crmSelection[id] = true;
+          else delete window.__crmSelection[id];
+          var row = cb.closest(".mkt-crm-row");
+          if (row) row.classList.toggle("is-selected", cb.checked);
+          syncBar();
+        });
+
+        if (selectAllEl) {
+          selectAllEl.addEventListener("change", function () {
+            var rows = listContainer.querySelectorAll("[data-bulk-select]");
+            rows.forEach(function (cb) {
+              var id = cb.getAttribute("data-bulk-select");
+              if (selectAllEl.checked) {
+                window.__crmSelection[id] = true;
+                cb.checked = true;
+              } else {
+                delete window.__crmSelection[id];
+                cb.checked = false;
+              }
+              var row = cb.closest(".mkt-crm-row");
+              if (row) row.classList.toggle("is-selected", selectAllEl.checked);
+            });
+            syncBar();
+          });
+        }
+
+        function applyBulk(label, patcher) {
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          var ids = selectedIds();
+          if (!ids.length) { alert(t.crmBulkNoSelection); return; }
+          if (!confirm((t.crmBulkConfirmFmt || "Apply to {n}?").replace("{n}", ids.length))) return;
+          var flow = window.MindDoFlow;
+          if (!flow) return;
+          var leads = flow.readJson(flow.keys.leads) || [];
+          var idSet = {}; ids.forEach(function (i) { idSet[i] = true; });
+          var changed = 0;
+          var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+          var actorId = (active && active.staff && active.staff.id) || "ops";
+          leads.forEach(function (l) {
+            if (!l || !idSet[l.createdAt]) return;
+            var before = Object.assign({}, l);
+            patcher(l, actorId);
+            changed++;
+            if (flow.appendAudit) {
+              flow.appendAudit({
+                actor: actorId, kind: "lead.bulk." + label,
+                target: l.createdAt,
+                summary: "批量·" + label + " · " + (l.studentName || l.parentName || l.createdAt),
+                before: before, after: l
+              });
+            }
+          });
+          flow.writeJson(flow.keys.leads, leads);
+          if (typeof render === "function") render();
+          alert((t.crmBulkDoneFmt || "Updated {n}").replace("{n}", changed));
+        }
+
+        if (markBtn) {
+          markBtn.addEventListener("click", function () {
+            var nowIso = new Date().toISOString();
+            applyBulk("mark-contacted", function (l, actorId) {
+              l.lastContactAt = nowIso;
+              if ((l.crmStatus || "new") === "new") l.crmStatus = "contacted";
+              l.contactLog = Array.isArray(l.contactLog) ? l.contactLog : [];
+              l.contactLog.push({ at: nowIso, by: actorId, channel: "bulk", note: "" });
+            });
+          });
+        }
+        if (applyStatusBtn) {
+          applyStatusBtn.addEventListener("click", function () {
+            var v = statusSel ? statusSel.value : "";
+            if (!v) return;
+            applyBulk("status", function (l) { l.crmStatus = v; });
+            if (statusSel) statusSel.value = "";
+          });
+        }
+        if (addTagBtn) {
+          addTagBtn.addEventListener("click", function () {
+            var v = tagInputEl ? tagInputEl.value.trim() : "";
+            if (!v) return;
+            applyBulk("add-tag", function (l) {
+              l.tags = Array.isArray(l.tags) ? l.tags : [];
+              if (l.tags.indexOf(v) === -1) l.tags.push(v);
+            });
+            if (tagInputEl) tagInputEl.value = "";
+          });
+        }
+        if (clearBtn) {
+          clearBtn.addEventListener("click", function () {
+            window.__crmSelection = {};
+            listContainer.querySelectorAll(".mkt-crm-row.is-selected").forEach(function (r) {
+              r.classList.remove("is-selected");
+            });
+            listContainer.querySelectorAll("[data-bulk-select]").forEach(function (cb) {
+              cb.checked = false;
+            });
+            syncBar();
+          });
+        }
+      })();
+
       // Trial-table action delegation — Confirm / Mark done / No-show /
       // Reschedule / Reopen / Evaluate / Invite parent. Walks the lead
       // by its createdAt identifier and writes the new trialStatus via
@@ -10678,6 +10921,8 @@
 
         // ---- Marketing Center: CRM lead list + trial table + brand grid ----
         renderMarketingCenter(leadsAll, t);
+        // Refresh the bulk-action bar count/visibility after the list redraws.
+        if (typeof window.__crmSyncBulkBar === "function") window.__crmSyncBulkBar();
         // Channel deep-dive uses its own time window (independent of the
         // dashboard-wide range filter) so pass the *unfiltered* arrays.
         renderChannelDeepDive(leadsAll, paymentsAll, t);
