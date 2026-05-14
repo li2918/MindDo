@@ -2454,16 +2454,6 @@
              Data Center / other callers keep working. -->
         <div class="mkt-subpanel" data-mkt-subpanel="channel" role="tabpanel" hidden>
           <section class="dash-zone">
-            <div class="dash-zone-head" style="justify-content:flex-end;">
-              <div class="dash-zone-actions">
-                <div class="range-pill-bar ch-range-bar" id="chRangeBar" role="group" aria-label="Channel range">
-                  <button type="button" class="range-pill" data-ch-range="week"     data-i18n="chRangeWeek"></button>
-                  <button type="button" class="range-pill active" data-ch-range="month" data-i18n="chRangeMonth"></button>
-                  <button type="button" class="range-pill" data-ch-range="lastMonth" data-i18n="chRangeLastMonth"></button>
-                  <button type="button" class="range-pill" data-ch-range="all"      data-i18n="chRangeAll"></button>
-                </div>
-              </div>
-            </div>
             <section class="grid" id="chKpiMetrics"></section>
           </section>
 
@@ -4146,10 +4136,6 @@
           mktSubtabTrial: "试课",
           mktSubtabChannel: "渠道",
           mktSubtabBrand: "品牌",
-          chRangeWeek: "本周",
-          chRangeMonth: "本月",
-          chRangeLastMonth: "上月",
-          chRangeAll: "全部",
           chKpiTotalChannels: "覆盖渠道",
           chKpiTopChannel: "本期最佳渠道",
           chKpiAvgConv: "整体转化率",
@@ -5002,10 +4988,6 @@
           mktSubtabTrial: "Trials",
           mktSubtabChannel: "Channels",
           mktSubtabBrand: "Brand",
-          chRangeWeek: "This Week",
-          chRangeMonth: "This Month",
-          chRangeLastMonth: "Last Month",
-          chRangeAll: "All",
           chKpiTotalChannels: "Active Channels",
           chKpiTopChannel: "Top Channel",
           chKpiAvgConv: "Overall Conv",
@@ -5953,35 +5935,11 @@
           .replace(/"/g, "&quot;");
       }
 
-      // Channel deep-dive (Marketing Center → 渠道效果). Owns its own time
-      // window so it can answer "how did 抖音 do last month" without
-      // interfering with the dashboard-wide range filter at the top.
-      // Persists the selection so reloads land back on the same view.
-      var __chRange = "month";
-      try { __chRange = localStorage.getItem("minddo_dashboard_ch_range") || "month"; } catch (_) {}
+      // Channel deep-dive (Marketing Center → 渠道效果). Filters off the
+      // dashboard-wide range selector at the top so it shares one source
+      // of truth — picking 本月 in the top bar drives every channel tile,
+      // table row, and funnel too.
       var __chSort = { key: "leads", dir: "desc" };
-
-      function chInRange(item, rangeKey) {
-        var d = new Date(item && (item.createdAt || 0));
-        if (!isFinite(d.getTime())) return false;
-        var now = new Date();
-        if (rangeKey === "week") {
-          var w = new Date(now); w.setHours(0, 0, 0, 0);
-          w.setDate(w.getDate() - ((w.getDay() || 7) - 1));
-          return d >= w;
-        }
-        if (rangeKey === "month") {
-          var m0 = new Date(now.getFullYear(), now.getMonth(), 1);
-          var m1 = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-          return d >= m0 && d < m1;
-        }
-        if (rangeKey === "lastMonth") {
-          var lm0 = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          var lm1 = new Date(now.getFullYear(), now.getMonth(), 1);
-          return d >= lm0 && d < lm1;
-        }
-        return true; // "all"
-      }
 
       function renderChannelDeepDive(leadsAll, paymentsAll, t) {
         var kpiEl = document.getElementById("chKpiMetrics");
@@ -5990,15 +5948,14 @@
         var leaderEl = document.getElementById("chLeaderBody");
         if (!kpiEl && !bodyEl && !funnelEl && !leaderEl) return;
 
-        var range = __chRange;
-        var leads = (leadsAll || []).filter(function (l) { return chInRange(l, range); });
+        var leads = (leadsAll || []).filter(function (l) { return inRange(l, state.range); });
         // Build paid-email lookup over the same period — payments are
         // matched to leads by email, so the conversion attribution
         // mirrors what the marketing overview already counts.
         var paidEmails = {};
         var revenueByEmail = {};
         (paymentsAll || []).forEach(function (p) {
-          if (!p || !chInRange(p, range)) return;
+          if (!p || !inRange(p, state.range)) return;
           var em = String(p.email || "").toLowerCase();
           if (!em) return;
           paidEmails[em] = true;
@@ -6195,27 +6152,6 @@
           }
         }
       }
-
-      // Wire the channel range pill bar once. Re-runs render() on click so
-      // every channel-page surface picks up the new window.
-      (function () {
-        var bar = document.getElementById("chRangeBar");
-        if (!bar) return;
-        function syncActive() {
-          bar.querySelectorAll("[data-ch-range]").forEach(function (b) {
-            b.classList.toggle("active", b.getAttribute("data-ch-range") === __chRange);
-          });
-        }
-        syncActive();
-        bar.addEventListener("click", function (e) {
-          var b = e.target.closest("[data-ch-range]");
-          if (!b) return;
-          __chRange = b.getAttribute("data-ch-range") || "month";
-          try { localStorage.setItem("minddo_dashboard_ch_range", __chRange); } catch (_) {}
-          syncActive();
-          render();
-        });
-      })();
 
       // Marketing Center — CRM lead pipeline + trial-management table +
       // brand-asset grid. Reads from the unfiltered leads array (campus-
@@ -10999,11 +10935,11 @@
               // matches what the user sees.
               var allLeads = f.readJson(f.keys.leads) || [];
               var allPays = f.readJson(f.keys.payments) || [];
-              var rangeLeads = allLeads.filter(function (l) { return chInRange(l, __chRange); });
+              var rangeLeads = allLeads.filter(function (l) { return inRange(l, state.range); });
               var paidLookup = {};
               var revLookup = {};
               allPays.forEach(function (p) {
-                if (!p || !chInRange(p, __chRange)) return;
+                if (!p || !inRange(p, state.range)) return;
                 var em = String(p.email || "").toLowerCase();
                 if (!em) return;
                 paidLookup[em] = true;
@@ -11027,7 +10963,7 @@
                 return r;
               }).sort(function (a, b) { return b.leads - a.leads; });
               return {
-                filename: "minddo-channels-" + __chRange + "-" + stamp() + ".csv",
+                filename: "minddo-channels-" + state.range + "-" + stamp() + ".csv",
                 rows: chRows,
                 headers: [
                   { key: "channel", label: langLabel("渠道", "Channel") },
