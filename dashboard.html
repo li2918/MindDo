@@ -1627,6 +1627,126 @@
     .tv-ring circle { fill: none; stroke-width: 8; }
     .tv-ring circle.fg { stroke-linecap: round;
       filter: drop-shadow(0 0 6px currentColor); }
+
+    /* ================================================================
+       Marketing-only first screen (#marketingOverview) — KPI tiles,
+       today's follow-up queue, top-channel mini-table, lead-entry FAB
+       and modal. All scoped to .mo-* so the rest of the dashboard isn't
+       affected.
+       ================================================================ */
+    .mo-split { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin-top: 14px; }
+    @media (max-width: 1080px) { .mo-split { grid-template-columns: 1fr; } }
+
+    /* Today's follow-up queue */
+    .mo-queue-row { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+      padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px;
+      margin-bottom: 8px; transition: 0.15s; }
+    .mo-queue-row:hover { border-color: rgba(245,158,11,0.4); box-shadow: 0 6px 16px rgba(122,48,16,0.06); }
+    .mo-queue-row .mo-q-stale { display: inline-flex; flex-direction: column; align-items: center;
+      padding: 6px 10px; border-radius: 10px; font-weight: 800; font-size: 11px; min-width: 50px;
+      color: #fff; line-height: 1.2; }
+    .mo-queue-row .mo-q-stale .n { font-size: 18px; line-height: 1; }
+    .mo-queue-row .mo-q-stale .u { font-size: 10px; opacity: 0.85; }
+    .mo-queue-row .mo-q-stale.fresh { background: linear-gradient(135deg, #6e8b58, #4f6f38); }
+    .mo-queue-row .mo-q-stale.mid   { background: linear-gradient(135deg, #d89c36, var(--gold-deep)); }
+    .mo-queue-row .mo-q-stale.stale { background: linear-gradient(135deg, #c46a4d, #8e3d21); }
+    .mo-queue-row .mo-q-info strong { display: block; font-size: 14px; font-weight: 800; color: var(--clay); }
+    .mo-queue-row .mo-q-info .meta { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .mo-queue-row .mo-q-info .meta .chip { display: inline-flex; padding: 1px 8px; border-radius: 999px;
+      background: rgba(245,158,11,0.14); color: var(--gold-deep); font-size: 10.5px; font-weight: 700;
+      letter-spacing: 0.04em; margin-right: 6px; }
+    .mo-queue-row .mo-q-actions { display: inline-flex; gap: 6px; flex-wrap: nowrap; }
+    .mo-queue-row .mo-q-actions a, .mo-queue-row .mo-q-actions button {
+      all: unset; cursor: pointer; padding: 6px 12px; border-radius: 999px;
+      background: rgba(122,48,16,0.06); color: var(--clay); font-size: 11.5px; font-weight: 700;
+      transition: 0.12s; font-family: inherit; white-space: nowrap; }
+    .mo-queue-row .mo-q-actions a:hover, .mo-queue-row .mo-q-actions button:hover {
+      background: rgba(245,158,11,0.18); color: var(--gold-deep); }
+    .mo-queue-row .mo-q-actions button.done { background: rgba(110,143,87,0.16); color: #3f5d26; }
+    .mo-queue-row .mo-q-actions button.done:hover { background: rgba(110,143,87,0.28); }
+
+    .mo-queue-empty { padding: 18px; text-align: center; color: var(--muted); font-size: 13px;
+      background: rgba(248,250,252,0.7); border: 1px dashed var(--line); border-radius: 12px; }
+
+    /* Channel ROI mini-card — compact table with conv % bar */
+    .mo-ch-row { display: grid; grid-template-columns: 1fr auto auto auto 60px; gap: 10px; align-items: center;
+      padding: 8px 4px; border-bottom: 1px dashed rgba(122,48,16,0.08); font-size: 12px; }
+    .mo-ch-row:last-child { border-bottom: none; }
+    .mo-ch-row .ch-name { font-weight: 800; color: var(--clay); }
+    .mo-ch-row .ch-v { font-variant-numeric: tabular-nums; color: var(--text); }
+    .mo-ch-row .ch-bar { position: relative; height: 6px; background: rgba(122,48,16,0.07);
+      border-radius: 999px; overflow: hidden; }
+    .mo-ch-row .ch-bar .fill { position: absolute; left: 0; top: 0; bottom: 0;
+      background: linear-gradient(90deg, #fde68a, var(--gold-deep)); border-radius: 999px; }
+    .mo-ch-row .ch-pct { font-size: 11px; font-weight: 800; color: var(--gold-deep); text-align: right;
+      font-variant-numeric: tabular-nums; }
+    .mo-ch-head { display: grid; grid-template-columns: 1fr auto auto auto 60px; gap: 10px;
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); padding: 4px 4px 8px; }
+
+    /* Floating "+ 新线索" button — fixed bottom-right, doesn't fight the
+       customer-service FAB above it (sits higher). */
+    .mo-fab { position: fixed; right: 22px; bottom: 92px; z-index: 1450;
+      padding: 12px 22px; border-radius: 999px; border: none; cursor: pointer;
+      background: linear-gradient(135deg, #6e8b58, #4f6f38); color: #fff;
+      font: inherit; font-size: 14px; font-weight: 800; font-family: inherit;
+      box-shadow: 0 14px 28px rgba(79,111,56,0.36); transition: 0.18s;
+      display: inline-flex; align-items: center; gap: 10px; }
+    .mo-fab:hover { transform: translateY(-2px); box-shadow: 0 20px 36px rgba(79,111,56,0.45); }
+    .mo-fab[hidden] { display: none; }
+    .mo-fab .mo-fab-ic { display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,0.22);
+      font-size: 16px; font-weight: 900; line-height: 1; }
+    @media (max-width: 640px) { .mo-fab { right: 16px; bottom: 80px; padding: 10px 16px; font-size: 13px; } }
+
+    /* New-lead modal — content-only, no per-page chrome */
+    .mo-lead-overlay { position: fixed; inset: 0; z-index: 2400; padding: 24px;
+      background: rgba(42,20,8,0.5); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; }
+    .mo-lead-overlay.open { display: flex; animation: reschedFade 0.18s ease-out; }
+    .mo-lead-card { background: var(--bg, #fff8ee); border-radius: 18px;
+      box-shadow: 0 30px 60px rgba(42,20,8,0.42); width: min(640px, 100%);
+      max-height: min(90vh, 720px); display: flex; flex-direction: column;
+      overflow: hidden; font-family: inherit; }
+    .mo-lead-head { display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 12px; padding: 18px 22px 12px; border-bottom: 1px solid var(--line); flex: none; background: #fff; }
+    .mo-lead-head h3 { margin: 0 0 4px; font-size: 17px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .mo-lead-head p { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.55; }
+    .mo-lead-close { width: 30px; height: 30px; border-radius: 50%; background: transparent;
+      border: 1px solid var(--line); cursor: pointer; font-size: 16px; line-height: 1; color: var(--muted);
+      display: inline-flex; align-items: center; justify-content: center; transition: 0.12s; font-family: inherit; }
+    .mo-lead-close:hover { background: #f1f5f9; color: var(--clay); }
+    .mo-lead-form { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+    .mo-lead-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px;
+      padding: 18px 22px; overflow: auto; }
+    .mo-field { display: flex; flex-direction: column; gap: 4px; }
+    .mo-field.span-2 { grid-column: 1 / -1; }
+    .mo-field span { font-size: 11px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+    .mo-field input, .mo-field select, .mo-field textarea {
+      padding: 9px 12px; border: 1px solid var(--line); background: #fef9ec;
+      border-radius: 10px; font: inherit; font-size: 13.5px; color: var(--text);
+      outline: none; transition: 0.15s; font-family: inherit; }
+    .mo-field input:focus, .mo-field select:focus, .mo-field textarea:focus {
+      border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,158,11,0.18); }
+    .mo-field textarea { resize: vertical; min-height: 56px; }
+    .mo-lead-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      padding: 14px 22px; border-top: 1px solid var(--line); background: #fafafa; flex: none; flex-wrap: wrap; }
+    .mo-lead-msg { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .mo-lead-msg.err { color: var(--danger, #c46a4d); }
+    .mo-lead-msg.ok  { color: var(--success, #6f8f57); }
+    .mo-lead-primary { background: linear-gradient(135deg, #6e8b58, #4f6f38); color: #fff;
+      border: none; border-radius: 999px; padding: 9px 22px; font: inherit; font-size: 13.5px;
+      font-weight: 800; cursor: pointer; font-family: inherit; transition: 0.15s; }
+    .mo-lead-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(79,111,56,0.4); }
+    .mo-lead-secondary { background: rgba(122,48,16,0.06); color: var(--clay); border: none;
+      border-radius: 999px; padding: 9px 22px; font: inherit; font-size: 13.5px; font-weight: 800;
+      cursor: pointer; font-family: inherit; transition: 0.15s; }
+    .mo-lead-secondary:hover { background: rgba(122,48,16,0.12); }
+    @media (max-width: 720px) {
+      .mo-lead-grid { grid-template-columns: 1fr; }
+      .mo-lead-overlay { padding: 0; }
+      .mo-lead-card { height: 100vh; max-height: 100vh; width: 100%; border-radius: 0; }
+    }
   </style>
   <link rel="stylesheet" href="assets/minddo-theme.css" />
   <link rel="stylesheet" href="assets/minddo-responsive.css" />
@@ -1969,6 +2089,34 @@
              guards. The Quick Apps row above is the new entry point. -->
         <section id="opsWorkspace" hidden>
           <div class="workspace-grid" id="workspaceGrid"></div>
+        </section>
+
+        <!-- ============================================================
+             Marketing-only first screen — hidden by default; the role
+             swap in render() reveals it (and hides the generic overview
+             content above) when the active ops user is the
+             campus-marketing template.
+             ============================================================ -->
+        <section id="marketingOverview" hidden>
+          <div class="dash-zone-head" style="margin-bottom:14px;">
+            <div class="dash-zone-text">
+              <h3 data-i18n="moTitle"></h3>
+              <p data-i18n="moSub"></p>
+            </div>
+          </div>
+          <section class="grid" id="moKpiMetrics"></section>
+          <div class="mo-split">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
+                <h2 data-i18n="moQueueHead" style="margin:0;"></h2>
+              </div>
+              <div id="moQueueList"></div>
+            </article>
+            <article class="panel">
+              <h2 data-i18n="moChannelHead" style="margin:0 0 12px;"></h2>
+              <div id="moChannelBody"></div>
+            </article>
+          </div>
         </section>
       </section>
 
@@ -2851,6 +2999,86 @@
         <button type="button" class="cls-roster-close" id="clsRosterCloseBtn" aria-label="Close">×</button>
       </header>
       <div class="cls-roster-body" id="clsRosterBody"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       Floating「+ 新线索」 button — only renders for users with the
+       campus-marketing template. Opens the 30-second lead capture
+       modal below. JS attaches the role-check on every identity
+       refresh; hidden by default to avoid a flash on first paint.
+       ============================================================ -->
+  <button type="button" id="moNewLeadFab" class="mo-fab" hidden>
+    <span class="mo-fab-ic">+</span>
+    <span class="mo-fab-lbl" data-i18n="moFabLabel"></span>
+  </button>
+
+  <!-- New-lead capture modal — opens from the FAB. Writes the lead
+       directly to KEYS.leads via flow.readJson / writeJson so it
+       doesn't carry saveLead's currentStudent side-effect (ops is
+       creating a lead for someone OTHER than the parent-side current
+       student). -->
+  <div class="mo-lead-overlay" id="moLeadOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="mo-lead-card">
+      <header class="mo-lead-head">
+        <div>
+          <h3 data-i18n="moLeadModalTitle"></h3>
+          <p data-i18n="moLeadModalSub"></p>
+        </div>
+        <button type="button" class="mo-lead-close" id="moLeadCloseBtn" aria-label="Close">×</button>
+      </header>
+      <form id="moLeadForm" class="mo-lead-form" novalidate>
+        <div class="mo-lead-grid">
+          <label class="mo-field span-1">
+            <span data-i18n="moLeadFieldStudent"></span>
+            <input type="text" name="studentName" autocomplete="off" />
+          </label>
+          <label class="mo-field span-1">
+            <span data-i18n="moLeadFieldParent"></span>
+            <input type="text" name="parentName" autocomplete="off" />
+          </label>
+          <label class="mo-field span-1">
+            <span data-i18n="moLeadFieldPhone"></span>
+            <input type="tel" name="phone" inputmode="tel" autocomplete="off" />
+          </label>
+          <label class="mo-field span-1">
+            <span data-i18n="moLeadFieldEmail"></span>
+            <input type="email" name="email" autocomplete="off" />
+          </label>
+          <label class="mo-field span-1">
+            <span data-i18n="moLeadFieldSubject"></span>
+            <select name="subject">
+              <option value="ai-foundations" data-i18n="moLeadOptSubjectAI"></option>
+              <option value="ai-creative" data-i18n="moLeadOptSubjectCreate"></option>
+              <option value="ai-programming" data-i18n="moLeadOptSubjectProg"></option>
+              <option value="ai-competition" data-i18n="moLeadOptSubjectComp"></option>
+              <option value="ai-project-camp" data-i18n="moLeadOptSubjectCamp"></option>
+            </select>
+          </label>
+          <label class="mo-field span-1">
+            <span data-i18n="moLeadFieldChannel"></span>
+            <select name="channel">
+              <option value="tiktok" data-i18n="moLeadOptChannelTiktok"></option>
+              <option value="xhs" data-i18n="moLeadOptChannelXhs"></option>
+              <option value="referral" data-i18n="moLeadOptChannelWom"></option>
+              <option value="walkin" data-i18n="moLeadOptChannelWalkin"></option>
+              <option value="ad" data-i18n="moLeadOptChannelAd"></option>
+              <option value="other" data-i18n="moLeadOptChannelOther"></option>
+            </select>
+          </label>
+          <label class="mo-field span-2">
+            <span data-i18n="moLeadFieldNote"></span>
+            <textarea name="note" rows="2"></textarea>
+          </label>
+        </div>
+        <div class="mo-lead-foot">
+          <span id="moLeadMsg" class="mo-lead-msg"></span>
+          <div style="display:flex;gap:8px;">
+            <button type="button" id="moLeadCancelBtn" class="mo-lead-secondary" data-i18n="moLeadCancel"></button>
+            <button type="submit" class="mo-lead-primary" data-i18n="moLeadSave"></button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -3739,6 +3967,56 @@
           tvNoTeacher: "暂无课消数据。",
           tvNoSales: "暂无销售排名。",
           tvLastUpdated: "数据更新于 {time}",
+          // ---- Marketing-overview (campus-marketing first-screen) ----
+          moTitle: "市场作战首页",
+          moSub: "本校区线索 / 试听 / 渠道转化 · 为你的下一通电话排好序。",
+          moKpiTodayFollow: "今日待跟进",
+          moKpiWeekNew: "本周新线索",
+          moKpiMonthConv: "本月转化率",
+          moKpiMyRank: "我的转化排名",
+          moKpiRankFmt: "第 {n} / {total} 名",
+          moKpiRankSelf: "—",
+          moQueueHead: "今日待跟进客户",
+          moQueueEmpty: "暂无待跟进客户 ✦ 当日跟进已清空。",
+          moQueueDaysFmt: "已 {n} 天未联系",
+          moQueueToday: "今天",
+          moQueueYesterday: "昨天",
+          moQueueActionCall: "📞 打电话",
+          moQueueActionEmail: "✉️ 发邮件",
+          moQueueActionDone: "✓ 标记联系",
+          moChannelHead: "本月 Top 渠道",
+          moChannelEmpty: "暂无渠道数据，等待新线索进入。",
+          moChannelColName: "渠道",
+          moChannelColLeads: "线索",
+          moChannelColTrials: "试听",
+          moChannelColPaid: "付费",
+          moChannelColConv: "转化率",
+          // FAB + new-lead modal
+          moFabLabel: "新线索",
+          moLeadModalTitle: "30 秒录入线索",
+          moLeadModalSub: "家长来电时直接在这里录，回头再补全详细信息。",
+          moLeadFieldStudent: "学员姓名",
+          moLeadFieldParent: "家长姓名",
+          moLeadFieldPhone: "联系电话",
+          moLeadFieldEmail: "邮箱（可选）",
+          moLeadFieldSubject: "意向科目",
+          moLeadFieldChannel: "来源渠道",
+          moLeadFieldNote: "备注 / 跟进要点",
+          moLeadOptSubjectAI: "AI 启蒙",
+          moLeadOptSubjectCreate: "AI 创意工坊",
+          moLeadOptSubjectProg: "AI 编程进阶",
+          moLeadOptSubjectComp: "AI 竞赛冲刺",
+          moLeadOptSubjectCamp: "AI 项目营",
+          moLeadOptChannelTiktok: "抖音 / TikTok",
+          moLeadOptChannelXhs: "小红书",
+          moLeadOptChannelWom: "口碑推荐",
+          moLeadOptChannelWalkin: "校区路过",
+          moLeadOptChannelAd: "广告投放",
+          moLeadOptChannelOther: "其他",
+          moLeadCancel: "取消",
+          moLeadSave: "录入",
+          moLeadSuccess: "已录入「{name}」线索 → CRM 列表",
+          moLeadMissing: "请填写学员姓名和电话。",
           zoneDataWallSub: "校区核心数据一屏总览，适合大屏展示与早会讲数。",
           dataWallTopChannelHead: "Top 渠道",
           dataWallTopTeacherHead: "Top 教师（按工资）",
@@ -4496,6 +4774,55 @@
           tvNoTeacher: "No teacher consumption data yet.",
           tvNoSales: "No sales ranking yet.",
           tvLastUpdated: "Updated {time}",
+          // ---- Marketing-overview ----
+          moTitle: "Marketing Command",
+          moSub: "Single-campus leads / trials / channel conversion — your next call queued for you.",
+          moKpiTodayFollow: "Follow up today",
+          moKpiWeekNew: "New leads (wk)",
+          moKpiMonthConv: "Conversion (mo)",
+          moKpiMyRank: "My rank",
+          moKpiRankFmt: "#{n} of {total}",
+          moKpiRankSelf: "—",
+          moQueueHead: "Today's Follow-up Queue",
+          moQueueEmpty: "Inbox zero ✦ no leads waiting today.",
+          moQueueDaysFmt: "{n}d no contact",
+          moQueueToday: "Today",
+          moQueueYesterday: "Yesterday",
+          moQueueActionCall: "📞 Call",
+          moQueueActionEmail: "✉️ Email",
+          moQueueActionDone: "✓ Mark contacted",
+          moChannelHead: "Top channels (this month)",
+          moChannelEmpty: "No channel data yet — waiting for fresh leads.",
+          moChannelColName: "Channel",
+          moChannelColLeads: "Leads",
+          moChannelColTrials: "Trials",
+          moChannelColPaid: "Paid",
+          moChannelColConv: "Conv %",
+          moFabLabel: "New lead",
+          moLeadModalTitle: "30-second lead capture",
+          moLeadModalSub: "Capture the call live — fill in details later from the CRM.",
+          moLeadFieldStudent: "Student name",
+          moLeadFieldParent: "Parent name",
+          moLeadFieldPhone: "Phone",
+          moLeadFieldEmail: "Email (optional)",
+          moLeadFieldSubject: "Subject of interest",
+          moLeadFieldChannel: "Source channel",
+          moLeadFieldNote: "Notes / follow-up cue",
+          moLeadOptSubjectAI: "AI Fundamentals",
+          moLeadOptSubjectCreate: "AI Creative Studio",
+          moLeadOptSubjectProg: "AI Programming",
+          moLeadOptSubjectComp: "AI Competition",
+          moLeadOptSubjectCamp: "AI Project Camp",
+          moLeadOptChannelTiktok: "TikTok / 抖音",
+          moLeadOptChannelXhs: "Xiaohongshu",
+          moLeadOptChannelWom: "Word of mouth",
+          moLeadOptChannelWalkin: "Walk-in",
+          moLeadOptChannelAd: "Paid ad",
+          moLeadOptChannelOther: "Other",
+          moLeadCancel: "Cancel",
+          moLeadSave: "Save lead",
+          moLeadSuccess: "Lead for «{name}» added to CRM.",
+          moLeadMissing: "Student name and phone are required.",
           zoneDataWallSub: "All-in-one snapshot for the campus — perfect for the lobby screen / morning standup.",
           dataWallTopChannelHead: "Top Channels",
           dataWallTopTeacherHead: "Top Teachers (by payroll)",
@@ -6238,6 +6565,328 @@
           if (!b) return;
           var parts = b.getAttribute("data-att-reopen").split("|");
           if (parts.length === 2) open(parts[0], parts[1]);
+        });
+      })();
+
+      // ============================================================
+      // 市场作战首页 (campus-marketing's overview replacement)
+      // ============================================================
+
+      // KEY_LAST_CONTACT is a side-channel ops keeps for each lead so
+      // "days since last contact" doesn't reset to lead.createdAt every
+      // time we sort. Stored on the lead row itself as `lastContactAt`.
+      function moRoleActive() {
+        var flow = window.MindDoFlow;
+        if (!flow || !flow.getActivePermissions) return false;
+        var t = flow.getActivePermissions();
+        return !!(t && t.id === "campus-marketing");
+      }
+      function moActiveCampus() {
+        var flow = window.MindDoFlow;
+        if (!flow || !flow.getActiveCampusScope) return null;
+        var s = flow.getActiveCampusScope();
+        return s && s.campus ? s.campus : null;
+      }
+      function moDaysSince(iso) {
+        if (!iso) return null;
+        var d = new Date(iso).getTime();
+        if (!isFinite(d)) return null;
+        var now = new Date(); now.setHours(0, 0, 0, 0);
+        var thatDay = new Date(d); thatDay.setHours(0, 0, 0, 0);
+        return Math.max(0, Math.round((now.getTime() - thatDay.getTime()) / 86400000));
+      }
+
+      // Apply the role swap: when campus-marketing is active, hide the
+      // generic overview content (learning dashboard + kids stack) and
+      // show #marketingOverview instead. Called from render() and from
+      // every identity switch.
+      function applyRoleSpecificOverview() {
+        var moEl = document.getElementById("marketingOverview");
+        var dashEl = document.getElementById("dashPanel");
+        var kidsEl = document.getElementById("kidsScheduleStack");
+        var fab = document.getElementById("moNewLeadFab");
+        var on = moRoleActive();
+        if (moEl) moEl.hidden = !on;
+        if (dashEl) dashEl.style.display = on ? "none" : "";
+        if (kidsEl) kidsEl.style.display = on ? "none" : "";
+        if (fab) fab.hidden = !on;
+        if (on) renderMarketingOverview(I18N[state.lang] || I18N["zh-CN"]);
+      }
+
+      function renderMarketingOverview(t) {
+        if (!t) t = I18N[state.lang] || I18N["zh-CN"];
+        var flow = window.MindDoFlow;
+        if (!flow) return;
+        var campus = moActiveCampus();
+        var leadsAll = flow.readJson(flow.keys.leads) || [];
+        var leads = leadsAll.filter(function (l) {
+          if (!l) return false;
+          if (campus && l.campus && l.campus !== campus) return false;
+          return true;
+        });
+        var payments = flow.readJson(flow.keys.payments) || [];
+
+        // ---- 4 KPI tiles ----
+        var now = new Date();
+        var startOfWeek = new Date(now); startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(startOfWeek.getDate() - ((startOfWeek.getDay() || 7) - 1));
+        var startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        var todayFollow = leads.filter(function (l) {
+          if ((l.crmStatus || "new") === "won" || l.crmStatus === "lost") return false;
+          var days = moDaysSince(l.lastContactAt || l.createdAt);
+          return days != null && days >= 1;            // contacted ≥ 1 day ago counts as "to follow up"
+        }).length;
+        var weekNew = leads.filter(function (l) {
+          var ts = new Date(l.createdAt || 0).getTime();
+          return isFinite(ts) && ts >= startOfWeek.getTime();
+        }).length;
+        var monthPaidEmails = {};
+        payments.forEach(function (p) {
+          if (!p) return;
+          var ts = new Date(p.createdAt || 0).getTime();
+          if (!isFinite(ts) || ts < startOfMonth.getTime()) return;
+          if (p.email) monthPaidEmails[String(p.email).toLowerCase()] = true;
+        });
+        var monthLeads = leads.filter(function (l) {
+          var ts = new Date(l.createdAt || 0).getTime();
+          return isFinite(ts) && ts >= startOfMonth.getTime();
+        });
+        var monthConverted = monthLeads.filter(function (l) {
+          return l.email && monthPaidEmails[String(l.email).toLowerCase()];
+        }).length;
+        var monthConvRate = monthLeads.length
+          ? Math.round((monthConverted / monthLeads.length) * 100) + "%"
+          : "—";
+
+        // Rank by personal attribution (won leads / total won in campus).
+        var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+        var myStaffId = active && active.staff && active.staff.id;
+        var staffList = (flow.readJson(flow.keys.staff) || []).filter(function (s) {
+          if (s.roleId !== "campus-marketing") return false;
+          if (campus && s.campus !== campus) return false;
+          return s.status === "active";
+        });
+        // Mock attribution — deterministic hash of leadId → staff index.
+        var attrib = {};
+        staffList.forEach(function (s) { attrib[s.id] = { name: s.name, won: 0 }; });
+        if (staffList.length) {
+          leads.forEach(function (l) {
+            if (l.crmStatus !== "won") return;
+            var key = String(l.createdAt || l.email || "").split("").reduce(function (a, c) { return ((a << 5) - a) + c.charCodeAt(0) | 0; }, 0);
+            var idx = Math.abs(key) % staffList.length;
+            attrib[staffList[idx].id].won++;
+          });
+        }
+        var ranking = Object.keys(attrib).map(function (sid) { return { sid: sid, won: attrib[sid].won, name: attrib[sid].name }; })
+          .sort(function (a, b) { return b.won - a.won; });
+        var myRank = -1;
+        for (var i = 0; i < ranking.length; i++) {
+          if (ranking[i].sid === myStaffId) { myRank = i + 1; break; }
+        }
+        var rankLabel = myRank > 0
+          ? (t.moKpiRankFmt || "#{n} of {total}").replace("{n}", myRank).replace("{total}", ranking.length)
+          : (t.moKpiRankSelf || "—");
+
+        var kpiEl = document.getElementById("moKpiMetrics");
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.moKpiTodayFollow, value: todayFollow, sub: "" },
+            { label: t.moKpiWeekNew,     value: weekNew,     sub: "" },
+            { label: t.moKpiMonthConv,   value: monthConvRate, sub: monthConverted + " / " + monthLeads.length },
+            { label: t.moKpiMyRank,      value: rankLabel,   sub: "" }
+          ]);
+        }
+
+        // ---- Today's follow-up queue ----
+        var queueEl = document.getElementById("moQueueList");
+        if (queueEl) {
+          var queue = leads
+            .filter(function (l) {
+              var st = l.crmStatus || "new";
+              return st !== "won" && st !== "lost";
+            })
+            .map(function (l) {
+              return { lead: l, days: moDaysSince(l.lastContactAt || l.createdAt) };
+            })
+            .filter(function (r) { return r.days != null; })
+            .sort(function (a, b) { return b.days - a.days; })
+            .slice(0, 12);
+          if (!queue.length) {
+            queueEl.innerHTML = "<div class='mo-queue-empty'>" + escHTML(t.moQueueEmpty) + "</div>";
+          } else {
+            queueEl.innerHTML = queue.map(function (r) {
+              var l = r.lead;
+              var staleCls = r.days >= 7 ? "stale" : r.days >= 3 ? "mid" : "fresh";
+              var staleLabel = r.days === 0 ? (t.moQueueToday || "Today")
+                             : r.days === 1 ? (t.moQueueYesterday || "Yesterday")
+                             : (t.moQueueDaysFmt || "{n}d").replace("{n}", r.days);
+              var sid = l.studentId ? " data-student-drawer='" + escHTML(l.studentId) + "'" : "";
+              var actions = "";
+              if (l.phone) actions += "<a href='tel:" + escHTML(l.phone) + "'>" + escHTML(t.moQueueActionCall) + "</a>";
+              if (l.email) actions += "<a href='mailto:" + escHTML(l.email) + "'>" + escHTML(t.moQueueActionEmail) + "</a>";
+              actions += "<button type='button' class='done' data-mo-mark-contact='" + escHTML(l.createdAt || "") + "'>" + escHTML(t.moQueueActionDone) + "</button>";
+              return "<div class='mo-queue-row'>"
+                + "<div class='mo-q-stale " + staleCls + "'>"
+                +   "<span class='n'>" + (r.days >= 1 ? r.days : "0") + "</span>"
+                +   "<span class='u'>" + escHTML(staleLabel) + "</span>"
+                + "</div>"
+                + "<div class='mo-q-info'><strong" + sid + ">" + escHTML(l.studentName || l.parentName || "—") + "</strong>"
+                +   "<span class='meta'>"
+                +     (l.channelLabel ? "<span class='chip'>" + escHTML(l.channelLabel) + "</span>" : "")
+                +     (l.parentName ? escHTML(l.parentName) + " · " : "")
+                +     (l.phone ? escHTML(l.phone) : "")
+                +   "</span>"
+                + "</div>"
+                + "<div class='mo-q-actions'>" + actions + "</div>"
+                + "</div>";
+            }).join("");
+          }
+        }
+
+        // ---- Top channels (this month) ----
+        var chEl = document.getElementById("moChannelBody");
+        if (chEl) {
+          var byChan = {};
+          monthLeads.forEach(function (l) {
+            var k = l.channel || "other";
+            var lbl = l.channelLabel || k;
+            if (!byChan[k]) byChan[k] = { name: lbl, leads: 0, trials: 0, paid: 0 };
+            byChan[k].leads++;
+            if (l.trialDate) byChan[k].trials++;
+            if (l.email && monthPaidEmails[String(l.email).toLowerCase()]) byChan[k].paid++;
+          });
+          var chans = Object.values(byChan).sort(function (a, b) {
+            var ra = a.leads ? a.paid / a.leads : 0;
+            var rb = b.leads ? b.paid / b.leads : 0;
+            return rb - ra;
+          }).slice(0, 5);
+          if (!chans.length) {
+            chEl.innerHTML = "<div class='mo-queue-empty'>" + escHTML(t.moChannelEmpty) + "</div>";
+          } else {
+            chEl.innerHTML = "<div class='mo-ch-head'>"
+              + "<span>" + escHTML(t.moChannelColName) + "</span>"
+              + "<span>" + escHTML(t.moChannelColLeads) + "</span>"
+              + "<span>" + escHTML(t.moChannelColTrials) + "</span>"
+              + "<span>" + escHTML(t.moChannelColPaid) + "</span>"
+              + "<span style='text-align:right;'>" + escHTML(t.moChannelColConv) + "</span>"
+              + "</div>"
+              + chans.map(function (c) {
+                  var pct = c.leads ? Math.round((c.paid / c.leads) * 100) : 0;
+                  return "<div class='mo-ch-row'>"
+                    + "<span class='ch-name'>" + escHTML(c.name) + "</span>"
+                    + "<span class='ch-v'>" + c.leads + "</span>"
+                    + "<span class='ch-v'>" + c.trials + "</span>"
+                    + "<span class='ch-v'>" + c.paid + "</span>"
+                    + "<span class='ch-pct'>" + pct + "%</span>"
+                    + "<span class='ch-bar' style='grid-column:1/-1;'>"
+                    +   "<span class='fill' style='width:" + Math.max(2, pct) + "%;'></span>"
+                    + "</span>"
+                    + "</div>";
+                }).join("");
+          }
+        }
+      }
+
+      // "Mark contacted" — stamps lastContactAt and re-renders.
+      document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-mo-mark-contact]");
+        if (!b) return;
+        var flow = window.MindDoFlow;
+        if (!flow) return;
+        var createdAt = b.getAttribute("data-mo-mark-contact");
+        var leads = flow.readJson(flow.keys.leads) || [];
+        var hit = leads.filter(function (l) { return l && l.createdAt === createdAt; })[0];
+        if (!hit) return;
+        hit.lastContactAt = new Date().toISOString();
+        if ((hit.crmStatus || "new") === "new") hit.crmStatus = "contacted";
+        flow.writeJson(flow.keys.leads, leads);
+        renderMarketingOverview(I18N[state.lang] || I18N["zh-CN"]);
+      });
+
+      // New-lead FAB + modal wiring.
+      (function () {
+        var fab = document.getElementById("moNewLeadFab");
+        var overlay = document.getElementById("moLeadOverlay");
+        var form = document.getElementById("moLeadForm");
+        var closeBtn = document.getElementById("moLeadCloseBtn");
+        var cancelBtn = document.getElementById("moLeadCancelBtn");
+        var msgEl = document.getElementById("moLeadMsg");
+        if (!fab || !overlay || !form) return;
+        function openModal() {
+          form.reset();
+          msgEl.textContent = "";
+          msgEl.className = "mo-lead-msg";
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+          var first = form.querySelector("input[name='studentName']");
+          if (first) setTimeout(function () { first.focus(); }, 30);
+        }
+        function closeModal() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+        fab.addEventListener("click", openModal);
+        if (closeBtn) closeBtn.addEventListener("click", closeModal);
+        if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+        overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && overlay.classList.contains("open")) closeModal();
+        });
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          var flow = window.MindDoFlow;
+          if (!flow) return;
+          var data = {};
+          Array.from(form.elements).forEach(function (el) {
+            if (el.name) data[el.name] = (el.value || "").trim();
+          });
+          if (!data.studentName || !data.phone) {
+            msgEl.textContent = t.moLeadMissing;
+            msgEl.className = "mo-lead-msg err";
+            return;
+          }
+          // Find the channel label that matches the value.
+          var chanSel = form.querySelector("[name='channel'] option:checked");
+          var subjSel = form.querySelector("[name='subject'] option:checked");
+          var campus = moActiveCampus();
+          var nowIso = new Date().toISOString();
+          var record = {
+            studentName: data.studentName,
+            parentName: data.parentName,
+            phone: data.phone,
+            email: data.email,
+            subject: data.subject,
+            subjectLabel: subjSel ? subjSel.textContent : data.subject,
+            channel: data.channel,
+            channelLabel: chanSel ? chanSel.textContent : data.channel,
+            note: data.note,
+            campus: campus,
+            crmStatus: "new",
+            trialStatus: "scheduled",
+            createdAt: nowIso,
+            lastContactAt: nowIso
+          };
+          var leads = flow.readJson(flow.keys.leads) || [];
+          leads.push(record);
+          flow.writeJson(flow.keys.leads, leads);
+          // Audit + toast + close + refresh
+          if (flow.appendAudit) {
+            flow.appendAudit({
+              actor: ((flow.getActiveOpsUser && flow.getActiveOpsUser() && flow.getActiveOpsUser().staff && flow.getActiveOpsUser().staff.id) || "ops"),
+              kind: "lead.create",
+              target: nowIso,
+              summary: "新建线索 · " + record.studentName,
+              before: null,
+              after: record
+            });
+          }
+          msgEl.textContent = (t.moLeadSuccess || "Lead added").replace("{name}", record.studentName);
+          msgEl.className = "mo-lead-msg ok";
+          setTimeout(function () { closeModal(); renderMarketingOverview(I18N[state.lang] || I18N["zh-CN"]); }, 700);
         });
       })();
 
@@ -8447,6 +9096,12 @@
         renderFinanceContracts(t);
         renderRenewalPipeline(t);
 
+        // ---- Role-specific overview swap ----
+        // Marketing reps see a CRM-driven first screen instead of the
+        // generic learning dashboard. Called last so role-switching mid-
+        // session immediately picks up the right view.
+        applyRoleSpecificOverview();
+
         // ---- Internal Management: staff + roles ----
         renderInternalStaff(t);
         renderInternalRoles(t);
@@ -9414,6 +10069,9 @@
           // switch immediately hides / reveals the right tabs.
           applyPermissionGates();
           applyCampusLock();
+          // Role-specific overview swap — marketing reps get a different
+          // first screen than ops / principal / super-admin.
+          if (typeof applyRoleSpecificOverview === "function") applyRoleSpecificOverview();
         }
 
         // Hide sidebar items + sub-items the active user lacks
