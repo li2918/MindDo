@@ -528,7 +528,8 @@
     .user-menu { position: absolute; top: calc(100% + 6px); right: 0;
       width: 260px; background: #fff; border: 1px solid var(--line);
       border-radius: 14px; box-shadow: 0 18px 44px rgba(42,20,8,0.12);
-      padding: 8px; display: none; z-index: 200; }
+      padding: 8px; display: none; z-index: 200;
+      max-height: 70vh; overflow-y: auto; }
     .user-menu.open { display: block; }
     .user-menu-head { display: flex; gap: 12px; align-items: center; padding: 12px;
       border-bottom: 1px solid var(--line); margin-bottom: 6px; }
@@ -9463,7 +9464,10 @@
           }
         }
 
-        // Switch-list — sorted by category priority (admin > academic > ops).
+        // Switch-list — ranked by permission template so the 4 simplified
+        // login roles (super-admin / principal / campus-ops / campus-
+        // marketing) all show up regardless of how many staff are seeded
+        // in each. Within a template we sort alphabetically.
         function renderSwitchList() {
           var listEl = document.getElementById("userSwitchList");
           if (!listEl) return;
@@ -9476,12 +9480,18 @@
           var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
           var activeId = active && active.staff ? active.staff.id : null;
           var lang = state && state.lang === "en" ? "en" : "zh";
-          var catRank = { admin: 0, academic: 1, ops: 2 };
+          // Rank by template (the simplified login model) so each of the
+          // 4 templates is represented near the top.
+          var tmplRank = { "super-admin": 0, "principal": 1, "campus-ops": 2, "campus-marketing": 3 };
           var roster = staff
             .filter(function (s) { return s.status === "active"; })
             .map(function (s) {
               var role = roleById[s.roleId] || {};
-              return { staff: s, role: role, rank: (role.category in catRank) ? catRank[role.category] : 99 };
+              var tmpl = (flow.ROLE_TEMPLATE_MAP && flow.ROLE_TEMPLATE_MAP[s.roleId])
+                       || role.template
+                       || "campus-ops";
+              return { staff: s, role: role, tmpl: tmpl,
+                rank: (tmpl in tmplRank) ? tmplRank[tmpl] : 99 };
             })
             .sort(function (a, b) {
               if (a.rank !== b.rank) return a.rank - b.rank;
@@ -9493,8 +9503,9 @@
               + "</div>";
             return;
           }
-          listEl.innerHTML = roster.slice(0, 8).map(function (r) {
+          listEl.innerHTML = roster.map(function (r) {
             var roleName = lang === "en" ? (r.role.nameEn || r.role.name || "—") : (r.role.name || r.role.nameEn || "—");
+            // Pill colour follows the broader category for backwards-compat.
             var cls = (r.role.category || "ops");
             var isActive = r.staff.id === activeId;
             return "<button type='button' class='um-switch-row" + (isActive ? " active" : "") + "' data-switch-staff='" + escHTML(r.staff.id) + "'>"
