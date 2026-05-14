@@ -2155,6 +2155,56 @@
       border-color: rgba(196,106,77,0.32);
     }
 
+    /* CSV import modal — file picker + textarea + preview table */
+    .csv-import-tools {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 14px 0 6px;
+    }
+    .csv-import-file {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 700; color: var(--clay);
+    }
+    .csv-import-file input[type="file"] {
+      font-size: 12px; padding: 4px 0;
+    }
+    #crmImportTextarea {
+      width: 100%; box-sizing: border-box;
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 10px; font-family: ui-monospace, "Courier New", monospace;
+      font-size: 12px; background: #fafaf6;
+      resize: vertical;
+    }
+    .csv-import-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+    .csv-import-preview {
+      margin-top: 12px;
+      max-height: 280px; overflow: auto;
+      border: 1px solid var(--line); border-radius: 8px;
+      background: rgba(248,250,252,0.55);
+    }
+    .csv-import-preview:empty { display: none; }
+    .csv-import-preview table {
+      width: 100%; border-collapse: collapse; font-size: 12px;
+    }
+    .csv-import-preview th, .csv-import-preview td {
+      padding: 6px 10px; text-align: left;
+      border-bottom: 1px dashed rgba(122,48,16,0.08);
+    }
+    .csv-import-preview thead th {
+      background: rgba(122,48,16,0.04);
+      font-size: 10.5px; font-weight: 800;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+      position: sticky; top: 0;
+    }
+    .csv-import-preview tr.is-dup { background: rgba(245,158,11,0.08); }
+    .csv-import-preview tr.is-bad { background: rgba(196,106,77,0.1); }
+    .csv-import-preview .ci-flag {
+      display: inline-block; padding: 1px 6px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 800;
+    }
+    .csv-import-preview .ci-flag.ok    { background: rgba(110,143,87,0.18); color: #3f5d26; }
+    .csv-import-preview .ci-flag.dup   { background: rgba(245,158,11,0.18); color: var(--gold-deep); }
+    .csv-import-preview .ci-flag.bad   { background: rgba(196,106,77,0.18); color: #8e3d21; }
+
     /* Duplicate-lead warning banner inside the new-lead modal */
     .lead-dup-warn {
       margin: 10px 22px 0;
@@ -2623,6 +2673,7 @@
                     <button type="button" data-mkt-crm-filter="won" data-i18n="mktCrmFilterWon"></button>
                     <button type="button" data-mkt-crm-filter="lost" data-i18n="mktCrmFilterLost"></button>
                   </div>
+                  <button type="button" class="csv-export-btn" id="crmImportBtn" data-i18n="crmImportBtn"></button>
                   <button type="button" class="csv-export-btn" data-csv-export="mkt-leads" data-i18n="csvExport"></button>
                 </div>
               </div>
@@ -3566,6 +3617,48 @@
           </div>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       CSV lead import modal — opened from CRM panel's 批量导入 button.
+       Accepts a pasted CSV blob or a file upload. Previews the parsed
+       rows (with dup hits flagged), then writes the non-dup subset to
+       KEYS.leads on confirm. Headers required: studentName, phone
+       (mandatory) + optional parentName, email, channel, channelLabel,
+       subject, subjectLabel, note. Comma OR tab separated.
+       ================================================================ -->
+  <div class="mo-lead-overlay" id="crmImportOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="mo-lead-card" style="max-width:780px;">
+      <header class="mo-lead-head">
+        <div>
+          <h3 data-i18n="crmImportTitle"></h3>
+          <p data-i18n="crmImportSub" class="muted" style="margin:0;font-size:12.5px;color:var(--muted);"></p>
+        </div>
+        <button type="button" class="mo-lead-close" id="crmImportCloseBtn" aria-label="Close">×</button>
+      </header>
+      <div class="mo-lead-form" style="padding:0 22px 22px; overflow-y:auto;">
+        <div class="csv-import-tools">
+          <label class="csv-import-file">
+            <span data-i18n="crmImportFileLabel"></span>
+            <input type="file" id="crmImportFile" accept=".csv,.tsv,text/csv,text/plain" />
+          </label>
+          <button type="button" class="mo-lead-secondary" id="crmImportSampleBtn" data-i18n="crmImportSample"></button>
+        </div>
+        <textarea id="crmImportTextarea" rows="6" placeholder=""></textarea>
+        <div class="csv-import-actions">
+          <button type="button" class="mo-lead-secondary" id="crmImportParseBtn" data-i18n="crmImportPreview"></button>
+          <span id="crmImportMsg" class="mo-lead-msg"></span>
+        </div>
+        <div class="csv-import-preview" id="crmImportPreview"></div>
+        <div class="mo-lead-foot">
+          <span id="crmImportSummary" class="mo-lead-msg"></span>
+          <div style="display:flex;gap:8px;">
+            <button type="button" id="crmImportCancelBtn" class="mo-lead-secondary" data-i18n="crmImportCancel"></button>
+            <button type="button" id="crmImportConfirmBtn" class="mo-lead-primary" data-i18n="crmImportConfirm" disabled></button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -4674,6 +4767,32 @@
           crmBulkNoSelection: "请先勾选线索",
           crmBulkConfirmFmt: "确定对 {n} 条线索执行此操作？",
           crmBulkDoneFmt: "已更新 {n} 条线索",
+          crmImportBtn: "📥 批量导入",
+          crmImportTitle: "导入线索（CSV）",
+          crmImportSub: "上传 CSV/TSV 或直接粘贴。最少需要 studentName、phone 两列；其余字段可选。",
+          crmImportFileLabel: "选择文件：",
+          crmImportSample: "插入示例",
+          crmImportSampleText: "studentName,phone,parentName,email,channel,subject,note\n李同学,13800138000,李女士,leo@example.com,tiktok,ai-foundations,抖音引流\n王同学,13912345678,,wang@example.com,xhs,ai-creative,小红书咨询",
+          crmImportTextareaPlaceholder: "粘贴 CSV 数据，第一行是表头。",
+          crmImportPreview: "预览",
+          crmImportNeedHeader: "缺少必需列：studentName / phone。",
+          crmImportEmpty: "没有可导入的有效行。",
+          crmImportPreviewFmtPlural: "解析到 {total} 行 · 可导入 {ok} 行 · 重复 {dup} 行 · 异常 {bad} 行",
+          crmImportColFlag: "状态",
+          crmImportColRow: "#",
+          crmImportColName: "学员",
+          crmImportColPhone: "电话",
+          crmImportColParent: "家长",
+          crmImportColEmail: "邮箱",
+          crmImportColChannel: "渠道",
+          crmImportColNote: "备注",
+          crmImportFlagOk: "可导入",
+          crmImportFlagDup: "重复",
+          crmImportFlagBad: "异常",
+          crmImportConfirm: "导入",
+          crmImportCancel: "取消",
+          crmImportDoneFmt: "已导入 {n} 条 · 跳过 {skipped} 条重复",
+          crmImportNothingOk: "没有可写入的新线索。",
           moLeadMissing: "请填写学员姓名和电话。",
           zoneDataWallSub: "校区核心数据一屏总览，适合大屏展示与早会讲数。",
           dataWallTopChannelHead: "Top 渠道",
@@ -5564,6 +5683,32 @@
           crmBulkNoSelection: "Select leads first",
           crmBulkConfirmFmt: "Apply this action to {n} leads?",
           crmBulkDoneFmt: "Updated {n} leads",
+          crmImportBtn: "📥 Import",
+          crmImportTitle: "Import Leads (CSV)",
+          crmImportSub: "Upload a CSV/TSV file or paste it below. Required columns: studentName, phone. All other fields optional.",
+          crmImportFileLabel: "Pick a file:",
+          crmImportSample: "Insert sample",
+          crmImportSampleText: "studentName,phone,parentName,email,channel,subject,note\nLeo Li,13800138000,Mrs. Li,leo@example.com,tiktok,ai-foundations,TikTok inbound\nMia Wang,13912345678,,wang@example.com,xhs,ai-creative,XHS inquiry",
+          crmImportTextareaPlaceholder: "Paste CSV data — first row is the header.",
+          crmImportPreview: "Preview",
+          crmImportNeedHeader: "Required columns missing: studentName / phone.",
+          crmImportEmpty: "No valid rows to import.",
+          crmImportPreviewFmtPlural: "Parsed {total} rows · {ok} importable · {dup} duplicate · {bad} invalid",
+          crmImportColFlag: "Status",
+          crmImportColRow: "#",
+          crmImportColName: "Student",
+          crmImportColPhone: "Phone",
+          crmImportColParent: "Parent",
+          crmImportColEmail: "Email",
+          crmImportColChannel: "Channel",
+          crmImportColNote: "Note",
+          crmImportFlagOk: "OK",
+          crmImportFlagDup: "Dup",
+          crmImportFlagBad: "Bad",
+          crmImportConfirm: "Import",
+          crmImportCancel: "Cancel",
+          crmImportDoneFmt: "Imported {n} · Skipped {skipped} duplicates",
+          crmImportNothingOk: "No new leads to import.",
           moLeadMissing: "Student name and phone are required.",
           zoneDataWallSub: "All-in-one snapshot for the campus — perfect for the lobby screen / morning standup.",
           dataWallTopChannelHead: "Top Channels",
@@ -8341,6 +8486,270 @@
               msgEl.textContent = t.leadDetailSaved;
               msgEl.className = "mo-lead-msg ok";
             }
+          });
+        }
+      })();
+
+      // CSV import — parse a pasted CSV/TSV blob into lead records,
+      // surface duplicates (against existing leads + within the batch),
+      // preview the table, and write the non-dup subset on confirm.
+      (function () {
+        var btn = document.getElementById("crmImportBtn");
+        var overlay = document.getElementById("crmImportOverlay");
+        if (!btn || !overlay) return;
+        var fileEl = document.getElementById("crmImportFile");
+        var textareaEl = document.getElementById("crmImportTextarea");
+        var sampleBtn = document.getElementById("crmImportSampleBtn");
+        var parseBtn = document.getElementById("crmImportParseBtn");
+        var msgEl = document.getElementById("crmImportMsg");
+        var summaryEl = document.getElementById("crmImportSummary");
+        var previewEl = document.getElementById("crmImportPreview");
+        var confirmBtn = document.getElementById("crmImportConfirmBtn");
+        var cancelBtn = document.getElementById("crmImportCancelBtn");
+        var closeBtn = document.getElementById("crmImportCloseBtn");
+
+        var parsedRows = [];   // [{record, flag: "ok"|"dup"|"bad", reason}]
+
+        function openModal() {
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          textareaEl.value = "";
+          textareaEl.placeholder = t.crmImportTextareaPlaceholder;
+          if (fileEl) fileEl.value = "";
+          previewEl.innerHTML = "";
+          msgEl.textContent = "";
+          msgEl.className = "mo-lead-msg";
+          summaryEl.textContent = "";
+          confirmBtn.disabled = true;
+          parsedRows = [];
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+        function closeModal() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+        btn.addEventListener("click", openModal);
+        if (closeBtn) closeBtn.addEventListener("click", closeModal);
+        if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+        overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
+
+        if (sampleBtn) {
+          sampleBtn.addEventListener("click", function () {
+            var t = I18N[state.lang] || I18N["zh-CN"];
+            textareaEl.value = t.crmImportSampleText;
+            textareaEl.focus();
+          });
+        }
+        if (fileEl) {
+          fileEl.addEventListener("change", function () {
+            var f = fileEl.files && fileEl.files[0];
+            if (!f) return;
+            var reader = new FileReader();
+            reader.onload = function () {
+              textareaEl.value = String(reader.result || "");
+            };
+            reader.readAsText(f);
+          });
+        }
+
+        // Minimal CSV/TSV parser — handles double-quoted fields with
+        // embedded commas/newlines and "" escapes. Sniffs delimiter from
+        // the header row (comma vs tab). Trims trailing CRs.
+        function parseCsv(text) {
+          var s = String(text || "").replace(/\r\n/g, "\n").trim();
+          if (!s) return [];
+          var firstLine = s.split("\n", 1)[0];
+          var delim = firstLine.indexOf("\t") !== -1 && firstLine.indexOf(",") === -1 ? "\t" : ",";
+          var rows = [];
+          var cur = [];
+          var field = "";
+          var inQuotes = false;
+          for (var i = 0; i < s.length; i++) {
+            var c = s.charAt(i);
+            if (inQuotes) {
+              if (c === '"') {
+                if (s.charAt(i + 1) === '"') { field += '"'; i++; }
+                else { inQuotes = false; }
+              } else field += c;
+            } else {
+              if (c === '"') inQuotes = true;
+              else if (c === delim) { cur.push(field); field = ""; }
+              else if (c === "\n") { cur.push(field); rows.push(cur); cur = []; field = ""; }
+              else field += c;
+            }
+          }
+          if (field.length || cur.length) { cur.push(field); rows.push(cur); }
+          return rows;
+        }
+
+        function parseAndPreview() {
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          msgEl.textContent = "";
+          msgEl.className = "mo-lead-msg";
+          var rows = parseCsv(textareaEl.value);
+          if (!rows.length) {
+            msgEl.textContent = t.crmImportEmpty;
+            msgEl.className = "mo-lead-msg err";
+            previewEl.innerHTML = "";
+            confirmBtn.disabled = true;
+            return;
+          }
+          var headers = rows[0].map(function (h) { return String(h || "").trim().toLowerCase(); });
+          var nameIdx = headers.indexOf("studentname");
+          if (nameIdx === -1) nameIdx = headers.indexOf("学员");
+          if (nameIdx === -1) nameIdx = headers.indexOf("姓名");
+          var phoneIdx = headers.indexOf("phone");
+          if (phoneIdx === -1) phoneIdx = headers.indexOf("电话");
+          if (nameIdx === -1 || phoneIdx === -1) {
+            msgEl.textContent = t.crmImportNeedHeader;
+            msgEl.className = "mo-lead-msg err";
+            previewEl.innerHTML = "";
+            confirmBtn.disabled = true;
+            return;
+          }
+          var colMap = {
+            parentName: headers.indexOf("parentname") !== -1 ? headers.indexOf("parentname") : headers.indexOf("家长"),
+            email: headers.indexOf("email") !== -1 ? headers.indexOf("email") : headers.indexOf("邮箱"),
+            channel: headers.indexOf("channel") !== -1 ? headers.indexOf("channel") : headers.indexOf("渠道"),
+            channelLabel: headers.indexOf("channellabel"),
+            subject: headers.indexOf("subject") !== -1 ? headers.indexOf("subject") : headers.indexOf("意向"),
+            subjectLabel: headers.indexOf("subjectlabel"),
+            note: headers.indexOf("note") !== -1 ? headers.indexOf("note") : headers.indexOf("备注")
+          };
+          var flow = window.MindDoFlow;
+          var existing = flow ? (flow.readJson(flow.keys.leads) || []) : [];
+          var existingByPhone = {};
+          var existingByEmail = {};
+          existing.forEach(function (l) {
+            var p = String(l.phone || "").replace(/\s+/g, "").toLowerCase();
+            var em = String(l.email || "").trim().toLowerCase();
+            if (p) existingByPhone[p] = l;
+            if (em) existingByEmail[em] = l;
+          });
+          var seenPhone = {};
+          var seenEmail = {};
+          parsedRows = [];
+          var nowBase = Date.now();
+          for (var r = 1; r < rows.length; r++) {
+            var row = rows[r];
+            if (!row || row.length === 0) continue;
+            if (row.length === 1 && !String(row[0]).trim()) continue;
+            var name = String(row[nameIdx] || "").trim();
+            var phone = String(row[phoneIdx] || "").trim();
+            var rec = {
+              studentName: name,
+              parentName: colMap.parentName !== -1 ? String(row[colMap.parentName] || "").trim() : "",
+              phone: phone,
+              email: colMap.email !== -1 ? String(row[colMap.email] || "").trim() : "",
+              channel: colMap.channel !== -1 ? String(row[colMap.channel] || "").trim() : "",
+              channelLabel: colMap.channelLabel !== -1 ? String(row[colMap.channelLabel] || "").trim() : "",
+              subject: colMap.subject !== -1 ? String(row[colMap.subject] || "").trim() : "",
+              subjectLabel: colMap.subjectLabel !== -1 ? String(row[colMap.subjectLabel] || "").trim() : "",
+              note: colMap.note !== -1 ? String(row[colMap.note] || "").trim() : ""
+            };
+            if (!rec.channelLabel && rec.channel) rec.channelLabel = rec.channel;
+            if (!rec.subjectLabel && rec.subject) rec.subjectLabel = rec.subject;
+            var flag = "ok";
+            if (!rec.studentName || !rec.phone) flag = "bad";
+            else {
+              var pkey = rec.phone.replace(/\s+/g, "").toLowerCase();
+              var ekey = (rec.email || "").trim().toLowerCase();
+              if (existingByPhone[pkey] || (ekey && existingByEmail[ekey])) flag = "dup";
+              else if (seenPhone[pkey] || (ekey && seenEmail[ekey])) flag = "dup";
+              else {
+                seenPhone[pkey] = true;
+                if (ekey) seenEmail[ekey] = true;
+              }
+            }
+            parsedRows.push({ record: rec, flag: flag, rowNo: r });
+          }
+          renderPreview();
+        }
+
+        function renderPreview() {
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          var total = parsedRows.length;
+          var ok = parsedRows.filter(function (x) { return x.flag === "ok"; }).length;
+          var dup = parsedRows.filter(function (x) { return x.flag === "dup"; }).length;
+          var bad = parsedRows.filter(function (x) { return x.flag === "bad"; }).length;
+          summaryEl.textContent = (t.crmImportPreviewFmtPlural || "{total}")
+            .replace("{total}", total).replace("{ok}", ok)
+            .replace("{dup}", dup).replace("{bad}", bad);
+          summaryEl.className = "mo-lead-msg";
+          confirmBtn.disabled = ok === 0;
+          var flagLabel = { ok: t.crmImportFlagOk, dup: t.crmImportFlagDup, bad: t.crmImportFlagBad };
+          previewEl.innerHTML = "<table><thead><tr>"
+            + "<th>" + escHTML(t.crmImportColRow) + "</th>"
+            + "<th>" + escHTML(t.crmImportColFlag) + "</th>"
+            + "<th>" + escHTML(t.crmImportColName) + "</th>"
+            + "<th>" + escHTML(t.crmImportColPhone) + "</th>"
+            + "<th>" + escHTML(t.crmImportColParent) + "</th>"
+            + "<th>" + escHTML(t.crmImportColEmail) + "</th>"
+            + "<th>" + escHTML(t.crmImportColChannel) + "</th>"
+            + "<th>" + escHTML(t.crmImportColNote) + "</th>"
+            + "</tr></thead><tbody>"
+            + parsedRows.map(function (x) {
+                var cls = x.flag === "dup" ? " class='is-dup'" : x.flag === "bad" ? " class='is-bad'" : "";
+                return "<tr" + cls + ">"
+                  + "<td>" + x.rowNo + "</td>"
+                  + "<td><span class='ci-flag " + x.flag + "'>" + escHTML(flagLabel[x.flag]) + "</span></td>"
+                  + "<td>" + escHTML(x.record.studentName) + "</td>"
+                  + "<td>" + escHTML(x.record.phone) + "</td>"
+                  + "<td>" + escHTML(x.record.parentName) + "</td>"
+                  + "<td>" + escHTML(x.record.email) + "</td>"
+                  + "<td>" + escHTML(x.record.channelLabel || x.record.channel) + "</td>"
+                  + "<td>" + escHTML(x.record.note) + "</td>"
+                  + "</tr>";
+              }).join("")
+            + "</tbody></table>";
+        }
+
+        if (parseBtn) parseBtn.addEventListener("click", parseAndPreview);
+
+        if (confirmBtn) {
+          confirmBtn.addEventListener("click", function () {
+            var t = I18N[state.lang] || I18N["zh-CN"];
+            var toWrite = parsedRows.filter(function (x) { return x.flag === "ok"; });
+            if (!toWrite.length) {
+              msgEl.textContent = t.crmImportNothingOk;
+              msgEl.className = "mo-lead-msg err";
+              return;
+            }
+            var flow = window.MindDoFlow;
+            if (!flow) return;
+            var leads = flow.readJson(flow.keys.leads) || [];
+            var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+            var actorId = (active && active.staff && active.staff.id) || "ops";
+            var campus = (typeof moActiveCampus === "function") ? moActiveCampus() : null;
+            var base = Date.now();
+            toWrite.forEach(function (x, i) {
+              var nowIso = new Date(base + i).toISOString();
+              var rec = Object.assign({}, x.record, {
+                campus: campus,
+                crmStatus: "new",
+                trialStatus: "scheduled",
+                createdAt: nowIso,
+                lastContactAt: nowIso
+              });
+              leads.push(rec);
+              if (flow.appendAudit) {
+                flow.appendAudit({
+                  actor: actorId, kind: "lead.import",
+                  target: nowIso,
+                  summary: "导入线索 · " + (rec.studentName || rec.phone || nowIso),
+                  before: null, after: rec
+                });
+              }
+            });
+            flow.writeJson(flow.keys.leads, leads);
+            var dupCount = parsedRows.filter(function (x) { return x.flag === "dup"; }).length;
+            alert((t.crmImportDoneFmt || "Imported {n} · Skipped {skipped}")
+              .replace("{n}", toWrite.length)
+              .replace("{skipped}", dupCount));
+            closeModal();
+            if (typeof render === "function") render();
           });
         }
       })();
