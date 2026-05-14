@@ -1273,10 +1273,13 @@
     .mkt-crm-status.won       { background: rgba(110,143,87,0.2); color: #3f5d26; border: 1px solid rgba(110,143,87,0.4); }
     .mkt-crm-status.lost      { background: rgba(196,106,77,0.18); color: #8e3d21; border: 1px solid rgba(196,106,77,0.42); }
     .mkt-crm-actions { display: flex; gap: 6px; }
-    .mkt-crm-actions button { all: unset; cursor: pointer; padding: 5px 10px; border-radius: 999px;
+    .mkt-crm-actions button,
+    .mkt-crm-actions a.crm-act { all: unset; cursor: pointer; padding: 5px 10px; border-radius: 999px;
       font-size: 11px; font-weight: 700; color: var(--clay); border: 1px solid var(--line);
-      background: #fff; transition: 0.12s; }
-    .mkt-crm-actions button:hover { border-color: var(--gold); }
+      background: #fff; transition: 0.12s; text-decoration: none; display: inline-block; line-height: 1.4; }
+    .mkt-crm-actions button:hover,
+    .mkt-crm-actions a.crm-act:hover { border-color: var(--gold); }
+    .mkt-crm-actions button:disabled { color: var(--muted); cursor: not-allowed; opacity: 0.55; }
     .mkt-crm-empty { padding: 30px 16px; text-align: center; color: var(--muted); font-size: 13px;
       background: rgba(254,243,199,0.32); border: 1px dashed rgba(245,158,11,0.32); border-radius: 12px; }
     @media (max-width: 720px) {
@@ -1953,6 +1956,41 @@
       .mo-lead-grid { grid-template-columns: 1fr; }
       .mo-lead-overlay { padding: 0; }
       .mo-lead-card { height: 100vh; max-height: 100vh; width: 100%; border-radius: 0; }
+    }
+
+    /* Lead detail modal — readonly fields grid + small edit area at the
+       bottom (status + note). Reuses .mo-lead-overlay container. */
+    .lead-detail-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 16px; padding: 16px 0 12px; font-size: 13px;
+    }
+    .lead-detail-grid dt {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .lead-detail-grid dd {
+      margin: 0 0 6px; color: var(--text, #1f2937);
+      font-variant-numeric: tabular-nums;
+      word-break: break-word;
+    }
+    .lead-detail-edit {
+      display: grid; grid-template-columns: 200px 1fr; gap: 12px;
+      padding: 14px 0 4px;
+      border-top: 1px dashed rgba(122,48,16,0.12);
+    }
+    .lead-detail-edit .mo-field { display: flex; flex-direction: column; gap: 6px; }
+    .lead-detail-edit .mo-field span {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .lead-detail-edit select, .lead-detail-edit textarea {
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 10px; font: inherit; font-size: 13px; background: #fff;
+      resize: vertical;
+    }
+    @media (max-width: 640px) {
+      .lead-detail-grid { grid-template-columns: 1fr; }
+      .lead-detail-edit { grid-template-columns: 1fr; }
     }
   </style>
   <link rel="stylesheet" href="assets/minddo-theme.css" />
@@ -3345,6 +3383,50 @@
   </div>
 
   <!-- ================================================================
+       Lead detail modal — opened from CRM 客户管理 row's 详情 button.
+       Reuses .mo-lead-overlay styles. Shows the full lead record,
+       lets ops change crmStatus, add a note, and mark contacted.
+       ================================================================ -->
+  <div class="mo-lead-overlay" id="leadDetailOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="mo-lead-card">
+      <header class="mo-lead-head">
+        <div>
+          <h3 data-i18n="leadDetailTitle"></h3>
+          <p id="leadDetailSubName" class="muted" style="margin:0;font-size:13px;color:var(--muted);"></p>
+        </div>
+        <button type="button" class="mo-lead-close" id="leadDetailCloseBtn" aria-label="Close">×</button>
+      </header>
+      <div class="mo-lead-form" style="padding:0 22px 22px;">
+        <div class="lead-detail-grid" id="leadDetailFields"></div>
+        <div class="lead-detail-edit">
+          <label class="mo-field span-1">
+            <span data-i18n="leadDetailStatusLabel"></span>
+            <select id="leadDetailStatus">
+              <option value="new" data-i18n="mktCrmStatusNew"></option>
+              <option value="contacted" data-i18n="leadDetailStatusContacted"></option>
+              <option value="follow" data-i18n="mktCrmStatusFollow"></option>
+              <option value="won" data-i18n="mktCrmStatusWon"></option>
+              <option value="lost" data-i18n="mktCrmStatusLost"></option>
+            </select>
+          </label>
+          <label class="mo-field span-2">
+            <span data-i18n="leadDetailNoteLabel"></span>
+            <textarea id="leadDetailNote" rows="3"></textarea>
+          </label>
+        </div>
+        <div class="mo-lead-foot">
+          <span id="leadDetailMsg" class="mo-lead-msg"></span>
+          <div style="display:flex;gap:8px;">
+            <button type="button" id="leadDetailMarkBtn" class="mo-lead-secondary" data-i18n="leadDetailMarkContacted"></button>
+            <button type="button" id="leadDetailCancelBtn" class="mo-lead-secondary" data-i18n="leadDetailClose"></button>
+            <button type="button" id="leadDetailSaveBtn" class="mo-lead-primary" data-i18n="leadDetailSave"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
        TV-wall / 数据大屏 (校区运营数据大屏) — fullscreen overlay
        triggered from 数据中心 → 数据大屏 → "进入大屏模式". All numbers
        hydrate from MindDoFlow on render; auto-refreshes every 30s.
@@ -4156,6 +4238,25 @@
           mktCrmActionCall: "拨号",
           mktCrmActionEmail: "邮件",
           mktCrmActionDetail: "详情",
+          leadDetailTitle: "线索详情",
+          leadDetailFieldStudent: "学员",
+          leadDetailFieldParent: "家长",
+          leadDetailFieldPhone: "电话",
+          leadDetailFieldEmail: "邮箱",
+          leadDetailFieldChannel: "渠道",
+          leadDetailFieldSubject: "意向",
+          leadDetailFieldCampus: "校区",
+          leadDetailFieldTrial: "试课时间",
+          leadDetailFieldCreated: "进入时间",
+          leadDetailFieldLastContact: "最近联系",
+          leadDetailStatusLabel: "状态",
+          leadDetailStatusContacted: "已联系",
+          leadDetailNoteLabel: "备注",
+          leadDetailMarkContacted: "标记已联系",
+          leadDetailClose: "关闭",
+          leadDetailSave: "保存",
+          leadDetailSaved: "已保存",
+          leadDetailNoData: "—",
           mktCrmCreatedFmt: "{n} 天前进入",
           mktCrmTodayLabel: "今天",
           mktCrmYesterdayLabel: "昨天",
@@ -5006,6 +5107,25 @@
           mktCrmActionCall: "Call",
           mktCrmActionEmail: "Email",
           mktCrmActionDetail: "Details",
+          leadDetailTitle: "Lead Details",
+          leadDetailFieldStudent: "Student",
+          leadDetailFieldParent: "Parent",
+          leadDetailFieldPhone: "Phone",
+          leadDetailFieldEmail: "Email",
+          leadDetailFieldChannel: "Channel",
+          leadDetailFieldSubject: "Interest",
+          leadDetailFieldCampus: "Campus",
+          leadDetailFieldTrial: "Trial",
+          leadDetailFieldCreated: "Entered",
+          leadDetailFieldLastContact: "Last Contact",
+          leadDetailStatusLabel: "Status",
+          leadDetailStatusContacted: "Contacted",
+          leadDetailNoteLabel: "Note",
+          leadDetailMarkContacted: "Mark Contacted",
+          leadDetailClose: "Close",
+          leadDetailSave: "Save",
+          leadDetailSaved: "Saved",
+          leadDetailNoData: "—",
           mktCrmCreatedFmt: "Entered {n}d ago",
           mktCrmTodayLabel: "Today",
           mktCrmYesterdayLabel: "Yesterday",
@@ -6217,7 +6337,18 @@
                 : (t.mktCrmCreatedFmt || "{n}d").replace("{n}", daysAgoN);
               var channelLabel = l.channelLabel || l.channel || "—";
               var contact = (l.parentName ? l.parentName + " · " : "") + (l.phone || l.email || "");
-              return "<div class='mkt-crm-row'>"
+              var leadId = escHTML(l.createdAt || "");
+              // Call / Email render as anchors when the lead has the
+              // matching contact info; otherwise render as a disabled
+              // button so the row layout stays consistent. 详情 always
+              // opens the lead-detail modal.
+              var callBtn = l.phone
+                ? "<a href='tel:" + escHTML(l.phone) + "' class='crm-act'>" + escHTML(t.mktCrmActionCall) + "</a>"
+                : "<button type='button' disabled>" + escHTML(t.mktCrmActionCall) + "</button>";
+              var emailBtn = l.email
+                ? "<a href='mailto:" + escHTML(l.email) + "' class='crm-act'>" + escHTML(t.mktCrmActionEmail) + "</a>"
+                : "<button type='button' disabled>" + escHTML(t.mktCrmActionEmail) + "</button>";
+              return "<div class='mkt-crm-row' data-lead-id='" + leadId + "'>"
                 + "<div class='mkt-crm-avatar'>" + escHTML(initial) + "</div>"
                 + "<div class='mkt-crm-info'>"
                 +   "<div class='name'>" + escHTML(name) + "</div>"
@@ -6228,9 +6359,9 @@
                 + "</div>"
                 + "<span class='mkt-crm-status " + status + "'>" + escHTML(statusLabel) + "</span>"
                 + "<div class='mkt-crm-actions'>"
-                +   "<button type='button'>" + escHTML(t.mktCrmActionCall) + "</button>"
-                +   "<button type='button'>" + escHTML(t.mktCrmActionEmail) + "</button>"
-                +   "<button type='button'>" + escHTML(t.mktCrmActionDetail) + "</button>"
+                +   callBtn
+                +   emailBtn
+                +   "<button type='button' data-lead-detail='" + leadId + "'>" + escHTML(t.mktCrmActionDetail) + "</button>"
                 + "</div>"
                 + "</div>";
             }).join("") + "</div>";
@@ -7589,6 +7720,165 @@
         flow.writeJson(flow.keys.leads, leads);
         renderMarketingOverview(I18N[state.lang] || I18N["zh-CN"]);
       });
+
+      // Lead-detail modal — opens from the CRM list 详情 button. Reads
+      // the lead by createdAt (the stable id used elsewhere in this
+      // file), renders the full record into a read-only grid, and lets
+      // ops change crmStatus + add a note. Save writes back, audits, and
+      // re-renders so the CRM list reflects the change immediately.
+      (function () {
+        var overlay = document.getElementById("leadDetailOverlay");
+        if (!overlay) return;
+        var subNameEl = document.getElementById("leadDetailSubName");
+        var fieldsEl = document.getElementById("leadDetailFields");
+        var statusSel = document.getElementById("leadDetailStatus");
+        var noteEl = document.getElementById("leadDetailNote");
+        var msgEl = document.getElementById("leadDetailMsg");
+        var closeBtn = document.getElementById("leadDetailCloseBtn");
+        var cancelBtn = document.getElementById("leadDetailCancelBtn");
+        var saveBtn = document.getElementById("leadDetailSaveBtn");
+        var markBtn = document.getElementById("leadDetailMarkBtn");
+        var current = null;
+
+        function fmtDate(iso) {
+          if (!iso) return "";
+          var d = new Date(iso);
+          if (!isFinite(d.getTime())) return iso;
+          var p = function (n) { return n < 10 ? "0" + n : "" + n; };
+          return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate())
+            + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+        }
+
+        function findLeadById(id) {
+          var flow = window.MindDoFlow;
+          if (!flow || !id) return null;
+          var leads = flow.readJson(flow.keys.leads) || [];
+          for (var i = 0; i < leads.length; i++) {
+            if (leads[i] && leads[i].createdAt === id) return leads[i];
+          }
+          return null;
+        }
+
+        function openDetail(id) {
+          var lead = findLeadById(id);
+          if (!lead) return;
+          current = lead;
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          var nameLine = lead.studentName || lead.parentName || t.leadDetailNoData;
+          if (subNameEl) subNameEl.textContent = nameLine;
+          var noData = t.leadDetailNoData;
+          var trialLabel = lead.trialDate
+            ? (lead.trialDate + (lead.trialTime ? " " + lead.trialTime : ""))
+            : noData;
+          var fields = [
+            [t.leadDetailFieldStudent, lead.studentName || noData],
+            [t.leadDetailFieldParent, lead.parentName || noData],
+            [t.leadDetailFieldPhone, lead.phone || noData],
+            [t.leadDetailFieldEmail, lead.email || noData],
+            [t.leadDetailFieldChannel, lead.channelLabel || lead.channel || noData],
+            [t.leadDetailFieldSubject, lead.subjectLabel || lead.subject || noData],
+            [t.leadDetailFieldCampus, lead.campus || noData],
+            [t.leadDetailFieldTrial, trialLabel],
+            [t.leadDetailFieldCreated, fmtDate(lead.createdAt) || noData],
+            [t.leadDetailFieldLastContact, fmtDate(lead.lastContactAt) || noData]
+          ];
+          fieldsEl.innerHTML = "<dl class='lead-detail-grid'>"
+            + fields.map(function (f) {
+                return "<dt>" + escHTML(f[0]) + "</dt><dd>" + escHTML(f[1]) + "</dd>";
+              }).join("")
+            + "</dl>";
+          if (statusSel) statusSel.value = lead.crmStatus || "new";
+          if (noteEl) noteEl.value = lead.note || "";
+          if (msgEl) { msgEl.textContent = ""; msgEl.className = "mo-lead-msg"; }
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+          if (statusSel) statusSel.focus();
+        }
+
+        function closeDetail() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+          current = null;
+        }
+
+        function persist(extraPatch) {
+          var flow = window.MindDoFlow;
+          if (!flow || !current) return false;
+          var leads = flow.readJson(flow.keys.leads) || [];
+          var hit = null;
+          for (var i = 0; i < leads.length; i++) {
+            if (leads[i] && leads[i].createdAt === current.createdAt) { hit = leads[i]; break; }
+          }
+          if (!hit) return false;
+          var before = Object.assign({}, hit);
+          hit.crmStatus = statusSel ? statusSel.value : hit.crmStatus;
+          hit.note = noteEl ? noteEl.value.trim() : hit.note;
+          if (extraPatch) Object.assign(hit, extraPatch);
+          flow.writeJson(flow.keys.leads, leads);
+          if (flow.appendAudit) {
+            var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+            flow.appendAudit({
+              actor: (active && active.staff && active.staff.id) || "ops",
+              kind: "lead.update",
+              target: hit.createdAt,
+              summary: "更新线索 · " + (hit.studentName || hit.parentName || hit.createdAt),
+              before: before,
+              after: hit
+            });
+          }
+          current = hit;
+          if (typeof render === "function") render();
+          return true;
+        }
+
+        document.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-lead-detail]");
+          if (!b) return;
+          e.preventDefault();
+          openDetail(b.getAttribute("data-lead-detail"));
+        });
+        if (closeBtn) closeBtn.addEventListener("click", closeDetail);
+        if (cancelBtn) cancelBtn.addEventListener("click", closeDetail);
+        overlay.addEventListener("click", function (e) {
+          if (e.target === overlay) closeDetail();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && overlay.classList.contains("open")) closeDetail();
+        });
+        if (saveBtn) {
+          saveBtn.addEventListener("click", function () {
+            var t = I18N[state.lang] || I18N["zh-CN"];
+            if (persist()) {
+              if (msgEl) {
+                msgEl.textContent = t.leadDetailSaved;
+                msgEl.className = "mo-lead-msg ok";
+              }
+              setTimeout(closeDetail, 400);
+            }
+          });
+        }
+        if (markBtn) {
+          markBtn.addEventListener("click", function () {
+            // "Mark contacted" — stamp lastContactAt, bump status from
+            // raw "new" to "contacted" if applicable.
+            if (!current) return;
+            var nowIso = new Date().toISOString();
+            var statusBump = (current.crmStatus || "new") === "new" ? "contacted" : current.crmStatus;
+            if (statusSel) statusSel.value = statusBump;
+            persist({ lastContactAt: nowIso });
+            // Re-open with refreshed values so the user sees the new
+            // last-contact timestamp without leaving the modal.
+            openDetail(current.createdAt);
+            var t = I18N[state.lang] || I18N["zh-CN"];
+            if (msgEl) {
+              msgEl.textContent = t.leadDetailSaved;
+              msgEl.className = "mo-lead-msg ok";
+            }
+          });
+        }
+      })();
 
       // New-lead FAB + modal wiring.
       (function () {
