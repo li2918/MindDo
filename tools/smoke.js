@@ -29,6 +29,32 @@ const failures = [];
 
 const INLINE_SCRIPT_RE = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g;
 
+// Tags whose balance matters at the document level. Unclosed <style> or
+// <script> blocks make the HTML parser swallow the rest of the body —
+// the exact bug pattern that caused "dashboard shows nothing" in 2026-05.
+// <body> / <html> are also checked so stray duplicates raise an alarm.
+const BALANCED_TAGS = ["style", "script", "body", "html", "head"];
+
+function countTag(html, tag, isClose) {
+  // Match <tag>, <tag ...>, but not <tagFoo> — require word boundary.
+  const re = new RegExp(`<${isClose ? "\\/" : ""}${tag}(?:>|\\s[^>]*>|\\/>)`, "gi");
+  return (html.match(re) || []).length;
+}
+
+function checkTagBalance(html) {
+  const problems = [];
+  for (const tag of BALANCED_TAGS) {
+    const opens = countTag(html, tag, false);
+    const closes = countTag(html, tag, true);
+    // For void elements you wouldn't run this — but every tag we check
+    // requires explicit open + close in well-formed HTML.
+    if (opens !== closes) {
+      problems.push(`<${tag}>: ${opens} open / ${closes} close`);
+    }
+  }
+  return problems;
+}
+
 for (const rel of targets) {
   const abs = path.join(ROOT, rel);
   let html;
@@ -40,18 +66,28 @@ for (const rel of targets) {
     failures.push({ file: rel, error: e.message });
     continue;
   }
-  // Concatenate every inline script so cross-IIFE references stay valid
-  // when we wrap in new Function() — same trick the previous ad-hoc
-  // checks used in this repo.
+  checked++;
+
+  // 1. HTML tag balance — catches the unclosed-<style> class of bugs that
+  //    silently make the entire body disappear in the browser.
+  const tagProblems = checkTagBalance(html);
+  if (tagProblems.length) {
+    failed++;
+    const msg = "tag balance: " + tagProblems.join(", ");
+    failures.push({ file: rel, error: msg });
+    process.stdout.write(`  ✗ ${rel}: ${msg}\n`);
+    continue;
+  }
+
+  // 2. Inline scripts — concatenate and parse-check.
   let combined = "";
   let m;
   INLINE_SCRIPT_RE.lastIndex = 0;
   while ((m = INLINE_SCRIPT_RE.exec(html)) !== null) {
     combined += "\n;\n" + m[1];
   }
-  checked++;
   if (!combined.trim()) {
-    // No inline JS — fine.
+    process.stdout.write(`  ✓ ${rel}\n`);
     continue;
   }
   try {
