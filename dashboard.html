@@ -6597,21 +6597,34 @@
       }
 
       // Apply the role swap: when campus-marketing is active, hide the
-      // generic overview content (learning dashboard + kids stack) and
-      // show #marketingOverview instead. Called from render() and from
-      // every identity switch.
+      // generic overview content (onboarding checklist, ops workspace
+      // tiles, alert strip) and show #marketingOverview instead. Both
+      // live inside the same data-tab-panel="overview" section so
+      // tab-switching keeps working unchanged. Called from render() and
+      // from every identity switch. Exposed on `window` so the
+      // separate mock-auth IIFE can call it across IIFE scopes.
       function applyRoleSpecificOverview() {
         var moEl = document.getElementById("marketingOverview");
-        var dashEl = document.getElementById("dashPanel");
-        var kidsEl = document.getElementById("kidsScheduleStack");
         var fab = document.getElementById("moNewLeadFab");
         var on = moRoleActive();
         if (moEl) moEl.hidden = !on;
-        if (dashEl) dashEl.style.display = on ? "none" : "";
-        if (kidsEl) kidsEl.style.display = on ? "none" : "";
         if (fab) fab.hidden = !on;
+        // Hide every direct sibling inside the overview panel that
+        // ISN'T the marketing block. This way we don't have to know
+        // every legacy element's id — just toggle visibility.
+        var panel = document.querySelector('[data-tab-panel="overview"]');
+        if (panel) {
+          Array.prototype.forEach.call(panel.children, function (child) {
+            if (child === moEl) return;
+            child.style.display = on ? "none" : "";
+          });
+        }
         if (on) renderMarketingOverview(I18N[state.lang] || I18N["zh-CN"]);
       }
+      window.__minddoApplyRoleOverview = applyRoleSpecificOverview;
+      window.__minddoRender = function () {
+        try { render(); } catch (_) {}
+      };
 
       function renderMarketingOverview(t) {
         if (!t) t = I18N[state.lang] || I18N["zh-CN"];
@@ -10070,8 +10083,12 @@
           applyPermissionGates();
           applyCampusLock();
           // Role-specific overview swap — marketing reps get a different
-          // first screen than ops / principal / super-admin.
-          if (typeof applyRoleSpecificOverview === "function") applyRoleSpecificOverview();
+          // first screen than ops / principal / super-admin. The function
+          // is defined in the main IIFE; cross-scope so we reach it via
+          // the explicit window bridge set up there.
+          if (typeof window.__minddoApplyRoleOverview === "function") {
+            window.__minddoApplyRoleOverview();
+          }
         }
 
         // Hide sidebar items + sub-items the active user lacks
@@ -10182,9 +10199,12 @@
             if (flow.setActiveOpsUser) flow.setActiveOpsUser(sid);
             refreshIdentity();
             renderSwitchList();
-            // Re-render the dashboard so per-tab content honors the new
-            // identity (the per-tab gates aren't wired yet, but staff
-            // count / KPIs read live state, so reload-free is fine).
+            // Re-run the main render() so every per-role panel
+            // (marketing overview KPIs, today's queue, channel ROI,
+            // campus-filtered counts) refreshes for the new identity.
+            if (typeof window.__minddoRender === "function") {
+              window.__minddoRender();
+            }
             return;
           }
           var rs = e.target.closest("#reseedBtn");
