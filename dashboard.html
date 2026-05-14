@@ -1435,7 +1435,197 @@
       .sidebar-item { white-space: nowrap; padding: 8px 12px; font-size: 13px; }
       .portal-main { padding: 22px 18px 60px; }
     }
-  </style>
+
+    /* ================================================================
+       TV-wall / 数据大屏 — fullscreen overlay (dark sci-fi theme).
+       Scoped to .tv-wall so it never bleeds into the rest of the
+       dashboard's warm MindDo palette. Triggered from 数据中心 → 数据
+       大屏 sub-panel via a "进入大屏模式" button.
+       ================================================================ */
+    .tv-wall-overlay { position: fixed; inset: 0; z-index: 9000;
+      background: #050a1a; color: #e0eaff; display: none;
+      font-family: "Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; }
+    .tv-wall-overlay.open { display: block; }
+    .tv-wall { width: 100%; height: 100%; overflow: auto;
+      background:
+        radial-gradient(ellipse at top, rgba(56,189,248,0.08), transparent 50%),
+        radial-gradient(ellipse at bottom, rgba(124,58,237,0.06), transparent 50%),
+        linear-gradient(180deg, #050a1a 0%, #0a1432 50%, #050a1a 100%); }
+    .tv-wall * { box-sizing: border-box; }
+
+    /* Header */
+    .tv-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+      padding: 14px 24px; position: relative; }
+    .tv-head .tv-logo { display: inline-flex; align-items: center; gap: 8px;
+      color: #38bdf8; font-weight: 800; letter-spacing: 0.1em; font-size: 13px; }
+    .tv-head .tv-logo::before { content: ""; width: 22px; height: 22px; border-radius: 50%;
+      background: linear-gradient(135deg, #38bdf8, #6366f1); }
+    .tv-head .tv-title { position: relative; text-align: center;
+      font-size: clamp(20px, 2.6vw, 32px); font-weight: 900; letter-spacing: 0.3em;
+      color: #fff;
+      background: linear-gradient(180deg, #fff 30%, #93c5fd 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      padding: 8px 80px; text-shadow: 0 0 20px rgba(56,189,248,0.35);
+      white-space: nowrap; }
+    .tv-head .tv-title::before, .tv-head .tv-title::after {
+      content: ""; position: absolute; top: 50%; width: 60px; height: 14px;
+      background:
+        linear-gradient(90deg, transparent 0%, rgba(56,189,248,0.55) 50%, transparent 100%);
+      transform: translateY(-50%);
+      clip-path: polygon(0 30%, 70% 30%, 80% 0, 100% 50%, 80% 100%, 70% 70%, 0 70%); }
+    .tv-head .tv-title::before { left: -10px; }
+    .tv-head .tv-title::after  { right: -10px; transform: translateY(-50%) scaleX(-1); }
+    .tv-head .tv-actions { justify-self: end; display: inline-flex; gap: 10px; align-items: center;
+      font-size: 12px; color: #93c5fd; }
+    .tv-head button { background: rgba(56,189,248,0.08); color: #93c5fd;
+      border: 1px solid rgba(56,189,248,0.32); border-radius: 999px;
+      padding: 7px 14px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700;
+      font-family: inherit; transition: 0.15s; display: inline-flex; align-items: center; gap: 5px; }
+    .tv-head button:hover { background: rgba(56,189,248,0.2); border-color: #38bdf8; color: #fff; }
+
+    /* Body grid */
+    .tv-body { display: grid; grid-template-columns: 320px 1fr 340px; gap: 14px;
+      padding: 0 18px 18px; align-items: start; }
+    @media (max-width: 1280px) {
+      .tv-body { grid-template-columns: 1fr; }
+    }
+
+    /* Card chrome — dark with glowing cyan border */
+    .tv-card { position: relative;
+      background: linear-gradient(180deg, rgba(15,28,69,0.55), rgba(8,16,42,0.65));
+      border: 1px solid rgba(56,189,248,0.18); border-radius: 12px;
+      padding: 14px 16px 16px; margin-bottom: 14px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04), 0 4px 24px rgba(56,189,248,0.05); }
+    .tv-card::before, .tv-card::after {
+      content: ""; position: absolute; width: 14px; height: 14px;
+      border: 1px solid #38bdf8; pointer-events: none; }
+    .tv-card::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .tv-card::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+    .tv-card h4 { font-size: 13px; font-weight: 700; color: #e0eaff; margin: 0 0 12px;
+      display: flex; align-items: center; gap: 6px; letter-spacing: 0.04em; }
+    .tv-card h4::before { content: ""; width: 4px; height: 12px;
+      background: linear-gradient(180deg, #38bdf8, #6366f1); border-radius: 1px; }
+
+    /* KPI tile row (e.g. 在读学员数 / 新增 / 历史) */
+    .tv-kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .tv-kpi-row .tv-kpi { text-align: left; padding: 6px 4px; }
+    .tv-kpi-row .tv-kpi .lbl { font-size: 11px; color: #6b8db8; margin-bottom: 4px; font-weight: 500; }
+    .tv-kpi-row .tv-kpi .num { font-size: 28px; font-weight: 900; color: #22d3ee;
+      line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+      text-shadow: 0 0 14px rgba(34,211,238,0.5); }
+
+    /* Trial-conversion stacked rows + a thin progress strip */
+    .tv-trial-list { display: grid; gap: 12px; }
+    .tv-trial-row { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center;
+      font-size: 12px; color: #93c5fd; }
+    .tv-trial-row .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .tv-trial-row .dot.c1 { background: #f472b6; }
+    .tv-trial-row .dot.c2 { background: #facc15; }
+    .tv-trial-row .dot.c3 { background: #38bdf8; }
+    .tv-trial-row .name { color: #e0eaff; }
+    .tv-trial-row .v { color: #22d3ee; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .tv-trial-rate { display: grid; grid-template-columns: 1fr auto; gap: 6px;
+      font-size: 11px; color: #6b8db8; margin-top: 4px; }
+    .tv-trial-rate .v { color: #22d3ee; }
+
+    /* Attendance row — 2 chips */
+    .tv-att-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .tv-att-row .chip { border-radius: 10px; padding: 14px 16px; font-size: 12px; color: #e0eaff;
+      background: linear-gradient(135deg, rgba(34,211,238,0.16), rgba(99,102,241,0.16));
+      border: 1px solid rgba(34,211,238,0.32); display: flex; flex-direction: column; gap: 4px; }
+    .tv-att-row .chip.alt { background: linear-gradient(135deg, rgba(124,58,237,0.16), rgba(56,189,248,0.16));
+      border-color: rgba(124,58,237,0.3); }
+    .tv-att-row .chip .v { font-size: 22px; font-weight: 900; color: #fff; font-variant-numeric: tabular-nums; }
+
+    /* Date selector + announcement banner */
+    .tv-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      background: linear-gradient(180deg, rgba(15,28,69,0.55), rgba(8,16,42,0.4));
+      border: 1px solid rgba(56,189,248,0.18); border-radius: 12px; padding: 8px 14px; margin-bottom: 14px; }
+    .tv-toolbar select, .tv-toolbar input { background: rgba(15,28,69,0.6); color: #e0eaff;
+      border: 1px solid rgba(56,189,248,0.3); border-radius: 8px; padding: 6px 10px; font: inherit;
+      font-size: 12.5px; font-family: inherit; }
+    .tv-toolbar .tv-update { margin-left: auto; font-size: 11.5px; color: #6b8db8; }
+    .tv-announce { background: linear-gradient(90deg, rgba(56,189,248,0.16), rgba(99,102,241,0.16));
+      border: 1px solid rgba(56,189,248,0.3); border-radius: 999px; padding: 9px 18px;
+      color: #93c5fd; font-size: 12px; font-weight: 600; margin-bottom: 14px;
+      display: inline-flex; align-items: center; gap: 8px; width: 100%; }
+    .tv-announce::before { content: "📢"; }
+
+    /* Big cash tiles (top of middle column) */
+    .tv-cash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .tv-cash-tile { position: relative; padding: 18px 22px; border-radius: 14px;
+      background: linear-gradient(135deg, #06b6d4, #0ea5e9 60%, #38bdf8);
+      box-shadow: 0 8px 32px rgba(56,189,248,0.32); overflow: hidden; }
+    .tv-cash-tile.alt { background: linear-gradient(135deg, #a855f7, #7c3aed 60%, #6366f1);
+      box-shadow: 0 8px 32px rgba(168,85,247,0.32); }
+    .tv-cash-tile .label { font-size: 13px; color: rgba(255,255,255,0.84); font-weight: 600; }
+    .tv-cash-tile .big { font-size: 38px; font-weight: 900; color: #fff; letter-spacing: -0.02em;
+      line-height: 1.05; margin-top: 6px; font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 18px rgba(255,255,255,0.45); }
+    .tv-cash-tile .sub { display: flex; gap: 14px; margin-top: 8px;
+      font-size: 11.5px; color: rgba(255,255,255,0.78); }
+    .tv-cash-tile .sub b { color: #fff; font-weight: 700; }
+
+    /* Middle column — chart + ranking side by side */
+    .tv-grid-2 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 12px; margin-bottom: 14px; }
+    @media (max-width: 1080px) { .tv-grid-2 { grid-template-columns: 1fr; } }
+    .tv-line-svg { width: 100%; height: 200px; display: block; }
+    .tv-line-svg .grid { stroke: rgba(56,189,248,0.1); stroke-width: 1; stroke-dasharray: 3 4; }
+    .tv-line-svg .axis { font-size: 10px; fill: #6b8db8; }
+    .tv-line-svg .area { fill: url(#tvLineGrad); }
+    .tv-line-svg .line { fill: none; stroke: #22d3ee; stroke-width: 2;
+      stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 6px rgba(34,211,238,0.5)); }
+    .tv-line-svg .pt { fill: #fff; stroke: #22d3ee; stroke-width: 2; }
+
+    /* Sales ranking — list of rows */
+    .tv-rank-list { display: grid; gap: 8px; }
+    .tv-rank-row { display: grid; grid-template-columns: 24px 1fr auto; gap: 8px; align-items: center;
+      padding: 6px 8px; border-radius: 8px; background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(56,189,248,0.08); font-size: 12px; color: #e0eaff; }
+    .tv-rank-row .rk { color: #6b8db8; font-weight: 800; text-align: center; font-size: 11px; }
+    .tv-rank-row.top1 .rk { color: #fbbf24; }
+    .tv-rank-row.top2 .rk { color: #d1d5db; }
+    .tv-rank-row.top3 .rk { color: #f97316; }
+    .tv-rank-row .v { color: #22d3ee; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+    /* Donut for 新报续报报占比 */
+    .tv-donut-wrap { display: grid; grid-template-columns: 200px 1fr; gap: 18px; align-items: center; }
+    @media (max-width: 720px) { .tv-donut-wrap { grid-template-columns: 1fr; } }
+    .tv-donut-svg { width: 200px; height: 200px; }
+    .tv-donut-legend { display: grid; gap: 10px; font-size: 13px; }
+    .tv-donut-legend .row { display: grid; grid-template-columns: 12px 1fr auto auto; gap: 12px;
+      align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(56,189,248,0.08); }
+    .tv-donut-legend .row:last-child { border-bottom: none; }
+    .tv-donut-legend .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .tv-donut-legend .name { color: #e0eaff; }
+    .tv-donut-legend .v { color: #e0eaff; font-variant-numeric: tabular-nums; }
+    .tv-donut-legend .pct { color: #6b8db8; font-size: 12px; min-width: 36px; text-align: right; }
+
+    /* Teacher consumption ranking (table) */
+    .tv-table { width: 100%; border-collapse: collapse; font-size: 12.5px; color: #e0eaff; }
+    .tv-table th { color: #6b8db8; font-size: 11px; font-weight: 500; text-align: left;
+      padding: 6px 8px; border-bottom: 1px solid rgba(56,189,248,0.15); }
+    .tv-table td { padding: 8px 8px; border-bottom: 1px solid rgba(56,189,248,0.05);
+      font-variant-numeric: tabular-nums; }
+    .tv-table td:last-child, .tv-table th:last-child { text-align: right; }
+    .tv-table .v { color: #22d3ee; font-weight: 700; }
+    .tv-table-empty { padding: 24px 0; text-align: center; color: #6b8db8; font-size: 12px; }
+
+    /* Home-school ring panel */
+    .tv-rings { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 12px; }
+    .tv-ring { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; }
+    .tv-ring svg { width: 64px; height: 64px; }
+    .tv-ring .lbl { font-size: 11.5px; color: #93c5fd; }
+    .tv-ring .v { font-size: 20px; font-weight: 900; color: #fff;
+      font-variant-numeric: tabular-nums; text-shadow: 0 0 10px rgba(34,211,238,0.4); }
+    .tv-ring.cyan circle.fg   { stroke: #22d3ee; }
+    .tv-ring.amber circle.fg  { stroke: #fbbf24; }
+    .tv-ring.violet circle.fg { stroke: #a855f7; }
+    .tv-ring.rose circle.fg   { stroke: #f472b6; }
+    .tv-ring circle.bg { stroke: rgba(56,189,248,0.14); }
+    .tv-ring circle { fill: none; stroke-width: 8; }
+    .tv-ring circle.fg { stroke-linecap: round;
+      filter: drop-shadow(0 0 6px currentColor); }
   <link rel="stylesheet" href="assets/minddo-theme.css" />
   <link rel="stylesheet" href="assets/minddo-responsive.css" />
 </head>
@@ -2380,6 +2570,9 @@
                 <h3 data-i18n="zoneDataWallTitle"></h3>
                 <p data-i18n="zoneDataWallSub"></p>
               </div>
+              <div class="dash-zone-actions">
+                <button type="button" id="openTvWallBtn" class="bm-edit-btn" style="background:linear-gradient(135deg,#06b6d4,#0ea5e9);color:#fff;border:none;">🖥️ <span data-i18n="tvWallEnter"></span></button>
+              </div>
             </div>
             <!-- Hero KPI strip — bigger numbers + sub-line -->
             <div class="data-wall-hero" id="dataWallHero"></div>
@@ -2656,6 +2849,104 @@
         <button type="button" class="cls-roster-close" id="clsRosterCloseBtn" aria-label="Close">×</button>
       </header>
       <div class="cls-roster-body" id="clsRosterBody"></div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       TV-wall / 数据大屏 (校区运营数据大屏) — fullscreen overlay
+       triggered from 数据中心 → 数据大屏 → "进入大屏模式". All numbers
+       hydrate from MindDoFlow on render; auto-refreshes every 30s.
+       Esc / X / fullscreen-exit all close.
+       ================================================================ -->
+  <div class="tv-wall-overlay" id="tvWallOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="tv-wall">
+      <header class="tv-head">
+        <span class="tv-logo">MindDo</span>
+        <h1 class="tv-title" data-i18n="tvWallTitle"></h1>
+        <div class="tv-actions">
+          <span class="tv-update" id="tvLastUpdated"></span>
+          <button type="button" id="tvFullscreenBtn">⛶ <span data-i18n="tvWallFullscreen"></span></button>
+          <button type="button" id="tvCloseBtn">✕ <span data-i18n="tvWallExit"></span></button>
+        </div>
+      </header>
+
+      <!-- ===== Body grid ===== -->
+      <div class="tv-body">
+
+        <!-- LEFT column -->
+        <div>
+          <section class="tv-card">
+            <h4 data-i18n="tvCardActiveStudents"></h4>
+            <div class="tv-kpi-row" id="tvActiveStudents"></div>
+          </section>
+          <section class="tv-card">
+            <h4 data-i18n="tvCardLeads"></h4>
+            <div class="tv-kpi-row" id="tvLeadKpis"></div>
+          </section>
+          <section class="tv-card">
+            <h4 data-i18n="tvCardTrialFunnel"></h4>
+            <div class="tv-trial-list" id="tvTrialFunnel"></div>
+          </section>
+          <section class="tv-card">
+            <h4 data-i18n="tvCardAttendance"></h4>
+            <div class="tv-att-row" id="tvAttendance"></div>
+          </section>
+        </div>
+
+        <!-- MIDDLE column -->
+        <div>
+          <div class="tv-toolbar">
+            <select id="tvRangeSelect">
+              <option value="month" data-i18n="tvRangeMonth"></option>
+              <option value="week" data-i18n="tvRangeWeek"></option>
+              <option value="all" data-i18n="tvRangeAll"></option>
+            </select>
+            <input type="date" id="tvRangeFrom" />
+            <span style="color:#6b8db8;">→</span>
+            <input type="date" id="tvRangeTo" />
+            <span class="tv-update" id="tvRangeLabel"></span>
+          </div>
+          <div class="tv-announce" id="tvAnnounce"><span data-i18n="tvAnnounceDefault"></span></div>
+
+          <div class="tv-cash-grid" id="tvCashGrid"></div>
+
+          <div class="tv-grid-2">
+            <section class="tv-card">
+              <h4 data-i18n="tvCardCashTrend"></h4>
+              <div id="tvCashTrendBody"></div>
+            </section>
+            <section class="tv-card">
+              <h4 data-i18n="tvCardSalesRank"></h4>
+              <div class="tv-rank-list" id="tvSalesRankBody"></div>
+            </section>
+          </div>
+
+          <section class="tv-card">
+            <h4 data-i18n="tvCardEnrollMix"></h4>
+            <div class="tv-donut-wrap">
+              <div id="tvDonutWrap"></div>
+              <div class="tv-donut-legend" id="tvDonutLegend"></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT column -->
+        <div>
+          <section class="tv-card">
+            <h4 data-i18n="tvCardTeacherRank"></h4>
+            <div id="tvTeacherRank"></div>
+          </section>
+          <section class="tv-card">
+            <h4 data-i18n="tvCardTuitionFlow"></h4>
+            <div class="tv-kpi-row" id="tvTuitionKpis"></div>
+          </section>
+          <section class="tv-card">
+            <h4 data-i18n="tvCardHomeSchool"></h4>
+            <div class="tv-rings" id="tvHomeSchool"></div>
+          </section>
+        </div>
+
+      </div>
     </div>
   </div>
 
@@ -3392,6 +3683,60 @@
           dataSubtabFinance: "财务数据",
           // 数据大屏
           zoneDataWallTitle: "数据大屏",
+          tvWallEnter: "进入大屏模式",
+          tvWallExit: "退出大屏",
+          tvWallFullscreen: "全屏",
+          tvWallTitle: "校区运营数据大屏",
+          tvAnnounceDefault: "校区数据每 30 秒自动刷新 · 适合大屏 / 早会现场展示",
+          tvCardActiveStudents: "在读学员概况",
+          tvCardLeads: "意向学员概况",
+          tvCardTrialFunnel: "试听转化概况",
+          tvCardAttendance: "满班 / 出勤数据",
+          tvCardCashTrend: "机构现金总收入趋势",
+          tvCardSalesRank: "销售业绩排名",
+          tvCardEnrollMix: "新报 / 续报 / 扩科 占比",
+          tvCardTeacherRank: "上课老师课消排名",
+          tvCardTuitionFlow: "课消概况",
+          tvCardHomeSchool: "家校概况",
+          tvRangeMonth: "本月",
+          tvRangeWeek: "本周",
+          tvRangeAll: "全部",
+          tvActiveCount: "在读学员数",
+          tvActiveNew: "新增报课人次",
+          tvActiveHist: "历史学员数",
+          tvLeadCount: "意向学员数",
+          tvLeadNew: "新增意向学员",
+          tvLeadFollow: "跟进记录数",
+          tvTrialInvited: "试听邀约数",
+          tvTrialDone: "试听完成数",
+          tvTrialConv: "试听转化数",
+          tvTrialCompleteRate: "试听完成率",
+          tvTrialConvRate: "试听转化率",
+          tvAttRate: "出勤率",
+          tvAttFull: "平均满班率",
+          tvCashIn: "现金总收入",
+          tvCashOut: "现金总支出",
+          tvCashOrder: "订单",
+          tvCashJournal: "记账",
+          tvTuitionNew: "新增总学费",
+          tvTuitionUsed: "消耗学费",
+          tvTuitionLeft: "剩余学费",
+          tvHsBind: "公众号绑定率",
+          tvHsReview: "老师点评率",
+          tvHsAssign: "课后任务发布率",
+          tvHsRead: "通知公告阅读率",
+          tvEnrollNew: "新报",
+          tvEnrollExpand: "扩科",
+          tvEnrollRenew: "续费",
+          tvEnrollOther: "无分类",
+          tvRankTeacher: "上课老师",
+          tvRankSessions: "课消人次",
+          tvRankCost: "消耗学费",
+          tvRankSales: "销售人员",
+          tvRankAmount: "金额",
+          tvNoTeacher: "暂无课消数据。",
+          tvNoSales: "暂无销售排名。",
+          tvLastUpdated: "数据更新于 {time}",
           zoneDataWallSub: "校区核心数据一屏总览，适合大屏展示与早会讲数。",
           dataWallTopChannelHead: "Top 渠道",
           dataWallTopTeacherHead: "Top 教师（按工资）",
@@ -4095,6 +4440,60 @@
           dataSubtabAcademic: "Academic",
           dataSubtabFinance: "Finance",
           zoneDataWallTitle: "Data Wall",
+          tvWallEnter: "Open Data Wall",
+          tvWallExit: "Exit",
+          tvWallFullscreen: "Fullscreen",
+          tvWallTitle: "Campus Operations Data Wall",
+          tvAnnounceDefault: "Auto-refresh every 30s · designed for big-screen / morning standup",
+          tvCardActiveStudents: "Active Students",
+          tvCardLeads: "Lead Pipeline",
+          tvCardTrialFunnel: "Trial Conversion",
+          tvCardAttendance: "Attendance & Fill",
+          tvCardCashTrend: "Cash-In Trend",
+          tvCardSalesRank: "Sales Ranking",
+          tvCardEnrollMix: "New / Renew / Expand Mix",
+          tvCardTeacherRank: "Teacher Consumption Rank",
+          tvCardTuitionFlow: "Tuition Flow",
+          tvCardHomeSchool: "Home-School Engagement",
+          tvRangeMonth: "This month",
+          tvRangeWeek: "This week",
+          tvRangeAll: "All time",
+          tvActiveCount: "Active",
+          tvActiveNew: "New signups",
+          tvActiveHist: "Lifetime",
+          tvLeadCount: "Open leads",
+          tvLeadNew: "New leads",
+          tvLeadFollow: "Follow-ups",
+          tvTrialInvited: "Trials booked",
+          tvTrialDone: "Trials done",
+          tvTrialConv: "Converted",
+          tvTrialCompleteRate: "Completion rate",
+          tvTrialConvRate: "Conversion rate",
+          tvAttRate: "Attendance",
+          tvAttFull: "Avg utilisation",
+          tvCashIn: "Cash In",
+          tvCashOut: "Cash Out",
+          tvCashOrder: "Orders",
+          tvCashJournal: "Journal",
+          tvTuitionNew: "New tuition",
+          tvTuitionUsed: "Used",
+          tvTuitionLeft: "Remaining",
+          tvHsBind: "Channel bound",
+          tvHsReview: "Teacher reviews",
+          tvHsAssign: "Assignments",
+          tvHsRead: "Notice read",
+          tvEnrollNew: "New",
+          tvEnrollExpand: "Expand",
+          tvEnrollRenew: "Renew",
+          tvEnrollOther: "Other",
+          tvRankTeacher: "Teacher",
+          tvRankSessions: "Sessions",
+          tvRankCost: "Tuition used",
+          tvRankSales: "Sales rep",
+          tvRankAmount: "Amount",
+          tvNoTeacher: "No teacher consumption data yet.",
+          tvNoSales: "No sales ranking yet.",
+          tvLastUpdated: "Updated {time}",
           zoneDataWallSub: "All-in-one snapshot for the campus — perfect for the lobby screen / morning standup.",
           dataWallTopChannelHead: "Top Channels",
           dataWallTopTeacherHead: "Top Teachers (by payroll)",
@@ -5838,6 +6237,451 @@
           var parts = b.getAttribute("data-att-reopen").split("|");
           if (parts.length === 2) open(parts[0], parts[1]);
         });
+      })();
+
+      // ============================================================
+      // TV-wall / 数据大屏 — fullscreen overlay rendered from a single
+      // helper that pulls real numbers off MindDoFlow on every refresh
+      // and falls back to "0" / "—" gracefully when storage is empty.
+      // ============================================================
+      var __tvRefreshTimer = null;
+      var __tvUiState = { range: "month", from: null, to: null };
+
+      function tvFmt(n) { return String(n == null ? 0 : n); }
+      function tvFmtMoney(n) {
+        var num = Number(n) || 0;
+        return "¥" + num.toLocaleString("zh-CN", { maximumFractionDigits: 0 });
+      }
+      function tvFmtPct(n) {
+        if (n == null || !isFinite(n)) return "—";
+        return Math.round(n) + "%";
+      }
+      function tvNowStr() {
+        var d = new Date();
+        function p(n) { return n < 10 ? "0" + n : "" + n; }
+        return d.getFullYear() + "/" + p(d.getMonth() + 1) + "/" + p(d.getDate())
+          + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+      }
+      function tvDateInRange(dateIso, fromMs, toMs) {
+        if (!dateIso) return false;
+        var ms = new Date(dateIso).getTime();
+        if (!isFinite(ms)) return false;
+        if (fromMs != null && ms < fromMs) return false;
+        if (toMs != null && ms > toMs + 86400000) return false;
+        return true;
+      }
+      function tvRangeMs() {
+        var range = __tvUiState.range;
+        var now = new Date();
+        var to = now.getTime();
+        var from = null;
+        if (range === "month") {
+          var d = new Date(now.getFullYear(), now.getMonth(), 1);
+          from = d.getTime();
+        } else if (range === "week") {
+          var dd = new Date(now); dd.setHours(0, 0, 0, 0);
+          var weekday = dd.getDay() || 7; dd.setDate(dd.getDate() - (weekday - 1));
+          from = dd.getTime();
+        } else if (range === "custom" && __tvUiState.from && __tvUiState.to) {
+          from = new Date(__tvUiState.from).getTime();
+          to = new Date(__tvUiState.to).getTime();
+        }
+        return { from: from, to: to };
+      }
+
+      function renderTvWall() {
+        var t = I18N[state.lang] || I18N["zh-CN"];
+        var f = window.MindDoFlow;
+        if (!f) return;
+
+        // --- Source data ---
+        var leads = f.readJson(f.keys.leads) || [];
+        var signups = f.readJson(f.keys.signups) || [];
+        var payments = f.readJson(f.keys.payments) || [];
+        var memberships = f.readJson(f.keys.memberships) || [];
+        var attendance = f.readJson(f.keys.attendance) || [];
+        var trialEvals = (f.getTrialEvaluations && f.getTrialEvaluations()) || [];
+        var trialDones = (f.getTrialCompletions && f.getTrialCompletions()) || [];
+        var offerings = (f.getClassOfferings && f.getClassOfferings()) || [];
+        var staffList = f.readJson(f.keys.staff) || [];
+        var rolesList = f.readJson(f.keys.roles) || [];
+        var feedbacks = f.readJson(f.keys.feedback) || [];
+        var assignments = f.readJson(f.keys.assignments) || [];
+        var rolesById = {};
+        rolesList.forEach(function (r) { rolesById[r.id] = r; });
+
+        var range = tvRangeMs();
+        var fromMs = range.from;
+        var toMs = range.to;
+
+        // --- KPI cards: active students ---
+        var activeStudents = {};
+        memberships.forEach(function (m) { if (m && m.studentId) activeStudents[m.studentId] = true; });
+        var historicStudents = {};
+        memberships.forEach(function (m) { if (m && m.studentId) historicStudents[m.studentId] = true; });
+        signups.forEach(function (s) { if (s && s.studentId) historicStudents[s.studentId] = true; });
+        var newSignups = signups.filter(function (s) { return tvDateInRange(s.createdAt, fromMs, toMs); }).length;
+        document.getElementById("tvActiveStudents").innerHTML = ""
+          + "<div class='tv-kpi'><div class='lbl'>" + escHTML(t.tvActiveCount) + "</div><div class='num'>" + tvFmt(Object.keys(activeStudents).length) + "</div></div>"
+          + "<div class='tv-kpi'><div class='lbl'>" + escHTML(t.tvActiveNew) + "</div><div class='num'>" + tvFmt(newSignups) + "</div></div>"
+          + "<div class='tv-kpi'><div class='lbl'>" + escHTML(t.tvActiveHist) + "</div><div class='num'>" + tvFmt(Object.keys(historicStudents).length) + "</div></div>";
+
+        // --- KPI cards: leads ---
+        var openLeads = leads.filter(function (l) {
+          var s = l.crmStatus || "new";
+          return s === "new" || s === "contacted" || s === "follow";
+        }).length;
+        var newLeads = leads.filter(function (l) { return tvDateInRange(l.createdAt, fromMs, toMs); }).length;
+        var followCount = trialEvals.length;
+        document.getElementById("tvLeadKpis").innerHTML = ""
+          + "<div class='tv-kpi'><div class='lbl'>" + escHTML(t.tvLeadCount) + "</div><div class='num'>" + tvFmt(openLeads) + "</div></div>"
+          + "<div class='tv-kpi'><div class='lbl'>" + escHTML(t.tvLeadNew) + "</div><div class='num'>" + tvFmt(newLeads) + "</div></div>"
+          + "<div class='tv-kpi'><div class='lbl'>" + escHTML(t.tvLeadFollow) + "</div><div class='num'>" + tvFmt(followCount) + "</div></div>";
+
+        // --- Trial funnel ---
+        var invited = leads.filter(function (l) { return l.trialDate; }).length;
+        var done = trialDones.length;
+        var paidEmails = {};
+        payments.forEach(function (p) { if (p && p.email) paidEmails[String(p.email).toLowerCase()] = true; });
+        var converted = trialDones.filter(function (c) {
+          return c.email && paidEmails[String(c.email).toLowerCase()];
+        }).length;
+        var completeRate = invited ? (done / invited * 100) : 0;
+        var convRate = done ? (converted / done * 100) : 0;
+        document.getElementById("tvTrialFunnel").innerHTML = ""
+          + "<div class='tv-trial-row'><span class='dot c1'></span><span class='name'>" + escHTML(t.tvTrialInvited) + "</span><span class='v'>" + tvFmt(invited) + "</span></div>"
+          + "<div class='tv-trial-row'><span class='dot c2'></span><span class='name'>" + escHTML(t.tvTrialDone) + "</span><span class='v'>" + tvFmt(done) + "</span></div>"
+          + "<div class='tv-trial-rate'><span>" + escHTML(t.tvTrialCompleteRate) + "</span><span class='v'>" + tvFmtPct(completeRate) + "</span></div>"
+          + "<div class='tv-trial-row'><span class='dot c3'></span><span class='name'>" + escHTML(t.tvTrialConv) + "</span><span class='v'>" + tvFmt(converted) + "</span></div>"
+          + "<div class='tv-trial-rate'><span>" + escHTML(t.tvTrialConvRate) + "</span><span class='v'>" + tvFmtPct(convRate) + "</span></div>";
+
+        // --- Attendance + fill rate ---
+        var totalAtt = attendance.length;
+        var presentLike = attendance.filter(function (r) { return r.status === "present" || r.status === "late"; }).length;
+        var attRate = totalAtt ? Math.round((presentLike / totalAtt) * 100) : null;
+        var totalSeats = offerings.reduce(function (a, o) { return a + (o.seatsTotal || 0); }, 0);
+        var takenSeats = offerings.reduce(function (a, o) { return a + (o.seatsTaken || 0); }, 0);
+        var fillRate = totalSeats ? Math.round((takenSeats / totalSeats) * 100) : null;
+        document.getElementById("tvAttendance").innerHTML = ""
+          + "<div class='chip'><span>" + escHTML(t.tvAttRate) + "</span><span class='v'>" + (attRate != null ? attRate + "%" : "—") + "</span></div>"
+          + "<div class='chip alt'><span>" + escHTML(t.tvAttFull) + "</span><span class='v'>" + (fillRate != null ? fillRate + "%" : "—") + "</span></div>";
+
+        // --- Cash tiles ---
+        var cashIn = payments
+          .filter(function (p) { return tvDateInRange(p.createdAt, fromMs, toMs); })
+          .reduce(function (a, p) { return a + (Number(p.amount) || 0); }, 0);
+        var cashInOrders = payments.filter(function (p) { return tvDateInRange(p.createdAt, fromMs, toMs); }).length;
+        // Mock "expense" side from payroll + approved approvals
+        var payroll = f.readJson(f.keys.payroll) || [];
+        var approvals = (f.readJson(f.keys.approvals) || []).filter(function (a) { return a.status === "approved" && a.amount; });
+        var cashOut = payroll.reduce(function (a, r) { return a + (Number(r.total) || 0); }, 0)
+                    + approvals.reduce(function (a, r) { return a + (Number(r.amount) || 0); }, 0);
+        var cashOutOrders = payroll.length + approvals.length;
+        document.getElementById("tvCashGrid").innerHTML = ""
+          + "<div class='tv-cash-tile'>"
+          +   "<div class='label'>" + escHTML(t.tvCashIn) + "</div>"
+          +   "<div class='big'>" + tvFmtMoney(cashIn) + "</div>"
+          +   "<div class='sub'><span>" + escHTML(t.tvCashOrder) + " <b>" + cashInOrders + "</b></span><span>" + escHTML(t.tvCashJournal) + " <b>0</b></span></div>"
+          + "</div>"
+          + "<div class='tv-cash-tile alt'>"
+          +   "<div class='label'>" + escHTML(t.tvCashOut) + "</div>"
+          +   "<div class='big'>" + tvFmtMoney(cashOut) + "</div>"
+          +   "<div class='sub'><span>" + escHTML(t.tvCashOrder) + " <b>" + cashOutOrders + "</b></span><span>" + escHTML(t.tvCashJournal) + " <b>0</b></span></div>"
+          + "</div>";
+
+        // --- Cash trend (last 8 weeks line chart) ---
+        var trendEl = document.getElementById("tvCashTrendBody");
+        if (trendEl) {
+          var weeks = 8, msInWeek = 7 * 24 * 3600 * 1000;
+          var nowMs = Date.now();
+          var buckets = [];
+          for (var w = weeks - 1; w >= 0; w--) buckets.push({ end: nowMs - w * msInWeek + msInWeek, total: 0 });
+          payments.forEach(function (p) {
+            var ts = new Date(p.createdAt || 0).getTime();
+            for (var b = 0; b < buckets.length; b++) {
+              var start = buckets[b].end - msInWeek;
+              if (ts > start && ts <= buckets[b].end) { buckets[b].total += Number(p.amount) || 0; break; }
+            }
+          });
+          var W = 600, H = 200, padL = 36, padR = 16, padT = 12, padB = 28;
+          var innerW = W - padL - padR, innerH = H - padT - padB;
+          var maxVal = Math.max.apply(null, buckets.map(function (b) { return b.total; }).concat([1]));
+          function xAt(i) { return padL + (innerW * i) / (weeks - 1); }
+          function yAt(v) { return padT + innerH * (1 - v / maxVal); }
+          var line = "", area = "";
+          buckets.forEach(function (b, i) {
+            var x = xAt(i).toFixed(1), y = yAt(b.total).toFixed(1);
+            line += (i === 0 ? "M" : "L") + x + "," + y + " ";
+          });
+          area = line
+            + "L" + xAt(weeks - 1).toFixed(1) + "," + (padT + innerH).toFixed(1) + " "
+            + "L" + xAt(0).toFixed(1) + "," + (padT + innerH).toFixed(1) + " Z";
+          var gridLines = [0, 0.5, 1].map(function (frac) {
+            var y = (padT + innerH * frac).toFixed(1);
+            return "<line class='grid' x1='" + padL + "' x2='" + (W - padR) + "' y1='" + y + "' y2='" + y + "' />";
+          }).join("");
+          var labels = buckets.map(function (b, i) {
+            var d = new Date(b.end);
+            return "<text class='axis' x='" + xAt(i).toFixed(1) + "' y='" + (H - 10) + "' text-anchor='middle'>" + (d.getMonth() + 1) + "/" + d.getDate() + "</text>";
+          }).join("");
+          var points = buckets.map(function (b, i) {
+            return "<circle class='pt' cx='" + xAt(i).toFixed(1) + "' cy='" + yAt(b.total).toFixed(1) + "' r='3.5' />";
+          }).join("");
+          trendEl.innerHTML = "<svg class='tv-line-svg' viewBox='0 0 " + W + " " + H + "' preserveAspectRatio='none'>"
+            + "<defs><linearGradient id='tvLineGrad' x1='0' y1='0' x2='0' y2='1'>"
+            +   "<stop offset='0%' stop-color='rgba(34,211,238,0.35)' />"
+            +   "<stop offset='100%' stop-color='rgba(34,211,238,0)' />"
+            + "</linearGradient></defs>"
+            + gridLines
+            + "<path class='area' d='" + area + "' />"
+            + "<path class='line' d='" + line + "' />"
+            + points + labels
+            + "</svg>";
+        }
+
+        // --- Sales ranking — synthesise from marketing + counselor staff
+        //     who have leads that converted in this campus. Falls back to
+        //     showing them with 0 if data's missing.
+        var rankEl = document.getElementById("tvSalesRankBody");
+        if (rankEl) {
+          var salesStaff = staffList.filter(function (s) {
+            var role = rolesById[s.roleId];
+            return s.status === "active" && role && (role.template === "campus-marketing" || role.id === "counselor" || role.id === "operations" || role.id === "campus-manager");
+          });
+          // Mock attribution: each lead converted is assigned to a random
+          // marketer (deterministically by lead createdAt hash) to give
+          // the demo some visible ranking variance.
+          var attrib = {};
+          salesStaff.forEach(function (s) { attrib[s.id] = 0; });
+          if (salesStaff.length) {
+            leads.forEach(function (l) {
+              if (l.crmStatus !== "won") return;
+              var key = String(l.createdAt || l.email || "").split("").reduce(function (a, c) { return ((a << 5) - a) + c.charCodeAt(0) | 0; }, 0);
+              var idx = Math.abs(key) % salesStaff.length;
+              attrib[salesStaff[idx].id] = (attrib[salesStaff[idx].id] || 0) + 1;
+            });
+          }
+          var sorted = salesStaff
+            .map(function (s) { return { name: s.name, count: attrib[s.id] || 0 }; })
+            .filter(function (r) { return r.count > 0; })
+            .sort(function (a, b) { return b.count - a.count; })
+            .slice(0, 5);
+          if (!sorted.length) {
+            rankEl.innerHTML = "<div class='tv-table-empty'>" + escHTML(t.tvNoSales) + "</div>";
+          } else {
+            rankEl.innerHTML = sorted.map(function (r, i) {
+              var cls = i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "";
+              return "<div class='tv-rank-row" + cls + "'>"
+                + "<span class='rk'>" + (i + 1) + "</span>"
+                + "<span>" + escHTML(r.name) + "</span>"
+                + "<span class='v'>" + r.count + "</span>"
+                + "</div>";
+            }).join("");
+          }
+        }
+
+        // --- Enrollment mix donut (新报 / 续费 / 扩科 / 无分类) ---
+        // Classify each payment by whether its student has previous
+        // payments / addons. Heuristic but matches the wall's intent.
+        var byStudentPay = {};
+        payments.forEach(function (p) {
+          var k = String(p.studentId || p.email || "—");
+          (byStudentPay[k] = byStudentPay[k] || []).push(p);
+        });
+        var bucketCounts = { new: 0, renew: 0, expand: 0, other: 0 };
+        Object.keys(byStudentPay).forEach(function (k) {
+          var list = byStudentPay[k].slice().sort(function (a, b) {
+            return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+          });
+          list.forEach(function (p, i) {
+            if (!tvDateInRange(p.createdAt, fromMs, toMs)) return;
+            if (i === 0) bucketCounts.new++;
+            else if (p.addons && p.addons.length) bucketCounts.expand++;
+            else if (p.amount) bucketCounts.renew++;
+            else bucketCounts.other++;
+          });
+        });
+        var mixTotal = bucketCounts.new + bucketCounts.renew + bucketCounts.expand + bucketCounts.other;
+        var mixData = [
+          { key: "new",    label: t.tvEnrollNew,    color: "#22d3ee", val: bucketCounts.new },
+          { key: "expand", label: t.tvEnrollExpand, color: "#fbbf24", val: bucketCounts.expand },
+          { key: "renew",  label: t.tvEnrollRenew,  color: "#38bdf8", val: bucketCounts.renew },
+          { key: "other",  label: t.tvEnrollOther,  color: "#f472b6", val: bucketCounts.other }
+        ];
+        var donutWrap = document.getElementById("tvDonutWrap");
+        var donutLegend = document.getElementById("tvDonutLegend");
+        if (donutWrap && donutLegend) {
+          var R = 78, CX = 100, CY = 100, stroke = 24;
+          var circ = 2 * Math.PI * R;
+          var offset = 0;
+          var segs = mixData.map(function (d) {
+            if (!mixTotal || !d.val) return "";
+            var len = (d.val / mixTotal) * circ;
+            var seg = "<circle r='" + R + "' cx='" + CX + "' cy='" + CY + "' fill='none' stroke='" + d.color + "' stroke-width='" + stroke + "' stroke-dasharray='" + len.toFixed(2) + " " + (circ - len).toFixed(2) + "' stroke-dashoffset='" + (-offset).toFixed(2) + "' transform='rotate(-90 " + CX + " " + CY + ")' />";
+            offset += len;
+            return seg;
+          }).join("");
+          var center = mixTotal > 0
+            ? "<text x='" + CX + "' y='" + (CY - 4) + "' text-anchor='middle' fill='#fff' style='font-size:24px;font-weight:900;font-variant-numeric:tabular-nums;'>" + mixTotal + "</text>"
+              + "<text x='" + CX + "' y='" + (CY + 16) + "' text-anchor='middle' fill='#6b8db8' style='font-size:11px;'>Σ " + escHTML(t.tvCashOrder) + "</text>"
+            : "<text x='" + CX + "' y='" + CY + "' text-anchor='middle' fill='#6b8db8' style='font-size:12px;'>—</text>";
+          donutWrap.innerHTML = "<svg class='tv-donut-svg' viewBox='0 0 200 200'>"
+            + "<circle r='" + R + "' cx='" + CX + "' cy='" + CY + "' fill='none' stroke='rgba(56,189,248,0.1)' stroke-width='" + stroke + "' />"
+            + segs + center
+            + "</svg>";
+          donutLegend.innerHTML = mixData.map(function (d) {
+            var pct = mixTotal ? Math.round(d.val / mixTotal * 100) + "%" : "0%";
+            return "<div class='row'>"
+              + "<span class='dot' style='background:" + d.color + ";'></span>"
+              + "<span class='name'>" + escHTML(d.label) + "</span>"
+              + "<span class='v'>" + tvFmtMoney(d.val * 0) + "</span>"      // placeholder
+              + "<span class='pct'>" + pct + "</span>"
+              + "</div>";
+          }).join("");
+        }
+
+        // --- Teacher consumption ranking ---
+        var teacherStats = {};
+        attendance.forEach(function (r) {
+          if (!r || (r.status !== "present" && r.status !== "late")) return;
+          var off = offerings.filter(function (o) { return o.id === r.offeringId; })[0];
+          if (!off) return;
+          var k = off.teacher || "—";
+          if (!teacherStats[k]) teacherStats[k] = { name: k, sessions: 0, cost: 0 };
+          teacherStats[k].sessions++;
+          teacherStats[k].cost += 120;    // mock: 120 yuan per attendance
+        });
+        var teacherEl = document.getElementById("tvTeacherRank");
+        if (teacherEl) {
+          var teacherRows = Object.values(teacherStats).sort(function (a, b) { return b.sessions - a.sessions; }).slice(0, 6);
+          if (!teacherRows.length) {
+            teacherEl.innerHTML = "<div class='tv-table-empty'>" + escHTML(t.tvNoTeacher) + "</div>";
+          } else {
+            teacherEl.innerHTML = "<table class='tv-table'><thead><tr>"
+              + "<th>" + escHTML(t.tvRankTeacher) + "</th>"
+              + "<th>" + escHTML(t.tvRankSessions) + "</th>"
+              + "<th>" + escHTML(t.tvRankCost) + "</th>"
+              + "</tr></thead><tbody>"
+              + teacherRows.map(function (r) {
+                  return "<tr><td>" + escHTML(r.name) + "</td>"
+                    + "<td class='v'>" + r.sessions + "</td>"
+                    + "<td class='v'>" + tvFmtMoney(r.cost) + "</td></tr>";
+                }).join("")
+              + "</tbody></table>";
+          }
+        }
+
+        // --- Tuition flow ---
+        var tuitionNew = cashIn;
+        var tuitionUsed = attendance.length * 120;       // mirror the mock rate above
+        var tuitionLeft = Math.max(0, tuitionNew - tuitionUsed);
+        document.getElementById("tvTuitionKpis").innerHTML = ""
+          + "<div class='tv-kpi'><div class='lbl'>" + escHTML(t.tvTuitionNew) + "</div><div class='num'>" + tvFmtMoney(tuitionNew) + "</div></div>"
+          + "<div class='tv-kpi'><div class='lbl'>" + escHTML(t.tvTuitionUsed) + "</div><div class='num'>" + tvFmtMoney(tuitionUsed) + "</div></div>"
+          + "<div class='tv-kpi'><div class='lbl'>" + escHTML(t.tvTuitionLeft) + "</div><div class='num'>" + tvFmtMoney(tuitionLeft) + "</div></div>";
+
+        // --- Home-school rings ---
+        // Real rates from feedback / assignments coverage; mock values for
+        // 公众号绑定率 + 通知公告阅读率 since those streams don't exist
+        // in the prototype yet.
+        var hsBind = 100;       // mock: 100% of accounts "bound"
+        var classesRun = attendance.length || offerings.length;
+        var reviewRate = classesRun ? Math.min(100, Math.round((feedbacks.length / Math.max(classesRun, 1)) * 100)) : 0;
+        var assignRate = offerings.length ? Math.min(100, Math.round((assignments.length / offerings.length) * 100)) : 0;
+        var readRate = 0;       // mock placeholder
+        function ring(pctRaw, label, val, tone) {
+          var pct = Math.max(0, Math.min(100, pctRaw || 0));
+          var R = 26, CX = 32, CY = 32, circ = 2 * Math.PI * R;
+          var len = (pct / 100) * circ;
+          return "<div class='tv-ring " + tone + "'>"
+            + "<svg viewBox='0 0 64 64'>"
+            +   "<circle class='bg' cx='" + CX + "' cy='" + CY + "' r='" + R + "' />"
+            +   "<circle class='fg' cx='" + CX + "' cy='" + CY + "' r='" + R + "' stroke-dasharray='" + len.toFixed(2) + " " + (circ - len).toFixed(2) + "' transform='rotate(-90 " + CX + " " + CY + ")' />"
+            + "</svg>"
+            + "<div>"
+            +   "<div class='lbl'>" + escHTML(label) + "</div>"
+            +   "<div class='v'>" + val + "</div>"
+            + "</div>"
+            + "</div>";
+        }
+        document.getElementById("tvHomeSchool").innerHTML = ""
+          + ring(hsBind,      t.tvHsBind,    hsBind + "%",   "cyan")
+          + ring(reviewRate,  t.tvHsReview,  reviewRate + "%", "amber")
+          + ring(assignRate,  t.tvHsAssign,  assignRate + "%", "violet")
+          + ring(readRate,    t.tvHsRead,    readRate + "%", "rose");
+
+        // --- Last-updated label ---
+        var labEl = document.getElementById("tvLastUpdated");
+        if (labEl) labEl.textContent = (t.tvLastUpdated || "{time}").replace("{time}", tvNowStr());
+        var rangeLabEl = document.getElementById("tvRangeLabel");
+        if (rangeLabEl && fromMs && toMs) {
+          var fromStr = new Date(fromMs).toISOString().slice(0, 10);
+          var toStr = new Date(toMs).toISOString().slice(0, 10);
+          rangeLabEl.textContent = fromStr + " → " + toStr;
+        }
+      }
+
+      // Open / close / refresh handlers.
+      (function () {
+        var overlay = document.getElementById("tvWallOverlay");
+        if (!overlay) return;
+        function openTv() {
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+          renderTvWall();
+          if (__tvRefreshTimer) clearInterval(__tvRefreshTimer);
+          __tvRefreshTimer = setInterval(renderTvWall, 30000);
+        }
+        function closeTv() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+          if (__tvRefreshTimer) { clearInterval(__tvRefreshTimer); __tvRefreshTimer = null; }
+          try { if (document.fullscreenElement) document.exitFullscreen(); } catch (_) {}
+        }
+        document.addEventListener("click", function (e) {
+          if (e.target.closest("#openTvWallBtn")) { e.preventDefault(); openTv(); return; }
+          if (e.target.closest("#tvCloseBtn"))    { closeTv(); return; }
+          if (e.target.closest("#tvFullscreenBtn")) {
+            try {
+              if (!document.fullscreenElement) overlay.requestFullscreen();
+              else document.exitFullscreen();
+            } catch (_) {}
+            return;
+          }
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && overlay.classList.contains("open")) closeTv();
+        });
+
+        var rangeSel = document.getElementById("tvRangeSelect");
+        var fromEl = document.getElementById("tvRangeFrom");
+        var toEl = document.getElementById("tvRangeTo");
+        if (rangeSel) rangeSel.addEventListener("change", function () {
+          __tvUiState.range = rangeSel.value;
+          renderTvWall();
+        });
+        function customRangeChanged() {
+          if (fromEl.value && toEl.value) {
+            __tvUiState.range = "custom";
+            __tvUiState.from = fromEl.value;
+            __tvUiState.to = toEl.value;
+            renderTvWall();
+          }
+        }
+        if (fromEl) fromEl.addEventListener("change", customRangeChanged);
+        if (toEl)   toEl.addEventListener("change", customRangeChanged);
+
+        // Default the custom date inputs to "this month" so the visual
+        // matches the reference image even before the user picks a range.
+        try {
+          var now = new Date();
+          var first = new Date(now.getFullYear(), now.getMonth(), 1);
+          var pad = function (n) { return n < 10 ? "0" + n : "" + n; };
+          if (fromEl) fromEl.value = first.getFullYear() + "-" + pad(first.getMonth() + 1) + "-" + pad(first.getDate());
+          if (toEl)   toEl.value   = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+        } catch (_) {}
       })();
 
       // ============================================================
