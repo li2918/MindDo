@@ -2111,6 +2111,48 @@
       background: rgba(196,106,77,0.16); color: #8c3c20;
       border-color: rgba(196,106,77,0.32);
     }
+
+    /* Duplicate-lead warning banner inside the new-lead modal */
+    .lead-dup-warn {
+      margin: 10px 22px 0;
+      padding: 12px 14px;
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.4);
+      border-radius: 12px;
+      font-size: 13px;
+    }
+    .lead-dup-warn .ldw-title {
+      font-weight: 800; color: var(--clay);
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 6px;
+    }
+    .lead-dup-warn .ldw-icon { font-size: 16px; }
+    .lead-dup-warn .ldw-existing {
+      background: #fff; border: 1px solid var(--line);
+      border-radius: 8px; padding: 8px 10px;
+      font-size: 12.5px; margin: 6px 0 10px;
+      color: var(--text, #1f2937);
+    }
+    .lead-dup-warn .ldw-existing strong { color: var(--clay); }
+    .lead-dup-warn .ldw-existing .ldw-match {
+      display: inline-block; margin-left: 6px;
+      font-size: 11px; font-weight: 700;
+      padding: 1px 6px; border-radius: 999px;
+      background: rgba(196,106,77,0.16); color: #8c3c20;
+    }
+    .lead-dup-warn .ldw-actions {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .lead-dup-warn .ldw-actions button {
+      all: unset; cursor: pointer; padding: 6px 12px;
+      border-radius: 8px; font-size: 12px; font-weight: 700;
+      border: 1px solid var(--line); background: #fff; color: var(--clay);
+    }
+    .lead-dup-warn .ldw-actions button.primary {
+      background: var(--brand, #d8551c); color: #fff; border-color: transparent;
+    }
+    .lead-dup-warn .ldw-actions button:hover { border-color: var(--gold); }
+    .lead-dup-warn .ldw-actions button.primary:hover { filter: brightness(1.05); }
   </style>
   <link rel="stylesheet" href="assets/minddo-theme.css" />
   <link rel="stylesheet" href="assets/minddo-responsive.css" />
@@ -3443,6 +3485,10 @@
             <textarea name="note" rows="2"></textarea>
           </label>
         </div>
+        <!-- Dup-warning banner — hidden until a phone/email match is found
+             in existing leads. Renders a card with the existing lead's
+             quick info and 3 actions: 查看 / 仍然新建 / 取消. -->
+        <div class="lead-dup-warn" id="moLeadDupWarn" hidden></div>
         <div class="mo-lead-foot">
           <span id="moLeadMsg" class="mo-lead-msg"></span>
           <div style="display:flex;gap:8px;">
@@ -4538,6 +4584,16 @@
           moLeadCancel: "取消",
           moLeadSave: "录入",
           moLeadSuccess: "已录入「{name}」线索 → CRM 列表",
+          leadDupTitle: "可能是重复线索",
+          leadDupDescPhone: "该手机号已存在",
+          leadDupDescEmail: "该邮箱已存在",
+          leadDupDescBoth: "手机号和邮箱都已存在",
+          leadDupMatchPhone: "手机号匹配",
+          leadDupMatchEmail: "邮箱匹配",
+          leadDupExistingFmt: "{name}（{channel}·{ago}进入·{status}）",
+          leadDupOpenExisting: "查看已有线索",
+          leadDupCreateAnyway: "仍然新建",
+          leadDupCancel: "取消",
           moLeadMissing: "请填写学员姓名和电话。",
           zoneDataWallSub: "校区核心数据一屏总览，适合大屏展示与早会讲数。",
           dataWallTopChannelHead: "Top 渠道",
@@ -5407,6 +5463,16 @@
           moLeadCancel: "Cancel",
           moLeadSave: "Save lead",
           moLeadSuccess: "Lead for «{name}» added to CRM.",
+          leadDupTitle: "Possible duplicate lead",
+          leadDupDescPhone: "This phone number already exists",
+          leadDupDescEmail: "This email already exists",
+          leadDupDescBoth: "Both phone and email already exist",
+          leadDupMatchPhone: "phone match",
+          leadDupMatchEmail: "email match",
+          leadDupExistingFmt: "{name} ({channel} · entered {ago} · {status})",
+          leadDupOpenExisting: "Open existing",
+          leadDupCreateAnyway: "Create anyway",
+          leadDupCancel: "Cancel",
           moLeadMissing: "Student name and phone are required.",
           zoneDataWallSub: "All-in-one snapshot for the campus — perfect for the lobby screen / morning standup.",
           dataWallTopChannelHead: "Top Channels",
@@ -8059,6 +8125,9 @@
           e.preventDefault();
           openDetail(b.getAttribute("data-lead-detail"));
         });
+        // Expose cross-IIFE so the new-lead modal's dup-warning "Open existing"
+        // button can route directly without dispatching synthetic events.
+        window.__minddoOpenLeadDetail = openDetail;
         if (closeBtn) closeBtn.addEventListener("click", closeDetail);
         if (cancelBtn) cancelBtn.addEventListener("click", closeDetail);
         overlay.addEventListener("click", function (e) {
@@ -8196,6 +8265,8 @@
           form.reset();
           msgEl.textContent = "";
           msgEl.className = "mo-lead-msg";
+          var dwn = document.getElementById("moLeadDupWarn");
+          if (dwn) { dwn.hidden = true; dwn.innerHTML = ""; }
           overlay.classList.add("open");
           overlay.setAttribute("aria-hidden", "false");
           document.body.style.overflow = "hidden";
@@ -8214,6 +8285,107 @@
         document.addEventListener("keydown", function (e) {
           if (e.key === "Escape" && overlay.classList.contains("open")) closeModal();
         });
+
+        // Dup detection — scan existing leads for the same phone or email
+        // before writing a new record. Returns the first match (preferring
+        // phone, since marketers usually re-enter phone but leave email
+        // blank), or null when no collision is found.
+        var dupWarnEl = document.getElementById("moLeadDupWarn");
+        function findDupLead(phone, email) {
+          var flow = window.MindDoFlow;
+          if (!flow) return null;
+          var leads = flow.readJson(flow.keys.leads) || [];
+          var p = String(phone || "").replace(/\s+/g, "").toLowerCase();
+          var em = String(email || "").trim().toLowerCase();
+          var phoneHit = null;
+          var emailHit = null;
+          for (var i = 0; i < leads.length; i++) {
+            var l = leads[i];
+            if (!l) continue;
+            var lp = String(l.phone || "").replace(/\s+/g, "").toLowerCase();
+            var le = String(l.email || "").trim().toLowerCase();
+            if (p && lp && lp === p) {
+              phoneHit = phoneHit || { lead: l, match: "phone" };
+            }
+            if (em && le && le === em) {
+              emailHit = emailHit || { lead: l, match: "email" };
+            }
+            if (phoneHit && emailHit && phoneHit.lead === emailHit.lead) {
+              return { lead: l, match: "both" };
+            }
+          }
+          if (phoneHit && emailHit) {
+            // Two distinct leads collide — surface the phone match first;
+            // both will be visible in the list.
+            return { lead: phoneHit.lead, match: "phone+email" };
+          }
+          return phoneHit || emailHit;
+        }
+        function renderDupWarn(dup) {
+          if (!dupWarnEl) return;
+          if (!dup) { dupWarnEl.hidden = true; dupWarnEl.innerHTML = ""; return; }
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          var l = dup.lead;
+          var matchLabel;
+          if (dup.match === "both" || dup.match === "phone+email") matchLabel = t.leadDupDescBoth;
+          else if (dup.match === "phone") matchLabel = t.leadDupDescPhone;
+          else matchLabel = t.leadDupDescEmail;
+          var daysAgoN = Math.max(0, Math.floor((Date.now() - new Date(l.createdAt || 0).getTime()) / 86400000));
+          var ago = daysAgoN === 0 ? t.mktCrmTodayLabel
+            : daysAgoN === 1 ? t.mktCrmYesterdayLabel
+            : (t.mktCrmCreatedFmt || "{n}d").replace("{n}", daysAgoN);
+          var statusKey = l.crmStatus || "new";
+          var statusLabel = statusKey === "follow" ? t.mktCrmStatusFollow
+            : statusKey === "won" ? t.mktCrmStatusWon
+            : statusKey === "lost" ? t.mktCrmStatusLost
+            : t.mktCrmStatusNew;
+          var existing = (t.leadDupExistingFmt || "{name} ({channel} · {ago} · {status})")
+            .replace("{name}", l.studentName || l.parentName || "—")
+            .replace("{channel}", l.channelLabel || l.channel || "—")
+            .replace("{ago}", ago)
+            .replace("{status}", statusLabel);
+          dupWarnEl.innerHTML =
+            "<div class='ldw-title'><span class='ldw-icon'>⚠️</span>"
+            + escHTML(t.leadDupTitle) + " — " + escHTML(matchLabel)
+            + "</div>"
+            + "<div class='ldw-existing'><strong>" + escHTML(existing) + "</strong>"
+            +   (l.phone ? " · " + escHTML(l.phone) : "")
+            + "</div>"
+            + "<div class='ldw-actions'>"
+            +   "<button type='button' data-dup-open='" + escHTML(l.createdAt || "") + "'>"
+            +     escHTML(t.leadDupOpenExisting) + "</button>"
+            +   "<button type='button' class='primary' data-dup-create>"
+            +     escHTML(t.leadDupCreateAnyway) + "</button>"
+            +   "<button type='button' data-dup-cancel>"
+            +     escHTML(t.leadDupCancel) + "</button>"
+            + "</div>";
+          dupWarnEl.hidden = false;
+        }
+        // Dup banner buttons — open existing lead, force create, or cancel.
+        var pendingForceSubmit = false;
+        if (dupWarnEl) {
+          dupWarnEl.addEventListener("click", function (e) {
+            var openBtn = e.target.closest("[data-dup-open]");
+            if (openBtn) {
+              closeModal();
+              if (typeof window.__minddoOpenLeadDetail === "function") {
+                window.__minddoOpenLeadDetail(openBtn.getAttribute("data-dup-open"));
+              }
+              return;
+            }
+            if (e.target.closest("[data-dup-create]")) {
+              pendingForceSubmit = true;
+              renderDupWarn(null);
+              if (typeof form.requestSubmit === "function") form.requestSubmit();
+              else form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+              return;
+            }
+            if (e.target.closest("[data-dup-cancel]")) {
+              renderDupWarn(null);
+            }
+          });
+        }
+
         form.addEventListener("submit", function (e) {
           e.preventDefault();
           var t = I18N[state.lang] || I18N["zh-CN"];
@@ -8228,6 +8400,19 @@
             msgEl.className = "mo-lead-msg err";
             return;
           }
+          // Dup check — unless the user already saw the warning and clicked
+          // "create anyway", surface the existing lead first.
+          if (!pendingForceSubmit) {
+            var dup = findDupLead(data.phone, data.email);
+            if (dup) {
+              renderDupWarn(dup);
+              msgEl.textContent = "";
+              msgEl.className = "mo-lead-msg";
+              return;
+            }
+          }
+          pendingForceSubmit = false;
+          renderDupWarn(null);
           // Find the channel label that matches the value.
           var chanSel = form.querySelector("[name='channel'] option:checked");
           var subjSel = form.querySelector("[name='subject'] option:checked");
