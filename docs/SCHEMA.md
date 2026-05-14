@@ -221,6 +221,22 @@ into the contact-log note. Seeded with 4 starter rows on first read.
 { id, title, body, createdAt }
 ```
 
+### `minddo_trial_feedback` 🟢 (object)
+Post-trial marketing feedback captured by the campus-marketing team via
+the "市场反馈" button on the 试课管理 row (only available when trial
+status is `done`). Distinct from `minddo_trial_evaluations` (which
+records the academic placement level). Keyed by `lead.createdAt`.
+
+```js
+{
+  "<lead.createdAt iso>": {
+    leadId, intent,                    // 1-5 stars
+    ready,                             // "yes" | "maybe" | "no"
+    note, by, updatedAt
+  }
+}
+```
+
 ### `minddo_marketing_targets` 🟢 (object)
 Personal monthly target per campus-marketing staff, keyed by
 `{staffId}_{YYYY-MM}`. The marketing-overview "我的本月业绩" panel reads

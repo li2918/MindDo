@@ -2155,6 +2155,50 @@
       border-color: rgba(196,106,77,0.32);
     }
 
+    /* Post-trial marketing feedback modal */
+    .trial-fb-section { padding: 10px 0; }
+    .trial-fb-stars {
+      display: inline-flex; gap: 4px; padding: 4px 0;
+    }
+    .trial-fb-stars button {
+      all: unset; cursor: pointer; padding: 4px 8px;
+      font-size: 24px; line-height: 1;
+      color: rgba(122,48,16,0.18);
+      transition: color 0.12s, transform 0.12s;
+    }
+    .trial-fb-stars button.on { color: var(--gold-deep, #d4a017); }
+    .trial-fb-stars button:hover { transform: translateY(-1px); }
+    .trial-fb-stars-hint {
+      font-size: 12px; color: var(--muted); margin-top: 4px;
+      min-height: 16px;
+    }
+    .trial-fb-ready {
+      display: inline-flex; gap: 6px; padding: 4px 0;
+    }
+    .trial-fb-ready button {
+      all: unset; cursor: pointer; padding: 6px 14px;
+      border-radius: 999px; border: 1px solid var(--line);
+      background: #fff; color: var(--clay); font-size: 12.5px; font-weight: 700;
+    }
+    .trial-fb-ready button:hover { border-color: var(--gold); }
+    .trial-fb-ready button.on { background: var(--brand, #d8551c); color: #fff; border-color: transparent; }
+    #trialFbNote {
+      width: 100%; box-sizing: border-box;
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 10px; font: inherit; font-size: 13px;
+      resize: vertical; background: #fff;
+    }
+    /* Trial feedback chip on the trial row */
+    .mkt-trial-fb-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; margin-right: 6px;
+      background: rgba(254,243,199,0.7); border: 1px solid rgba(245,158,11,0.36);
+      color: var(--clay);
+    }
+    .mkt-trial-fb-chip.high { background: rgba(110,143,87,0.16); border-color: rgba(110,143,87,0.36); color: #3f5d26; }
+    .mkt-trial-fb-chip.low  { background: rgba(196,106,77,0.16); border-color: rgba(196,106,77,0.32); color: #8e3d21; }
+
     /* Personal monthly target panel (marketing overview) */
     .mo-target-panel { padding: 18px 20px; margin-bottom: 16px; }
     .mo-target-edit-btn {
@@ -3819,6 +3863,58 @@
   </div>
 
   <!-- ================================================================
+       Post-trial marketing feedback modal — captures the marketer's
+       qualitative read on the parent's intent after a trial class.
+       Stored in localStorage at minddo_trial_feedback, keyed by
+       lead.createdAt (the same id the rest of the marketing flow uses).
+       Distinct from the academic 评估 modal (which records skill level
+       for placement); this one's about conversion likelihood.
+       ================================================================ -->
+  <div class="mo-lead-overlay" id="trialFbOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="mo-lead-card" style="max-width:520px;">
+      <header class="mo-lead-head">
+        <div>
+          <h3 data-i18n="trialFbTitle"></h3>
+          <p id="trialFbSubName" class="muted" style="margin:0;font-size:13px;color:var(--muted);"></p>
+        </div>
+        <button type="button" class="mo-lead-close" id="trialFbCloseBtn" aria-label="Close">×</button>
+      </header>
+      <div class="mo-lead-form" style="padding:0 22px 22px;">
+        <div class="trial-fb-section">
+          <label class="lead-edit-label" data-i18n="trialFbIntentLabel"></label>
+          <div class="trial-fb-stars" id="trialFbStars" role="radiogroup">
+            <button type="button" data-fb-star="1" aria-label="1">★</button>
+            <button type="button" data-fb-star="2" aria-label="2">★</button>
+            <button type="button" data-fb-star="3" aria-label="3">★</button>
+            <button type="button" data-fb-star="4" aria-label="4">★</button>
+            <button type="button" data-fb-star="5" aria-label="5">★</button>
+          </div>
+          <div class="trial-fb-stars-hint" id="trialFbStarsHint"></div>
+        </div>
+        <div class="trial-fb-section">
+          <label class="lead-edit-label" data-i18n="trialFbReadyLabel"></label>
+          <div class="trial-fb-ready" id="trialFbReady" role="radiogroup">
+            <button type="button" data-fb-ready="yes" data-i18n="trialFbReadyYes"></button>
+            <button type="button" data-fb-ready="maybe" data-i18n="trialFbReadyMaybe"></button>
+            <button type="button" data-fb-ready="no" data-i18n="trialFbReadyNo"></button>
+          </div>
+        </div>
+        <div class="trial-fb-section">
+          <label class="lead-edit-label" data-i18n="trialFbNoteLabel"></label>
+          <textarea id="trialFbNote" rows="3"></textarea>
+        </div>
+        <div class="mo-lead-foot">
+          <span id="trialFbMsg" class="mo-lead-msg"></span>
+          <div style="display:flex;gap:8px;">
+            <button type="button" id="trialFbCancelBtn" class="mo-lead-secondary" data-i18n="trialFbCancel"></button>
+            <button type="button" id="trialFbSaveBtn" class="mo-lead-primary" data-i18n="trialFbSave"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
        Communication template manager — list / add / edit / delete the
        templates marketers re-use in messages. Opened from the lead-detail
        modal's 📋 button next to the contact-log note.
@@ -4961,6 +5057,19 @@
           moTargetVsFmt: "目标 {target}",
           moTargetNoActive: "请先在右上角切换到市场专员账号查看本人业绩。",
           moTargetUnset: "尚未设置目标，点右上「设置目标」开始。",
+          mktTrialActionFeedback: "市场反馈",
+          mktTrialActionEditFeedback: "修改反馈",
+          mktTrialFbChipPrefix: "意向 ",
+          trialFbTitle: "试课后反馈",
+          trialFbIntentLabel: "意向打分（1-5 星）",
+          trialFbIntentHints: ["低意向", "弱意向", "一般", "较强", "高意向"],
+          trialFbReadyLabel: "是否准备付费",
+          trialFbReadyYes: "可成交",
+          trialFbReadyMaybe: "需再跟进",
+          trialFbReadyNo: "暂不考虑",
+          trialFbNoteLabel: "反馈备注",
+          trialFbSave: "保存",
+          trialFbCancel: "取消",
           // FAB + new-lead modal
           moFabLabel: "新线索",
           moLeadModalTitle: "30 秒录入线索",
@@ -5910,6 +6019,19 @@
           moTargetVsFmt: "of {target}",
           moTargetNoActive: "Switch to a marketing user (top-right) to see personal targets.",
           moTargetUnset: "No targets yet — click \"Set targets\" to start.",
+          mktTrialActionFeedback: "Mkt feedback",
+          mktTrialActionEditFeedback: "Edit feedback",
+          mktTrialFbChipPrefix: "Intent ",
+          trialFbTitle: "Post-trial feedback",
+          trialFbIntentLabel: "Intent score (1–5 ★)",
+          trialFbIntentHints: ["Low intent", "Weak intent", "Neutral", "Strong intent", "Very high intent"],
+          trialFbReadyLabel: "Ready to pay?",
+          trialFbReadyYes: "Closing",
+          trialFbReadyMaybe: "Needs follow-up",
+          trialFbReadyNo: "Not now",
+          trialFbNoteLabel: "Notes",
+          trialFbSave: "Save",
+          trialFbCancel: "Cancel",
           moFabLabel: "New lead",
           moLeadModalTitle: "30-second lead capture",
           moLeadModalSub: "Capture the call live — fill in details later from the CRM.",
@@ -7127,6 +7249,23 @@
                     + "<button type='button' data-mkt-trial-action='evaluate' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionReEvaluate) + "</button>";
                 } else {
                   evalRow = "<button type='button' class='primary' data-mkt-trial-action='evaluate' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionEvaluate) + "</button>";
+                }
+                // Marketing-side qualitative feedback (intent + readiness +
+                // note). Independent of the academic evaluation, so a row
+                // can have both. Shown as a chip on the same line when set.
+                var fbRec = null;
+                try {
+                  var fbAll = JSON.parse(localStorage.getItem("minddo_trial_feedback") || "{}");
+                  fbRec = fbAll[l.createdAt] || null;
+                } catch (_) {}
+                if (fbRec) {
+                  var iScore = Number(fbRec.intent) || 0;
+                  var chipCls = iScore >= 4 ? "high" : iScore <= 2 ? "low" : "";
+                  evalRow += "<span class='mkt-trial-fb-chip " + chipCls + "'>"
+                    + escHTML(t.mktTrialFbChipPrefix) + iScore + "★</span>"
+                    + "<button type='button' data-mkt-trial-action='feedback' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionEditFeedback) + "</button>";
+                } else {
+                  evalRow += "<button type='button' data-mkt-trial-action='feedback' data-lead-id='" + leadId + "'>" + escHTML(t.mktTrialActionFeedback) + "</button>";
                 }
               } else {
                 evalRow = "<span class='pill gated'>" + escHTML(t.mktTrialEvalGated) + "</span>";
@@ -9147,6 +9286,139 @@
             alert((t.crmImportDoneFmt || "Imported {n} · Skipped {skipped}")
               .replace("{n}", toWrite.length)
               .replace("{skipped}", dupCount));
+            closeModal();
+            if (typeof render === "function") render();
+          });
+        }
+      })();
+
+      // Post-trial marketing feedback modal — 1-5 stars + readiness +
+      // free-form note. Persists to minddo_trial_feedback keyed by
+      // lead.createdAt. Re-renders so the trial row chip updates.
+      (function () {
+        var overlay = document.getElementById("trialFbOverlay");
+        if (!overlay) return;
+        var subNameEl = document.getElementById("trialFbSubName");
+        var starsEl = document.getElementById("trialFbStars");
+        var starsHintEl = document.getElementById("trialFbStarsHint");
+        var readyEl = document.getElementById("trialFbReady");
+        var noteEl = document.getElementById("trialFbNote");
+        var msgEl = document.getElementById("trialFbMsg");
+        var saveBtn = document.getElementById("trialFbSaveBtn");
+        var cancelBtn = document.getElementById("trialFbCancelBtn");
+        var closeBtn = document.getElementById("trialFbCloseBtn");
+        var currentLeadId = null;
+        var workingIntent = 0;
+        var workingReady = "";
+
+        function readFeedbackMap() {
+          try {
+            var raw = localStorage.getItem("minddo_trial_feedback");
+            return raw ? JSON.parse(raw) : {};
+          } catch (_) { return {}; }
+        }
+        function writeFeedbackMap(m) {
+          try { localStorage.setItem("minddo_trial_feedback", JSON.stringify(m || {})); } catch (_) {}
+        }
+
+        function paintStars() {
+          if (!starsEl) return;
+          starsEl.querySelectorAll("[data-fb-star]").forEach(function (b) {
+            var v = Number(b.getAttribute("data-fb-star"));
+            b.classList.toggle("on", workingIntent >= v);
+          });
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          var hints = t.trialFbIntentHints || [];
+          if (starsHintEl) {
+            starsHintEl.textContent = workingIntent > 0 ? (hints[workingIntent - 1] || "") : "";
+          }
+        }
+        function paintReady() {
+          if (!readyEl) return;
+          readyEl.querySelectorAll("[data-fb-ready]").forEach(function (b) {
+            b.classList.toggle("on", b.getAttribute("data-fb-ready") === workingReady);
+          });
+        }
+
+        function openModal(leadId) {
+          var lead = (window.MindDoFlow && window.MindDoFlow.readJson)
+            ? (window.MindDoFlow.readJson(window.MindDoFlow.keys.leads) || []).filter(function (l) {
+                return l && l.createdAt === leadId;
+              })[0] : null;
+          if (!lead) return;
+          currentLeadId = leadId;
+          var existing = readFeedbackMap()[leadId] || null;
+          workingIntent = existing ? Number(existing.intent) || 0 : 0;
+          workingReady = existing ? (existing.ready || "") : "";
+          if (subNameEl) {
+            subNameEl.textContent = (lead.studentName || lead.parentName || "—")
+              + " · " + (lead.trialDate || "") + " " + (lead.trialTime || "");
+          }
+          if (noteEl) noteEl.value = existing ? (existing.note || "") : "";
+          paintStars();
+          paintReady();
+          if (msgEl) { msgEl.textContent = ""; msgEl.className = "mo-lead-msg"; }
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+        function closeModal() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+          currentLeadId = null;
+        }
+        window.__minddoOpenTrialFeedback = openModal;
+
+        if (closeBtn) closeBtn.addEventListener("click", closeModal);
+        if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+        overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && overlay.classList.contains("open")) closeModal();
+        });
+
+        if (starsEl) {
+          starsEl.addEventListener("click", function (e) {
+            var b = e.target.closest("[data-fb-star]");
+            if (!b) return;
+            workingIntent = Number(b.getAttribute("data-fb-star")) || 0;
+            paintStars();
+          });
+        }
+        if (readyEl) {
+          readyEl.addEventListener("click", function (e) {
+            var b = e.target.closest("[data-fb-ready]");
+            if (!b) return;
+            workingReady = b.getAttribute("data-fb-ready");
+            paintReady();
+          });
+        }
+        if (saveBtn) {
+          saveBtn.addEventListener("click", function () {
+            if (!currentLeadId) return;
+            var flow = window.MindDoFlow;
+            var active = flow && flow.getActiveOpsUser && flow.getActiveOpsUser();
+            var actorId = (active && active.staff && active.staff.id) || "ops";
+            var map = readFeedbackMap();
+            var before = map[currentLeadId] || null;
+            var rec = {
+              leadId: currentLeadId,
+              intent: workingIntent,
+              ready: workingReady,
+              note: noteEl ? noteEl.value.trim() : "",
+              by: actorId,
+              updatedAt: new Date().toISOString()
+            };
+            map[currentLeadId] = rec;
+            writeFeedbackMap(map);
+            if (flow && flow.appendAudit) {
+              flow.appendAudit({
+                actor: actorId, kind: "trial.feedback",
+                target: currentLeadId,
+                summary: "试课反馈 · 意向 " + workingIntent + "★ · " + (workingReady || "—"),
+                before: before, after: rec
+              });
+            }
             closeModal();
             if (typeof render === "function") render();
           });
@@ -11552,6 +11824,14 @@
           // Open eval modal — pre-fills with existing eval if any.
           if (action === "evaluate") {
             openEvalModal(leadId);
+            return;
+          }
+
+          // Open the marketing-side post-trial feedback modal.
+          if (action === "feedback") {
+            if (typeof window.__minddoOpenTrialFeedback === "function") {
+              window.__minddoOpenTrialFeedback(leadId);
+            }
             return;
           }
 
