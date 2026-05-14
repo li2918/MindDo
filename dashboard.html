@@ -1783,6 +1783,111 @@
       font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
       color: var(--muted); padding: 4px 4px 8px; }
 
+    /* ====================================================================
+       Channel deep-dive (Marketing Center → 渠道效果)
+       — sortable table, per-channel funnel mini-cards, staff leaderboard.
+       ==================================================================== */
+    .ch-range-bar { gap: 4px; }
+
+    .ch-perf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .ch-perf-table thead th {
+      background: rgba(122,48,16,0.04);
+      font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+      padding: 10px 12px; text-align: left;
+      cursor: pointer; user-select: none;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    .ch-perf-table thead th:hover { color: var(--clay); }
+    .ch-perf-table thead th::after { content: ""; display: inline-block; width: 0; opacity: 0; }
+    .ch-perf-table thead th.sort-active { color: var(--brand, #d8551c); }
+    .ch-perf-table thead th.sort-active.sort-desc::after { content: " ↓"; opacity: 1; margin-left: 4px; }
+    .ch-perf-table thead th.sort-active.sort-asc::after  { content: " ↑"; opacity: 1; margin-left: 4px; }
+    .ch-perf-table tbody td {
+      padding: 12px; border-bottom: 1px dashed rgba(122,48,16,0.08);
+      vertical-align: middle;
+    }
+    .ch-perf-table tbody tr:hover { background: rgba(248,250,252,0.55); }
+    .ch-perf-table tbody td.num { font-variant-numeric: tabular-nums; }
+    .ch-share-bar {
+      position: relative; height: 18px; background: rgba(122,48,16,0.07);
+      border-radius: 999px; overflow: hidden; min-width: 90px;
+    }
+    .ch-share-bar .ch-share-fill {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      background: linear-gradient(90deg, #fde68a, var(--gold-deep));
+      border-radius: 999px;
+    }
+    .ch-share-bar span {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 10.5px; font-weight: 800; color: var(--clay);
+    }
+
+    .ch-funnel-grid {
+      display: grid; gap: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    .ch-funnel {
+      padding: 14px 16px;
+      background: rgba(248,250,252,0.55);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+    .ch-funnel .cf-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 10px;
+    }
+    .ch-funnel .cf-head .muted { font-size: 11.5px; color: var(--muted); }
+    .ch-funnel .cf-row {
+      display: grid; grid-template-columns: 48px 1fr; gap: 10px;
+      align-items: center; margin-bottom: 6px; font-size: 12px;
+    }
+    .ch-funnel .cf-label { color: var(--muted); font-weight: 700; }
+    .ch-funnel .cf-bar {
+      position: relative; height: 22px;
+      background: rgba(122,48,16,0.06);
+      border-radius: 6px; overflow: hidden;
+    }
+    .ch-funnel .cf-fill {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      border-radius: 6px;
+      transition: width 0.3s ease;
+    }
+    .ch-funnel .cf-fill.leads  { background: linear-gradient(90deg, #cbd5e1, #94a3b8); }
+    .ch-funnel .cf-fill.trials { background: linear-gradient(90deg, #fed7aa, #f59e0b); }
+    .ch-funnel .cf-fill.paid   { background: linear-gradient(90deg, #bbf7d0, #16a34a); }
+    .ch-funnel .cf-num {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      font-size: 11px; font-weight: 800; color: var(--clay);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ch-leader-table {
+      display: flex; flex-direction: column;
+      border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    }
+    .ch-leader-head, .ch-leader-row {
+      display: grid; grid-template-columns: 60px 1fr 80px 80px;
+      gap: 10px; padding: 10px 14px; align-items: center;
+      font-variant-numeric: tabular-nums;
+    }
+    .ch-leader-head {
+      background: rgba(122,48,16,0.04);
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .ch-leader-row {
+      font-size: 13px; border-top: 1px solid var(--line);
+    }
+    .ch-leader-row.is-me {
+      background: linear-gradient(90deg, rgba(254,243,199,0.6), rgba(254,243,199,0.2));
+      font-weight: 700;
+    }
+    .ch-leader-row .cl-rank { font-size: 16px; }
+    .ch-leader-row .cl-name { font-weight: 700; color: var(--clay); }
+    .ch-leader-row .cl-v { text-align: right; color: var(--text); }
+
     /* Floating "+ 新线索" button — fixed bottom-right, doesn't fight the
        customer-service FAB above it (sits higher). */
     .mo-fab { position: fixed; right: 22px; bottom: 92px; z-index: 1450;
@@ -2328,7 +2433,11 @@
           </section>
         </div>
 
-        <!-- Sub-tab 4: Channel mix -->
+        <!-- Sub-tab 4: Channel mix — full deep-dive: KPI tiles, time-range
+             pills, sortable channel performance table, per-channel funnel
+             (线索 → 试课 → 付费), and a campus-marketing leaderboard. The
+             single-list legacy view lives on as #channelList (hidden) so
+             Data Center / other callers keep working. -->
         <div class="mkt-subpanel" data-mkt-subpanel="channel" role="tabpanel" hidden>
           <section class="dash-zone">
             <div class="dash-zone-head">
@@ -2336,12 +2445,62 @@
                 <h3 data-i18n="zoneMktChannelTitle"></h3>
                 <p data-i18n="zoneMktChannelSub"></p>
               </div>
+              <div class="dash-zone-actions">
+                <div class="range-pill-bar ch-range-bar" id="chRangeBar" role="group" aria-label="Channel range">
+                  <button type="button" class="range-pill" data-ch-range="week"     data-i18n="chRangeWeek"></button>
+                  <button type="button" class="range-pill active" data-ch-range="month" data-i18n="chRangeMonth"></button>
+                  <button type="button" class="range-pill" data-ch-range="lastMonth" data-i18n="chRangeLastMonth"></button>
+                  <button type="button" class="range-pill" data-ch-range="all"      data-i18n="chRangeAll"></button>
+                </div>
+              </div>
             </div>
+            <section class="grid" id="chKpiMetrics"></section>
+          </section>
+
+          <section class="dash-zone">
             <article class="panel">
-              <h2 data-i18n="channelDist"></h2>
-              <ul class="kv-list" id="channelList"></ul>
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                <h2 data-i18n="chTableHead" style="margin:0;"></h2>
+                <button type="button" class="csv-export-btn" data-csv-export="channel-perf" data-i18n="csvExport"></button>
+              </div>
+              <div class="table-wrap">
+                <table class="ch-perf-table" id="chPerfTable">
+                  <thead>
+                    <tr>
+                      <th data-i18n="chColChannel" data-ch-sort="name"></th>
+                      <th data-i18n="chColLeads"   data-ch-sort="leads"></th>
+                      <th data-i18n="chColTrials" data-ch-sort="trials"></th>
+                      <th data-i18n="chColPaid"   data-ch-sort="paid"></th>
+                      <th data-i18n="chColConv"   data-ch-sort="conv"></th>
+                      <th data-i18n="chColRevenue" data-ch-sort="revenue"></th>
+                      <th data-i18n="chColShare"  data-ch-sort="share"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="chPerfBody"></tbody>
+                </table>
+              </div>
             </article>
           </section>
+
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="chFunnelHead" style="margin:0 0 14px;"></h2>
+              <p class="muted" style="font-size:12.5px;margin:-6px 0 12px;" data-i18n="chFunnelHint"></p>
+              <div class="ch-funnel-grid" id="chFunnelGrid"></div>
+            </article>
+          </section>
+
+          <section class="dash-zone">
+            <article class="panel">
+              <h2 data-i18n="chLeaderHead" style="margin:0 0 4px;"></h2>
+              <p class="muted" style="font-size:12.5px;margin:0 0 14px;" data-i18n="chLeaderHint"></p>
+              <div id="chLeaderBody"></div>
+            </article>
+          </section>
+
+          <!-- Legacy data-center mirror — kept so renderKvList(channelList) above
+               keeps populating. Hidden visually since the table replaces it. -->
+          <ul class="kv-list" id="channelList" hidden></ul>
         </div>
 
         <!-- Sub-tab 5: Brand assets -->
@@ -3945,8 +4104,37 @@
           zoneMktCrmSub: "线索 → 跟进 → 转化全流程，按状态分组管理。",
           zoneMktTrialTitle: "试课管理",
           zoneMktTrialSub: "已预约 / 待确认 / 已完成 — 跟进每一节体验课。",
-          zoneMktChannelTitle: "渠道分布",
-          zoneMktChannelSub: "学员来源渠道占比。",
+          zoneMktChannelTitle: "渠道效果",
+          zoneMktChannelSub: "按渠道查看线索、试课、付费的漏斗与转化率。",
+          chRangeWeek: "本周",
+          chRangeMonth: "本月",
+          chRangeLastMonth: "上月",
+          chRangeAll: "全部",
+          chKpiTotalChannels: "覆盖渠道",
+          chKpiTopChannel: "本期最佳渠道",
+          chKpiAvgConv: "整体转化率",
+          chKpiTopRevenue: "本期最高金额渠道",
+          chTableHead: "渠道表现",
+          chColChannel: "渠道",
+          chColLeads: "线索",
+          chColTrials: "试课",
+          chColPaid: "付费",
+          chColConv: "转化率",
+          chColRevenue: "金额",
+          chColShare: "占比",
+          chFunnelHead: "渠道漏斗",
+          chFunnelHint: "每个渠道的 线索 → 试课 → 付费 转化漏斗。",
+          chFunnelLeads: "线索",
+          chFunnelTrials: "试课",
+          chFunnelPaid: "付费",
+          chLeaderHead: "市场专员战绩",
+          chLeaderHint: "按已转化线索数排名（本期）。",
+          chLeaderCol1: "排名",
+          chLeaderCol2: "成员",
+          chLeaderCol3: "已转化",
+          chLeaderCol4: "试课促成",
+          chEmpty: "本期没有匹配的渠道数据。",
+          chLeaderEmpty: "本期暂无成员转化记录。",
           zoneMktBrandTitle: "品牌物料",
           zoneMktBrandSub: "授权下载校区物料、社媒模板与活动素材。",
           mktCrmHead: "线索管理",
@@ -4766,8 +4954,37 @@
           zoneMktCrmSub: "Manage every lead from first contact through conversion.",
           zoneMktTrialTitle: "Trial Management",
           zoneMktTrialSub: "Booked / Confirmed / Done — follow up on every trial class.",
-          zoneMktChannelTitle: "Channel Mix",
-          zoneMktChannelSub: "Where students come from.",
+          zoneMktChannelTitle: "Channel Performance",
+          zoneMktChannelSub: "Leads, trials, paid conversions and revenue by source.",
+          chRangeWeek: "This Week",
+          chRangeMonth: "This Month",
+          chRangeLastMonth: "Last Month",
+          chRangeAll: "All",
+          chKpiTotalChannels: "Active Channels",
+          chKpiTopChannel: "Top Channel",
+          chKpiAvgConv: "Overall Conv",
+          chKpiTopRevenue: "Top Revenue Channel",
+          chTableHead: "Channel Performance",
+          chColChannel: "Channel",
+          chColLeads: "Leads",
+          chColTrials: "Trials",
+          chColPaid: "Paid",
+          chColConv: "Conv.",
+          chColRevenue: "Revenue",
+          chColShare: "Share",
+          chFunnelHead: "Channel Funnels",
+          chFunnelHint: "Per-channel funnel: leads → trials → paid.",
+          chFunnelLeads: "Leads",
+          chFunnelTrials: "Trials",
+          chFunnelPaid: "Paid",
+          chLeaderHead: "Marketing Leaderboard",
+          chLeaderHint: "Ranked by closed (won) leads this period.",
+          chLeaderCol1: "Rank",
+          chLeaderCol2: "Member",
+          chLeaderCol3: "Won",
+          chLeaderCol4: "Trials",
+          chEmpty: "No channel data for this period.",
+          chLeaderEmpty: "No member conversions yet.",
           zoneMktBrandTitle: "Brand Assets",
           zoneMktBrandSub: "Download campus materials, social templates, and event kits.",
           mktCrmHead: "Leads",
@@ -5666,6 +5883,270 @@
           .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;");
       }
+
+      // Channel deep-dive (Marketing Center → 渠道效果). Owns its own time
+      // window so it can answer "how did 抖音 do last month" without
+      // interfering with the dashboard-wide range filter at the top.
+      // Persists the selection so reloads land back on the same view.
+      var __chRange = "month";
+      try { __chRange = localStorage.getItem("minddo_dashboard_ch_range") || "month"; } catch (_) {}
+      var __chSort = { key: "leads", dir: "desc" };
+
+      function chInRange(item, rangeKey) {
+        var d = new Date(item && (item.createdAt || 0));
+        if (!isFinite(d.getTime())) return false;
+        var now = new Date();
+        if (rangeKey === "week") {
+          var w = new Date(now); w.setHours(0, 0, 0, 0);
+          w.setDate(w.getDate() - ((w.getDay() || 7) - 1));
+          return d >= w;
+        }
+        if (rangeKey === "month") {
+          var m0 = new Date(now.getFullYear(), now.getMonth(), 1);
+          var m1 = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          return d >= m0 && d < m1;
+        }
+        if (rangeKey === "lastMonth") {
+          var lm0 = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          var lm1 = new Date(now.getFullYear(), now.getMonth(), 1);
+          return d >= lm0 && d < lm1;
+        }
+        return true; // "all"
+      }
+
+      function renderChannelDeepDive(leadsAll, paymentsAll, t) {
+        var kpiEl = document.getElementById("chKpiMetrics");
+        var bodyEl = document.getElementById("chPerfBody");
+        var funnelEl = document.getElementById("chFunnelGrid");
+        var leaderEl = document.getElementById("chLeaderBody");
+        if (!kpiEl && !bodyEl && !funnelEl && !leaderEl) return;
+
+        var range = __chRange;
+        var leads = (leadsAll || []).filter(function (l) { return chInRange(l, range); });
+        // Build paid-email lookup over the same period — payments are
+        // matched to leads by email, so the conversion attribution
+        // mirrors what the marketing overview already counts.
+        var paidEmails = {};
+        var revenueByEmail = {};
+        (paymentsAll || []).forEach(function (p) {
+          if (!p || !chInRange(p, range)) return;
+          var em = String(p.email || "").toLowerCase();
+          if (!em) return;
+          paidEmails[em] = true;
+          revenueByEmail[em] = (revenueByEmail[em] || 0) + (Number(p.amount) || 0);
+        });
+
+        // Group leads by channel.
+        var byChan = {};
+        leads.forEach(function (l) {
+          var k = l.channel || "other";
+          var lbl = l.channelLabel || k;
+          if (!byChan[k]) byChan[k] = { key: k, name: lbl, leads: 0, trials: 0, paid: 0, revenue: 0 };
+          var row = byChan[k];
+          row.leads++;
+          if (l.trialDate) row.trials++;
+          if (l.email && paidEmails[String(l.email).toLowerCase()]) {
+            row.paid++;
+            row.revenue += revenueByEmail[String(l.email).toLowerCase()] || 0;
+          }
+        });
+        var chans = Object.keys(byChan).map(function (k) { return byChan[k]; });
+        var totalLeads = chans.reduce(function (a, c) { return a + c.leads; }, 0);
+        var totalTrials = chans.reduce(function (a, c) { return a + c.trials; }, 0);
+        var totalPaid = chans.reduce(function (a, c) { return a + c.paid; }, 0);
+        chans.forEach(function (c) {
+          c.conv = c.leads ? c.paid / c.leads : 0;
+          c.share = totalLeads ? c.leads / totalLeads : 0;
+        });
+
+        // ---- KPI tiles ----
+        if (kpiEl) {
+          var topByConv = chans.slice().sort(function (a, b) {
+            // Need ≥3 leads to qualify as "top" — keeps a single-lead
+            // 100% from masquerading as the winner.
+            var qa = a.leads >= 3 ? a.conv : -1;
+            var qb = b.leads >= 3 ? b.conv : -1;
+            return qb - qa;
+          })[0];
+          var topByRev = chans.slice().sort(function (a, b) { return b.revenue - a.revenue; })[0];
+          var avgConv = totalLeads ? Math.round((totalPaid / totalLeads) * 100) + "%" : "—";
+          renderMetricCards(kpiEl, [
+            { label: t.chKpiTotalChannels, value: chans.length, sub: totalLeads + " " + t.chColLeads },
+            { label: t.chKpiTopChannel,
+              value: topByConv ? topByConv.name : "—",
+              sub: topByConv ? (Math.round(topByConv.conv * 100) + "% " + t.chColConv) : "" },
+            { label: t.chKpiAvgConv, value: avgConv, sub: totalPaid + " / " + totalLeads },
+            { label: t.chKpiTopRevenue,
+              value: topByRev && topByRev.revenue ? topByRev.name : "—",
+              sub: topByRev && topByRev.revenue ? money(topByRev.revenue) : "" }
+          ]);
+        }
+
+        // ---- Sortable table ----
+        if (bodyEl) {
+          var sortKey = __chSort.key;
+          var dir = __chSort.dir === "asc" ? 1 : -1;
+          var sorted = chans.slice().sort(function (a, b) {
+            if (sortKey === "name") return dir * String(a.name).localeCompare(String(b.name));
+            return dir * ((a[sortKey] || 0) - (b[sortKey] || 0));
+          });
+          if (!sorted.length) {
+            bodyEl.innerHTML = "<tr><td colspan='7' style='text-align:center;color:var(--muted);padding:24px;'>"
+              + escHTML(t.chEmpty) + "</td></tr>";
+          } else {
+            bodyEl.innerHTML = sorted.map(function (c) {
+              var conv = Math.round(c.conv * 100) + "%";
+              var share = Math.round(c.share * 100) + "%";
+              return "<tr>"
+                + "<td><strong>" + escHTML(c.name) + "</strong></td>"
+                + "<td class='num'>" + c.leads + "</td>"
+                + "<td class='num'>" + c.trials + "</td>"
+                + "<td class='num'>" + c.paid + "</td>"
+                + "<td class='num'>" + conv + "</td>"
+                + "<td class='num'>" + safeMoney(c.revenue) + "</td>"
+                + "<td><div class='ch-share-bar'>"
+                +   "<div class='ch-share-fill' style='width:" + (c.share * 100).toFixed(1) + "%;'></div>"
+                +   "<span>" + share + "</span></div></td>"
+                + "</tr>";
+            }).join("");
+          }
+          // Sortable headers — re-bind once per element via a flag.
+          var head = document.querySelector("#chPerfTable thead");
+          if (head && !head.__sortWired) {
+            head.__sortWired = true;
+            head.addEventListener("click", function (e) {
+              var th = e.target.closest("[data-ch-sort]");
+              if (!th) return;
+              var key = th.getAttribute("data-ch-sort");
+              if (__chSort.key === key) {
+                __chSort.dir = __chSort.dir === "asc" ? "desc" : "asc";
+              } else {
+                __chSort.key = key;
+                __chSort.dir = (key === "name") ? "asc" : "desc";
+              }
+              render();
+            });
+          }
+          // Mark current sort column for arrow hint via CSS.
+          if (head) {
+            head.querySelectorAll("[data-ch-sort]").forEach(function (th) {
+              var active = th.getAttribute("data-ch-sort") === __chSort.key;
+              th.classList.toggle("sort-active", active);
+              th.classList.toggle("sort-desc", active && __chSort.dir === "desc");
+              th.classList.toggle("sort-asc", active && __chSort.dir === "asc");
+            });
+          }
+        }
+
+        // ---- Per-channel funnels ----
+        if (funnelEl) {
+          if (!chans.length) {
+            funnelEl.innerHTML = "<div class='mo-queue-empty'>" + escHTML(t.chEmpty) + "</div>";
+          } else {
+            // Pick top 6 by leads — every campaign deserves a row, but
+            // displaying 30 funnels would be noise. Click-through to the
+            // table for the rest.
+            var topFun = chans.slice().sort(function (a, b) { return b.leads - a.leads; }).slice(0, 6);
+            var maxLeads = topFun.reduce(function (m, c) { return Math.max(m, c.leads); }, 0) || 1;
+            funnelEl.innerHTML = topFun.map(function (c) {
+              var trialPct = c.leads ? Math.round((c.trials / c.leads) * 100) : 0;
+              var paidPct = c.leads ? Math.round((c.paid / c.leads) * 100) : 0;
+              var w1 = (c.leads / maxLeads) * 100;
+              var w2 = (c.trials / maxLeads) * 100;
+              var w3 = (c.paid / maxLeads) * 100;
+              return "<div class='ch-funnel'>"
+                + "<div class='cf-head'><strong>" + escHTML(c.name) + "</strong>"
+                +   "<span class='muted'>" + Math.round(c.conv * 100) + "% " + escHTML(t.chColConv) + "</span></div>"
+                + "<div class='cf-row'><span class='cf-label'>" + escHTML(t.chFunnelLeads) + "</span>"
+                +   "<div class='cf-bar'><div class='cf-fill leads' style='width:" + w1.toFixed(1) + "%;'></div>"
+                +   "<span class='cf-num'>" + c.leads + "</span></div></div>"
+                + "<div class='cf-row'><span class='cf-label'>" + escHTML(t.chFunnelTrials) + "</span>"
+                +   "<div class='cf-bar'><div class='cf-fill trials' style='width:" + w2.toFixed(1) + "%;'></div>"
+                +   "<span class='cf-num'>" + c.trials + " (" + trialPct + "%)</span></div></div>"
+                + "<div class='cf-row'><span class='cf-label'>" + escHTML(t.chFunnelPaid) + "</span>"
+                +   "<div class='cf-bar'><div class='cf-fill paid' style='width:" + w3.toFixed(1) + "%;'></div>"
+                +   "<span class='cf-num'>" + c.paid + " (" + paidPct + "%)</span></div></div>"
+                + "</div>";
+            }).join("");
+          }
+        }
+
+        // ---- Leaderboard (campus-marketing staff) ----
+        if (leaderEl) {
+          var flow = window.MindDoFlow;
+          var campus = (typeof moActiveCampus === "function") ? moActiveCampus() : null;
+          var staffList = (flow && flow.readJson(flow.keys.staff) || []).filter(function (s) {
+            if (!s) return false;
+            if (s.roleId !== "campus-marketing") return false;
+            if (campus && s.campus !== campus) return false;
+            return s.status === "active";
+          });
+          // Mock attribution — same deterministic hash the marketing
+          // overview uses, so the leaderboard agrees with the "我的排名"
+          // KPI tile that links here.
+          var attrib = {};
+          staffList.forEach(function (s) { attrib[s.id] = { name: s.name, won: 0, trials: 0 }; });
+          if (staffList.length) {
+            leads.forEach(function (l) {
+              var key = String(l.createdAt || l.email || "").split("").reduce(function (a, c) {
+                return ((a << 5) - a) + c.charCodeAt(0) | 0;
+              }, 0);
+              var idx = Math.abs(key) % staffList.length;
+              var bucket = attrib[staffList[idx].id];
+              if (l.trialDate) bucket.trials++;
+              if (l.crmStatus === "won") bucket.won++;
+            });
+          }
+          var ranked = Object.keys(attrib).map(function (sid) {
+            return { sid: sid, name: attrib[sid].name, won: attrib[sid].won, trials: attrib[sid].trials };
+          }).sort(function (a, b) { return b.won - a.won || b.trials - a.trials; });
+          var activeOps = flow && flow.getActiveOpsUser && flow.getActiveOpsUser();
+          var myStaffId = activeOps && activeOps.staff && activeOps.staff.id;
+          if (!ranked.length) {
+            leaderEl.innerHTML = "<div class='mo-queue-empty'>" + escHTML(t.chLeaderEmpty) + "</div>";
+          } else {
+            leaderEl.innerHTML = "<div class='ch-leader-table'>"
+              + "<div class='ch-leader-head'>"
+              +   "<span>" + escHTML(t.chLeaderCol1) + "</span>"
+              +   "<span>" + escHTML(t.chLeaderCol2) + "</span>"
+              +   "<span>" + escHTML(t.chLeaderCol3) + "</span>"
+              +   "<span>" + escHTML(t.chLeaderCol4) + "</span>"
+              + "</div>"
+              + ranked.map(function (r, i) {
+                  var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "#" + (i + 1);
+                  var me = r.sid === myStaffId ? " is-me" : "";
+                  return "<div class='ch-leader-row" + me + "'>"
+                    + "<span class='cl-rank'>" + medal + "</span>"
+                    + "<span class='cl-name'>" + escHTML(r.name || "—") + "</span>"
+                    + "<span class='cl-v'>" + r.won + "</span>"
+                    + "<span class='cl-v'>" + r.trials + "</span>"
+                    + "</div>";
+                }).join("")
+              + "</div>";
+          }
+        }
+      }
+
+      // Wire the channel range pill bar once. Re-runs render() on click so
+      // every channel-page surface picks up the new window.
+      (function () {
+        var bar = document.getElementById("chRangeBar");
+        if (!bar) return;
+        function syncActive() {
+          bar.querySelectorAll("[data-ch-range]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-ch-range") === __chRange);
+          });
+        }
+        syncActive();
+        bar.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-ch-range]");
+          if (!b) return;
+          __chRange = b.getAttribute("data-ch-range") || "month";
+          try { localStorage.setItem("minddo_dashboard_ch_range", __chRange); } catch (_) {}
+          syncActive();
+          render();
+        });
+      })();
 
       // Marketing Center — CRM lead pipeline + trial-management table +
       // brand-asset grid. Reads from the unfiltered leads array (campus-
@@ -9407,6 +9888,9 @@
 
         // ---- Marketing Center: CRM lead list + trial table + brand grid ----
         renderMarketingCenter(leadsAll, t);
+        // Channel deep-dive uses its own time window (independent of the
+        // dashboard-wide range filter) so pass the *unfiltered* arrays.
+        renderChannelDeepDive(leadsAll, paymentsAll, t);
 
         // ---- Inbox: aggregated pending work + sidebar badge ----
         renderInboxPanel(t);
@@ -10267,6 +10751,52 @@
                   { key: "status",    label: langLabel("状态", "Status") },
                   { key: "source",    label: langLabel("来源", "Source") },
                   { key: "createdAt", label: langLabel("时间", "Created at") }
+                ]
+              };
+            }
+            case "channel-perf": {
+              // Snapshot the channel deep-dive table for the current
+              // time window. Mirrors the in-page table 1:1 so the export
+              // matches what the user sees.
+              var allLeads = f.readJson(f.keys.leads) || [];
+              var allPays = f.readJson(f.keys.payments) || [];
+              var rangeLeads = allLeads.filter(function (l) { return chInRange(l, __chRange); });
+              var paidLookup = {};
+              var revLookup = {};
+              allPays.forEach(function (p) {
+                if (!p || !chInRange(p, __chRange)) return;
+                var em = String(p.email || "").toLowerCase();
+                if (!em) return;
+                paidLookup[em] = true;
+                revLookup[em] = (revLookup[em] || 0) + (Number(p.amount) || 0);
+              });
+              var byCh = {};
+              rangeLeads.forEach(function (l) {
+                var k = l.channel || "other";
+                if (!byCh[k]) byCh[k] = { channel: l.channelLabel || k, leads: 0, trials: 0, paid: 0, revenue: 0 };
+                byCh[k].leads++;
+                if (l.trialDate) byCh[k].trials++;
+                if (l.email && paidLookup[String(l.email).toLowerCase()]) {
+                  byCh[k].paid++;
+                  byCh[k].revenue += revLookup[String(l.email).toLowerCase()] || 0;
+                }
+              });
+              var chRows = Object.keys(byCh).map(function (k) {
+                var r = byCh[k];
+                r.conv = r.leads ? Math.round((r.paid / r.leads) * 100) + "%" : "0%";
+                r.revenue = (Number(r.revenue) || 0).toFixed(2);
+                return r;
+              }).sort(function (a, b) { return b.leads - a.leads; });
+              return {
+                filename: "minddo-channels-" + __chRange + "-" + stamp() + ".csv",
+                rows: chRows,
+                headers: [
+                  { key: "channel", label: langLabel("渠道", "Channel") },
+                  { key: "leads",   label: langLabel("线索", "Leads") },
+                  { key: "trials",  label: langLabel("试课", "Trials") },
+                  { key: "paid",    label: langLabel("付费", "Paid") },
+                  { key: "conv",    label: langLabel("转化率", "Conversion") },
+                  { key: "revenue", label: langLabel("金额", "Revenue") }
                 ]
               };
             }
