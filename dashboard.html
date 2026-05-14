@@ -1907,7 +1907,7 @@
         </button>
         <!-- 数据中心 second-level menu — 4 functional cuts of analytics -->
         <div class="sidebar-subnav" id="dataSubtabs" role="tablist" aria-label="Data groups">
-          <button type="button" class="sidebar-subitem data-subtab active" data-data-subtab="wall" role="tab">
+          <button type="button" class="sidebar-subitem data-subtab active" data-data-subtab="wall" data-perm-required="data.finance" role="tab">
             <span class="ms-icon" aria-hidden="true">📺</span><span class="ms-label" data-i18n="dataSubtabWall"></span>
           </button>
           <button type="button" class="sidebar-subitem data-subtab" data-data-subtab="enroll" role="tab">
@@ -8619,8 +8619,30 @@
         if (!bar) return;
         var KEY = "minddo_dash_data_subtab";
         var KNOWN = ["wall", "enroll", "academic", "finance"];
+        // Each sub-tab carries a permission requirement (data.finance for
+        // wall + finance, academic.view for academic, none for enroll).
+        // If the active user lacks the requirement, applySub falls back
+        // to the first visible sub-tab so they don't land on a blank
+        // panel — marketing reps default to "enroll" since they have no
+        // data.finance / academic.view.
+        function allowedForKey(key) {
+          var btn = bar.querySelector("[data-data-subtab='" + key + "']");
+          if (!btn) return false;
+          var perm = btn.getAttribute("data-perm-required");
+          var flow = window.MindDoFlow;
+          if (perm && flow && flow.hasPerm && !flow.hasPerm(perm)) return false;
+          return true;
+        }
+        function firstAllowed() {
+          for (var i = 0; i < KNOWN.length; i++) {
+            if (allowedForKey(KNOWN[i])) return KNOWN[i];
+          }
+          return null;
+        }
         function applySub(key) {
-          if (KNOWN.indexOf(key) === -1) key = "wall";
+          if (KNOWN.indexOf(key) === -1 || !allowedForKey(key)) {
+            key = firstAllowed() || "enroll";
+          }
           bar.querySelectorAll("[data-data-subtab]").forEach(function (b) {
             b.classList.toggle("active", b.getAttribute("data-data-subtab") === key);
           });
