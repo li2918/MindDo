@@ -2155,6 +2155,83 @@
       border-color: rgba(196,106,77,0.32);
     }
 
+    /* Personal monthly target panel (marketing overview) */
+    .mo-target-panel { padding: 18px 20px; margin-bottom: 16px; }
+    .mo-target-edit-btn {
+      all: unset; cursor: pointer; padding: 6px 12px;
+      border-radius: 999px; font-size: 12px; font-weight: 700;
+      border: 1px solid var(--line); background: #fff; color: var(--clay);
+    }
+    .mo-target-edit-btn:hover { border-color: var(--gold); }
+    .mo-target-grid {
+      display: grid; gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .mo-tg-cell {
+      padding: 12px 14px; border: 1px solid var(--line);
+      border-radius: 12px; background: rgba(248,250,252,0.55);
+    }
+    .mo-tg-cell .mo-tg-label {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .mo-tg-cell .mo-tg-pct {
+      font-size: 11.5px; font-weight: 800; color: var(--brand, #d8551c);
+    }
+    .mo-tg-cell .mo-tg-pct.done { color: #3f5d26; }
+    .mo-tg-cell .mo-tg-pct.behind { color: #8e3d21; }
+    .mo-tg-cell .mo-tg-value {
+      font-size: 19px; font-weight: 900; color: var(--clay);
+      margin: 4px 0 6px; font-variant-numeric: tabular-nums;
+    }
+    .mo-tg-cell .mo-tg-target {
+      font-size: 11.5px; color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .mo-tg-cell .mo-tg-bar {
+      position: relative; height: 8px;
+      background: rgba(122,48,16,0.06); border-radius: 999px; overflow: hidden;
+    }
+    .mo-tg-cell .mo-tg-fill {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      background: linear-gradient(90deg, #fde68a, var(--gold-deep));
+      border-radius: 999px; transition: width 0.3s ease;
+    }
+    .mo-tg-cell .mo-tg-fill.done {
+      background: linear-gradient(90deg, #bbf7d0, #16a34a);
+    }
+    .mo-tg-cell .mo-tg-fill.behind {
+      background: linear-gradient(90deg, #fed7aa, #ef6c4a);
+    }
+    .mo-target-form {
+      padding: 12px 0 4px;
+      border-top: 1px dashed rgba(122,48,16,0.12);
+      margin-top: 12px;
+    }
+    .mo-target-form[hidden] { display: none; }
+    .mo-target-form-row {
+      display: grid; gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+    .mo-target-form label {
+      display: flex; flex-direction: column; gap: 4px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .mo-target-form input {
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 7px 10px; font: inherit; font-size: 13px; background: #fff;
+    }
+    .mo-target-form-actions {
+      display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;
+    }
+    .mo-target-empty {
+      padding: 24px; text-align: center; color: var(--muted); font-size: 13px;
+      background: rgba(248,250,252,0.55);
+      border: 1px dashed var(--line); border-radius: 12px;
+    }
+
     /* Communication template manager modal */
     .tpl-add {
       display: grid; grid-template-columns: 1fr;
@@ -2687,6 +2764,37 @@
              ============================================================ -->
         <section id="marketingOverview" hidden>
           <section class="grid" id="moKpiMetrics"></section>
+          <!-- Personal monthly performance — target vs actual progress bars
+               for the active campus-marketing user. "设置目标" opens a small
+               inline editor that writes to minddo_marketing_targets keyed
+               by staffId_YYYY-MM. -->
+          <article class="panel mo-target-panel" id="moTargetPanel">
+            <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+              <h2 data-i18n="moTargetHead" style="margin:0;"></h2>
+              <button type="button" class="mo-target-edit-btn" id="moTargetEditBtn" data-i18n="moTargetEditBtn"></button>
+            </div>
+            <div class="mo-target-grid" id="moTargetGrid"></div>
+            <form class="mo-target-form" id="moTargetForm" hidden>
+              <div class="mo-target-form-row">
+                <label><span data-i18n="moTargetFieldLeads"></span>
+                  <input type="number" min="0" name="leads" />
+                </label>
+                <label><span data-i18n="moTargetFieldTrials"></span>
+                  <input type="number" min="0" name="trials" />
+                </label>
+                <label><span data-i18n="moTargetFieldWon"></span>
+                  <input type="number" min="0" name="won" />
+                </label>
+                <label><span data-i18n="moTargetFieldRevenue"></span>
+                  <input type="number" min="0" name="revenue" />
+                </label>
+              </div>
+              <div class="mo-target-form-actions">
+                <button type="button" id="moTargetCancelBtn" class="mo-lead-secondary" data-i18n="moTargetCancel"></button>
+                <button type="submit" class="mo-lead-primary" data-i18n="moTargetSave"></button>
+              </div>
+            </form>
+          </article>
           <div class="mo-split">
             <article class="panel">
               <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
@@ -4838,6 +4946,21 @@
           moChannelColTrials: "试听",
           moChannelColPaid: "付费",
           moChannelColConv: "转化率",
+          moTargetHead: "我的本月业绩",
+          moTargetEditBtn: "设置目标",
+          moTargetSave: "保存",
+          moTargetCancel: "取消",
+          moTargetFieldLeads: "线索目标",
+          moTargetFieldTrials: "试课目标",
+          moTargetFieldWon: "转化目标",
+          moTargetFieldRevenue: "业绩目标 ($)",
+          moTargetLabelLeads: "本月线索",
+          moTargetLabelTrials: "本月试课",
+          moTargetLabelWon: "本月转化",
+          moTargetLabelRevenue: "本月业绩",
+          moTargetVsFmt: "目标 {target}",
+          moTargetNoActive: "请先在右上角切换到市场专员账号查看本人业绩。",
+          moTargetUnset: "尚未设置目标，点右上「设置目标」开始。",
           // FAB + new-lead modal
           moFabLabel: "新线索",
           moLeadModalTitle: "30 秒录入线索",
@@ -5772,6 +5895,21 @@
           moChannelColTrials: "Trials",
           moChannelColPaid: "Paid",
           moChannelColConv: "Conv %",
+          moTargetHead: "My Monthly Performance",
+          moTargetEditBtn: "Set targets",
+          moTargetSave: "Save",
+          moTargetCancel: "Cancel",
+          moTargetFieldLeads: "Leads target",
+          moTargetFieldTrials: "Trials target",
+          moTargetFieldWon: "Conv. target",
+          moTargetFieldRevenue: "Revenue target ($)",
+          moTargetLabelLeads: "Leads",
+          moTargetLabelTrials: "Trials",
+          moTargetLabelWon: "Conversions",
+          moTargetLabelRevenue: "Revenue",
+          moTargetVsFmt: "of {target}",
+          moTargetNoActive: "Switch to a marketing user (top-right) to see personal targets.",
+          moTargetUnset: "No targets yet — click \"Set targets\" to start.",
           moFabLabel: "New lead",
           moLeadModalTitle: "30-second lead capture",
           moLeadModalSub: "Capture the call live — fill in details later from the CRM.",
@@ -8273,6 +8411,116 @@
                 }).join("");
           }
         }
+
+        // ---- Personal monthly target panel ----
+        renderMyTargetPanel(leads, payments, monthLeads, monthPaidEmails, monthConverted, startOfMonth, t);
+      }
+
+      // Marketing-personal monthly target panel — progress bars for
+      // leads / trials / conversions / revenue against the active
+      // marketer's targets. Target storage: minddo_marketing_targets,
+      // keyed by `${staffId}_${YYYY-MM}` → { leads, trials, won, revenue }.
+      function readMyTarget(staffId, ym) {
+        if (!staffId) return null;
+        try {
+          var raw = localStorage.getItem("minddo_marketing_targets");
+          var obj = raw ? JSON.parse(raw) : {};
+          return obj[staffId + "_" + ym] || null;
+        } catch (_) { return null; }
+      }
+      function writeMyTarget(staffId, ym, target) {
+        try {
+          var raw = localStorage.getItem("minddo_marketing_targets");
+          var obj = raw ? JSON.parse(raw) : {};
+          obj[staffId + "_" + ym] = target;
+          localStorage.setItem("minddo_marketing_targets", JSON.stringify(obj));
+        } catch (_) {}
+      }
+      function ymKey(d) {
+        var p = function (n) { return n < 10 ? "0" + n : "" + n; };
+        return d.getFullYear() + "-" + p(d.getMonth() + 1);
+      }
+
+      function renderMyTargetPanel(leads, payments, monthLeads, monthPaidEmails, monthConverted, startOfMonth, t) {
+        var panel = document.getElementById("moTargetPanel");
+        var grid = document.getElementById("moTargetGrid");
+        var editBtn = document.getElementById("moTargetEditBtn");
+        if (!panel || !grid) return;
+        var flow = window.MindDoFlow;
+        var active = flow && flow.getActiveOpsUser && flow.getActiveOpsUser();
+        var staff = active && active.staff;
+        if (!staff || staff.roleId !== "campus-marketing") {
+          grid.innerHTML = "<div class='mo-target-empty'>" + escHTML(t.moTargetNoActive) + "</div>";
+          if (editBtn) editBtn.style.display = "none";
+          return;
+        }
+        if (editBtn) editBtn.style.display = "";
+
+        // Compute this-month actuals for the active staff. Mock attribution
+        // uses the same deterministic hash the channel leaderboard uses, so
+        // numbers stay consistent across surfaces.
+        var staffList = (flow.readJson(flow.keys.staff) || []).filter(function (s) {
+          return s && s.roleId === "campus-marketing" && s.status === "active";
+        });
+        var idxOfMe = -1;
+        for (var i = 0; i < staffList.length; i++) {
+          if (staffList[i].id === staff.id) { idxOfMe = i; break; }
+        }
+        function hashIdx(l) {
+          var key = String(l.createdAt || l.email || "").split("").reduce(function (a, c) {
+            return ((a << 5) - a) + c.charCodeAt(0) | 0;
+          }, 0);
+          return staffList.length ? Math.abs(key) % staffList.length : 0;
+        }
+        var myLeadsCount = 0, myTrials = 0, myWon = 0, myRevenue = 0;
+        (monthLeads || []).forEach(function (l) {
+          if (staffList.length && hashIdx(l) !== idxOfMe) return;
+          myLeadsCount++;
+          if (l.trialDate) myTrials++;
+          if (l.crmStatus === "won") myWon++;
+        });
+        // Revenue: payments this month belonging to the marketer's won leads.
+        var myWonEmails = {};
+        (monthLeads || []).forEach(function (l) {
+          if (staffList.length && hashIdx(l) !== idxOfMe) return;
+          if (l.crmStatus === "won" && l.email) myWonEmails[String(l.email).toLowerCase()] = true;
+        });
+        (payments || []).forEach(function (p) {
+          if (!p) return;
+          var ts = new Date(p.createdAt || 0).getTime();
+          if (!isFinite(ts) || ts < startOfMonth.getTime()) return;
+          if (p.email && myWonEmails[String(p.email).toLowerCase()]) {
+            myRevenue += Number(p.amount) || 0;
+          }
+        });
+
+        var ym = ymKey(new Date());
+        var target = readMyTarget(staff.id, ym);
+        if (!target) {
+          grid.innerHTML = "<div class='mo-target-empty'>" + escHTML(t.moTargetUnset) + "</div>";
+          return;
+        }
+        var cells = [
+          { label: t.moTargetLabelLeads, value: myLeadsCount, target: target.leads || 0, fmt: function (v) { return v; } },
+          { label: t.moTargetLabelTrials, value: myTrials, target: target.trials || 0, fmt: function (v) { return v; } },
+          { label: t.moTargetLabelWon, value: myWon, target: target.won || 0, fmt: function (v) { return v; } },
+          { label: t.moTargetLabelRevenue, value: Math.round(myRevenue), target: target.revenue || 0, fmt: function (v) { return safeMoney(v); } }
+        ];
+        grid.innerHTML = cells.map(function (c) {
+          var tgt = Number(c.target) || 0;
+          var pct = tgt ? Math.min(100, Math.round((c.value / tgt) * 100)) : 0;
+          var fillCls = !tgt ? "" : c.value >= tgt ? "done" : pct < 50 ? "behind" : "";
+          var pctCls = fillCls;
+          return "<div class='mo-tg-cell'>"
+            + "<div class='mo-tg-label'><span>" + escHTML(c.label) + "</span>"
+            +   "<span class='mo-tg-pct " + pctCls + "'>" + (tgt ? pct + "%" : "—") + "</span></div>"
+            + "<div class='mo-tg-value'>" + c.fmt(c.value) + "</div>"
+            + "<div class='mo-tg-target'>" + (tgt
+                ? t.moTargetVsFmt.replace("{target}", c.fmt(tgt))
+                : "—") + "</div>"
+            + "<div class='mo-tg-bar'><div class='mo-tg-fill " + fillCls + "' style='width:" + pct + "%;'></div></div>"
+            + "</div>";
+        }).join("");
       }
 
       // "Mark contacted" — stamps lastContactAt and re-renders.
@@ -8903,6 +9151,53 @@
             if (typeof render === "function") render();
           });
         }
+      })();
+
+      // Personal target editor — opens an inline form inside the
+      // marketing-overview target panel. Persists to localStorage keyed
+      // by the active staff id + current YYYY-MM, then re-renders the
+      // overview so the bars reflect the new numbers immediately.
+      (function () {
+        var btn = document.getElementById("moTargetEditBtn");
+        var form = document.getElementById("moTargetForm");
+        var cancelBtn = document.getElementById("moTargetCancelBtn");
+        if (!btn || !form) return;
+        function openForm() {
+          var flow = window.MindDoFlow;
+          var active = flow && flow.getActiveOpsUser && flow.getActiveOpsUser();
+          var staff = active && active.staff;
+          if (!staff) return;
+          var ym = ymKey(new Date());
+          var existing = readMyTarget(staff.id, ym) || {};
+          form.querySelector("input[name='leads']").value = existing.leads || "";
+          form.querySelector("input[name='trials']").value = existing.trials || "";
+          form.querySelector("input[name='won']").value = existing.won || "";
+          form.querySelector("input[name='revenue']").value = existing.revenue || "";
+          form.hidden = false;
+          form.querySelector("input[name='leads']").focus();
+        }
+        function closeForm() { form.hidden = true; }
+        btn.addEventListener("click", function () {
+          if (form.hidden) openForm(); else closeForm();
+        });
+        if (cancelBtn) cancelBtn.addEventListener("click", closeForm);
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var flow = window.MindDoFlow;
+          var active = flow && flow.getActiveOpsUser && flow.getActiveOpsUser();
+          var staff = active && active.staff;
+          if (!staff) return;
+          var ym = ymKey(new Date());
+          var target = {
+            leads: Number(form.querySelector("input[name='leads']").value) || 0,
+            trials: Number(form.querySelector("input[name='trials']").value) || 0,
+            won: Number(form.querySelector("input[name='won']").value) || 0,
+            revenue: Number(form.querySelector("input[name='revenue']").value) || 0
+          };
+          writeMyTarget(staff.id, ym, target);
+          closeForm();
+          if (typeof render === "function") render();
+        });
       })();
 
       // Communication templates — list / add / edit / delete + a popover

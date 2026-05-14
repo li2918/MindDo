@@ -221,6 +221,17 @@ into the contact-log note. Seeded with 4 starter rows on first read.
 { id, title, body, createdAt }
 ```
 
+### `minddo_marketing_targets` 🟢 (object)
+Personal monthly target per campus-marketing staff, keyed by
+`{staffId}_{YYYY-MM}`. The marketing-overview "我的本月业绩" panel reads
+this to render progress bars vs actuals.
+
+```js
+{
+  "M2026-0042_2026-05": { leads: 60, trials: 30, won: 12, revenue: 24000 }
+}
+```
+
 ### `minddo_newsletter` 🟡 (array of strings)
 Newsletter subscriber emails captured on `index.html`.
 
