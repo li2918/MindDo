@@ -140,6 +140,36 @@
       box-shadow: 0 18px 44px rgba(122,48,16,0.08);
     }
 
+    /* Clickable metric — same look, but reads as a button. The little
+       → arrow only appears on hover so the resting state stays calm and
+       matches the static cards next to it. */
+    button.metric.metric-clickable {
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+      position: relative;
+      transition: 0.15s;
+    }
+    button.metric.metric-clickable:hover {
+      transform: translateY(-2px);
+      border-color: rgba(217,119,6,0.45);
+      box-shadow: 0 22px 50px rgba(245,158,11,0.18);
+    }
+    button.metric.metric-clickable:focus-visible {
+      outline: 2px solid var(--brand, #d8551c);
+      outline-offset: 3px;
+    }
+    button.metric.metric-clickable .metric-cta {
+      position: absolute; top: 14px; right: 16px;
+      font-size: 14px; font-weight: 900; color: var(--brand, #d8551c);
+      opacity: 0; transform: translateX(-4px); transition: 0.15s;
+    }
+    button.metric.metric-clickable:hover .metric-cta,
+    button.metric.metric-clickable:focus-visible .metric-cta {
+      opacity: 1; transform: translateX(0);
+    }
+
     .alert-strip {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -2250,6 +2280,8 @@
                 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
                   <div class="mkt-crm-filters" id="mktCrmFilters" role="group" aria-label="CRM filter">
                     <button type="button" data-mkt-crm-filter="all" class="active" data-i18n="mktCrmFilterAll"></button>
+                    <button type="button" data-mkt-crm-filter="today-follow" data-i18n="mktCrmFilterTodayFollow"></button>
+                    <button type="button" data-mkt-crm-filter="week-new" data-i18n="mktCrmFilterWeekNew"></button>
                     <button type="button" data-mkt-crm-filter="new" data-i18n="mktCrmFilterNew"></button>
                     <button type="button" data-mkt-crm-filter="follow" data-i18n="mktCrmFilterFollow"></button>
                     <button type="button" data-mkt-crm-filter="won" data-i18n="mktCrmFilterWon"></button>
@@ -3920,6 +3952,8 @@
           mktCrmHead: "线索管理",
           mktCrmEmpty: "暂无线索 — 试课报名后会自动出现在这里。",
           mktCrmFilterAll: "全部",
+          mktCrmFilterTodayFollow: "今日待跟进",
+          mktCrmFilterWeekNew: "本周新线索",
           mktCrmFilterNew: "新线索",
           mktCrmFilterFollow: "跟进中",
           mktCrmFilterWon: "已转化",
@@ -4739,6 +4773,8 @@
           mktCrmHead: "Leads",
           mktCrmEmpty: "No leads yet — they'll show up here as trial bookings come in.",
           mktCrmFilterAll: "All",
+          mktCrmFilterTodayFollow: "To Follow Up",
+          mktCrmFilterWeekNew: "New This Week",
           mktCrmFilterNew: "New",
           mktCrmFilterFollow: "Following up",
           mktCrmFilterWon: "Won",
@@ -5405,8 +5441,44 @@
       function renderMetricCards(targetEl, items) {
         if (!targetEl) return;
         targetEl.innerHTML = items.map(function (m) {
+          // When a card carries a `nav` payload we render it as a button
+          // so it's clickable + reachable from the keyboard. The nav
+          // routes to a tab (and optional sub-tab + CRM filter) via the
+          // setActiveTab + setMktSubtab + setMktCrmFilter helpers exposed
+          // on window.
+          var nav = m.nav;
+          if (nav) {
+            var data = "data-nav-tab='" + (nav.tab || "") + "'"
+              + " data-nav-subtab='" + (nav.subtab || "") + "'"
+              + " data-nav-crm='" + (nav.crmFilter || "") + "'";
+            return "<button type='button' class='metric metric-clickable' " + data + ">"
+              + "<span class='label'>" + m.label + "</span>"
+              + "<div class='value'>" + m.value + "</div>"
+              + "<div class='sub'>" + (m.sub || "&nbsp;") + "</div>"
+              + "<span class='metric-cta' aria-hidden='true'>→</span>"
+              + "</button>";
+          }
           return "<article class='metric'><span class='label'>" + m.label + "</span><div class='value'>" + m.value + "</div><div class='sub'>" + (m.sub || "&nbsp;") + "</div></article>";
         }).join("");
+        // Wire the nav click — delegated handler on the container so it
+        // survives re-renders. Idempotent: we only attach once per element.
+        if (!targetEl.__navWired) {
+          targetEl.__navWired = true;
+          targetEl.addEventListener("click", function (e) {
+            var btn = e.target.closest(".metric-clickable");
+            if (!btn) return;
+            var tab = btn.getAttribute("data-nav-tab");
+            var subtab = btn.getAttribute("data-nav-subtab");
+            var crm = btn.getAttribute("data-nav-crm");
+            if (tab && typeof setActiveTab === "function") setActiveTab(tab);
+            if (subtab && typeof window.__minddoSetMktSubtab === "function") {
+              window.__minddoSetMktSubtab(subtab);
+            }
+            if (crm && typeof window.__minddoSetMktCrmFilter === "function") {
+              window.__minddoSetMktCrmFilter(crm);
+            }
+          });
+        }
       }
 
       // Render the redesigned Overview pieces: onboarding checklist,
@@ -5613,6 +5685,25 @@
           });
           var filtered = sorted.filter(function (l) {
             if (__mktCrmFilter === "all") return true;
+            // "Smart" filters — same criteria the marketing-overview KPI
+            // tiles compute against, so a click from a tile lands on a
+            // list whose count matches.
+            if (__mktCrmFilter === "today-follow") {
+              var st = l.crmStatus || "new";
+              if (st === "won" || st === "lost") return false;
+              var ref = new Date(l.lastContactAt || l.createdAt || 0);
+              if (Number.isNaN(ref.getTime())) return false;
+              var day0 = new Date(); day0.setHours(0, 0, 0, 0);
+              var ref0 = new Date(ref); ref0.setHours(0, 0, 0, 0);
+              var days = Math.round((day0.getTime() - ref0.getTime()) / 86400000);
+              return days >= 1;
+            }
+            if (__mktCrmFilter === "week-new") {
+              var startOfWeek = new Date(); startOfWeek.setHours(0, 0, 0, 0);
+              startOfWeek.setDate(startOfWeek.getDate() - ((startOfWeek.getDay() || 7) - 1));
+              var ts = new Date(l.createdAt || 0).getTime();
+              return isFinite(ts) && ts >= startOfWeek.getTime();
+            }
             return (l.crmStatus || "new") === __mktCrmFilter;
           });
           if (!filtered.length) {
@@ -6889,10 +6980,14 @@
         var kpiEl = document.getElementById("moKpiMetrics");
         if (kpiEl) {
           renderMetricCards(kpiEl, [
-            { label: t.moKpiTodayFollow, value: todayFollow, sub: "" },
-            { label: t.moKpiWeekNew,     value: weekNew,     sub: "" },
-            { label: t.moKpiMonthConv,   value: monthConvRate, sub: monthConverted + " / " + monthLeads.length },
-            { label: t.moKpiMyRank,      value: rankLabel,   sub: "" }
+            { label: t.moKpiTodayFollow, value: todayFollow, sub: "",
+              nav: { tab: "enrollment", subtab: "crm", crmFilter: "today-follow" } },
+            { label: t.moKpiWeekNew,     value: weekNew,     sub: "",
+              nav: { tab: "enrollment", subtab: "crm", crmFilter: "week-new" } },
+            { label: t.moKpiMonthConv,   value: monthConvRate, sub: monthConverted + " / " + monthLeads.length,
+              nav: { tab: "enrollment", subtab: "crm", crmFilter: "won" } },
+            { label: t.moKpiMyRank,      value: rankLabel,   sub: "",
+              nav: { tab: "enrollment", subtab: "channel" } }
           ]);
         }
 
@@ -8854,15 +8949,25 @@
       (function () {
         var bar = document.getElementById("mktCrmFilters");
         if (!bar) return;
+        function syncActive() {
+          bar.querySelectorAll("[data-mkt-crm-filter]").forEach(function (btn) {
+            btn.classList.toggle("active", btn.getAttribute("data-mkt-crm-filter") === __mktCrmFilter);
+          });
+        }
         bar.addEventListener("click", function (e) {
           var b = e.target.closest("[data-mkt-crm-filter]");
           if (!b) return;
           __mktCrmFilter = b.getAttribute("data-mkt-crm-filter");
-          bar.querySelectorAll("[data-mkt-crm-filter]").forEach(function (btn) {
-            btn.classList.toggle("active", btn === b);
-          });
+          syncActive();
           if (typeof render === "function") render();
         });
+        // Cross-IIFE entry point for deep links (KPI tiles → CRM filter).
+        window.__minddoSetMktCrmFilter = function (key) {
+          if (!key) return;
+          __mktCrmFilter = key;
+          syncActive();
+          if (typeof render === "function") render();
+        };
       })();
 
       // Trial-table action delegation — Confirm / Mark done / No-show /
@@ -9072,6 +9177,9 @@
         var saved;
         try { saved = localStorage.getItem(KEY); } catch (_) {}
         applySub(saved || "kpi");
+        // Expose for cross-IIFE deep links (e.g. marketing-overview KPI
+        // tiles routing to the CRM list).
+        window.__minddoSetMktSubtab = applySub;
       })();
 
       function renderMetrics(data, t) {
