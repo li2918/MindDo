@@ -1693,6 +1693,139 @@
     return false;
   }
 
+  // =================================================================
+  // Permission templates (RBAC for ops-side login identities)
+  // -----------------------------------------------------------------
+  // Each role in minddo_roles can carry a `template` ∈ this list. The
+  // template defines (a) what permission set the role grants and (b)
+  // whether the role is campus-scoped or global.
+  //
+  //   super-admin       : all campuses, all functions
+  //   principal         : single-campus, full feature access (incl. $)
+  //   campus-ops        : single-campus, ops features, masked $
+  //   campus-marketing  : single-campus, marketing-only
+  //
+  // The full list of permission keys lives in PERMISSIONS for grep-ability.
+  // =================================================================
+  var PERMISSIONS = [
+    "dashboard.view",
+    "overview.view",
+    "inbox.view", "inbox.approve",
+    "marketing.view", "marketing.write",
+    "academic.view", "academic.write",
+    "schedule.view",
+    "attendance.view", "attendance.write",
+    "students.view", "students.write",
+    "finance.view",           // can open the 财务中心 tab at all
+    "finance.detail",         // sees raw $ amounts (orders, refunds, billing)
+    "finance.payroll",        // sees 工资管理 sub-tab
+    "finance.contracts",      // sees 电子合同 sub-tab
+    "finance.renewals",       // sees 续费看板 sub-tab
+    "data.view",
+    "data.finance",           // financial widgets inside 数据中心
+    "internal.view",          // sees 内部管理 (staff + roles)
+    "settings.view",
+    "audit.view"
+  ];
+
+  var PERMISSION_TEMPLATES = {
+    "super-admin": {
+      campusScope: "all",
+      perms: ["*"]
+    },
+    "principal": {
+      campusScope: "single",
+      perms: ["*"]                       // full feature, but single-campus
+    },
+    "campus-ops": {
+      campusScope: "single",
+      perms: [
+        "dashboard.view", "overview.view",
+        "inbox.view", "inbox.approve",
+        "marketing.view",
+        "academic.view", "academic.write",
+        "schedule.view",
+        "attendance.view", "attendance.write",
+        "students.view", "students.write",
+        "finance.view", "finance.renewals",   // no detail / payroll / contracts
+        "data.view"                            // no data.finance
+      ]
+    },
+    "campus-marketing": {
+      campusScope: "single",
+      perms: [
+        "dashboard.view", "overview.view",
+        "marketing.view", "marketing.write",
+        "data.view"
+      ]
+    }
+  };
+
+  // Map every existing role.id to a template so the 切换身份 menu can
+  // route from the role hierarchy onto the simplified permission model.
+  var ROLE_TEMPLATE_MAP = {
+    "owner":             "super-admin",
+    "admin":             "super-admin",
+    "campus-manager":    "principal",
+    "academic-lead":     "principal",
+    "finance":           "principal",       // finance staff see $, campus-scoped
+    "operations":        "campus-ops",
+    "counselor":         "campus-ops",
+    "frontdesk":         "campus-ops",
+    "homeroom":          "campus-ops",
+    "instructor-senior": "campus-ops",
+    "instructor":        "campus-ops",
+    "instructor-intern": "campus-ops",
+    "marketing":         "campus-marketing"
+  };
+
+  function resolveTemplate(roleId) {
+    if (!roleId) return null;
+    var key = ROLE_TEMPLATE_MAP[roleId];
+    if (!key) return null;
+    var spec = PERMISSION_TEMPLATES[key];
+    if (!spec) return null;
+    return Object.assign({ id: key }, spec);
+  }
+
+  function getActivePermissions() {
+    var active = getActiveOpsUser();
+    if (!active || !active.staff) return null;
+    var tmpl = resolveTemplate(active.staff.roleId);
+    return tmpl || null;
+  }
+  function hasPerm(perm) {
+    if (!perm) return true;
+    var tmpl = getActivePermissions();
+    if (!tmpl) return false;
+    if (tmpl.perms.indexOf("*") >= 0) return true;
+    return tmpl.perms.indexOf(perm) >= 0;
+  }
+  function getActiveCampusScope() {
+    var active = getActiveOpsUser();
+    if (!active || !active.staff) return null;
+    var tmpl = resolveTemplate(active.staff.roleId);
+    if (!tmpl) return null;
+    return {
+      scope: tmpl.campusScope,                  // "all" | "single"
+      campus: active.staff.campus || null,      // null when scope === "all"
+      template: tmpl.id
+    };
+  }
+  function inCampusScope(campusKey) {
+    var s = getActiveCampusScope();
+    if (!s) return false;
+    if (s.scope === "all") return true;
+    if (!s.campus) return true;                  // staff without a campus assigned
+    if (!campusKey || campusKey === "all" || campusKey === "__none__") return true;
+    return campusKey === s.campus;
+  }
+  // Money masking — caller decides what to render when no .detail perm.
+  function maskMoney(amount, opts) {
+    if (hasPerm("finance.detail")) return amount;
+    return (opts && opts.placeholder) || "***";
+  }
+
   // ---- Seed-version + active-ops-user (for "log in as role" testing) --
   // Bump SEED_VERSION whenever seedDemoData adds/changes shape so existing
   // localStorage gets refreshed automatically on next page load. Active
@@ -2287,42 +2420,42 @@
     // 内部管理 → 员工 view shows real variety. Each staff entry
     // carries a roleId that joins to the roles seed below.
     writeJson(KEYS.staff, [
-      { id: "EM001", name: "Dr. Sarah Chen",  roleId: "instructor-senior", department: "教学部", email: "sarah@minddo.local",  phone: "626-555-0102", status: "active",  joinedAt: daysAgo(450) },
-      { id: "EM002", name: "Jenny Lin",       roleId: "instructor",        department: "教学部", email: "jenny@minddo.local",  phone: "626-555-0118", status: "active",  joinedAt: daysAgo(380) },
-      { id: "EM003", name: "Marcus Johnson",  roleId: "instructor-senior", department: "教学部", email: "marcus@minddo.local", phone: "626-555-0134", status: "active",  joinedAt: daysAgo(220) },
-      { id: "EM004", name: "David Park",      roleId: "academic-lead",     department: "教学部", email: "david@minddo.local",  phone: "626-555-0156", status: "active",  joinedAt: daysAgo(560) },
-      { id: "EM005", name: "Wei Zhang",       roleId: "campus-manager",    department: "运营部", email: "wei@minddo.local",    phone: "626-555-0173", status: "active",  joinedAt: daysAgo(610) },
-      { id: "EM006", name: "Amy Cheng",       roleId: "instructor-intern", department: "教学部", email: "amy@minddo.local",    phone: "626-555-0188", status: "active",  joinedAt: daysAgo(60)  },
-      { id: "EM007", name: "Kevin Wu",        roleId: "marketing",         department: "市场部", email: "kevin@minddo.local",  phone: "626-555-0210", status: "active",  joinedAt: daysAgo(180) },
-      { id: "EM008", name: "Iris Yang",       roleId: "finance",           department: "财务部", email: "iris@minddo.local",   phone: "626-555-0225", status: "leave",   joinedAt: daysAgo(420) },
-      { id: "EM009", name: "Lily Hsu",        roleId: "frontdesk",         department: "运营部", email: "lily@minddo.local",   phone: "626-555-0246", status: "active",  joinedAt: daysAgo(150) },
-      { id: "EM010", name: "Tom Liu",         roleId: "marketing",         department: "市场部", email: "tom@minddo.local",    phone: "626-555-0262", status: "inactive",joinedAt: daysAgo(540) },
-      { id: "EM011", name: "Alex Chen",       roleId: "owner",             department: "管理层", email: "alex@minddo.local",   phone: "626-555-0301", status: "active",  joinedAt: daysAgo(900) },
-      { id: "EM012", name: "Grace Wang",      roleId: "admin",             department: "管理层", email: "grace@minddo.local",  phone: "626-555-0312", status: "active",  joinedAt: daysAgo(720) },
-      { id: "EM013", name: "Sophia Lee",      roleId: "operations",        department: "运营部", email: "sophia@minddo.local", phone: "626-555-0324", status: "active",  joinedAt: daysAgo(280) },
-      { id: "EM014", name: "Daniel Liu",      roleId: "counselor",         department: "运营部", email: "daniel@minddo.local", phone: "626-555-0335", status: "active",  joinedAt: daysAgo(200) },
-      { id: "EM015", name: "Rachel Kim",      roleId: "homeroom",          department: "教学部", email: "rachel@minddo.local", phone: "626-555-0347", status: "active",  joinedAt: daysAgo(310) }
+      { id: "EM001", name: "Dr. Sarah Chen",  roleId: "instructor-senior", campus: "irvine",      department: "教学部", email: "sarah@minddo.local",  phone: "626-555-0102", status: "active",  joinedAt: daysAgo(450) },
+      { id: "EM002", name: "Jenny Lin",       roleId: "instructor",        campus: "irvine",      department: "教学部", email: "jenny@minddo.local",  phone: "626-555-0118", status: "active",  joinedAt: daysAgo(380) },
+      { id: "EM003", name: "Marcus Johnson",  roleId: "instructor-senior", campus: "diamond-bar", department: "教学部", email: "marcus@minddo.local", phone: "626-555-0134", status: "active",  joinedAt: daysAgo(220) },
+      { id: "EM004", name: "David Park",      roleId: "academic-lead",     campus: "arcadia",     department: "教学部", email: "david@minddo.local",  phone: "626-555-0156", status: "active",  joinedAt: daysAgo(560) },
+      { id: "EM005", name: "Wei Zhang",       roleId: "campus-manager",    campus: "irvine",      department: "运营部", email: "wei@minddo.local",    phone: "626-555-0173", status: "active",  joinedAt: daysAgo(610) },
+      { id: "EM006", name: "Amy Cheng",       roleId: "instructor-intern", campus: "arcadia",     department: "教学部", email: "amy@minddo.local",    phone: "626-555-0188", status: "active",  joinedAt: daysAgo(60)  },
+      { id: "EM007", name: "Kevin Wu",        roleId: "marketing",         campus: "diamond-bar", department: "市场部", email: "kevin@minddo.local",  phone: "626-555-0210", status: "active",  joinedAt: daysAgo(180) },
+      { id: "EM008", name: "Iris Yang",       roleId: "finance",           campus: "arcadia",     department: "财务部", email: "iris@minddo.local",   phone: "626-555-0225", status: "leave",   joinedAt: daysAgo(420) },
+      { id: "EM009", name: "Lily Hsu",        roleId: "frontdesk",         campus: "irvine",      department: "运营部", email: "lily@minddo.local",   phone: "626-555-0246", status: "active",  joinedAt: daysAgo(150) },
+      { id: "EM010", name: "Tom Liu",         roleId: "marketing",         campus: "diamond-bar", department: "市场部", email: "tom@minddo.local",    phone: "626-555-0262", status: "inactive",joinedAt: daysAgo(540) },
+      { id: "EM011", name: "Alex Chen",       roleId: "owner",             campus: null,          department: "管理层", email: "alex@minddo.local",   phone: "626-555-0301", status: "active",  joinedAt: daysAgo(900) },
+      { id: "EM012", name: "Grace Wang",      roleId: "admin",             campus: null,          department: "管理层", email: "grace@minddo.local",  phone: "626-555-0312", status: "active",  joinedAt: daysAgo(720) },
+      { id: "EM013", name: "Sophia Lee",      roleId: "operations",        campus: "irvine",      department: "运营部", email: "sophia@minddo.local", phone: "626-555-0324", status: "active",  joinedAt: daysAgo(280) },
+      { id: "EM014", name: "Daniel Liu",      roleId: "counselor",         campus: "diamond-bar", department: "运营部", email: "daniel@minddo.local", phone: "626-555-0335", status: "active",  joinedAt: daysAgo(200) },
+      { id: "EM015", name: "Rachel Kim",      roleId: "homeroom",          campus: "irvine",      department: "教学部", email: "rachel@minddo.local", phone: "626-555-0347", status: "active",  joinedAt: daysAgo(310) }
     ]);
 
     writeJson(KEYS.roles, [
       // ---- Admin / Management ----
-      { id: "owner",              name: "超级管理员", nameEn: "Owner",            category: "admin",    desc: "系统所有者，拥有全部权限，可配置角色与计费。", descEn: "System owner — full permissions across all modules; can manage roles and billing.", permissions: ["*.write", "staff.write", "billing.write", "academic.write", "marketing.write", "approvals.approve"] },
-      { id: "admin",              name: "管理员",     nameEn: "Admin",            category: "admin",    desc: "日常系统管理：员工 / 角色 / 校区 / 配置。",    descEn: "Day-to-day system administration — staff, roles, campuses, configuration.",        permissions: ["staff.write", "roles.write", "campuses.write", "settings.write", "reports.view"] },
+      { id: "owner",              template: "super-admin",      name: "超级管理员", nameEn: "Owner",            category: "admin",    desc: "系统所有者，拥有全部权限，可配置角色与计费。", descEn: "System owner — full permissions across all modules; can manage roles and billing.", permissions: ["*.write", "staff.write", "billing.write", "academic.write", "marketing.write", "approvals.approve"] },
+      { id: "admin",              template: "super-admin",      name: "管理员",     nameEn: "Admin",            category: "admin",    desc: "日常系统管理：员工 / 角色 / 校区 / 配置。",    descEn: "Day-to-day system administration — staff, roles, campuses, configuration.",        permissions: ["staff.write", "roles.write", "campuses.write", "settings.write", "reports.view"] },
 
       // ---- Academic ----
-      { id: "academic-lead",      name: "教学主管",   nameEn: "Academic Lead",    category: "academic", desc: "统筹课程体系、教师培训与教研活动。",        descEn: "Owns curriculum, teacher training, and pedagogical R&D.", permissions: ["academic.write", "staff.view", "approvals.approve", "reports.view"] },
-      { id: "instructor-senior",  name: "高级讲师",   nameEn: "Senior Instructor",category: "academic", desc: "可独立授课、负责竞赛 / 项目营核心班次。",     descEn: "Independent classroom + competition / project-camp lead.",   permissions: ["academic.write", "students.view", "feedback.write"] },
-      { id: "instructor",         name: "讲师",       nameEn: "Instructor",       category: "academic", desc: "负责常规班级授课与课堂反馈。",              descEn: "Standard class delivery + feedback authoring.",             permissions: ["students.view", "feedback.write"] },
-      { id: "instructor-intern",  name: "实习讲师",   nameEn: "Intern Instructor",category: "academic", desc: "在导师指导下完成助教与试课带班。",          descEn: "Mentored TA + trial-class delivery.",                       permissions: ["students.view"] },
-      { id: "homeroom",           name: "班主任",     nameEn: "Homeroom Teacher", category: "academic", desc: "对接学生与家长，跟进学习进度与课堂出勤。",   descEn: "Owns the student–parent relationship, tracks progress and attendance.",             permissions: ["students.write", "feedback.write", "requests.approve"] },
+      { id: "academic-lead",      template: "principal",        name: "教学主管",   nameEn: "Academic Lead",    category: "academic", desc: "统筹课程体系、教师培训与教研活动。",        descEn: "Owns curriculum, teacher training, and pedagogical R&D.", permissions: ["academic.write", "staff.view", "approvals.approve", "reports.view"] },
+      { id: "instructor-senior",  template: "campus-ops",       name: "高级讲师",   nameEn: "Senior Instructor",category: "academic", desc: "可独立授课、负责竞赛 / 项目营核心班次。",     descEn: "Independent classroom + competition / project-camp lead.",   permissions: ["academic.write", "students.view", "feedback.write"] },
+      { id: "instructor",         template: "campus-ops",       name: "讲师",       nameEn: "Instructor",       category: "academic", desc: "负责常规班级授课与课堂反馈。",              descEn: "Standard class delivery + feedback authoring.",             permissions: ["students.view", "feedback.write"] },
+      { id: "instructor-intern",  template: "campus-ops",       name: "实习讲师",   nameEn: "Intern Instructor",category: "academic", desc: "在导师指导下完成助教与试课带班。",          descEn: "Mentored TA + trial-class delivery.",                       permissions: ["students.view"] },
+      { id: "homeroom",           template: "campus-ops",       name: "班主任",     nameEn: "Homeroom Teacher", category: "academic", desc: "对接学生与家长，跟进学习进度与课堂出勤。",   descEn: "Owns the student–parent relationship, tracks progress and attendance.",             permissions: ["students.write", "feedback.write", "requests.approve"] },
 
       // ---- Operations ----
-      { id: "campus-manager",     name: "校区经理",   nameEn: "Campus Manager",   category: "ops",      desc: "校区运营、师资排班、家校沟通的负责人。",     descEn: "Owns campus ops, scheduling, parent comms.",                permissions: ["staff.view", "academic.view", "billing.view", "approvals.approve"] },
-      { id: "operations",         name: "运营专员",   nameEn: "Operations",       category: "ops",      desc: "日常运营执行：排课、活动、家长沟通与跟进。", descEn: "Day-to-day operations: scheduling, events, parent follow-up.",                       permissions: ["academic.view", "leads.view", "requests.approve", "reports.view"] },
-      { id: "counselor",          name: "学习顾问",   nameEn: "Education Counselor", category: "ops",   desc: "面向家长的咨询、试课跟进与升学规划建议。",  descEn: "Parent-facing consultation: trial follow-up + admissions planning.",                  permissions: ["leads.write", "students.view", "marketing.view"] },
-      { id: "marketing",          name: "市场专员",   nameEn: "Marketing",        category: "ops",      desc: "招生渠道维护、试听跟进与品牌物料。",        descEn: "Channel growth, trial follow-up, brand assets.",            permissions: ["leads.write", "marketing.write"] },
-      { id: "finance",            name: "财务",       nameEn: "Finance",          category: "ops",      desc: "订单 / 账单 / 工资 / 报销审批。",            descEn: "Orders, billing, payroll, expense approvals.",              permissions: ["billing.write", "payroll.write", "approvals.approve"] },
-      { id: "frontdesk",          name: "前台",       nameEn: "Front Desk",       category: "ops",      desc: "试听签到、家长接待、日程协助。",            descEn: "Trial check-in, parent reception, scheduling support.",     permissions: ["students.view", "leads.view"] }
+      { id: "campus-manager",     template: "principal",        name: "校区经理",   nameEn: "Campus Manager",   category: "ops",      desc: "校区运营、师资排班、家校沟通的负责人。",     descEn: "Owns campus ops, scheduling, parent comms.",                permissions: ["staff.view", "academic.view", "billing.view", "approvals.approve"] },
+      { id: "operations",         template: "campus-ops",       name: "运营专员",   nameEn: "Operations",       category: "ops",      desc: "日常运营执行：排课、活动、家长沟通与跟进。", descEn: "Day-to-day operations: scheduling, events, parent follow-up.",                       permissions: ["academic.view", "leads.view", "requests.approve", "reports.view"] },
+      { id: "counselor",          template: "campus-ops",       name: "学习顾问",   nameEn: "Education Counselor", category: "ops",   desc: "面向家长的咨询、试课跟进与升学规划建议。",  descEn: "Parent-facing consultation: trial follow-up + admissions planning.",                  permissions: ["leads.write", "students.view", "marketing.view"] },
+      { id: "marketing",          template: "campus-marketing", name: "市场专员",   nameEn: "Marketing",        category: "ops",      desc: "招生渠道维护、试听跟进与品牌物料。",        descEn: "Channel growth, trial follow-up, brand assets.",            permissions: ["leads.write", "marketing.write"] },
+      { id: "finance",            template: "principal",        name: "财务",       nameEn: "Finance",          category: "ops",      desc: "订单 / 账单 / 工资 / 报销审批。",            descEn: "Orders, billing, payroll, expense approvals.",              permissions: ["billing.write", "payroll.write", "approvals.approve"] },
+      { id: "frontdesk",          template: "campus-ops",       name: "前台",       nameEn: "Front Desk",       category: "ops",      desc: "试听签到、家长接待、日程协助。",            descEn: "Trial check-in, parent reception, scheduling support.",     permissions: ["students.view", "leads.view"] }
     ]);
 
     // ---- Section 6: ACTIVATION ----
@@ -3183,7 +3316,17 @@
     // Student edit + audit log
     updateStudentProfile: updateStudentProfile,
     appendAudit: appendAudit,
-    getAuditLog: getAuditLog
+    getAuditLog: getAuditLog,
+    // Permission / scope (RBAC for ops dashboard)
+    PERMISSIONS: PERMISSIONS,
+    PERMISSION_TEMPLATES: PERMISSION_TEMPLATES,
+    ROLE_TEMPLATE_MAP: ROLE_TEMPLATE_MAP,
+    resolveTemplate: resolveTemplate,
+    getActivePermissions: getActivePermissions,
+    hasPerm: hasPerm,
+    getActiveCampusScope: getActiveCampusScope,
+    inCampusScope: inCampusScope,
+    maskMoney: maskMoney
   };
 
   // =================================================================
@@ -3227,6 +3370,63 @@
           { id: "EM015", name: "Rachel Kim", roleId: "homeroom",   department: "教学部", email: "rachel@minddo.local", phone: "626-555-0347", status: "active", joinedAt: new Date(Date.now() - 310 * 86400000).toISOString() }
         ].filter(function (s) { return !haveStaff[s.id]; });
         if (NEW_STAFF.length) writeJson(KEYS.staff, staff.concat(NEW_STAFF));
+      }
+    },
+    {
+      id: "2026-05-rbac-templates",
+      description: "Assign permission templates to existing roles + campus keys to existing staff for RBAC gating.",
+      run: function () {
+        // 1) Stamp template on every role record so the dashboard can
+        //    resolve permissions even after this migration runs.
+        var roles = readJson(KEYS.roles) || [];
+        var rolesChanged = false;
+        roles.forEach(function (r) {
+          if (!r || !r.id) return;
+          var tpl = ROLE_TEMPLATE_MAP[r.id];
+          if (tpl && r.template !== tpl) { r.template = tpl; rolesChanged = true; }
+        });
+        if (rolesChanged) writeJson(KEYS.roles, roles);
+
+        // 2) Assign each seeded staff to a default campus so campus
+        //    scoping has something to test against. Owners / admins
+        //    explicitly get no campus (they're global).
+        var campusByStaffId = {
+          // Global (super-admin / owner)
+          "EM011": null,         // Alex Chen — owner
+          "EM012": null,         // Grace Wang — admin
+          // Irvine
+          "EM001": "irvine",     // Dr. Sarah Chen — instructor-senior
+          "EM002": "irvine",     // Jenny Lin — instructor
+          "EM005": "irvine",     // Wei Zhang — campus-manager
+          "EM009": "irvine",     // Lily Hsu — frontdesk
+          "EM013": "irvine",     // Sophia Lee — operations
+          "EM015": "irvine",     // Rachel Kim — homeroom
+          // Diamond Bar
+          "EM003": "diamond-bar",// Marcus Johnson — instructor-senior
+          "EM007": "diamond-bar",// Kevin Wu — marketing
+          "EM010": "diamond-bar",// Tom Liu — marketing
+          "EM014": "diamond-bar",// Daniel Liu — counselor
+          // Arcadia
+          "EM004": "arcadia",    // David Park — academic-lead
+          "EM006": "arcadia",    // Amy Cheng — instructor-intern
+          "EM008": "arcadia"     // Iris Yang — finance
+        };
+        var staff = readJson(KEYS.staff) || [];
+        var staffChanged = false;
+        staff.forEach(function (s) {
+          if (!s || !s.id) return;
+          if (s.campus !== undefined) return;     // already migrated for this row
+          if (campusByStaffId.hasOwnProperty(s.id)) {
+            s.campus = campusByStaffId[s.id];
+            staffChanged = true;
+          } else {
+            // Unknown staff (custom add) — default to no campus so they
+            // appear cross-campus until ops sets one explicitly.
+            s.campus = null;
+            staffChanged = true;
+          }
+        });
+        if (staffChanged) writeJson(KEYS.staff, staff);
       }
     }
   ];

@@ -1502,16 +1502,16 @@
   <div class="portal-layout">
     <aside class="sidebar" aria-label="Operations Sections">
       <div class="sidebar-section" id="dashTabs" role="tablist">
-        <button type="button" class="sidebar-item active" data-tab="overview" role="tab">
+        <button type="button" class="sidebar-item active" data-tab="overview" data-perm-required="overview.view" role="tab">
           <span class="si-icon" aria-hidden="true">🏠</span><span class="si-label" data-i18n="tabOverview"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
-        <button type="button" class="sidebar-item" data-tab="inbox" role="tab">
+        <button type="button" class="sidebar-item" data-tab="inbox" data-perm-required="inbox.view" role="tab">
           <span class="si-icon" aria-hidden="true">📥</span><span class="si-label" data-i18n="tabInbox"></span>
           <span class="tab-pill" id="inboxBadge" hidden>0</span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
-        <button type="button" class="sidebar-item" data-tab="enrollment" role="tab">
+        <button type="button" class="sidebar-item" data-tab="enrollment" data-perm-required="marketing.view" role="tab">
           <span class="si-icon" aria-hidden="true">📣</span><span class="si-label" data-i18n="navMarketing"></span>
           <span class="tab-pill" id="enrollmentBadge" hidden>0</span>
           <span class="si-arrow" aria-hidden="true">▸</span>
@@ -1536,7 +1536,7 @@
             <span class="ms-icon" aria-hidden="true">👑</span><span class="ms-label" data-i18n="mktSubtabBrand"></span>
           </button>
         </div>
-        <button type="button" class="sidebar-item" data-tab="academic" role="tab">
+        <button type="button" class="sidebar-item" data-tab="academic" data-perm-required="academic.view" role="tab">
           <span class="si-icon" aria-hidden="true">📘</span><span class="si-label" data-i18n="navAcademic"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
@@ -1555,41 +1555,41 @@
             <span class="ms-icon" aria-hidden="true">✅</span><span class="ms-label" data-i18n="acadSubtabAttendance"></span>
           </button>
         </div>
-        <button type="button" class="sidebar-item" data-tab="teaching" role="tab">
+        <button type="button" class="sidebar-item" data-tab="teaching" data-perm-required="academic.view" role="tab">
           <span class="si-icon" aria-hidden="true">📊</span><span class="si-label" data-i18n="navTeaching"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
-        <button type="button" class="sidebar-item" data-tab="requests" role="tab">
+        <button type="button" class="sidebar-item" data-tab="requests" data-perm-required="inbox.view" role="tab">
           <span class="si-icon" aria-hidden="true">📨</span><span class="si-label" data-i18n="navHomeSchool"></span>
           <span class="tab-pill" id="requestsBadge" hidden>0</span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
-        <button type="button" class="sidebar-item" data-tab="finance" role="tab">
+        <button type="button" class="sidebar-item" data-tab="finance" data-perm-required="finance.view" role="tab">
           <span class="si-icon" aria-hidden="true">💰</span><span class="si-label" data-i18n="navFinance"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
         <!-- 财务中心 second-level menu — auto-expands when finance tab active -->
         <div class="sidebar-subnav" id="finSubtabs" role="tablist" aria-label="Finance groups">
-          <button type="button" class="sidebar-subitem fin-subtab active" data-fin-subtab="orders" role="tab">
+          <button type="button" class="sidebar-subitem fin-subtab active" data-fin-subtab="orders" data-perm-required="finance.view" role="tab">
             <span class="ms-icon" aria-hidden="true">🧾</span><span class="ms-label" data-i18n="finSubtabOrders"></span>
           </button>
-          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="approvals" role="tab">
+          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="approvals" data-perm-required="finance.view" role="tab">
             <span class="ms-icon" aria-hidden="true">✅</span><span class="ms-label" data-i18n="finSubtabApprovals"></span>
           </button>
-          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="billing" role="tab">
+          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="billing" data-perm-required="finance.detail" role="tab">
             <span class="ms-icon" aria-hidden="true">📄</span><span class="ms-label" data-i18n="finSubtabBilling"></span>
           </button>
-          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="payroll" role="tab">
+          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="payroll" data-perm-required="finance.payroll" role="tab">
             <span class="ms-icon" aria-hidden="true">💼</span><span class="ms-label" data-i18n="finSubtabPayroll"></span>
           </button>
-          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="contracts" role="tab">
+          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="contracts" data-perm-required="finance.contracts" role="tab">
             <span class="ms-icon" aria-hidden="true">📝</span><span class="ms-label" data-i18n="finSubtabContracts"></span>
           </button>
-          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="renewals" role="tab">
+          <button type="button" class="sidebar-subitem fin-subtab" data-fin-subtab="renewals" data-perm-required="finance.renewals" role="tab">
             <span class="ms-icon" aria-hidden="true">🔁</span><span class="ms-label" data-i18n="finSubtabRenewals"></span>
           </button>
         </div>
-        <button type="button" class="sidebar-item" data-tab="data" role="tab">
+        <button type="button" class="sidebar-item" data-tab="data" data-perm-required="data.view" role="tab">
           <span class="si-icon" aria-hidden="true">📈</span><span class="si-label" data-i18n="navData"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
@@ -1601,14 +1601,14 @@
           <button type="button" class="sidebar-subitem data-subtab" data-data-subtab="enroll" role="tab">
             <span class="ms-icon" aria-hidden="true">🎯</span><span class="ms-label" data-i18n="dataSubtabEnroll"></span>
           </button>
-          <button type="button" class="sidebar-subitem data-subtab" data-data-subtab="academic" role="tab">
+          <button type="button" class="sidebar-subitem data-subtab" data-data-subtab="academic" data-perm-required="academic.view" role="tab">
             <span class="ms-icon" aria-hidden="true">🎓</span><span class="ms-label" data-i18n="dataSubtabAcademic"></span>
           </button>
-          <button type="button" class="sidebar-subitem data-subtab" data-data-subtab="finance" role="tab">
+          <button type="button" class="sidebar-subitem data-subtab" data-data-subtab="finance" data-perm-required="data.finance" role="tab">
             <span class="ms-icon" aria-hidden="true">💰</span><span class="ms-label" data-i18n="dataSubtabFinance"></span>
           </button>
         </div>
-        <button type="button" class="sidebar-item" data-tab="internal" role="tab">
+        <button type="button" class="sidebar-item" data-tab="internal" data-perm-required="internal.view" role="tab">
           <span class="si-icon" aria-hidden="true">🛠</span><span class="si-label" data-i18n="navInternal"></span>
           <span class="si-dot" aria-hidden="true"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
@@ -1622,7 +1622,7 @@
             <span class="ms-icon" aria-hidden="true">🛡️</span><span class="ms-label" data-i18n="intSubtabRoles"></span>
           </button>
         </div>
-        <button type="button" class="sidebar-item" data-tab="settings" role="tab">
+        <button type="button" class="sidebar-item" data-tab="settings" data-perm-required="settings.view" role="tab">
           <span class="si-icon" aria-hidden="true">⚙️</span><span class="si-label" data-i18n="navBizSettings"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
@@ -4292,6 +4292,15 @@
       function money(n) {
         return "$" + n.toFixed(2);
       }
+      // Mask money for users without the finance.detail permission so the
+      // base panels (orders list, summary KPIs) still render but hide
+      // amounts. The whole sub-tabs that are purely financial are gated
+      // separately via data-perm-required on the sidebar.
+      function safeMoney(n) {
+        var flow = window.MindDoFlow;
+        if (flow && flow.hasPerm && !flow.hasPerm("finance.detail")) return "***";
+        return money(Number(n) || 0);
+      }
 
       function normEmail(v) {
         return String(v || "").trim().toLowerCase();
@@ -6368,7 +6377,7 @@
             { label: t.finBillingKpiThisMonth, value: money(monthRev), sub: "" },
             { label: t.finBillingKpiPending, value: money(pendingAR), sub: "" },
             { label: t.finBillingKpiPaidCount, value: monthCount, sub: "" },
-            { label: t.finBillingKpiAvgValue, value: money(avgVal), sub: "" }
+            { label: t.finBillingKpiAvgValue, value: safeMoney(avgVal), sub: "" }
           ]);
         }
 
@@ -6412,7 +6421,7 @@
                 + "<td><strong style='font-family:\"SFMono-Regular\",ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--clay);'>"
                 + escHTML(p.orderId || "—") + "</strong></td>"
                 + "<td>" + escHTML(p.email || "—") + "</td>"
-                + "<td><strong>" + money(p.amount) + "</strong></td>"
+                + "<td><strong>" + safeMoney(p.amount) + "</strong></td>"
                 + "<td>" + escHTML(date) + "</td>"
                 + "<td><span class='fin-status paid'>" + escHTML(t.finOrdersStatusPaid) + "</span></td>"
                 + "</tr>";
@@ -7065,9 +7074,9 @@
         var kpiEl = document.getElementById("dataFinanceKpi");
         if (kpiEl) {
           renderMetricCards(kpiEl, [
-            { label: t.dataFinanceKpiRevenue || t.metrics.revenue, value: money(monthlyRevenue), sub: "" },
+            { label: t.dataFinanceKpiRevenue || t.metrics.revenue, value: safeMoney(monthlyRevenue), sub: "" },
             { label: t.dataFinanceKpiPaid    || t.metrics.paid,    value: monthlyCount,          sub: "" },
-            { label: t.dataFinanceKpiAvg     || t.metrics.arpu,    value: money(avgTicket),      sub: "" },
+            { label: t.dataFinanceKpiAvg     || t.metrics.arpu,    value: safeMoney(avgTicket),      sub: "" },
             { label: t.dataFinanceKpiRefund  || "Refunds",         value: refundCount,           sub: "" }
           ]);
         }
@@ -8535,11 +8544,77 @@
             var staff = active.staff;
             var role = active.role || {};
             var roleName = lang === "en" ? (role.nameEn || role.name || "—") : (role.name || role.nameEn || "—");
+            // Append permission-template chip + campus scope so the user
+            // sees at a glance what they're "logged in as" can/can't do.
+            var scope = flow.getActiveCampusScope ? flow.getActiveCampusScope() : null;
+            var scopeLabel = "";
+            if (scope) {
+              if (scope.scope === "all") {
+                scopeLabel = " · " + (lang === "en" ? "All campuses" : "全部校区");
+              } else if (scope.campus) {
+                // Pull the campus display name from the campus filter options.
+                var sel = document.getElementById("campusFilter");
+                var match = sel ? Array.from(sel.options).filter(function (o) { return o.value === scope.campus; })[0] : null;
+                scopeLabel = " · " + (match ? match.textContent : scope.campus);
+              }
+            }
             if (avatar) avatar.textContent = initials(staff.name);
             if (menuAvatar) menuAvatar.textContent = initials(staff.name);
             if (greeting) greeting.textContent = staff.name;
             if (menuName) menuName.textContent = staff.name;
-            if (menuRole) menuRole.textContent = roleName;
+            if (menuRole) menuRole.textContent = roleName + scopeLabel;
+          }
+          // Always re-apply permission gates after identity refresh so a
+          // switch immediately hides / reveals the right tabs.
+          applyPermissionGates();
+          applyCampusLock();
+        }
+
+        // Hide sidebar items + sub-items the active user lacks
+        // perms for. Also hides top-level tab buttons their nested
+        // sub-nav should collapse with them via the existing
+        // .sidebar-item.active + .sidebar-subnav CSS rule.
+        function applyPermissionGates() {
+          if (!flow.hasPerm) return;
+          document.querySelectorAll("[data-perm-required]").forEach(function (el) {
+            var perm = el.getAttribute("data-perm-required");
+            var allowed = flow.hasPerm(perm);
+            el.style.display = allowed ? "" : "none";
+          });
+          // If the currently-active tab is now hidden, switch to the first
+          // visible one (typically overview).
+          var sidebar = document.getElementById("dashTabs");
+          if (!sidebar) return;
+          var activeBtn = sidebar.querySelector(".sidebar-item.active");
+          if (activeBtn && activeBtn.style.display === "none") {
+            var firstVisible = sidebar.querySelector(".sidebar-item:not([style*='display: none'])");
+            if (firstVisible && typeof setActiveTab === "function") {
+              setActiveTab(firstVisible.getAttribute("data-tab"));
+            }
+          }
+        }
+
+        // Campus filter — if scoped, lock to the user's campus.
+        function applyCampusLock() {
+          if (!flow.getActiveCampusScope) return;
+          var scope = flow.getActiveCampusScope();
+          var sel = document.getElementById("campusFilter");
+          if (!sel) return;
+          if (!scope || scope.scope === "all") {
+            sel.disabled = false;
+            return;
+          }
+          // Scoped → restrict options to user's campus and pre-select.
+          if (scope.campus) {
+            // Remove the "All campuses" option if present + non-matching ones.
+            Array.from(sel.options).forEach(function (o) {
+              if (o.value !== scope.campus) o.style.display = "none";
+            });
+            sel.value = scope.campus;
+            try { localStorage.setItem("minddo_dashboard_campus", scope.campus); } catch (_) {}
+            sel.disabled = true;
+            // Push state.campus to match if the page uses it.
+            if (typeof state !== "undefined" && state) state.campus = scope.campus;
           }
         }
 
