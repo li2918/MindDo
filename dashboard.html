@@ -2126,7 +2126,7 @@
     }
     .lead-log-row .ll-note { color: var(--text, #1f2937); word-break: break-word; }
     .lead-log-add {
-      display: grid; grid-template-columns: 110px 1fr auto; gap: 6px;
+      display: grid; grid-template-columns: 110px 1fr auto auto; gap: 6px;
     }
     .lead-log-add select, .lead-log-add input {
       border: 1px solid var(--line); border-radius: 8px;
@@ -2154,6 +2154,96 @@
       background: rgba(196,106,77,0.16); color: #8c3c20;
       border-color: rgba(196,106,77,0.32);
     }
+
+    /* Communication template manager modal */
+    .tpl-add {
+      display: grid; grid-template-columns: 1fr;
+      gap: 8px; padding: 12px 0;
+      border-bottom: 1px dashed rgba(122,48,16,0.12);
+      margin-bottom: 12px;
+    }
+    .tpl-add input, .tpl-add textarea {
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 10px; font: inherit; font-size: 13px; background: #fff;
+      resize: vertical;
+    }
+    .tpl-list { display: flex; flex-direction: column; gap: 8px; }
+    .tpl-list:empty::before {
+      content: attr(data-empty);
+      display: block; text-align: center; padding: 18px;
+      font-size: 12.5px; color: var(--muted); font-style: italic;
+      border: 1px dashed var(--line); border-radius: 10px;
+      background: rgba(248,250,252,0.55);
+    }
+    .tpl-item {
+      padding: 10px 12px;
+      border: 1px solid var(--line); border-radius: 10px;
+      background: #fff;
+    }
+    .tpl-item-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px;
+    }
+    .tpl-item-head strong {
+      color: var(--clay); font-size: 13px; flex: 1 1 auto; min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .tpl-item-actions { display: inline-flex; gap: 6px; }
+    .tpl-item-actions button {
+      all: unset; cursor: pointer; padding: 4px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; color: var(--clay);
+      border: 1px solid var(--line); background: #fff;
+    }
+    .tpl-item-actions button:hover { border-color: var(--gold); }
+    .tpl-item-actions button.danger { color: #8e3d21; }
+    .tpl-item-actions button.danger:hover { border-color: rgba(196,106,77,0.6); }
+    .tpl-item-body {
+      font-size: 12px; color: var(--text, #1f2937);
+      margin-top: 6px; line-height: 1.55; white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Template-pick dropdown — opens above the contact-log note input. */
+    .tpl-pick-btn { all: unset; cursor: pointer;
+      padding: 7px 10px !important; font-size: 12px !important;
+      border: 1px solid var(--line); border-radius: 8px; background: #fff;
+      color: var(--clay); font-weight: 700;
+    }
+    .tpl-pick-btn:hover { border-color: var(--gold); }
+    .tpl-pick-popover {
+      position: absolute; z-index: 30;
+      background: #fff; border: 1px solid var(--line);
+      border-radius: 10px; box-shadow: 0 8px 24px rgba(122,48,16,0.18);
+      min-width: 240px; max-width: 360px;
+      max-height: 260px; overflow-y: auto;
+      padding: 6px;
+    }
+    .tpl-pick-popover[hidden] { display: none; }
+    .tpl-pick-popover button {
+      all: unset; cursor: pointer; display: block; width: 100%;
+      padding: 8px 10px; border-radius: 6px;
+      font-size: 12.5px; color: var(--clay); box-sizing: border-box;
+    }
+    .tpl-pick-popover button:hover { background: rgba(254,243,199,0.5); }
+    .tpl-pick-popover button strong {
+      display: block; font-size: 12.5px; color: var(--clay);
+    }
+    .tpl-pick-popover button .preview {
+      display: block; font-size: 11px; color: var(--muted);
+      margin-top: 2px; white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tpl-pick-popover .empty {
+      padding: 10px; font-size: 12px; color: var(--muted);
+      text-align: center; font-style: italic;
+    }
+    .tpl-pick-popover .manage-link {
+      display: block; padding: 8px 10px; font-size: 12px;
+      color: var(--brand, #d8551c); font-weight: 800;
+      border-top: 1px dashed var(--line); margin-top: 4px;
+      text-align: center; cursor: pointer;
+    }
+    .tpl-pick-popover .manage-link:hover { background: rgba(254,243,199,0.5); }
 
     /* CSV import modal — file picker + textarea + preview table */
     .csv-import-tools {
@@ -3621,6 +3711,31 @@
   </div>
 
   <!-- ================================================================
+       Communication template manager — list / add / edit / delete the
+       templates marketers re-use in messages. Opened from the lead-detail
+       modal's 📋 button next to the contact-log note.
+       ================================================================ -->
+  <div class="mo-lead-overlay" id="tplManagerOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="mo-lead-card" style="max-width:680px;">
+      <header class="mo-lead-head">
+        <div>
+          <h3 data-i18n="tplManagerTitle"></h3>
+          <p data-i18n="tplManagerSub" class="muted" style="margin:0;font-size:12.5px;color:var(--muted);"></p>
+        </div>
+        <button type="button" class="mo-lead-close" id="tplManagerCloseBtn" aria-label="Close">×</button>
+      </header>
+      <div class="mo-lead-form" style="padding:0 22px 22px; overflow-y:auto;">
+        <div class="tpl-add">
+          <input type="text" id="tplAddTitle" placeholder="" />
+          <textarea id="tplAddBody" rows="3" placeholder=""></textarea>
+          <button type="button" id="tplAddBtn" class="mo-lead-primary" data-i18n="tplAddBtn"></button>
+        </div>
+        <div class="tpl-list" id="tplList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
        CSV lead import modal — opened from CRM panel's 批量导入 button.
        Accepts a pasted CSV blob or a file upload. Previews the parsed
        rows (with dup hits flagged), then writes the non-dup subset to
@@ -3724,7 +3839,7 @@
             <span class="lead-log-count" id="leadDetailLogCount"></span>
           </header>
           <div class="lead-log-list" id="leadDetailLogList"></div>
-          <div class="lead-log-add">
+          <div class="lead-log-add" style="position:relative;">
             <select id="leadDetailLogChannel">
               <option value="call" data-i18n="leadDetailLogChCall"></option>
               <option value="wechat" data-i18n="leadDetailLogChWechat"></option>
@@ -3733,7 +3848,9 @@
               <option value="other" data-i18n="leadDetailLogChOther"></option>
             </select>
             <input type="text" id="leadDetailLogNote" placeholder="" autocomplete="off" />
+            <button type="button" id="leadTplPickBtn" class="tpl-pick-btn" aria-label="templates" title="">📋</button>
             <button type="button" id="leadDetailLogAddBtn" class="mo-lead-secondary" data-i18n="leadDetailLogAdd"></button>
+            <div class="tpl-pick-popover" id="leadTplPicker" hidden></div>
           </div>
         </section>
 
@@ -4793,6 +4910,23 @@
           crmImportCancel: "取消",
           crmImportDoneFmt: "已导入 {n} 条 · 跳过 {skipped} 条重复",
           crmImportNothingOk: "没有可写入的新线索。",
+          tplManagerTitle: "沟通模板",
+          tplManagerSub: "管理跟进备注和家长沟通用的常用话术。在「添加跟进」时点击 📋 一键插入。",
+          tplAddTitle: "模板名",
+          tplAddBody: "模板内容",
+          tplAddBtn: "新增模板",
+          tplListEmpty: "暂无模板，先新建一个吧。",
+          tplItemUse: "插入",
+          tplItemDelete: "删除",
+          tplPickerTitle: "选择模板",
+          tplPickerEmpty: "暂无模板",
+          tplPickerManage: "管理模板…",
+          tplDefaults: [
+            { title: "试课确认", body: "您好，已为孩子预约 {trialDate} {trialTime} 的 AI 体验课，到校请提前 10 分钟到前台签到。" },
+            { title: "试课提醒", body: "您好，明天的 AI 体验课已为您预留，期待和孩子见面！如有变动请提前告知。" },
+            { title: "试课后跟进", body: "感谢您今天带孩子来体验 AI 课程，老师对孩子的表现做了简单评估，您方便聊一下吗？" },
+            { title: "重新激活", body: "您好，最近 AI 兴趣班开了新的项目营，孩子有兴趣的话欢迎了解。" }
+          ],
           moLeadMissing: "请填写学员姓名和电话。",
           zoneDataWallSub: "校区核心数据一屏总览，适合大屏展示与早会讲数。",
           dataWallTopChannelHead: "Top 渠道",
@@ -5709,6 +5843,23 @@
           crmImportCancel: "Cancel",
           crmImportDoneFmt: "Imported {n} · Skipped {skipped} duplicates",
           crmImportNothingOk: "No new leads to import.",
+          tplManagerTitle: "Message Templates",
+          tplManagerSub: "Manage the canned messages marketers reuse when following up. Click 📋 on a contact-log entry to insert one.",
+          tplAddTitle: "Template name",
+          tplAddBody: "Body",
+          tplAddBtn: "Add template",
+          tplListEmpty: "No templates yet — add one.",
+          tplItemUse: "Insert",
+          tplItemDelete: "Delete",
+          tplPickerTitle: "Pick a template",
+          tplPickerEmpty: "No templates",
+          tplPickerManage: "Manage templates…",
+          tplDefaults: [
+            { title: "Trial confirmed", body: "Hi! We've reserved the {trialDate} {trialTime} AI trial slot for your child. Please arrive 10 minutes early and check in at the front desk." },
+            { title: "Trial reminder", body: "Just a friendly reminder about tomorrow's AI trial class. Looking forward to meeting your child! Let us know if anything changes." },
+            { title: "Post-trial follow-up", body: "Thanks for bringing your child to the AI trial. The teacher put together a short assessment — do you have a minute to chat?" },
+            { title: "Re-engagement", body: "Hi! We've launched a new AI project camp this season. Let us know if your child would like to learn more." }
+          ],
           moLeadMissing: "Student name and phone are required.",
           zoneDataWallSub: "All-in-one snapshot for the campus — perfect for the lobby screen / morning standup.",
           dataWallTopChannelHead: "Top Channels",
@@ -8752,6 +8903,193 @@
             if (typeof render === "function") render();
           });
         }
+      })();
+
+      // Communication templates — list / add / edit / delete + a popover
+      // picker on the lead-detail contact-log row. Storage uses a small
+      // dedicated key (minddo_marketing_templates) so it's separate from
+      // the rest of the marketing CRM data.
+      var TPL_KEY = "minddo_marketing_templates";
+      function readTemplates() {
+        try {
+          var raw = localStorage.getItem(TPL_KEY);
+          if (!raw) return null;
+          var arr = JSON.parse(raw);
+          return Array.isArray(arr) ? arr : null;
+        } catch (_) { return null; }
+      }
+      function writeTemplates(arr) {
+        try { localStorage.setItem(TPL_KEY, JSON.stringify(arr || [])); } catch (_) {}
+      }
+      function ensureSeedTemplates() {
+        // First-run seed — pulls a starter set from the active language's
+        // tplDefaults dictionary so marketers don't see an empty manager.
+        var existing = readTemplates();
+        if (existing && existing.length) return existing;
+        var t = I18N[state.lang] || I18N["zh-CN"];
+        var seed = (t.tplDefaults || []).map(function (tp, i) {
+          return { id: "tpl-seed-" + i, title: tp.title, body: tp.body, createdAt: new Date().toISOString() };
+        });
+        writeTemplates(seed);
+        return seed;
+      }
+      function getTemplates() {
+        var existing = readTemplates();
+        if (existing) return existing;
+        return ensureSeedTemplates();
+      }
+
+      // Template manager modal wiring (list, add, delete).
+      (function () {
+        var overlay = document.getElementById("tplManagerOverlay");
+        if (!overlay) return;
+        var listEl = document.getElementById("tplList");
+        var titleEl = document.getElementById("tplAddTitle");
+        var bodyEl = document.getElementById("tplAddBody");
+        var addBtn = document.getElementById("tplAddBtn");
+        var closeBtn = document.getElementById("tplManagerCloseBtn");
+
+        function renderList() {
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          var items = getTemplates();
+          listEl.setAttribute("data-empty", t.tplListEmpty);
+          if (!items.length) { listEl.innerHTML = ""; return; }
+          listEl.innerHTML = items.map(function (tp) {
+            return "<div class='tpl-item' data-tpl-id='" + escHTML(tp.id) + "'>"
+              + "<div class='tpl-item-head'>"
+              +   "<strong>" + escHTML(tp.title || "—") + "</strong>"
+              +   "<span class='tpl-item-actions'>"
+              +     "<button type='button' data-tpl-delete='" + escHTML(tp.id) + "' class='danger'>" + escHTML(t.tplItemDelete) + "</button>"
+              +   "</span>"
+              + "</div>"
+              + "<div class='tpl-item-body'>" + escHTML(tp.body || "") + "</div>"
+              + "</div>";
+          }).join("");
+        }
+
+        function openManager() {
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          titleEl.value = "";
+          bodyEl.value = "";
+          titleEl.placeholder = t.tplAddTitle;
+          bodyEl.placeholder = t.tplAddBody;
+          renderList();
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+          setTimeout(function () { titleEl.focus(); }, 30);
+        }
+        function closeManager() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+        // Expose for cross-IIFE open (the contact-log template picker
+        // routes "管理模板…" through this).
+        window.__minddoOpenTemplateManager = openManager;
+
+        if (closeBtn) closeBtn.addEventListener("click", closeManager);
+        overlay.addEventListener("click", function (e) { if (e.target === overlay) closeManager(); });
+
+        if (addBtn) {
+          addBtn.addEventListener("click", function () {
+            var title = (titleEl.value || "").trim();
+            var body = (bodyEl.value || "").trim();
+            if (!title || !body) return;
+            var items = getTemplates().slice();
+            items.unshift({
+              id: "tpl-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+              title: title, body: body, createdAt: new Date().toISOString()
+            });
+            writeTemplates(items);
+            titleEl.value = "";
+            bodyEl.value = "";
+            renderList();
+            titleEl.focus();
+          });
+        }
+        if (listEl) {
+          listEl.addEventListener("click", function (e) {
+            var del = e.target.closest("[data-tpl-delete]");
+            if (!del) return;
+            var id = del.getAttribute("data-tpl-delete");
+            var items = getTemplates().filter(function (tp) { return tp.id !== id; });
+            writeTemplates(items);
+            renderList();
+          });
+        }
+      })();
+
+      // Template picker on the lead-detail contact-log note field. 📋 opens
+      // a small popover listing template titles + a preview; clicking one
+      // inserts the body into the note input. "管理模板…" jumps to the
+      // template manager modal.
+      (function () {
+        var pickBtn = document.getElementById("leadTplPickBtn");
+        var popover = document.getElementById("leadTplPicker");
+        var noteEl = document.getElementById("leadDetailLogNote");
+        if (!pickBtn || !popover || !noteEl) return;
+
+        function buildPopover() {
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          var items = getTemplates();
+          var html = "";
+          if (!items.length) {
+            html = "<div class='empty'>" + escHTML(t.tplPickerEmpty) + "</div>";
+          } else {
+            html = items.map(function (tp) {
+              var preview = (tp.body || "").replace(/\s+/g, " ").slice(0, 60);
+              return "<button type='button' data-tpl-id='" + escHTML(tp.id) + "'>"
+                + "<strong>" + escHTML(tp.title || "—") + "</strong>"
+                + "<span class='preview'>" + escHTML(preview) + "</span>"
+                + "</button>";
+            }).join("");
+          }
+          html += "<a class='manage-link' id='leadTplManageLink' role='button'>" + escHTML(t.tplPickerManage) + "</a>";
+          popover.innerHTML = html;
+          // Position above the note field — clamp to viewport.
+          var rect = pickBtn.getBoundingClientRect();
+          popover.style.bottom = (window.innerHeight - rect.top + 6) + "px";
+          popover.style.right = (window.innerWidth - rect.right) + "px";
+          popover.style.left = "auto";
+          popover.style.top = "auto";
+          popover.style.position = "fixed";
+        }
+
+        pickBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          if (!popover.hidden) { popover.hidden = true; return; }
+          buildPopover();
+          popover.hidden = false;
+        });
+        popover.addEventListener("click", function (e) {
+          var pick = e.target.closest("[data-tpl-id]");
+          if (pick) {
+            var id = pick.getAttribute("data-tpl-id");
+            var tp = getTemplates().filter(function (x) { return x.id === id; })[0];
+            if (tp && noteEl) {
+              noteEl.value = tp.body || "";
+              noteEl.focus();
+            }
+            popover.hidden = true;
+            return;
+          }
+          if (e.target.closest("#leadTplManageLink")) {
+            popover.hidden = true;
+            if (typeof window.__minddoOpenTemplateManager === "function") {
+              window.__minddoOpenTemplateManager();
+            }
+          }
+        });
+        // Click outside closes the popover.
+        document.addEventListener("click", function (e) {
+          if (popover.hidden) return;
+          if (popover.contains(e.target) || pickBtn.contains(e.target)) return;
+          popover.hidden = true;
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && !popover.hidden) popover.hidden = true;
+        });
       })();
 
       // New-lead FAB + modal wiring.

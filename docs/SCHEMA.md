@@ -213,6 +213,14 @@ legacy page can read them.
 ### `minddo_email_outbox` 🟡 (array)
 Mock-email log used by `email-outbox.html`.
 
+### `minddo_marketing_templates` 🟢 (array)
+Communication templates the lead-detail "添加跟进" 📋 button inserts
+into the contact-log note. Seeded with 4 starter rows on first read.
+
+```js
+{ id, title, body, createdAt }
+```
+
 ### `minddo_newsletter` 🟡 (array of strings)
 Newsletter subscriber emails captured on `index.html`.
 
