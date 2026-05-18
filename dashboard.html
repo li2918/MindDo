@@ -1785,6 +1785,81 @@
     .mo-split { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin-top: 14px; }
     @media (max-width: 1080px) { .mo-split { grid-template-columns: 1fr; } }
 
+    /* Campus-ops first screen — today's class timeline + trial reception
+       in a 60/40 split, then an absentee panel below. Mirrors the
+       marketing overview's split so the two role-specific dashboards
+       feel like siblings. */
+    .ops-split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; margin: 14px 0; }
+    @media (max-width: 1080px) { .ops-split { grid-template-columns: 1fr; } }
+
+    .ops-class-row {
+      display: grid; grid-template-columns: 92px 1fr auto auto;
+      gap: 12px; align-items: center;
+      padding: 10px 12px; border: 1px solid var(--line);
+      border-radius: 12px; background: #fff;
+      margin-bottom: 8px;
+      transition: 0.15s;
+    }
+    .ops-class-row:hover { transform: translateY(-1px); border-color: rgba(245,158,11,0.32); }
+    .ops-class-row .ocr-time {
+      font-variant-numeric: tabular-nums; font-weight: 800;
+      color: var(--clay); font-size: 13px;
+    }
+    .ops-class-row .ocr-time .day-now { display: block; font-size: 10.5px; font-weight: 700; color: var(--brand); margin-top: 2px; }
+    .ops-class-row .ocr-info .name { font-size: 13px; font-weight: 800; color: var(--clay); }
+    .ops-class-row .ocr-info .meta { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+    .ops-class-row .ocr-info .meta span { margin-right: 8px; }
+    .ops-class-row .ocr-cap {
+      font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 999px;
+      background: rgba(110,143,87,0.18); color: #3f5d26;
+    }
+    .ops-class-row .ocr-cap.tight  { background: rgba(245,158,11,0.18); color: var(--gold-deep); }
+    .ops-class-row .ocr-cap.full   { background: rgba(196,106,77,0.18); color: #8e3d21; }
+    .ops-class-row .ocr-action {
+      padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line);
+      background: #fff; cursor: pointer; font-size: 12px; font-weight: 700; color: var(--clay);
+    }
+    .ops-class-row .ocr-action:hover { border-color: var(--gold); }
+
+    .ops-trial-row {
+      display: grid; grid-template-columns: 60px 1fr auto;
+      gap: 10px; align-items: center;
+      padding: 8px 10px; border-bottom: 1px dashed rgba(122,48,16,0.08);
+      font-size: 12.5px;
+    }
+    .ops-trial-row:last-child { border-bottom: none; }
+    .ops-trial-row .otr-time { font-weight: 800; color: var(--clay); font-variant-numeric: tabular-nums; }
+    .ops-trial-row .otr-name { font-weight: 700; color: var(--clay); }
+    .ops-trial-row .otr-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .ops-trial-row .otr-status {
+      font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 999px;
+      background: rgba(122,48,16,0.08); color: var(--clay); border: 1px solid var(--line);
+    }
+    .ops-trial-row .otr-status.signed { background: rgba(110,143,87,0.18); color: #3f5d26; border-color: rgba(110,143,87,0.36); }
+    .ops-trial-row .otr-status.during { background: rgba(245,158,11,0.18); color: var(--gold-deep); border-color: rgba(245,158,11,0.42); }
+    .ops-trial-row .otr-status.done   { background: rgba(110,143,87,0.18); color: #3f5d26; border-color: rgba(110,143,87,0.36); }
+    .ops-trial-row .otr-status.noshow { background: rgba(196,106,77,0.18); color: #8e3d21; border-color: rgba(196,106,77,0.4); }
+
+    .ops-absent-row {
+      display: grid; grid-template-columns: 1fr auto auto;
+      gap: 10px; align-items: center;
+      padding: 8px 10px; font-size: 13px;
+      border-bottom: 1px dashed rgba(122,48,16,0.08);
+    }
+    .ops-absent-row:last-child { border-bottom: none; }
+    .ops-absent-row strong { color: var(--clay); }
+    .ops-absent-row .oar-meta { font-size: 11.5px; color: var(--muted); }
+    .ops-absent-row .oar-action {
+      font-size: 11.5px; font-weight: 700; color: var(--brand);
+      cursor: pointer; padding: 3px 8px;
+    }
+
+    .ops-overview-empty {
+      padding: 22px; text-align: center; color: var(--muted); font-size: 13px;
+      background: rgba(248,250,252,0.55);
+      border: 1px dashed var(--line); border-radius: 12px;
+    }
+
     /* Today's follow-up queue */
     .mo-queue-row { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
       padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px;
@@ -2851,6 +2926,33 @@
               <div id="moChannelBody"></div>
             </article>
           </div>
+        </section>
+
+        <!-- ============================================================
+             Campus-ops first screen — KPI strip + today's class timeline +
+             today's trial reception list + yesterday's absentees. Same
+             role-swap pattern: hidden by default, revealed by
+             applyRoleSpecificOverview() when the active user is campus-ops.
+             ============================================================ -->
+        <section id="opsOverview" hidden>
+          <section class="grid" id="opsKpiMetrics"></section>
+          <div class="ops-split">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
+                <h2 data-i18n="opsTodayClassesHead" style="margin:0;"></h2>
+                <span class="muted" id="opsTodayClassesSub" style="font-size:12px;color:var(--muted);"></span>
+              </div>
+              <div id="opsTodayClasses"></div>
+            </article>
+            <article class="panel">
+              <h2 data-i18n="opsTodayTrialsHead" style="margin:0 0 12px;"></h2>
+              <div id="opsTodayTrials"></div>
+            </article>
+          </div>
+          <article class="panel">
+            <h2 data-i18n="opsAbsentHead" style="margin:0 0 12px;"></h2>
+            <div id="opsAbsentList"></div>
+          </article>
         </section>
       </section>
 
@@ -5057,6 +5159,26 @@
           moTargetVsFmt: "目标 {target}",
           moTargetNoActive: "请先在右上角切换到市场专员账号查看本人业绩。",
           moTargetUnset: "尚未设置目标，点右上「设置目标」开始。",
+          // ---- Campus-ops first-screen ----
+          opsKpiTodayClasses: "今日上课",
+          opsKpiTodayTrials: "今日试课",
+          opsKpiPendingApprovals: "待审请假",
+          opsKpiRenewals7d: "7 天内续费",
+          opsKpiTodayClassesSub: "课次 / 学员",
+          opsKpiTodayTrialsSub: "家庭",
+          opsKpiPendingApprovalsSub: "条申请",
+          opsKpiRenewals7dSub: "学员到期",
+          opsTodayClassesHead: "今日课程",
+          opsTodayClassesEmpty: "今天没有排课。",
+          opsTodayTrialsHead: "今日试课接待",
+          opsTodayTrialsEmpty: "今天没有预约试课。",
+          opsAbsentHead: "昨日缺勤跟进",
+          opsAbsentEmpty: "昨天没有缺勤记录。",
+          opsClassActionAttendance: "录考勤",
+          opsTrialDetail: "详情",
+          opsAbsentContact: "联系家长",
+          opsCapacityLabel: "{taken}/{total}",
+          opsClassNow: "进行中",
           mktTrialActionFeedback: "市场反馈",
           mktTrialActionEditFeedback: "修改反馈",
           mktTrialFbChipPrefix: "意向 ",
@@ -6019,6 +6141,26 @@
           moTargetVsFmt: "of {target}",
           moTargetNoActive: "Switch to a marketing user (top-right) to see personal targets.",
           moTargetUnset: "No targets yet — click \"Set targets\" to start.",
+          // ---- Campus-ops first-screen ----
+          opsKpiTodayClasses: "Today's Classes",
+          opsKpiTodayTrials: "Today's Trials",
+          opsKpiPendingApprovals: "Pending Approvals",
+          opsKpiRenewals7d: "Renewals (7d)",
+          opsKpiTodayClassesSub: "sessions / students",
+          opsKpiTodayTrialsSub: "families",
+          opsKpiPendingApprovalsSub: "requests",
+          opsKpiRenewals7dSub: "expiring",
+          opsTodayClassesHead: "Today's Schedule",
+          opsTodayClassesEmpty: "No classes scheduled today.",
+          opsTodayTrialsHead: "Today's Trial Reception",
+          opsTodayTrialsEmpty: "No trials booked for today.",
+          opsAbsentHead: "Yesterday's Absentees",
+          opsAbsentEmpty: "No absentees yesterday.",
+          opsClassActionAttendance: "Attendance",
+          opsTrialDetail: "Details",
+          opsAbsentContact: "Contact",
+          opsCapacityLabel: "{taken}/{total}",
+          opsClassNow: "Now",
           mktTrialActionFeedback: "Mkt feedback",
           mktTrialActionEditFeedback: "Edit feedback",
           mktTrialFbChipPrefix: "Intent ",
@@ -7977,7 +8119,7 @@
         var bar = document.getElementById("acadSubtabs");
         if (!bar) return;
         var KEY = "minddo_dash_acad_subtab";
-        var KNOWN = ["roster", "classes", "schedule"];
+        var KNOWN = ["roster", "classes", "schedule", "attendance"];
         function applySub(key) {
           if (KNOWN.indexOf(key) === -1) key = "roster";
           bar.querySelectorAll("[data-acad-subtab]").forEach(function (b) {
@@ -7998,6 +8140,7 @@
         var saved;
         try { saved = localStorage.getItem(KEY); } catch (_) {}
         applySub(saved || "roster");
+        window.__minddoSetAcadSubtab = applySub;
       })();
 
       // ============================================================
@@ -8334,30 +8477,38 @@
         return Math.max(0, Math.round((now.getTime() - thatDay.getTime()) / 86400000));
       }
 
-      // Apply the role swap: when campus-marketing is active, hide the
-      // generic overview content (onboarding checklist, ops workspace
-      // tiles, alert strip) and show #marketingOverview instead. Both
-      // live inside the same data-tab-panel="overview" section so
-      // tab-switching keeps working unchanged. Called from render() and
-      // from every identity switch. Exposed on `window` so the
-      // separate mock-auth IIFE can call it across IIFE scopes.
+      function opsRoleActive() {
+        var flow = window.MindDoFlow;
+        if (!flow || !flow.getActivePermissions) return false;
+        var t = flow.getActivePermissions();
+        return !!(t && t.id === "campus-ops");
+      }
+
+      // Apply the role swap: when campus-marketing is active, show
+      // #marketingOverview; when campus-ops is active, show #opsOverview.
+      // In both cases hide every sibling inside the overview panel
+      // (greeting, onboarding, etc) so the role-specific surface is the
+      // only thing on screen. Exposed on `window` for cross-IIFE calls.
       function applyRoleSpecificOverview() {
         var moEl = document.getElementById("marketingOverview");
+        var opsEl = document.getElementById("opsOverview");
         var fab = document.getElementById("moNewLeadFab");
-        var on = moRoleActive();
-        if (moEl) moEl.hidden = !on;
-        if (fab) fab.hidden = !on;
-        // Hide every direct sibling inside the overview panel that
-        // ISN'T the marketing block. This way we don't have to know
-        // every legacy element's id — just toggle visibility.
+        var moOn = moRoleActive();
+        var opsOn = opsRoleActive();
+        if (moEl) moEl.hidden = !moOn;
+        if (opsEl) opsEl.hidden = !opsOn;
+        if (fab) fab.hidden = !moOn;
+        var anyRole = moOn || opsOn;
         var panel = document.querySelector('[data-tab-panel="overview"]');
         if (panel) {
           Array.prototype.forEach.call(panel.children, function (child) {
-            if (child === moEl) return;
-            child.style.display = on ? "none" : "";
+            if (child === moEl || child === opsEl) return;
+            child.style.display = anyRole ? "none" : "";
           });
         }
-        if (on) renderMarketingOverview(I18N[state.lang] || I18N["zh-CN"]);
+        var t = I18N[state.lang] || I18N["zh-CN"];
+        if (moOn) renderMarketingOverview(t);
+        if (opsOn) renderOpsOverview(t);
       }
       window.__minddoApplyRoleOverview = applyRoleSpecificOverview;
       window.__minddoRender = function () {
@@ -8661,6 +8812,197 @@
             + "</div>";
         }).join("");
       }
+
+      // ============================================================
+      // 校区运营首页 (#opsOverview) — KPI strip + today's class list +
+      // today's trial reception list + yesterday's absentees.
+      // Reads from KEYS.classOfferings + KEYS.leads + KEYS.attendance +
+      // KEYS.requests + KEYS.memberships; campus-filtered.
+      // ============================================================
+      function renderOpsOverview(t) {
+        var flow = window.MindDoFlow;
+        if (!flow) return;
+        var campus = moActiveCampus(); // returns user's campus or null
+        var now = new Date();
+        var today0 = new Date(now); today0.setHours(0, 0, 0, 0);
+        var tomorrow0 = new Date(today0); tomorrow0.setDate(today0.getDate() + 1);
+        var yesterday0 = new Date(today0); yesterday0.setDate(today0.getDate() - 1);
+        var pad = function (n) { return n < 10 ? "0" + n : "" + n; };
+        var todayStr = today0.getFullYear() + "-" + pad(today0.getMonth() + 1) + "-" + pad(today0.getDate());
+        var yesterdayStr = yesterday0.getFullYear() + "-" + pad(yesterday0.getMonth() + 1) + "-" + pad(yesterday0.getDate());
+        var dayKeys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+        var todayKey = dayKeys[today0.getDay()];
+
+        // Class offerings — match today's dayKey + campus.
+        var offerings = (flow.getClassOfferings && flow.getClassOfferings()) || flow.readJson(flow.keys.classOfferings) || [];
+        var todayOfferings = offerings.filter(function (o) {
+          if (!o || o.dayKey !== todayKey) return false;
+          if (campus && o.campus && o.campus !== campus) return false;
+          return true;
+        }).sort(function (a, b) {
+          return String(a.timeSlot || "").localeCompare(String(b.timeSlot || ""));
+        });
+
+        // Trial leads scheduled for today.
+        var leadsAll = flow.readJson(flow.keys.leads) || [];
+        var todayTrials = leadsAll.filter(function (l) {
+          if (!l || l.trialDate !== todayStr) return false;
+          if (campus && l.campus && l.campus !== campus) return false;
+          return true;
+        }).sort(function (a, b) {
+          return String(a.trialTime || "00:00").localeCompare(String(b.trialTime || "00:00"));
+        });
+
+        // Pending leave/reschedule requests in the active campus.
+        var requests = flow.readJson(flow.keys.requests) || [];
+        var pendingRequests = requests.filter(function (r) {
+          if (!r || (r.status || "pending") !== "pending") return false;
+          // Requests carry an email; cross-reference student campus via leads / memberships.
+          // For now keep it loose — count all pending. Campus-ops sees only their own anyway.
+          return true;
+        });
+
+        // Renewals expiring within next 7 days (memberships).
+        var memberships = flow.readJson(flow.keys.memberships) || [];
+        var sevenOut = new Date(today0); sevenOut.setDate(today0.getDate() + 7);
+        var expiringRenewals = memberships.filter(function (m) {
+          if (!m || !m.expiresAt) return false;
+          var d = new Date(m.expiresAt);
+          if (!isFinite(d.getTime())) return false;
+          return d >= today0 && d < sevenOut;
+        });
+
+        // Yesterday's absentees from KEYS.attendance.
+        var attendance = flow.readJson(flow.keys.attendance) || [];
+        var yesterdayAbsent = attendance.filter(function (a) {
+          if (!a || a.classDate !== yesterdayStr) return false;
+          return a.status === "absent" || a.status === "noshow";
+        });
+
+        // KPI tiles.
+        var kpiEl = document.getElementById("opsKpiMetrics");
+        if (kpiEl) {
+          var totalSeats = todayOfferings.reduce(function (sum, o) { return sum + (o.seatsTaken || 0); }, 0);
+          renderMetricCards(kpiEl, [
+            { label: t.opsKpiTodayClasses, value: todayOfferings.length,
+              sub: totalSeats + " " + (t.opsKpiTodayClassesSub || "") },
+            { label: t.opsKpiTodayTrials, value: todayTrials.length,
+              sub: t.opsKpiTodayTrialsSub || "",
+              nav: { tab: "enrollment", subtab: "trial" } },
+            { label: t.opsKpiPendingApprovals, value: pendingRequests.length,
+              sub: t.opsKpiPendingApprovalsSub || "",
+              nav: { tab: "requests" } },
+            { label: t.opsKpiRenewals7d, value: expiringRenewals.length,
+              sub: t.opsKpiRenewals7dSub || "",
+              nav: { tab: "finance" } }
+          ]);
+        }
+
+        // Today's class timeline.
+        var classesEl = document.getElementById("opsTodayClasses");
+        var subEl = document.getElementById("opsTodayClassesSub");
+        if (subEl) {
+          var langDate = (state.lang === "en") ? "en-US" : "zh-CN";
+          subEl.textContent = today0.toLocaleDateString(langDate, { month: "short", day: "numeric", weekday: "long" });
+        }
+        if (classesEl) {
+          if (!todayOfferings.length) {
+            classesEl.innerHTML = "<div class='ops-overview-empty'>" + escHTML(t.opsTodayClassesEmpty) + "</div>";
+          } else {
+            var lang2 = state.lang === "en" ? "en" : "zh";
+            var nowHm = pad(now.getHours()) + ":" + pad(now.getMinutes());
+            classesEl.innerHTML = todayOfferings.map(function (o) {
+              var courseName = (o.courseName && (lang2 === "en" ? o.courseName.en : o.courseName.zh)) || "—";
+              var levelName = (o.level && (lang2 === "en" ? o.level.en : o.level.zh)) || "";
+              var teacher = o.teacher || "—";
+              var taken = o.seatsTaken || 0;
+              var total = o.seatsTotal || 0;
+              var pct = total ? Math.round(taken / total * 100) : 0;
+              var capCls = pct >= 100 ? "full" : pct >= 75 ? "tight" : "";
+              var slot = (o.timeSlot || "").split("–").map(function (s) { return s.trim(); });
+              var isNow = false;
+              if (slot.length === 2 && slot[0] <= nowHm && nowHm < slot[1]) isNow = true;
+              return "<div class='ops-class-row'>"
+                + "<div class='ocr-time'>" + escHTML(o.timeSlot || "—")
+                +   (isNow ? "<span class='day-now'>" + escHTML(t.opsClassNow) + "</span>" : "")
+                + "</div>"
+                + "<div class='ocr-info'>"
+                +   "<div class='name'>" + escHTML(courseName) + (levelName ? " · " + escHTML(levelName) : "") + "</div>"
+                +   "<div class='meta'><span>👨‍🏫 " + escHTML(teacher) + "</span>"
+                +     (o.classroom ? "<span>📍 " + escHTML(o.classroom) + "</span>" : "") + "</div>"
+                + "</div>"
+                + "<span class='ocr-cap " + capCls + "'>" + (t.opsCapacityLabel || "{taken}/{total}")
+                    .replace("{taken}", taken).replace("{total}", total) + "</span>"
+                + "<button type='button' class='ocr-action' data-ops-open-attendance='" + escHTML(o.id || "") + "'>"
+                +   escHTML(t.opsClassActionAttendance) + "</button>"
+                + "</div>";
+            }).join("");
+          }
+        }
+
+        // Today's trials reception list.
+        var trialsEl = document.getElementById("opsTodayTrials");
+        if (trialsEl) {
+          if (!todayTrials.length) {
+            trialsEl.innerHTML = "<div class='ops-overview-empty'>" + escHTML(t.opsTodayTrialsEmpty) + "</div>";
+          } else {
+            trialsEl.innerHTML = todayTrials.map(function (l) {
+              var stateRec = {
+                booked: "scheduled",
+                confirmed: "signed",
+                done: "done",
+                noshow: "noshow"
+              };
+              var stCls = stateRec[l.trialStatus] || "";
+              var stLabel = l.trialStatus === "done" ? (t.mktTrialStatusDone || "Done")
+                : l.trialStatus === "noshow" ? (t.mktTrialStatusNoShow || "No-show")
+                : l.trialStatus === "confirmed" ? (t.mktTrialStatusConfirmed || "Confirmed")
+                : (t.mktTrialStatusBooked || "Booked");
+              return "<div class='ops-trial-row'>"
+                + "<span class='otr-time'>" + escHTML(l.trialTime || "—") + "</span>"
+                + "<div>"
+                +   "<div class='otr-name'>" + escHTML(l.studentName || l.parentName || "—") + "</div>"
+                +   "<div class='otr-meta'>" + escHTML((l.parentName || "") + (l.phone ? " · " + l.phone : "")) + "</div>"
+                + "</div>"
+                + "<span class='otr-status " + stCls + "'>" + escHTML(stLabel) + "</span>"
+                + "</div>";
+            }).join("");
+          }
+        }
+
+        // Yesterday's absentees.
+        var absentEl = document.getElementById("opsAbsentList");
+        if (absentEl) {
+          if (!yesterdayAbsent.length) {
+            absentEl.innerHTML = "<div class='ops-overview-empty'>" + escHTML(t.opsAbsentEmpty) + "</div>";
+          } else {
+            absentEl.innerHTML = yesterdayAbsent.map(function (a) {
+              var stu = flow.findStudentById && flow.findStudentById(a.studentId);
+              var name = (stu && stu.name) || a.studentId || "—";
+              var phone = stu && stu.phone ? stu.phone : "";
+              return "<div class='ops-absent-row'>"
+                + "<div><strong>" + escHTML(name) + "</strong>"
+                +   "<div class='oar-meta'>" + escHTML(a.note || a.status) + "</div></div>"
+                + "<div class='oar-meta'>" + escHTML(phone) + "</div>"
+                +   (phone
+                    ? "<a class='oar-action' href='tel:" + escHTML(phone) + "'>" + escHTML(t.opsAbsentContact) + "</a>"
+                    : "<span class='oar-meta'>—</span>")
+                + "</div>";
+            }).join("");
+          }
+        }
+      }
+
+      // 录考勤 deep-link from the today-class row — switches to the
+      // academic > attendance sub-tab and (best-effort) sets the offering.
+      document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-ops-open-attendance]");
+        if (!b) return;
+        if (typeof setActiveTab === "function") setActiveTab("academic");
+        if (typeof window.__minddoSetAcadSubtab === "function") {
+          window.__minddoSetAcadSubtab("attendance");
+        }
+      });
 
       // "Mark contacted" — stamps lastContactAt and re-renders.
       document.addEventListener("click", function (e) {
