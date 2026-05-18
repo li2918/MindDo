@@ -734,6 +734,10 @@
     .int-subpanel { display: none; }
     .int-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
 
+    /* Business Settings sub-panels (trial / hours / classrooms / notice / offerings) */
+    .settings-subpanel { display: none; }
+    .settings-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
+
     /* Data Center sub-panels (wall / enroll / academic / finance) */
     .data-subpanel { display: none; }
     .data-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
@@ -2923,6 +2927,24 @@
           <span class="si-icon" aria-hidden="true">⚙️</span><span class="si-label" data-i18n="navBizSettings"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
+        <!-- 业务设置 second-level menu — campus-scoped config groups -->
+        <div class="sidebar-subnav" id="settingsSubtabs" role="tablist" aria-label="Settings groups">
+          <button type="button" class="sidebar-subitem settings-subtab active" data-settings-subtab="trial" role="tab">
+            <span class="ms-icon" aria-hidden="true">🎤</span><span class="ms-label" data-i18n="settingsSubtabTrial"></span>
+          </button>
+          <button type="button" class="sidebar-subitem settings-subtab" data-settings-subtab="hours" role="tab">
+            <span class="ms-icon" aria-hidden="true">🕒</span><span class="ms-label" data-i18n="settingsSubtabHours"></span>
+          </button>
+          <button type="button" class="sidebar-subitem settings-subtab" data-settings-subtab="classrooms" role="tab">
+            <span class="ms-icon" aria-hidden="true">🚪</span><span class="ms-label" data-i18n="settingsSubtabClassrooms"></span>
+          </button>
+          <button type="button" class="sidebar-subitem settings-subtab" data-settings-subtab="notice" role="tab">
+            <span class="ms-icon" aria-hidden="true">📢</span><span class="ms-label" data-i18n="settingsSubtabNotice"></span>
+          </button>
+          <button type="button" class="sidebar-subitem settings-subtab" data-settings-subtab="offerings" role="tab">
+            <span class="ms-icon" aria-hidden="true">📘</span><span class="ms-label" data-i18n="settingsSubtabOfferings"></span>
+          </button>
+        </div>
         <a class="sidebar-item" href="franchise.html">
           <span class="si-icon" aria-hidden="true">💎</span><span class="si-label" data-i18n="navFranchise"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
@@ -4001,105 +4023,117 @@
 
       </section>
 
-      <!-- ========== Course Settings ========== -->
+      <!-- ========== Business Settings ========== -->
+      <!-- Five campus-scoped sub-panels (trial / hours / classrooms /
+           notice / offerings) toggled by the settings-subtab sidebar
+           group. Same pattern Academic / Finance / Marketing / Data use. -->
       <section class="dash-panel" data-tab-panel="settings" role="tabpanel" hidden>
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneSettingsTrialTitle"></h3>
-              <p id="settingsTrialDesc" class="dash-zone-sub"></p>
-            </div>
-            <div class="dash-zone-actions">
-              <button type="button" class="btn" id="settingsResetBtn"><span data-i18n="settingsReset"></span></button>
-              <button type="button" class="btn-primary" id="settingsSaveBtn" style="padding:8px 18px;font-size:13px;"><span data-i18n="settingsSave"></span></button>
-            </div>
-          </div>
 
-          <article class="panel">
-            <div class="settings-grid">
-              <div class="settings-col">
-                <h2 data-i18n="settingsWeekday"></h2>
-                <p class="settings-hint" data-i18n="settingsSlotHint"></p>
-                <textarea id="settingsWeekday" class="settings-textarea" rows="6" placeholder="15:00&#10;16:00&#10;17:00"></textarea>
+        <!-- Sub-panel 1: 试课时段 (existing slot config) -->
+        <div class="settings-subpanel active" data-settings-subpanel="trial" role="tabpanel">
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneSettingsTrialTitle"></h3>
+                <p id="settingsTrialDesc" class="dash-zone-sub"></p>
               </div>
-              <div class="settings-col">
-                <h2 data-i18n="settingsWeekend"></h2>
-                <p class="settings-hint" data-i18n="settingsSlotHint"></p>
-                <textarea id="settingsWeekend" class="settings-textarea" rows="6" placeholder="09:00&#10;10:00&#10;11:00"></textarea>
+              <div class="dash-zone-actions">
+                <button type="button" class="btn" id="settingsResetBtn"><span data-i18n="settingsReset"></span></button>
+                <button type="button" class="btn-primary" id="settingsSaveBtn" style="padding:8px 18px;font-size:13px;"><span data-i18n="settingsSave"></span></button>
               </div>
             </div>
-            <div id="settingsPreview" class="settings-preview"></div>
-            <div id="settingsResult" class="settings-result"></div>
-          </article>
-        </section>
+            <article class="panel">
+              <div class="settings-grid">
+                <div class="settings-col">
+                  <h2 data-i18n="settingsWeekday"></h2>
+                  <p class="settings-hint" data-i18n="settingsSlotHint"></p>
+                  <textarea id="settingsWeekday" class="settings-textarea" rows="6" placeholder="15:00&#10;16:00&#10;17:00"></textarea>
+                </div>
+                <div class="settings-col">
+                  <h2 data-i18n="settingsWeekend"></h2>
+                  <p class="settings-hint" data-i18n="settingsSlotHint"></p>
+                  <textarea id="settingsWeekend" class="settings-textarea" rows="6" placeholder="09:00&#10;10:00&#10;11:00"></textarea>
+                </div>
+              </div>
+              <div id="settingsPreview" class="settings-preview"></div>
+              <div id="settingsResult" class="settings-result"></div>
+            </article>
+          </section>
+        </div>
 
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneSettingsOfferingsTitle"></h3>
-              <p data-i18n="zoneSettingsOfferingsSub"></p>
+        <!-- Sub-panel 2: 营业时段 -->
+        <div class="settings-subpanel" data-settings-subpanel="hours" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="settingsHoursTitle"></h3>
+                <p data-i18n="settingsHoursSub" class="dash-zone-sub"></p>
+              </div>
+              <div class="dash-zone-actions">
+                <button type="button" class="btn-primary" id="campusHoursSaveBtn" style="padding:8px 18px;font-size:13px;"><span data-i18n="settingsSave"></span></button>
+              </div>
             </div>
-            <div class="dash-zone-actions">
-              <a class="btn-primary" href="course-offerings.html" style="padding:8px 18px;font-size:13px;text-decoration:none;"><span data-i18n="settingsOpenOfferings"></span></a>
-            </div>
-          </div>
-        </section>
+            <article class="panel">
+              <div class="campus-hours-grid" id="campusHoursGrid"></div>
+              <div id="campusHoursMsg" class="settings-result"></div>
+            </article>
+          </section>
+        </div>
 
-        <!-- Campus operating hours — per-weekday open/close pickers.
-             Stored at minddo_campus_hours keyed by campus key. -->
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="settingsHoursTitle"></h3>
-              <p data-i18n="settingsHoursSub" class="dash-zone-sub"></p>
+        <!-- Sub-panel 3: 教室列表 -->
+        <div class="settings-subpanel" data-settings-subpanel="classrooms" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="settingsClassroomsTitle"></h3>
+                <p data-i18n="settingsClassroomsSub" class="dash-zone-sub"></p>
+              </div>
             </div>
-            <div class="dash-zone-actions">
-              <button type="button" class="btn-primary" id="campusHoursSaveBtn" style="padding:8px 18px;font-size:13px;"><span data-i18n="settingsSave"></span></button>
-            </div>
-          </div>
-          <article class="panel">
-            <div class="campus-hours-grid" id="campusHoursGrid"></div>
-            <div id="campusHoursMsg" class="settings-result"></div>
-          </article>
-        </section>
+            <article class="panel">
+              <div id="campusClassroomList"></div>
+              <div class="campus-classroom-add">
+                <input type="text" id="campusClassroomName" placeholder="" />
+                <input type="number" id="campusClassroomCap" min="1" placeholder="" />
+                <button type="button" id="campusClassroomAddBtn" class="mo-lead-secondary" data-i18n="settingsClassroomAdd"></button>
+              </div>
+            </article>
+          </section>
+        </div>
 
-        <!-- Classroom list — campus-scoped roster of physical rooms.
-             Stored at minddo_classrooms keyed by campus key. -->
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="settingsClassroomsTitle"></h3>
-              <p data-i18n="settingsClassroomsSub" class="dash-zone-sub"></p>
+        <!-- Sub-panel 4: 校区公告 -->
+        <div class="settings-subpanel" data-settings-subpanel="notice" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="settingsNoticeTitle"></h3>
+                <p data-i18n="settingsNoticeSub" class="dash-zone-sub"></p>
+              </div>
+              <div class="dash-zone-actions">
+                <button type="button" class="btn-primary" id="campusNoticeSaveBtn" style="padding:8px 18px;font-size:13px;"><span data-i18n="settingsSave"></span></button>
+              </div>
             </div>
-          </div>
-          <article class="panel">
-            <div id="campusClassroomList"></div>
-            <div class="campus-classroom-add">
-              <input type="text" id="campusClassroomName" placeholder="" />
-              <input type="number" id="campusClassroomCap" min="1" placeholder="" />
-              <button type="button" id="campusClassroomAddBtn" class="mo-lead-secondary" data-i18n="settingsClassroomAdd"></button>
-            </div>
-          </article>
-        </section>
+            <article class="panel">
+              <textarea id="campusNoticeBody" rows="3" placeholder=""></textarea>
+              <div id="campusNoticeMeta" class="settings-hint"></div>
+              <div id="campusNoticeMsg" class="settings-result"></div>
+            </article>
+          </section>
+        </div>
 
-        <!-- Campus notice — short message shown campus-wide. Stored at
-             minddo_campus_notice keyed by campus key. -->
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="settingsNoticeTitle"></h3>
-              <p data-i18n="settingsNoticeSub" class="dash-zone-sub"></p>
+        <!-- Sub-panel 5: 课程时段 (link out) -->
+        <div class="settings-subpanel" data-settings-subpanel="offerings" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <div class="dash-zone-head">
+              <div class="dash-zone-text">
+                <h3 data-i18n="zoneSettingsOfferingsTitle"></h3>
+                <p data-i18n="zoneSettingsOfferingsSub"></p>
+              </div>
+              <div class="dash-zone-actions">
+                <a class="btn-primary" href="course-offerings.html" style="padding:8px 18px;font-size:13px;text-decoration:none;"><span data-i18n="settingsOpenOfferings"></span></a>
+              </div>
             </div>
-            <div class="dash-zone-actions">
-              <button type="button" class="btn-primary" id="campusNoticeSaveBtn" style="padding:8px 18px;font-size:13px;"><span data-i18n="settingsSave"></span></button>
-            </div>
-          </div>
-          <article class="panel">
-            <textarea id="campusNoticeBody" rows="3" placeholder=""></textarea>
-            <div id="campusNoticeMeta" class="settings-hint"></div>
-            <div id="campusNoticeMsg" class="settings-result"></div>
-          </article>
-        </section>
+          </section>
+        </div>
       </section>
 
       </div>
@@ -5705,6 +5739,11 @@
           navData: "数据中心",
           navInternal: "内部管理",
           navBizSettings: "业务设置",
+          settingsSubtabTrial: "试课时段",
+          settingsSubtabHours: "营业时段",
+          settingsSubtabClassrooms: "教室",
+          settingsSubtabNotice: "校区公告",
+          settingsSubtabOfferings: "课程时段",
           navFranchise: "招商加盟",
           zoneSettingsTrialTitle: "试课时间设置",
           zoneSettingsTrialDescTpl: "为「{campus}」配置试课可选时段。家长在试课预约页看到的时间会按这里的设置展示。",
@@ -6741,6 +6780,11 @@
           navData: "Data Center",
           navInternal: "Internal",
           navBizSettings: "Business Settings",
+          settingsSubtabTrial: "Trial Slots",
+          settingsSubtabHours: "Hours",
+          settingsSubtabClassrooms: "Classrooms",
+          settingsSubtabNotice: "Notice",
+          settingsSubtabOfferings: "Offerings",
           navFranchise: "Franchise",
           zoneSettingsTrialTitle: "Trial Time Slots",
           zoneSettingsTrialDescTpl: "Configure available trial slots for {campus}. The trial booking page will show exactly these times to parents.",
@@ -8669,6 +8713,36 @@
         try { saved = localStorage.getItem(KEY); } catch (_) {}
         applySub(saved || "roster");
         window.__minddoSetAcadSubtab = applySub;
+      })();
+
+      // Settings sub-tabs handler — trial / hours / classrooms / notice /
+      // offerings. Same pattern as academic. Persists active sub-tab so
+      // refreshes land back where the user was.
+      (function () {
+        var bar = document.getElementById("settingsSubtabs");
+        if (!bar) return;
+        var KEY = "minddo_dash_settings_subtab";
+        var KNOWN = ["trial", "hours", "classrooms", "notice", "offerings"];
+        function applySub(key) {
+          if (KNOWN.indexOf(key) === -1) key = "trial";
+          bar.querySelectorAll("[data-settings-subtab]").forEach(function (b) {
+            b.classList.toggle("active", b.getAttribute("data-settings-subtab") === key);
+          });
+          document.querySelectorAll("[data-settings-subpanel]").forEach(function (p) {
+            var match = p.getAttribute("data-settings-subpanel") === key;
+            p.classList.toggle("active", match);
+            p.hidden = !match;
+          });
+          try { localStorage.setItem(KEY, key); } catch (_) {}
+        }
+        bar.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-settings-subtab]");
+          if (!b) return;
+          applySub(b.getAttribute("data-settings-subtab"));
+        });
+        var saved;
+        try { saved = localStorage.getItem(KEY); } catch (_) {}
+        applySub(saved || "trial");
       })();
 
       // ============================================================
