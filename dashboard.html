@@ -1822,23 +1822,48 @@
     .ops-class-row .ocr-action:hover { border-color: var(--gold); }
 
     .ops-trial-row {
-      display: grid; grid-template-columns: 60px 1fr auto;
-      gap: 10px; align-items: center;
-      padding: 8px 10px; border-bottom: 1px dashed rgba(122,48,16,0.08);
+      display: grid; grid-template-columns: 60px 1fr;
+      gap: 10px; align-items: start;
+      padding: 10px 10px; border-bottom: 1px dashed rgba(122,48,16,0.08);
       font-size: 12.5px;
     }
     .ops-trial-row:last-child { border-bottom: none; }
     .ops-trial-row .otr-time { font-weight: 800; color: var(--clay); font-variant-numeric: tabular-nums; }
+    .ops-trial-row .otr-body { display: flex; flex-direction: column; gap: 6px; }
+    .ops-trial-row .otr-head {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+    }
     .ops-trial-row .otr-name { font-weight: 700; color: var(--clay); }
-    .ops-trial-row .otr-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .ops-trial-row .otr-meta { font-size: 11px; color: var(--muted); }
     .ops-trial-row .otr-status {
       font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 999px;
       background: rgba(122,48,16,0.08); color: var(--clay); border: 1px solid var(--line);
+      white-space: nowrap;
     }
     .ops-trial-row .otr-status.signed { background: rgba(110,143,87,0.18); color: #3f5d26; border-color: rgba(110,143,87,0.36); }
     .ops-trial-row .otr-status.during { background: rgba(245,158,11,0.18); color: var(--gold-deep); border-color: rgba(245,158,11,0.42); }
     .ops-trial-row .otr-status.done   { background: rgba(110,143,87,0.18); color: #3f5d26; border-color: rgba(110,143,87,0.36); }
     .ops-trial-row .otr-status.noshow { background: rgba(196,106,77,0.18); color: #8e3d21; border-color: rgba(196,106,77,0.4); }
+    .ops-trial-row .otr-actions {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .ops-trial-row .otr-actions button {
+      all: unset; cursor: pointer;
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 700;
+      border: 1px solid var(--line); background: #fff; color: var(--clay);
+    }
+    .ops-trial-row .otr-actions button:hover { border-color: var(--gold); }
+    .ops-trial-row .otr-actions button.primary {
+      background: var(--brand, #d8551c); color: #fff; border-color: transparent;
+    }
+    .ops-trial-row .otr-actions button.primary:hover { filter: brightness(1.05); }
+    .ops-trial-row .otr-actions button.danger { color: #8e3d21; }
+    .ops-trial-row .otr-actions button.danger:hover { border-color: rgba(196,106,77,0.6); }
+    .ops-trial-row .otr-stamp {
+      font-size: 10.5px; color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
 
     .ops-absent-row {
       display: grid; grid-template-columns: 1fr auto auto;
@@ -5172,6 +5197,16 @@
           opsTodayClassesEmpty: "今天没有排课。",
           opsTodayTrialsHead: "今日试课接待",
           opsTodayTrialsEmpty: "今天没有预约试课。",
+          opsTrialActionCheckin: "签到",
+          opsTrialActionStart: "开始试课",
+          opsTrialActionFinish: "完成试课",
+          opsTrialActionNoshow: "未到",
+          opsTrialActionReopen: "撤销",
+          opsTrialStatusBooked: "已预约",
+          opsTrialStatusCheckedIn: "已到场",
+          opsTrialStatusInClass: "试课中",
+          opsTrialStatusDone: "已完成",
+          opsTrialStatusNoShow: "未到",
           opsAbsentHead: "昨日缺勤跟进",
           opsAbsentEmpty: "昨天没有缺勤记录。",
           opsClassActionAttendance: "录考勤",
@@ -6154,6 +6189,16 @@
           opsTodayClassesEmpty: "No classes scheduled today.",
           opsTodayTrialsHead: "Today's Trial Reception",
           opsTodayTrialsEmpty: "No trials booked for today.",
+          opsTrialActionCheckin: "Check in",
+          opsTrialActionStart: "Start",
+          opsTrialActionFinish: "Finish",
+          opsTrialActionNoshow: "No-show",
+          opsTrialActionReopen: "Undo",
+          opsTrialStatusBooked: "Booked",
+          opsTrialStatusCheckedIn: "Arrived",
+          opsTrialStatusInClass: "In class",
+          opsTrialStatusDone: "Done",
+          opsTrialStatusNoShow: "No-show",
           opsAbsentHead: "Yesterday's Absentees",
           opsAbsentEmpty: "No absentees yesterday.",
           opsClassActionAttendance: "Attendance",
@@ -8940,31 +8985,70 @@
           }
         }
 
-        // Today's trials reception list.
+        // Today's trials reception list — campus-ops can drive the
+        // on-site state machine: booked → checkedIn → inClass → done.
+        // Any state can be flipped to noshow. Each transition stamps a
+        // timestamp on the lead record (trialCheckedInAt /
+        // trialStartedAt / trialEndedAt) so we can show "签到于 14:32".
         var trialsEl = document.getElementById("opsTodayTrials");
         if (trialsEl) {
           if (!todayTrials.length) {
             trialsEl.innerHTML = "<div class='ops-overview-empty'>" + escHTML(t.opsTodayTrialsEmpty) + "</div>";
           } else {
+            var stCls = {
+              booked: "",
+              confirmed: "",
+              checkedIn: "signed",
+              inClass: "during",
+              done: "done",
+              noshow: "noshow"
+            };
+            var stLabel = {
+              booked: t.opsTrialStatusBooked,
+              confirmed: t.opsTrialStatusBooked,
+              checkedIn: t.opsTrialStatusCheckedIn,
+              inClass: t.opsTrialStatusInClass,
+              done: t.opsTrialStatusDone,
+              noshow: t.opsTrialStatusNoShow
+            };
+            function hm(iso) {
+              if (!iso) return "";
+              var d = new Date(iso);
+              if (!isFinite(d.getTime())) return "";
+              return pad(d.getHours()) + ":" + pad(d.getMinutes());
+            }
             trialsEl.innerHTML = todayTrials.map(function (l) {
-              var stateRec = {
-                booked: "scheduled",
-                confirmed: "signed",
-                done: "done",
-                noshow: "noshow"
-              };
-              var stCls = stateRec[l.trialStatus] || "";
-              var stLabel = l.trialStatus === "done" ? (t.mktTrialStatusDone || "Done")
-                : l.trialStatus === "noshow" ? (t.mktTrialStatusNoShow || "No-show")
-                : l.trialStatus === "confirmed" ? (t.mktTrialStatusConfirmed || "Confirmed")
-                : (t.mktTrialStatusBooked || "Booked");
+              var st = l.trialStatus || "booked";
+              var leadId = escHTML(l.createdAt || "");
+              var actions = "";
+              if (st === "booked" || st === "confirmed") {
+                actions = "<button type='button' class='primary' data-ops-trial='checkin' data-lead-id='" + leadId + "'>" + escHTML(t.opsTrialActionCheckin) + "</button>"
+                  + "<button type='button' class='danger' data-ops-trial='noshow' data-lead-id='" + leadId + "'>" + escHTML(t.opsTrialActionNoshow) + "</button>";
+              } else if (st === "checkedIn") {
+                actions = "<button type='button' class='primary' data-ops-trial='start' data-lead-id='" + leadId + "'>" + escHTML(t.opsTrialActionStart) + "</button>"
+                  + "<button type='button' data-ops-trial='reopen' data-lead-id='" + leadId + "'>" + escHTML(t.opsTrialActionReopen) + "</button>";
+              } else if (st === "inClass") {
+                actions = "<button type='button' class='primary' data-ops-trial='finish' data-lead-id='" + leadId + "'>" + escHTML(t.opsTrialActionFinish) + "</button>";
+              } else if (st === "done") {
+                actions = "<button type='button' data-ops-trial='reopen' data-lead-id='" + leadId + "'>" + escHTML(t.opsTrialActionReopen) + "</button>";
+              } else if (st === "noshow") {
+                actions = "<button type='button' data-ops-trial='reopen' data-lead-id='" + leadId + "'>" + escHTML(t.opsTrialActionReopen) + "</button>";
+              }
+              var stamps = [];
+              if (l.trialCheckedInAt) stamps.push("签 " + hm(l.trialCheckedInAt));
+              if (l.trialStartedAt)   stamps.push("起 " + hm(l.trialStartedAt));
+              if (l.trialEndedAt)     stamps.push("完 " + hm(l.trialEndedAt));
               return "<div class='ops-trial-row'>"
                 + "<span class='otr-time'>" + escHTML(l.trialTime || "—") + "</span>"
-                + "<div>"
-                +   "<div class='otr-name'>" + escHTML(l.studentName || l.parentName || "—") + "</div>"
+                + "<div class='otr-body'>"
+                +   "<div class='otr-head'>"
+                +     "<span class='otr-name'>" + escHTML(l.studentName || l.parentName || "—") + "</span>"
+                +     "<span class='otr-status " + (stCls[st] || "") + "'>" + escHTML(stLabel[st] || st) + "</span>"
+                +   "</div>"
                 +   "<div class='otr-meta'>" + escHTML((l.parentName || "") + (l.phone ? " · " + l.phone : "")) + "</div>"
+                +   (stamps.length ? "<div class='otr-stamp'>" + escHTML(stamps.join(" · ")) + "</div>" : "")
+                +   "<div class='otr-actions'>" + actions + "</div>"
                 + "</div>"
-                + "<span class='otr-status " + stCls + "'>" + escHTML(stLabel) + "</span>"
                 + "</div>";
             }).join("");
           }
@@ -9002,6 +9086,59 @@
         if (typeof window.__minddoSetAcadSubtab === "function") {
           window.__minddoSetAcadSubtab("attendance");
         }
+      });
+
+      // Trial reception state machine — campus-ops checks family in,
+      // starts the trial, finishes it. Each action stamps a timestamp
+      // on the lead record + audits the transition + re-renders.
+      document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-ops-trial]");
+        if (!b) return;
+        var flow = window.MindDoFlow;
+        if (!flow) return;
+        var leadId = b.getAttribute("data-lead-id");
+        var action = b.getAttribute("data-ops-trial");
+        var leads = flow.readJson(flow.keys.leads) || [];
+        var hit = leads.filter(function (l) { return l && l.createdAt === leadId; })[0];
+        if (!hit) return;
+        var before = Object.assign({}, hit);
+        var nowIso = new Date().toISOString();
+        if (action === "checkin") {
+          hit.trialStatus = "checkedIn";
+          hit.trialCheckedInAt = nowIso;
+        } else if (action === "start") {
+          hit.trialStatus = "inClass";
+          hit.trialStartedAt = nowIso;
+        } else if (action === "finish") {
+          hit.trialStatus = "done";
+          hit.trialEndedAt = nowIso;
+          // Mirror into the legacy completions store so other surfaces
+          // (new-trials.html, marketing trial table) reflect "done".
+          if (flow.markTrialComplete) {
+            try { flow.markTrialComplete(hit); } catch (_) {}
+          }
+        } else if (action === "noshow") {
+          hit.trialStatus = "noshow";
+        } else if (action === "reopen") {
+          hit.trialStatus = "booked";
+          delete hit.trialCheckedInAt;
+          delete hit.trialStartedAt;
+          delete hit.trialEndedAt;
+        }
+        flow.writeJson(flow.keys.leads, leads);
+        if (flow.appendAudit) {
+          var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+          flow.appendAudit({
+            actor: (active && active.staff && active.staff.id) || "ops",
+            kind: "trial.reception." + action,
+            target: leadId,
+            summary: "试课接待·" + action + " · " + (hit.studentName || hit.parentName || leadId),
+            before: before, after: hit
+          });
+        }
+        var t = I18N[state.lang] || I18N["zh-CN"];
+        if (typeof renderOpsOverview === "function") renderOpsOverview(t);
+        if (typeof render === "function") render();
       });
 
       // "Mark contacted" — stamps lastContactAt and re-renders.
