@@ -1879,6 +1879,34 @@
       cursor: pointer; padding: 3px 8px;
     }
 
+    /* Shift handover panel (ops overview) */
+    .ops-shift-entry {
+      padding: 10px 12px; border-bottom: 1px dashed rgba(122,48,16,0.08);
+    }
+    .ops-shift-entry:last-of-type { border-bottom: none; }
+    .ops-shift-entry .ose-meta {
+      font-size: 11px; font-weight: 700;
+      color: var(--muted); margin-bottom: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+    .ops-shift-entry .ose-body {
+      font-size: 13px; color: var(--text, #1f2937);
+      white-space: pre-wrap; word-break: break-word;
+      line-height: 1.55;
+    }
+    .ops-shift-add {
+      display: grid; grid-template-columns: 1fr auto; gap: 8px;
+      margin-top: 12px; padding-top: 12px;
+      border-top: 1px dashed rgba(122,48,16,0.12);
+    }
+    .ops-shift-add[hidden] { display: none; }
+    .ops-shift-add textarea {
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 10px; font: inherit; font-size: 13px;
+      background: #fff; resize: vertical;
+    }
+    .ops-shift-add button { padding: 8px 16px !important; font-size: 12.5px !important; }
+
     /* Teacher coverage view (Academic → Schedule → 教师值班) */
     .teacher-cover-row {
       display: grid; grid-template-columns: 1.4fr 70px 60px 1fr;
@@ -3067,6 +3095,21 @@
           <article class="panel">
             <h2 data-i18n="opsAbsentHead" style="margin:0 0 12px;"></h2>
             <div id="opsAbsentList"></div>
+          </article>
+          <!-- 交班记录 — campus-scoped handover notes. The textbox is
+               gated by shift.write so non-ops viewers see the log
+               read-only. Latest 6 entries shown; older ones still
+               persist in storage. -->
+          <article class="panel">
+            <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+              <h2 data-i18n="opsShiftHead" style="margin:0;"></h2>
+              <span class="muted" style="font-size:12px;color:var(--muted);" data-i18n="opsShiftHint"></span>
+            </div>
+            <div id="opsShiftList"></div>
+            <div class="ops-shift-add" id="opsShiftAdd" hidden>
+              <textarea id="opsShiftInput" rows="2" placeholder=""></textarea>
+              <button type="button" id="opsShiftAddBtn" class="mo-lead-primary" data-i18n="opsShiftAddBtn"></button>
+            </div>
           </article>
         </section>
       </section>
@@ -5384,6 +5427,14 @@
           teacherCoverConflictBadge: "冲突",
           teacherCoverConflictFmt: "{count} 个时段冲突",
           teacherCoverDays: ["一", "二", "三", "四", "五", "六", "日"],
+          opsShiftHead: "交班记录",
+          opsShiftHint: "最近 6 条；写给下一班同事的备忘。",
+          opsShiftEmpty: "暂无交班记录。",
+          opsShiftAddBtn: "保存交班",
+          opsShiftPlaceholder: "本班需要提醒下一班的事，例如：3 楼空调修好了 / 周四下午王老师代班。",
+          opsShiftSaved: "已记录",
+          opsShiftEmptyInput: "请输入交班内容",
+          opsShiftMeFmt: "{name} · {time}",
           opsAbsentHead: "昨日缺勤跟进",
           opsAbsentEmpty: "昨天没有缺勤记录。",
           opsClassActionAttendance: "录考勤",
@@ -6398,6 +6449,14 @@
           teacherCoverConflictBadge: "Conflict",
           teacherCoverConflictFmt: "{count} conflicting slots",
           teacherCoverDays: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+          opsShiftHead: "Shift Handover",
+          opsShiftHint: "Latest 6 — leave notes for the next shift.",
+          opsShiftEmpty: "No handover notes yet.",
+          opsShiftAddBtn: "Add note",
+          opsShiftPlaceholder: "Anything the next shift should know (e.g. AC fixed, sub teacher Thu PM)…",
+          opsShiftSaved: "Saved",
+          opsShiftEmptyInput: "Type something first",
+          opsShiftMeFmt: "{name} · {time}",
           opsAbsentHead: "Yesterday's Absentees",
           opsAbsentEmpty: "No absentees yesterday.",
           opsClassActionAttendance: "Attendance",
@@ -9386,7 +9445,99 @@
             }).join("");
           }
         }
+
+        // Shift handover — campus-scoped notes; latest 6 shown.
+        renderShiftNotes(t, campus);
       }
+
+      // 交班记录 — read/write minddo_shift_notes. Each entry carries:
+      // { id, campus, by, atIso, body }. The textbox is shown only when
+      // the active user holds the shift.write perm (campus-ops +
+      // principal + super-admin).
+      function readShiftNotes() {
+        try {
+          var raw = localStorage.getItem("minddo_shift_notes");
+          return raw ? JSON.parse(raw) : [];
+        } catch (_) { return []; }
+      }
+      function writeShiftNotes(arr) {
+        try { localStorage.setItem("minddo_shift_notes", JSON.stringify(arr || [])); } catch (_) {}
+      }
+      function renderShiftNotes(t, campus) {
+        var listEl = document.getElementById("opsShiftList");
+        var addEl = document.getElementById("opsShiftAdd");
+        var inputEl = document.getElementById("opsShiftInput");
+        if (!listEl) return;
+        var flow = window.MindDoFlow;
+        var staffById = {};
+        (flow && flow.readJson(flow.keys.staff) || []).forEach(function (s) {
+          if (s && s.id) staffById[s.id] = s;
+        });
+        var notes = readShiftNotes()
+          .filter(function (n) { return !campus || !n.campus || n.campus === campus; })
+          .sort(function (a, b) { return new Date(b.atIso || 0) - new Date(a.atIso || 0); });
+        if (!notes.length) {
+          listEl.innerHTML = "<div class='ops-overview-empty'>" + escHTML(t.opsShiftEmpty) + "</div>";
+        } else {
+          var lang = state.lang === "en" ? "en-US" : "zh-CN";
+          listEl.innerHTML = notes.slice(0, 6).map(function (n) {
+            var who = (staffById[n.by] && staffById[n.by].name) || n.by || "—";
+            var when = "";
+            try { when = new Date(n.atIso).toLocaleString(lang, { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }); } catch (_) {}
+            var metaTxt = (t.opsShiftMeFmt || "{name} · {time}")
+              .replace("{name}", who).replace("{time}", when);
+            return "<div class='ops-shift-entry'>"
+              + "<div class='ose-meta'>" + escHTML(metaTxt) + "</div>"
+              + "<div class='ose-body'>" + escHTML(n.body || "") + "</div>"
+              + "</div>";
+          }).join("");
+        }
+        // Toggle the writer based on permission.
+        if (addEl) {
+          var canWrite = flow && flow.hasPerm && flow.hasPerm("shift.write");
+          addEl.hidden = !canWrite;
+          if (inputEl) inputEl.placeholder = t.opsShiftPlaceholder || "";
+        }
+      }
+
+      // Append-a-note handler.
+      document.addEventListener("click", function (e) {
+        var b = e.target.closest("#opsShiftAddBtn");
+        if (!b) return;
+        var input = document.getElementById("opsShiftInput");
+        var body = (input && input.value || "").trim();
+        var t = I18N[state.lang] || I18N["zh-CN"];
+        if (!body) {
+          if (input) input.focus();
+          alert(t.opsShiftEmptyInput);
+          return;
+        }
+        var flow = window.MindDoFlow;
+        if (!flow || !flow.hasPerm || !flow.hasPerm("shift.write")) return;
+        var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+        var actorId = (active && active.staff && active.staff.id) || "ops";
+        var campus = (typeof moActiveCampus === "function") ? moActiveCampus() : null;
+        var notes = readShiftNotes();
+        var entry = {
+          id: "SN-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+          campus: campus,
+          by: actorId,
+          atIso: new Date().toISOString(),
+          body: body
+        };
+        notes.push(entry);
+        writeShiftNotes(notes);
+        if (flow.appendAudit) {
+          flow.appendAudit({
+            actor: actorId, kind: "shift.note",
+            target: entry.id,
+            summary: "交班记录 · " + body.slice(0, 40),
+            before: null, after: entry
+          });
+        }
+        if (input) input.value = "";
+        renderShiftNotes(t, campus);
+      });
 
       // 录考勤 deep-link from the today-class row — switches to the
       // academic > attendance sub-tab and (best-effort) sets the offering.

@@ -237,6 +237,23 @@ records the academic placement level). Keyed by `lead.createdAt`.
 }
 ```
 
+### `minddo_shift_notes` 🟢 (array)
+Campus shift-handover notes written from the campus-ops overview's
+交班记录 panel. Filtered by active campus on read.
+
+```js
+{
+  id: "SN-<ts>-<random>",
+  campus,                          // campus key
+  by,                              // staff id
+  atIso,                           // ISO timestamp
+  body                             // free-text handover note
+}
+```
+
+Permission: only users with `shift.write` (campus-ops + principal +
+super-admin) see the textbox. Read-only viewers still see the log.
+
 ### `minddo_marketing_targets` 🟢 (object)
 Personal monthly target per campus-marketing staff, keyed by
 `{staffId}_{YYYY-MM}`. The marketing-overview "我的本月业绩" panel reads
