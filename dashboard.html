@@ -1879,6 +1879,59 @@
       cursor: pointer; padding: 3px 8px;
     }
 
+    /* Teacher coverage view (Academic → Schedule → 教师值班) */
+    .teacher-cover-row {
+      display: grid; grid-template-columns: 1.4fr 70px 60px 1fr;
+      gap: 12px; align-items: center;
+      padding: 10px 12px; border-bottom: 1px dashed rgba(122,48,16,0.08);
+      font-size: 13px;
+    }
+    .teacher-cover-row:last-child { border-bottom: none; }
+    .teacher-cover-row .tcr-name {
+      font-weight: 800; color: var(--clay);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .teacher-cover-row .tcr-conflict {
+      font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px;
+      background: rgba(196,106,77,0.16); color: #8e3d21; border: 1px solid rgba(196,106,77,0.36);
+    }
+    .teacher-cover-row .tcr-num {
+      font-variant-numeric: tabular-nums; font-weight: 800; color: var(--clay);
+    }
+    .teacher-cover-row .tcr-week {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+    }
+    .teacher-cover-row .tcr-day {
+      text-align: center; font-size: 10.5px; font-weight: 700;
+      padding: 4px 0; border-radius: 6px;
+      background: rgba(122,48,16,0.05); color: var(--muted);
+    }
+    .teacher-cover-row .tcr-day.has {
+      background: rgba(110,143,87,0.18); color: #3f5d26;
+    }
+    .teacher-cover-row .tcr-day.busy {
+      background: rgba(245,158,11,0.22); color: var(--gold-deep);
+    }
+    .teacher-cover-row .tcr-day.conflict {
+      background: rgba(196,106,77,0.22); color: #8e3d21;
+    }
+    .teacher-cover-row .tcr-day .num { display: block; font-size: 11.5px; font-weight: 800; }
+    .teacher-cover-row .tcr-day .lbl { display: block; font-size: 9px; opacity: 0.7; }
+    .teacher-cover-head {
+      display: grid; grid-template-columns: 1.4fr 70px 60px 1fr;
+      gap: 12px; padding: 4px 12px 8px;
+      font-size: 10.5px; font-weight: 800;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+    }
+    @media (max-width: 720px) {
+      .teacher-cover-row, .teacher-cover-head {
+        grid-template-columns: 1fr 60px 50px;
+      }
+      .teacher-cover-row .tcr-week, .teacher-cover-head > span:last-child {
+        grid-column: 1 / -1; margin-top: 4px;
+      }
+    }
+
     .ops-overview-empty {
       padding: 22px; text-align: center; color: var(--muted); font-size: 13px;
       background: rgba(248,250,252,0.55);
@@ -3283,6 +3336,19 @@
               <div class="acad-grid-wrap">
                 <div class="acad-grid" id="acadScheduleGrid"></div>
               </div>
+            </article>
+          </section>
+
+          <!-- Teacher coverage view — per-teacher week totals + conflict
+               detection. Campus-scoped (only shows teachers with slots
+               in the active campus). -->
+          <section class="dash-zone">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+                <h2 data-i18n="teacherCoverHead" style="margin:0;"></h2>
+                <p class="muted" data-i18n="teacherCoverHint" style="margin:0;font-size:12px;color:var(--muted);"></p>
+              </div>
+              <div id="teacherCoverList"></div>
             </article>
           </section>
         </div>
@@ -5207,6 +5273,16 @@
           opsTrialStatusInClass: "试课中",
           opsTrialStatusDone: "已完成",
           opsTrialStatusNoShow: "未到",
+          teacherCoverHead: "教师值班",
+          teacherCoverHint: "按教师统计本周课时与每日上课次数，标记冲突时段。",
+          teacherCoverEmpty: "本校区暂无教师排课记录。",
+          teacherCoverColTeacher: "教师",
+          teacherCoverColTotal: "周课时",
+          teacherCoverColToday: "今日",
+          teacherCoverColWeek: "周分布",
+          teacherCoverConflictBadge: "冲突",
+          teacherCoverConflictFmt: "{count} 个时段冲突",
+          teacherCoverDays: ["一", "二", "三", "四", "五", "六", "日"],
           opsAbsentHead: "昨日缺勤跟进",
           opsAbsentEmpty: "昨天没有缺勤记录。",
           opsClassActionAttendance: "录考勤",
@@ -6199,6 +6275,16 @@
           opsTrialStatusInClass: "In class",
           opsTrialStatusDone: "Done",
           opsTrialStatusNoShow: "No-show",
+          teacherCoverHead: "Teacher Coverage",
+          teacherCoverHint: "Weekly hours and per-day session count by teacher. Conflicting slots are flagged.",
+          teacherCoverEmpty: "No teacher schedule for this campus yet.",
+          teacherCoverColTeacher: "Teacher",
+          teacherCoverColTotal: "Weekly",
+          teacherCoverColToday: "Today",
+          teacherCoverColWeek: "Mon–Sun",
+          teacherCoverConflictBadge: "Conflict",
+          teacherCoverConflictFmt: "{count} conflicting slots",
+          teacherCoverDays: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
           opsAbsentHead: "Yesterday's Absentees",
           opsAbsentEmpty: "No absentees yesterday.",
           opsClassActionAttendance: "Attendance",
@@ -8071,6 +8157,114 @@
       })();
 
       // 课表 — Mon→Sun × time-slot grid view of every offering. Time
+      // Teacher coverage view — sits below the schedule grid. For each
+      // teacher with at least one offering in the active campus, show
+      // weekly hours + per-day session count + a flag when the same
+      // teacher is double-booked (two offerings overlap in time on the
+      // same day). Best-effort overlap detection uses the timeSlot
+      // strings (e.g. "16:00 – 17:00") parsed into [start, end] HH:MM.
+      function renderTeacherCoverage(t) {
+        var el = document.getElementById("teacherCoverList");
+        if (!el) return;
+        var f = window.MindDoFlow;
+        var offerings = (f && f.getClassOfferings && f.getClassOfferings()) || [];
+        var campus = (typeof moActiveCampus === "function") ? moActiveCampus() : null;
+        if (campus) {
+          offerings = offerings.filter(function (o) {
+            return !o.campus || o.campus === campus;
+          });
+        }
+        // Group by teacher.
+        var DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+        var byTeacher = {};
+        offerings.forEach(function (o) {
+          var tn = o.teacher || "—";
+          if (!byTeacher[tn]) byTeacher[tn] = { name: tn, total: 0, byDay: {}, slots: [] };
+          byTeacher[tn].total++;
+          byTeacher[tn].byDay[o.dayKey] = (byTeacher[tn].byDay[o.dayKey] || 0) + 1;
+          byTeacher[tn].slots.push({ dayKey: o.dayKey, timeSlot: o.timeSlot || "" });
+        });
+        // Detect overlapping slots — two offerings on the same day whose
+        // time windows intersect.
+        function toMin(hm) {
+          var p = String(hm || "").split(":");
+          if (p.length !== 2) return null;
+          return Number(p[0]) * 60 + Number(p[1]);
+        }
+        function parseSlot(s) {
+          var parts = String(s || "").split("–").map(function (x) { return x.trim(); });
+          if (parts.length !== 2) return null;
+          var a = toMin(parts[0]); var b = toMin(parts[1]);
+          if (a == null || b == null) return null;
+          return [a, b];
+        }
+        Object.keys(byTeacher).forEach(function (tn) {
+          var slots = byTeacher[tn].slots;
+          var conflicts = 0;
+          var conflictDays = {};
+          for (var i = 0; i < slots.length; i++) {
+            for (var j = i + 1; j < slots.length; j++) {
+              if (slots[i].dayKey !== slots[j].dayKey) continue;
+              var a = parseSlot(slots[i].timeSlot);
+              var b = parseSlot(slots[j].timeSlot);
+              if (!a || !b) continue;
+              if (a[0] < b[1] && b[0] < a[1]) {
+                conflicts++;
+                conflictDays[slots[i].dayKey] = true;
+              }
+            }
+          }
+          byTeacher[tn].conflicts = conflicts;
+          byTeacher[tn].conflictDays = conflictDays;
+        });
+
+        var rows = Object.keys(byTeacher).map(function (tn) {
+          return byTeacher[tn];
+        }).sort(function (a, b) { return b.total - a.total || a.name.localeCompare(b.name); });
+
+        if (!rows.length) {
+          el.innerHTML = "<div class='ops-overview-empty'>" + escHTML(t.teacherCoverEmpty) + "</div>";
+          return;
+        }
+        var dayKeyNames = t.teacherCoverDays || ["一", "二", "三", "四", "五", "六", "日"];
+        var todayKey = DAYS[((new Date()).getDay() + 6) % 7]; // Mon-based index
+
+        var head = "<div class='teacher-cover-head'>"
+          + "<span>" + escHTML(t.teacherCoverColTeacher) + "</span>"
+          + "<span style='text-align:right;'>" + escHTML(t.teacherCoverColTotal) + "</span>"
+          + "<span style='text-align:right;'>" + escHTML(t.teacherCoverColToday) + "</span>"
+          + "<span>" + escHTML(t.teacherCoverColWeek) + "</span>"
+          + "</div>";
+        var body = rows.map(function (r) {
+          var todayCnt = r.byDay[todayKey] || 0;
+          var nameHtml = escHTML(r.name);
+          if (r.conflicts) {
+            nameHtml += "<span class='tcr-conflict'>" + escHTML(
+              (t.teacherCoverConflictFmt || "{count}").replace("{count}", r.conflicts)
+            ) + "</span>";
+          }
+          var weekHtml = DAYS.map(function (dk, i) {
+            var n = r.byDay[dk] || 0;
+            var cls = "tcr-day";
+            if (r.conflictDays[dk]) cls += " conflict";
+            else if (n >= 3) cls += " busy";
+            else if (n >= 1) cls += " has";
+            return "<div class='" + cls + "'>"
+              + "<span class='num'>" + n + "</span>"
+              + "<span class='lbl'>" + escHTML(dayKeyNames[i] || dk) + "</span>"
+              + "</div>";
+          }).join("");
+          return "<div class='teacher-cover-row'>"
+            + "<div class='tcr-name'>" + nameHtml + "</div>"
+            + "<div class='tcr-num' style='text-align:right;'>" + r.total + "</div>"
+            + "<div class='tcr-num' style='text-align:right;'>" + todayCnt + "</div>"
+            + "<div class='tcr-week'>" + weekHtml + "</div>"
+            + "</div>";
+        }).join("");
+
+        el.innerHTML = head + body;
+      }
+
       // slots are derived from the offerings' slotKey (t09…t20) so the
       // grid stays focused on actual class hours, not a fixed 24h band.
       var __acadScheduleLevelFilter = "";
@@ -8092,6 +8286,7 @@
           levelSel.addEventListener("change", function () {
             __acadScheduleLevelFilter = levelSel.value;
             renderAcademicSchedule(t);
+        renderTeacherCoverage(t);
           });
         }
         if (levelSel) levelSel.value = __acadScheduleLevelFilter;
@@ -12735,6 +12930,7 @@
         renderAcademicCenter(t);
         renderAcademicClasses(t);
         renderAcademicSchedule(t);
+        renderTeacherCoverage(t);
         renderAttendancePanel(t);
 
         // ---- Finance: orders + approvals + billing + payroll + contracts ----
