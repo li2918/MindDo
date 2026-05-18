@@ -2861,11 +2861,6 @@
           <span class="si-icon" aria-hidden="true">📊</span><span class="si-label" data-i18n="navTeaching"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
         </button>
-        <button type="button" class="sidebar-item" data-tab="requests" data-perm-required="inbox.view" role="tab">
-          <span class="si-icon" aria-hidden="true">📨</span><span class="si-label" data-i18n="navHomeSchool"></span>
-          <span class="tab-pill" id="requestsBadge" hidden>0</span>
-          <span class="si-arrow" aria-hidden="true">▸</span>
-        </button>
         <button type="button" class="sidebar-item" data-tab="finance" data-perm-required="finance.view" role="tab">
           <span class="si-icon" aria-hidden="true">💰</span><span class="si-label" data-i18n="navFinance"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
@@ -3937,46 +3932,6 @@
           </section>
         </div>
 
-      </section>
-
-      <!-- ========== Requests ========== -->
-      <section class="dash-panel" data-tab-panel="requests" role="tabpanel" hidden>
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneRequestsTitle"></h3>
-              <p data-i18n="zoneRequestsSub"></p>
-            </div>
-          </div>
-          <section class="grid" id="requestsMetrics"></section>
-        </section>
-
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneRequestsTableTitle"></h3>
-              <p data-i18n="zoneRequestsTableSub"></p>
-            </div>
-          </div>
-          <article class="panel">
-            <h2 data-i18n="recentRequests"></h2>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th data-i18n="colRequestType"></th>
-                    <th data-i18n="colStudent"></th>
-                    <th data-i18n="colTarget"></th>
-                    <th data-i18n="colReason"></th>
-                    <th data-i18n="colRequestStatus"></th>
-                    <th data-i18n="colTime"></th>
-                  </tr>
-                </thead>
-                <tbody id="requestTable"></tbody>
-              </table>
-            </div>
-          </article>
-        </section>
       </section>
 
       <!-- ========== Internal Management — staff + roles ========== -->
@@ -9464,7 +9419,7 @@
               nav: { tab: "enrollment", subtab: "trial" } },
             { label: t.opsKpiPendingApprovals, value: pendingRequests.length,
               sub: t.opsKpiPendingApprovalsSub || "",
-              nav: { tab: "requests" } },
+              nav: { tab: "inbox" } },
             { label: t.opsKpiRenewals7d, value: expiringRenewals.length,
               sub: t.opsKpiRenewals7dSub || "",
               nav: { tab: "finance" } }
@@ -13273,11 +13228,9 @@
           if (newToday > 0) { enrollBadge.textContent = newToday; enrollBadge.hidden = false; }
           else enrollBadge.hidden = true;
         }
-        var requestsBadge = document.getElementById("requestsBadge");
-        if (requestsBadge) {
-          if (data.pendingRequests > 0) { requestsBadge.textContent = data.pendingRequests; requestsBadge.hidden = false; }
-          else requestsBadge.hidden = true;
-        }
+        // requestsBadge belonged to the retired 家校服务 tab — no longer
+        // rendered. Pending-request count still surfaces via the 待办
+        // (inbox) badge.
       }
 
       function renderPaymentsTable(payments, t) {
@@ -13297,6 +13250,9 @@
       }
 
       function renderRequestTable(requests, t) {
+        // The 家校服务 tab was retired; the table element no longer exists.
+        // Inbox still reads from KEYS.requests so the data isn't orphaned.
+        if (!requestTable) return;
         if (!requests.length) {
           requestTable.innerHTML = "<tr><td colspan='6'>" + t.noData + "</td></tr>";
           return;
