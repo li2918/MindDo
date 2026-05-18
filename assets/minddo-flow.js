@@ -1710,12 +1710,15 @@
   var PERMISSIONS = [
     "dashboard.view",
     "overview.view",
-    "inbox.view", "inbox.approve",
+    "inbox.view",
+    "approve.schedule",       // can approve leave / reschedule requests
+    "approve.finance",        // can approve refunds / expenses / reimbursements
     "marketing.view", "marketing.write",
     "academic.view", "academic.write",
     "schedule.view",
     "attendance.view", "attendance.write",
     "students.view", "students.write",
+    "students.status",        // can change a student's status (paused / withdrawn)
     "finance.view",           // can open the 财务中心 tab at all
     "finance.detail",         // sees raw $ amounts (orders, refunds, billing)
     "finance.payroll",        // sees 工资管理 sub-tab
@@ -1723,8 +1726,11 @@
     "finance.renewals",       // sees 续费看板 sub-tab
     "data.view",
     "data.finance",           // financial widgets inside 数据中心
-    "internal.view",          // sees 内部管理 (staff + roles)
-    "settings.view",
+    "internal.view",          // sees 内部管理 (staff + roles, all campuses)
+    "internal.view.campus",   // read-only own-campus staff list (no roles editor)
+    "settings.view",          // global settings (all campuses)
+    "settings.view.campus",   // own-campus settings only (hours / trial slots / classrooms)
+    "shift.write",            // write shift-handover notes for own campus
     "audit.view"
   ];
 
@@ -1741,14 +1747,17 @@
       campusScope: "single",
       perms: [
         "dashboard.view", "overview.view",
-        "inbox.view", "inbox.approve",
-        "marketing.view",
+        "inbox.view", "approve.schedule",      // schedule approvals only — no refunds
+        "marketing.view",                      // read-only CRM + trial table
         "academic.view", "academic.write",
         "schedule.view",
         "attendance.view", "attendance.write",
-        "students.view", "students.write",
-        "finance.view", "finance.renewals",   // no detail / payroll / contracts
-        "data.view"                            // no data.finance
+        "students.view", "students.write", "students.status",
+        "finance.view", "finance.renewals",    // no detail / payroll / contracts
+        "data.view",                           // no data.finance
+        "internal.view.campus",                // own-campus staff (read-only)
+        "settings.view.campus",                // own-campus settings only
+        "shift.write"                          // 交班记录
       ]
     },
     "campus-marketing": {
@@ -1808,7 +1817,18 @@
     var tmpl = getActivePermissions();
     if (!tmpl) return false;
     if (tmpl.perms.indexOf("*") >= 0) return true;
-    return tmpl.perms.indexOf(perm) >= 0;
+    if (tmpl.perms.indexOf(perm) >= 0) return true;
+    // Broader perm implies its ".campus" variant — so a holder of
+    // "internal.view" automatically passes a check for
+    // "internal.view.campus", and "settings.view" passes
+    // "settings.view.campus". This lets one sidebar gate cover both
+    // global admins and campus-scoped operators without duplicating
+    // perm strings on the HTML.
+    if (perm.indexOf(".campus") > 0) {
+      var broader = perm.replace(/\.campus$/, "");
+      if (tmpl.perms.indexOf(broader) >= 0) return true;
+    }
+    return false;
   }
   function getActiveCampusScope() {
     var active = getActiveOpsUser();
@@ -3467,6 +3487,21 @@
           { id: "campus-ops",       template: "campus-ops",       name: "校区运营",     nameEn: "Campus Operations",    category: "ops",   desc: "本校区运营 / 教务 / 出勤 / 续费等日常功能，金额信息脱敏。",  descEn: "Single-campus ops / academic / attendance / renewals — finance amounts masked.",                       permissions: ["academic.write", "students.write", "attendance.write"] },
           { id: "campus-marketing", template: "campus-marketing", name: "校区市场运营", nameEn: "Campus Marketing Ops", category: "ops",   desc: "本校区获客相关：试听、CRM、招生渠道、招生数据。",            descEn: "Single-campus marketing only: trials, CRM, channels, enrollment data.",                                permissions: ["leads.write", "marketing.write"] }
         ]);
+      }
+    },
+    {
+      // Split the legacy "inbox.approve" perm into two narrower ones —
+      // "approve.schedule" for leave/reschedule requests (granted to
+      // campus-ops) and "approve.finance" for refunds/expenses (kept at
+      // principal+). Existing storage is fully derived from
+      // PERMISSION_TEMPLATES at runtime, so no actual data rewrite is
+      // needed; this entry exists so returning visitors who saved a
+      // stale snapshot of the perm strings still get the new behaviour.
+      id: "2026-05-rbac-split-approvals",
+      description: "Split inbox.approve into approve.schedule + approve.finance; add settings.view.campus / internal.view.campus / students.status / shift.write for campus-ops.",
+      run: function () {
+        // Nothing to migrate — PERMISSION_TEMPLATES is the source of
+        // truth and is read fresh on every call to hasPerm().
       }
     }
   ];
