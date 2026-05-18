@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>校区运营 · User Flow | MindDo</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #fef8ee;
+      --card: #ffffff;
+      --line: #e4ddd4;
+      --clay: #7a3010;
+      --brand: #d8551c;
+      --gold: #d97706;
+      --gold-deep: #b45309;
+      --muted: #6b7280;
+      --text: #1f2937;
+      --success: #6e8b58;
+      --danger: #c46a4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(254, 248, 238, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .topbar .brand {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 900; color: var(--clay); font-size: 15px; letter-spacing: -0.01em;
+      text-decoration: none;
+    }
+    .topbar .brand .dot {
+      display: inline-block; width: 22px; height: 22px; border-radius: 6px;
+      background: linear-gradient(135deg, #fde68a, var(--gold));
+      color: var(--clay); font-size: 13px; font-weight: 900;
+      text-align: center; line-height: 22px;
+    }
+    .topbar nav { display: flex; gap: 14px; font-size: 13px; }
+    .topbar nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
+    .topbar nav a:hover { color: var(--clay); }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+
+    .hero {
+      background: linear-gradient(135deg, #0d2841 0%, #1f3f5e 100%);
+      color: #fef3c7;
+      border-radius: 20px;
+      padding: 32px 36px;
+      box-shadow: 0 18px 44px rgba(13, 40, 65, 0.18);
+      margin-bottom: 28px;
+    }
+    .hero .eyebrow {
+      font-size: 11.5px; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #fbbf24;
+      margin-bottom: 8px;
+    }
+    .hero h1 { margin: 0 0 8px; font-size: 32px; letter-spacing: -0.02em; font-weight: 900; }
+    .hero .sub { font-size: 14.5px; color: rgba(254, 243, 199, 0.78); max-width: 70ch; line-height: 1.65; }
+    .hero .meta-row {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px;
+    }
+    .hero .meta-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 999px;
+      background: rgba(254, 243, 199, 0.12);
+      border: 1px solid rgba(254, 243, 199, 0.28);
+      font-size: 12px; font-weight: 700;
+    }
+    .hero .meta-chip strong { color: #fef3c7; }
+
+    .section-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin: 36px 0 14px;
+    }
+    .section-head h2 {
+      margin: 0; font-size: 18px; font-weight: 900; color: var(--clay);
+      letter-spacing: -0.01em;
+    }
+    .section-head .num {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 18px 44px rgba(122, 48, 16, 0.06);
+      margin-bottom: 18px;
+    }
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 15px; font-weight: 800; color: var(--clay);
+      letter-spacing: -0.01em;
+    }
+    .panel p { margin: 0 0 10px; font-size: 13.5px; color: var(--text); }
+    .panel p.muted { color: var(--muted); font-size: 12.5px; }
+
+    /* Daily KPI cards on the hero strip */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px; margin: 18px 0 28px;
+    }
+    .kpi-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: 0 4px 12px rgba(122, 48, 16, 0.04);
+    }
+    .kpi-card .icon { font-size: 22px; margin-bottom: 6px; }
+    .kpi-card .label {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .kpi-card .body {
+      font-size: 13px; color: var(--text); margin-top: 4px; line-height: 1.5;
+    }
+
+    /* Mermaid container styling */
+    .flow-wrap {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 18px 44px rgba(122, 48, 16, 0.06);
+      overflow-x: auto;
+      margin-bottom: 18px;
+    }
+    .mermaid { background: transparent; text-align: center; }
+
+    /* State-machine boxes for the trial flow */
+    .state-flow {
+      display: flex; align-items: center; gap: 0;
+      flex-wrap: wrap;
+      padding: 10px 0;
+    }
+    .state-box {
+      display: inline-flex; flex-direction: column; align-items: center;
+      gap: 6px;
+      padding: 14px 18px;
+      background: rgba(248, 250, 252, 0.7);
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      min-width: 110px;
+      text-align: center;
+    }
+    .state-box .badge {
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .state-box .name { font-size: 13px; font-weight: 800; color: var(--clay); }
+    .state-box .stamp { font-size: 10.5px; color: var(--muted); }
+    .state-box.start  { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.32); }
+    .state-box.during { background: rgba(245, 158, 11, 0.18); border-color: rgba(245, 158, 11, 0.42); }
+    .state-box.signed { background: rgba(110, 143, 87, 0.14); border-color: rgba(110, 143, 87, 0.32); }
+    .state-box.done   { background: rgba(110, 143, 87, 0.2); border-color: rgba(110, 143, 87, 0.42); }
+    .state-box.noshow { background: rgba(196, 106, 77, 0.16); border-color: rgba(196, 106, 77, 0.4); }
+    .state-arrow {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0 6px; color: var(--brand);
+      font-size: 22px; font-weight: 900;
+    }
+    .state-action {
+      font-size: 11.5px; font-weight: 700; color: var(--brand);
+      padding: 0 4px;
+    }
+
+    /* Permission matrix table */
+    table.perm {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    table.perm thead th {
+      text-align: left; padding: 10px 12px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+      border-bottom: 1px solid var(--line);
+      background: rgba(122, 48, 16, 0.04);
+    }
+    table.perm tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.08);
+    }
+    table.perm tbody tr:last-child td { border-bottom: none; }
+    table.perm .check { font-size: 16px; font-weight: 900; }
+    table.perm .check.yes { color: var(--success); }
+    table.perm .check.no  { color: var(--danger); }
+    table.perm .check.partial { color: var(--gold); }
+    table.perm tbody tr:hover { background: rgba(248, 250, 252, 0.55); }
+
+    /* Storage list */
+    .storage-grid {
+      display: grid; gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    .storage-item {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+    .storage-item code {
+      font-family: ui-monospace, "Courier New", monospace;
+      font-size: 12px; font-weight: 700;
+      color: var(--brand);
+      background: rgba(216, 85, 28, 0.08);
+      padding: 2px 6px; border-radius: 4px;
+    }
+    .storage-item .what {
+      font-size: 12.5px; color: var(--text); margin-top: 6px;
+    }
+    .storage-item .what strong { color: var(--clay); }
+
+    /* Two-col split for sub-flow cards */
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    @media (max-width: 760px) {
+      .two-col { grid-template-columns: 1fr; }
+      .hero { padding: 22px 24px; }
+      .hero h1 { font-size: 24px; }
+    }
+
+    /* Step list */
+    ol.steps {
+      counter-reset: step;
+      list-style: none; padding: 0; margin: 0;
+    }
+    ol.steps li {
+      counter-increment: step;
+      position: relative;
+      padding: 10px 12px 10px 44px;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.08);
+      font-size: 13px;
+    }
+    ol.steps li:last-child { border-bottom: none; }
+    ol.steps li::before {
+      content: counter(step);
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%);
+      width: 22px; height: 22px; border-radius: 999px;
+      background: var(--brand); color: #fff;
+      font-size: 11px; font-weight: 900;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    ol.steps li strong { color: var(--clay); }
+    ol.steps li code {
+      font-family: ui-monospace, monospace;
+      font-size: 11.5px; color: var(--brand);
+      background: rgba(216, 85, 28, 0.08);
+      padding: 1px 5px; border-radius: 3px;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 50px;
+      padding-top: 20px;
+      border-top: 1px dashed var(--line);
+      font-size: 11.5px; color: var(--muted);
+      text-align: center;
+    }
+    footer code {
+      font-family: ui-monospace, monospace;
+      color: var(--brand);
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="../index.html" class="brand">
+    <span class="dot">M</span>
+    <span>MindDo · Docs</span>
+  </a>
+  <nav>
+    <a href="../dashboard.html">运营 Dashboard</a>
+    <a href="SCHEMA.md">localStorage Schema</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="eyebrow">User Flow</div>
+    <h1>校区运营 · Campus Operations</h1>
+    <p class="sub">单校区现场操作型角色：每天处理上课、试课接待、考勤、请假审批、续费提醒，对接家长、记录交班。本流程图覆盖一个标准工作日内全部触达的页面、状态机、写入的存储与审计记录。</p>
+    <div class="meta-row">
+      <span class="meta-chip">校区范围 · <strong>单一</strong></span>
+      <span class="meta-chip">金额 · <strong>脱敏 ($***)</strong></span>
+      <span class="meta-chip">审批权限 · <strong>仅请假/调课</strong></span>
+      <span class="meta-chip">权限模板 · <strong>campus-ops</strong></span>
+    </div>
+  </section>
+
+  <!-- ===== Daily KPI strip ===== -->
+  <div class="section-head">
+    <h2>一日开始 · 校区运营首页 4 个 KPI</h2>
+    <span class="num">01</span>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="icon">📚</div>
+      <div class="label">今日上课</div>
+      <div class="body">来自 <code>minddo_class_offerings</code> 按 <code>dayKey</code> 过滤本校区。<br/>点击 → 今日课程时间轴。</div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon">🎤</div>
+      <div class="label">今日试课</div>
+      <div class="body">来自 <code>minddo_trial_leads</code> 按 <code>trialDate</code> 过滤。<br/>点击 → 市场中心 · 试课管理。</div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon">📨</div>
+      <div class="label">待审请假</div>
+      <div class="body">来自 <code>minddo_schedule_requests</code>，<code>status="pending"</code>。<br/>点击 → 待办 inbox。</div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon">🔁</div>
+      <div class="label">7 天内续费</div>
+      <div class="body">来自 <code>minddo_membership_orders</code>。<br/>点击 → 财务 · 续费看板。</div>
+    </div>
+  </div>
+
+  <!-- ===== Main flowchart ===== -->
+  <div class="section-head">
+    <h2>主流程 · 全日活动轨迹</h2>
+    <span class="num">02</span>
+  </div>
+  <div class="flow-wrap">
+    <div class="mermaid">
+flowchart TD
+    A[🔐 登录 dashboard.html] --> B[校区运营首页<br/>#opsOverview]
+    B --> KPI{4 个 KPI 卡片}
+    KPI -->|今日上课 N| C[今日课程时间轴]
+    KPI -->|今日试课 N| D[今日试课接待]
+    KPI -->|待审请假 N| E[待办 inbox]
+    KPI -->|7 天续费 N| F[财务 · 续费看板]
+
+    C --> C1[课程行<br/>时间 · 课程 · 教师 · 教室 · 容量]
+    C1 -->|当前时段| C2[🔴 进行中 徽章]
+    C1 -->|点击| C3[录考勤<br/>跳转 acad·attendance]
+
+    D --> D1[试课接待状态机<br/>详见 章节 03]
+
+    B --> G[昨日缺勤跟进]
+    G -->|有手机号| G1[📞 一键 tel: 联系家长]
+
+    B --> H[交班记录]
+    H --> H1[查看最近 6 条]
+    H -->|shift.write 权限| H2[新增交班<br/>保存到 minddo_shift_notes]
+
+    A --> Sidebar{侧栏导航}
+    Sidebar --> I[教务中心]
+    Sidebar --> E
+    Sidebar --> F
+    Sidebar --> J[市场中心 · 只读]
+    Sidebar --> K[数据中心<br/>无大屏/无财务]
+    Sidebar --> L[内部管理 · 只读本校区]
+    Sidebar --> M[业务设置 · 本校区]
+
+    I --> I1[学员名单]
+    I1 -->|改状态| I2[暂停/退课模态框<br/>详见 章节 04]
+    I --> I3[班级管理]
+    I --> I4[排课 + 教师值班<br/>周课时 · 冲突检测]
+    I --> I5[考勤录入]
+
+    E --> E1[审批请假/调课<br/>approve.schedule 权限]
+    E -.->|❌ 看不到| E2[退款审批<br/>需 approve.finance]
+
+    M --> M1[试课时段]
+    M --> M2[营业时段]
+    M --> M3[教室列表]
+    M --> M4[校区公告]
+
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#7a3010;
+    classDef kpi fill:#fff,stroke:#d97706,color:#7a3010;
+    classDef ops fill:#dcfce7,stroke:#6e8b58,color:#3f5d26;
+    classDef nope fill:#fef2f2,stroke:#c46a4d,color:#8e3d21,stroke-dasharray: 4 4;
+    class A entry
+    class KPI,Sidebar kpi
+    class D1,I2,H2,E1,C3 ops
+    class E2 nope
+    </div>
+  </div>
+
+  <!-- ===== Trial reception state machine ===== -->
+  <div class="section-head">
+    <h2>子流程 · 试课接待状态机</h2>
+    <span class="num">03</span>
+  </div>
+  <div class="panel">
+    <p>校区运营在首页"今日试课接待"列表上推动每个家庭的状态。每步会盖时间戳到 lead 记录上，并写入 <code style="font-family:ui-monospace;color:var(--brand);background:rgba(216,85,28,0.08);padding:1px 5px;border-radius:3px;">trial.reception.&lt;action&gt;</code> audit 记录。</p>
+    <div class="state-flow">
+      <div class="state-box start">
+        <span class="badge">初始</span>
+        <span class="name">已预约</span>
+        <span class="stamp">trialStatus=booked</span>
+      </div>
+      <div class="state-arrow">→</div>
+      <div class="state-action">[签到]</div>
+      <div class="state-arrow">→</div>
+      <div class="state-box signed">
+        <span class="badge">到场</span>
+        <span class="name">已到场</span>
+        <span class="stamp">trialCheckedInAt</span>
+      </div>
+      <div class="state-arrow">→</div>
+      <div class="state-action">[开始试课]</div>
+      <div class="state-arrow">→</div>
+      <div class="state-box during">
+        <span class="badge">进行中</span>
+        <span class="name">试课中</span>
+        <span class="stamp">trialStartedAt</span>
+      </div>
+      <div class="state-arrow">→</div>
+      <div class="state-action">[完成]</div>
+      <div class="state-arrow">→</div>
+      <div class="state-box done">
+        <span class="badge">完成</span>
+        <span class="name">已完成</span>
+        <span class="stamp">trialEndedAt</span>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:14px;">任意状态都可点击 <strong style="color:var(--danger);">[未到]</strong> → noshow；最终状态都可 <strong>[撤销]</strong> → 回到 booked 并清空时间戳。完成会联动调用 <code style="font-family:ui-monospace;color:var(--brand);background:rgba(216,85,28,0.08);padding:1px 5px;border-radius:3px;">flow.markTrialComplete</code> 让市场中心的试课表格也显示"完成"。</p>
+  </div>
+
+  <!-- ===== Student status change ===== -->
+  <div class="section-head">
+    <h2>子流程 · 学员状态变更</h2>
+    <span class="num">04</span>
+  </div>
+  <div class="panel">
+    <p>在 教务中心 · 学员名单 任意一行点击 <strong>改状态</strong> 触发。受 <code style="font-family:ui-monospace;color:var(--brand);background:rgba(216,85,28,0.08);padding:1px 5px;border-radius:3px;">students.status</code> 权限保护。</p>
+    <ol class="steps">
+      <li><strong>触发</strong>：点击 acad-roster 行的 <code>改状态</code> 链接（仅有权限的用户可见）</li>
+      <li><strong>模态框打开</strong>：渲染 3 个大选项（active / paused / withdrawn）+ 原因 textarea，预填当前值</li>
+      <li><strong>选择新状态</strong>：3 选 1，每个选项配 icon + hint（正常上课中 / 暂停-保留学籍 / 退课-不再上课）</li>
+      <li><strong>填写原因</strong>：自由文本，例如"搬家暂停"、"升学退课"</li>
+      <li><strong>保存</strong>：
+        <ul style="margin:6px 0 0 0;font-size:12.5px;color:var(--muted);">
+          <li>写入 <code>minddo_students</code> 行：<code>status</code>、<code>statusReason</code>、<code>statusChangedAt</code></li>
+          <li>追加 audit：<code>kind="student.status"</code>，带 before/after 快照</li>
+          <li>关闭模态框 → 重新渲染列表</li>
+        </ul>
+      </li>
+      <li><strong>无变化保护</strong>：状态和原因都没动时不写空 audit，提示"状态没有变化"</li>
+    </ol>
+  </div>
+
+  <!-- ===== Attendance + Approvals + Shift handover ===== -->
+  <div class="section-head">
+    <h2>其他高频操作</h2>
+    <span class="num">05</span>
+  </div>
+  <div class="two-col">
+    <div class="panel">
+      <h3>🎯 考勤录入</h3>
+      <p class="muted">从首页"今日课程"行的 <strong>[录考勤]</strong> 按钮一键跳转。</p>
+      <ol class="steps">
+        <li>选 (offering, classDate)</li>
+        <li>显示班级名单 + 4 个状态按钮（出勤 / 缺勤 / 迟到 / 请假）</li>
+        <li>逐人或批量打卡</li>
+        <li>写入 <code>minddo_attendance</code>，replace-set 语义（同一节课重复录入会覆盖）</li>
+        <li>次日的"昨日缺勤跟进"会从这里读取 absent + noshow 行</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>📨 请假/调课审批</h3>
+      <p class="muted">从待办 inbox 处理，受 <code>approve.schedule</code> 权限保护。</p>
+      <ol class="steps">
+        <li>看到 <code>minddo_schedule_requests</code> 里 status="pending" 的行</li>
+        <li>读取 type / studentName / targetLabel / reason</li>
+        <li>点击 [批准] / [拒绝]</li>
+        <li>更新 status → approved/rejected，写 updatedAt + 审批人 id</li>
+        <li>⚠️ 退款 / 报销审批走 <code>approve.finance</code>，校区运营看不到</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>📞 缺勤跟进</h3>
+      <p class="muted">"昨日缺勤"面板上一键拨号。</p>
+      <ol class="steps">
+        <li>页面打开自动查询 <code>minddo_attendance</code> 中 <code>classDate=yesterday</code> 且 status=absent/noshow 的行</li>
+        <li>用 studentId 反查学员档案拿 phone</li>
+        <li>渲染 [联系家长] 按钮，本质是 <code>&lt;a href="tel:..."&gt;</code></li>
+        <li>点击直接拉起拨号（桌面端 → 系统默认；手机 → 拨号器）</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>📝 交班记录</h3>
+      <p class="muted">下班前写一条给下一班同事的提醒。</p>
+      <ol class="steps">
+        <li>面板下方 textarea 输入内容</li>
+        <li>点击 <strong>保存交班</strong></li>
+        <li>追加到 <code>minddo_shift_notes</code> 数组：<code>{ id, campus, by, atIso, body }</code></li>
+        <li>列表自动显示最近 6 条，按时间倒序</li>
+        <li>权限：<code>shift.write</code>。没权限的角色只能读，看不到 textarea</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ===== Permission matrix ===== -->
+  <div class="section-head">
+    <h2>权限矩阵 · 哪些能看 / 不能看</h2>
+    <span class="num">06</span>
+  </div>
+  <div class="panel" style="padding:0;overflow:hidden;">
+    <table class="perm">
+      <thead>
+        <tr>
+          <th>模块</th>
+          <th>校区运营</th>
+          <th>同事的权限（对比）</th>
+          <th>说明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>校区运营首页</strong></td>
+          <td><span class="check yes">✓</span> 专属</td>
+          <td>仅自己看到</td>
+          <td>角色切换时通过 <code>applyRoleSpecificOverview</code> 显示 <code>#opsOverview</code></td>
+        </tr>
+        <tr>
+          <td><strong>市场中心</strong></td>
+          <td><span class="check partial">◐</span> 只读</td>
+          <td>市场可读写</td>
+          <td>能看 CRM / 试课 / 渠道 / 品牌，不能改</td>
+        </tr>
+        <tr>
+          <td><strong>教务中心</strong></td>
+          <td><span class="check yes">✓</span> 读写</td>
+          <td>校长 / 超管也有</td>
+          <td>学员、班级、排课、考勤全部可改</td>
+        </tr>
+        <tr>
+          <td><strong>学员改状态</strong></td>
+          <td><span class="check yes">✓</span></td>
+          <td>校长 / 超管也有</td>
+          <td><code>students.status</code> 权限</td>
+        </tr>
+        <tr>
+          <td><strong>待办审批 · 请假</strong></td>
+          <td><span class="check yes">✓</span></td>
+          <td>校长 / 超管也有</td>
+          <td><code>approve.schedule</code> 权限</td>
+        </tr>
+        <tr>
+          <td><strong>待办审批 · 退款</strong></td>
+          <td><span class="check no">✗</span></td>
+          <td>仅校长 / 超管</td>
+          <td><code>approve.finance</code> —— 校区运营拿不到</td>
+        </tr>
+        <tr>
+          <td><strong>财务订单 / 续费</strong></td>
+          <td><span class="check partial">◐</span> 金额脱敏</td>
+          <td>校长 / 超管看真金额</td>
+          <td><code>finance.view + finance.renewals</code>；<code>safeMoney()</code> 把 $ 显示成 ***</td>
+        </tr>
+        <tr>
+          <td><strong>财务 · 账单/工资/合同</strong></td>
+          <td><span class="check no">✗</span></td>
+          <td>校长 / 超管</td>
+          <td>子页直接隐藏（<code>finance.detail / payroll / contracts</code>）</td>
+        </tr>
+        <tr>
+          <td><strong>数据中心</strong></td>
+          <td><span class="check partial">◐</span> 招生 + 教务</td>
+          <td>校长 / 超管多看大屏 + 财务</td>
+          <td>没有 <code>data.finance</code>，大屏 + 财务模块隐藏</td>
+        </tr>
+        <tr>
+          <td><strong>内部管理</strong></td>
+          <td><span class="check partial">◐</span> 本校区员工只读</td>
+          <td>超管能管理全部</td>
+          <td><code>internal.view.campus</code>；角色编辑器藏掉</td>
+        </tr>
+        <tr>
+          <td><strong>业务设置</strong></td>
+          <td><span class="check partial">◐</span> 本校区</td>
+          <td>超管 = 任意校区</td>
+          <td><code>settings.view.campus</code>；试课时段 / 营业时段 / 教室 / 公告</td>
+        </tr>
+        <tr>
+          <td><strong>交班记录</strong></td>
+          <td><span class="check yes">✓</span></td>
+          <td>校长 / 超管也有</td>
+          <td><code>shift.write</code></td>
+        </tr>
+        <tr>
+          <td><strong>招商加盟</strong></td>
+          <td><span class="check no">✗</span></td>
+          <td>仅超管</td>
+          <td>侧栏链接看不到</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== Storage touched ===== -->
+  <div class="section-head">
+    <h2>触达的 localStorage 键</h2>
+    <span class="num">07</span>
+  </div>
+  <div class="storage-grid">
+    <div class="storage-item">
+      <code>minddo_class_offerings</code>
+      <div class="what"><strong>读</strong>：今日课程 + 教师值班</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_trial_leads</code>
+      <div class="what"><strong>读+写</strong>：试课接待状态机 trialStatus + 三个时间戳字段</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_schedule_requests</code>
+      <div class="what"><strong>读+写</strong>：待审请假 KPI + 审批 status 流转</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_membership_orders</code>
+      <div class="what"><strong>读</strong>：7 天内续费 KPI + 续费看板</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_attendance</code>
+      <div class="what"><strong>读+写</strong>：考勤录入 + 昨日缺勤跟进</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_students</code>
+      <div class="what"><strong>读+写</strong>：改状态时更新 status / statusReason / statusChangedAt</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_shift_notes</code> <span style="font-size:10.5px;color:var(--success);">新</span>
+      <div class="what"><strong>读+写</strong>：交班记录</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_campus_hours</code> <span style="font-size:10.5px;color:var(--success);">新</span>
+      <div class="what"><strong>读+写</strong>：营业时段（业务设置）</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_classrooms</code> <span style="font-size:10.5px;color:var(--success);">新</span>
+      <div class="what"><strong>读+写</strong>：教室列表（业务设置）</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_campus_notice</code> <span style="font-size:10.5px;color:var(--success);">新</span>
+      <div class="what"><strong>读+写</strong>：校区公告（业务设置）</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_trial_slots</code>
+      <div class="what"><strong>读+写</strong>：试课时段（业务设置）</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_audit_log</code>
+      <div class="what"><strong>写</strong>：trial.reception.* / student.status / shift.note 等动作都进 audit</div>
+    </div>
+  </div>
+
+  <!-- ===== Audit trail ===== -->
+  <div class="section-head">
+    <h2>审计 (Audit Log) 留痕</h2>
+    <span class="num">08</span>
+  </div>
+  <div class="panel">
+    <p class="muted" style="margin-bottom:14px;">每一次写操作都会追加一条到 <code>minddo_audit_log</code>，bound 在 500 条。校长 / 超管可在 内部管理 看到。</p>
+    <table class="perm">
+      <thead>
+        <tr>
+          <th>audit kind</th>
+          <th>触发动作</th>
+          <th>summary 示例</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>trial.reception.checkin</code></td><td>签到</td><td>试课接待·checkin · 李同学</td></tr>
+        <tr><td><code>trial.reception.start</code></td><td>开始试课</td><td>试课接待·start · 李同学</td></tr>
+        <tr><td><code>trial.reception.finish</code></td><td>完成试课</td><td>试课接待·finish · 李同学</td></tr>
+        <tr><td><code>trial.reception.noshow</code></td><td>未到</td><td>试课接待·noshow · 李同学</td></tr>
+        <tr><td><code>trial.reception.reopen</code></td><td>撤销</td><td>试课接待·reopen · 李同学</td></tr>
+        <tr><td><code>student.status</code></td><td>改学员状态</td><td>学员状态 · 李同学 · active → paused · 搬家暂停</td></tr>
+        <tr><td><code>shift.note</code></td><td>新增交班</td><td>交班记录 · A 室空调修好了…</td></tr>
+        <tr><td><code>attendance.set</code></td><td>录考勤</td><td>(由 recordAttendance 触发，每节课一条)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    生成于 <code>docs/campus-ops-flow.html</code> · 数据来源：
+    <a href="SCHEMA.md" style="color:var(--brand);">SCHEMA.md</a> +
+    <a href="../dashboard.html" style="color:var(--brand);">dashboard.html</a> ·
+    渲染：Mermaid via CDN
+  </footer>
+
+</main>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "base",
+    themeVariables: {
+      primaryColor: "#fef3c7",
+      primaryTextColor: "#7a3010",
+      primaryBorderColor: "#d97706",
+      lineColor: "#7a3010",
+      secondaryColor: "#fff8ee",
+      tertiaryColor: "#ffffff",
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif',
+      fontSize: "13px"
+    },
+    flowchart: {
+      curve: "basis",
+      htmlLabels: true,
+      nodeSpacing: 30,
+      rankSpacing: 50
+    }
+  });
+</script>
+
+</body>
+</html>
