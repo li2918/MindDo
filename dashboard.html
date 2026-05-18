@@ -2308,6 +2308,43 @@
       border-color: rgba(196,106,77,0.32);
     }
 
+    /* Student status change modal */
+    .student-status-section { padding: 10px 0; }
+    .student-status-choices {
+      display: grid; gap: 8px; padding: 4px 0;
+    }
+    .student-status-choices button {
+      all: unset; cursor: pointer;
+      display: grid; grid-template-columns: 36px 1fr;
+      gap: 12px; align-items: center;
+      padding: 10px 12px;
+      border: 1px solid var(--line); border-radius: 10px;
+      background: #fff;
+      transition: 0.12s;
+    }
+    .student-status-choices button:hover { border-color: var(--gold); }
+    .student-status-choices button.on {
+      border-color: var(--brand, #d8551c);
+      background: rgba(254,243,199,0.4);
+    }
+    .student-status-choices .ssc-pill {
+      width: 36px; height: 36px; border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 900;
+    }
+    .student-status-choices .ssc-pill.active    { background: rgba(110,143,87,0.18); color: #3f5d26; }
+    .student-status-choices .ssc-pill.paused    { background: rgba(245,158,11,0.18); color: var(--gold-deep); }
+    .student-status-choices .ssc-pill.withdrawn { background: rgba(196,106,77,0.16); color: #8e3d21; }
+    .student-status-choices .ssc-body { display: flex; flex-direction: column; gap: 3px; }
+    .student-status-choices .ssc-body strong { color: var(--clay); font-size: 13.5px; }
+    .student-status-choices .ssc-body .ssc-hint { font-size: 11.5px; color: var(--muted); }
+    #studentStatusReason {
+      width: 100%; box-sizing: border-box;
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 8px 10px; font: inherit; font-size: 13px;
+      resize: vertical; background: #fff;
+    }
+
     /* Post-trial marketing feedback modal */
     .trial-fb-section { padding: 10px 0; }
     .trial-fb-stars {
@@ -4056,6 +4093,58 @@
   </div>
 
   <!-- ================================================================
+       Student status change modal — pause / withdraw flow with reason.
+       Opens from any roster row's 改状态 link. Writes to the student
+       record's `status` field + appends a student.status audit row.
+       Permission-gated by students.status (only campus-ops / principal /
+       super-admin can open).
+       ================================================================ -->
+  <div class="mo-lead-overlay" id="studentStatusOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="mo-lead-card" style="max-width:520px;">
+      <header class="mo-lead-head">
+        <div>
+          <h3 data-i18n="studentStatusTitle"></h3>
+          <p id="studentStatusSubName" class="muted" style="margin:0;font-size:13px;color:var(--muted);"></p>
+        </div>
+        <button type="button" class="mo-lead-close" id="studentStatusCloseBtn" aria-label="Close">×</button>
+      </header>
+      <div class="mo-lead-form" style="padding:0 22px 22px;">
+        <div class="student-status-section">
+          <label class="lead-edit-label" data-i18n="studentStatusFieldLabel"></label>
+          <div class="student-status-choices" id="studentStatusChoices" role="radiogroup">
+            <button type="button" data-ss-status="active">
+              <span class="ssc-pill active">●</span>
+              <span class="ssc-body"><strong data-i18n="sdStatusActive"></strong>
+                <span class="ssc-hint" data-i18n="studentStatusActiveHint"></span></span>
+            </button>
+            <button type="button" data-ss-status="paused">
+              <span class="ssc-pill paused">⏸</span>
+              <span class="ssc-body"><strong data-i18n="sdStatusPaused"></strong>
+                <span class="ssc-hint" data-i18n="studentStatusPausedHint"></span></span>
+            </button>
+            <button type="button" data-ss-status="withdrawn">
+              <span class="ssc-pill withdrawn">✕</span>
+              <span class="ssc-body"><strong data-i18n="sdStatusWithdrawn"></strong>
+                <span class="ssc-hint" data-i18n="studentStatusWithdrawnHint"></span></span>
+            </button>
+          </div>
+        </div>
+        <div class="student-status-section">
+          <label class="lead-edit-label" for="studentStatusReason" data-i18n="studentStatusReasonLabel"></label>
+          <textarea id="studentStatusReason" rows="3"></textarea>
+        </div>
+        <div class="mo-lead-foot">
+          <span id="studentStatusMsg" class="mo-lead-msg"></span>
+          <div style="display:flex;gap:8px;">
+            <button type="button" id="studentStatusCancelBtn" class="mo-lead-secondary" data-i18n="studentStatusCancel"></button>
+            <button type="button" id="studentStatusSaveBtn" class="mo-lead-primary" data-i18n="studentStatusSave"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
        Post-trial marketing feedback modal — captures the marketer's
        qualitative read on the parent's intent after a trial class.
        Stored in localStorage at minddo_trial_feedback, keyed by
@@ -5010,6 +5099,18 @@
           acadActionDetail: "成长档案",
           acadActionAdjust: "调整等级",
           acadActionContact: "联系家长",
+          acadActionStatus: "改状态",
+          studentStatusTitle: "学员状态变更",
+          studentStatusFieldLabel: "新状态",
+          studentStatusActiveHint: "正常上课中",
+          studentStatusPausedHint: "暂停（保留学籍 / 延期）",
+          studentStatusWithdrawnHint: "退课（不再上课）",
+          studentStatusReasonLabel: "原因 / 备注",
+          studentStatusReasonPlaceholder: "记录变更原因，例如：搬家暂停 / 升学退课",
+          studentStatusCancel: "取消",
+          studentStatusSave: "保存",
+          studentStatusSaved: "已保存",
+          studentStatusNoChange: "状态没有变化",
           acadEmpty: "暂无在读学员，可前往「市场中心 → 试课」邀请新家长注册。",
           acadEmptyFiltered: "当前筛选下没有学员。",
           acadLevelOptionEmpty: "（未分配）",
@@ -6015,6 +6116,18 @@
           acadActionDetail: "Growth",
           acadActionAdjust: "Adjust level",
           acadActionContact: "Contact",
+          acadActionStatus: "Status",
+          studentStatusTitle: "Student Status",
+          studentStatusFieldLabel: "New status",
+          studentStatusActiveHint: "Currently enrolled",
+          studentStatusPausedHint: "Paused (records kept, on hold)",
+          studentStatusWithdrawnHint: "Withdrawn (no longer attending)",
+          studentStatusReasonLabel: "Reason / notes",
+          studentStatusReasonPlaceholder: "e.g. moved away, transferring schools",
+          studentStatusCancel: "Cancel",
+          studentStatusSave: "Save",
+          studentStatusSaved: "Saved",
+          studentStatusNoChange: "No status change",
           acadEmpty: "No active students yet — invite parents from Marketing → Trials.",
           acadEmptyFiltered: "No students match the current filter.",
           acadLevelOptionEmpty: "(unassigned)",
@@ -7767,6 +7880,9 @@
             + "<td><div class='acad-row-actions'>"
             +   "<a href='#' data-student-drawer='" + escHTML(r.sid) + "'>" + escHTML(t.acadActionDetail) + "</a>"
             +   (r.email ? "<a href='mailto:" + escHTML(r.email) + "'>" + escHTML(t.acadActionContact) + "</a>" : "")
+            +   (window.MindDoFlow && window.MindDoFlow.hasPerm && window.MindDoFlow.hasPerm("students.status")
+                ? "<a href='#' data-student-status='" + escHTML(r.sid) + "'>" + escHTML(t.acadActionStatus) + "</a>"
+                : "")
             + "</div></td>"
             + "</tr>";
         }).join("");
@@ -9960,6 +10076,121 @@
             alert((t.crmImportDoneFmt || "Imported {n} · Skipped {skipped}")
               .replace("{n}", toWrite.length)
               .replace("{skipped}", dupCount));
+            closeModal();
+            if (typeof render === "function") render();
+          });
+        }
+      })();
+
+      // Student status change modal — pause / withdraw flow with reason.
+      // Opens from any roster row's 改状态 link. Writes the student
+      // record's status + appends a student.status audit row.
+      (function () {
+        var overlay = document.getElementById("studentStatusOverlay");
+        if (!overlay) return;
+        var subNameEl = document.getElementById("studentStatusSubName");
+        var choicesEl = document.getElementById("studentStatusChoices");
+        var reasonEl = document.getElementById("studentStatusReason");
+        var msgEl = document.getElementById("studentStatusMsg");
+        var saveBtn = document.getElementById("studentStatusSaveBtn");
+        var cancelBtn = document.getElementById("studentStatusCancelBtn");
+        var closeBtn = document.getElementById("studentStatusCloseBtn");
+        var currentSid = null;
+        var workingStatus = "active";
+        var startingStatus = "active";
+
+        function paintChoices() {
+          if (!choicesEl) return;
+          choicesEl.querySelectorAll("[data-ss-status]").forEach(function (b) {
+            b.classList.toggle("on", b.getAttribute("data-ss-status") === workingStatus);
+          });
+        }
+        function openModal(sid) {
+          if (!sid) return;
+          var flow = window.MindDoFlow;
+          if (!flow || !flow.findStudentById) return;
+          var stu = flow.findStudentById(sid);
+          if (!stu) return;
+          currentSid = sid;
+          workingStatus = stu.status || "active";
+          startingStatus = workingStatus;
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          if (subNameEl) subNameEl.textContent = (stu.name || sid) + " · " + sid;
+          if (reasonEl) {
+            reasonEl.value = "";
+            reasonEl.placeholder = t.studentStatusReasonPlaceholder || "";
+          }
+          paintChoices();
+          if (msgEl) { msgEl.textContent = ""; msgEl.className = "mo-lead-msg"; }
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+        function closeModal() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+          currentSid = null;
+        }
+        if (closeBtn) closeBtn.addEventListener("click", closeModal);
+        if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+        overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && overlay.classList.contains("open")) closeModal();
+        });
+        if (choicesEl) {
+          choicesEl.addEventListener("click", function (e) {
+            var b = e.target.closest("[data-ss-status]");
+            if (!b) return;
+            workingStatus = b.getAttribute("data-ss-status");
+            paintChoices();
+          });
+        }
+        // Delegated row-link entry point.
+        document.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-student-status]");
+          if (!b) return;
+          e.preventDefault();
+          var flow = window.MindDoFlow;
+          if (!flow || !flow.hasPerm || !flow.hasPerm("students.status")) return;
+          openModal(b.getAttribute("data-student-status"));
+        });
+        if (saveBtn) {
+          saveBtn.addEventListener("click", function () {
+            var t = I18N[state.lang] || I18N["zh-CN"];
+            if (!currentSid) return;
+            if (workingStatus === startingStatus && (!reasonEl || !reasonEl.value.trim())) {
+              if (msgEl) {
+                msgEl.textContent = t.studentStatusNoChange;
+                msgEl.className = "mo-lead-msg err";
+              }
+              return;
+            }
+            var flow = window.MindDoFlow;
+            if (!flow) return;
+            var students = flow.readJson(flow.keys.students) || [];
+            var idx = -1;
+            for (var i = 0; i < students.length; i++) {
+              if (students[i] && students[i].id === currentSid) { idx = i; break; }
+            }
+            if (idx < 0) return;
+            var before = Object.assign({}, students[idx]);
+            students[idx].status = workingStatus;
+            students[idx].statusReason = reasonEl ? reasonEl.value.trim() : "";
+            students[idx].statusChangedAt = new Date().toISOString();
+            flow.writeJson(flow.keys.students, students);
+            if (flow.appendAudit) {
+              var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+              flow.appendAudit({
+                actor: (active && active.staff && active.staff.id) || "ops",
+                kind: "student.status",
+                target: currentSid,
+                summary: "学员状态 · " + (before.name || currentSid) + " · "
+                  + startingStatus + " → " + workingStatus
+                  + (students[idx].statusReason ? " · " + students[idx].statusReason : ""),
+                before: before, after: students[idx]
+              });
+            }
             closeModal();
             if (typeof render === "function") render();
           });
