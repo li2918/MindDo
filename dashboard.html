@@ -1879,6 +1879,68 @@
       cursor: pointer; padding: 3px 8px;
     }
 
+    /* Campus settings — hours grid + classroom list + notice editor */
+    .campus-hours-grid {
+      display: grid; gap: 8px;
+      grid-template-columns: 1fr;
+    }
+    .campus-hours-row {
+      display: grid; grid-template-columns: 60px 1fr 1fr 80px;
+      gap: 10px; align-items: center;
+      padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px;
+      background: #fff;
+      font-size: 13px;
+    }
+    .campus-hours-row .chr-day { font-weight: 800; color: var(--clay); }
+    .campus-hours-row input[type="time"] {
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 6px 10px; font: inherit; font-size: 12.5px; background: #fff;
+    }
+    .campus-hours-row label.chr-closed {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--muted); font-weight: 700;
+      justify-content: flex-end;
+    }
+    .campus-hours-row.is-closed input[type="time"] { opacity: 0.4; pointer-events: none; }
+
+    .campus-classroom-row {
+      display: grid; grid-template-columns: 1fr 80px auto;
+      gap: 10px; align-items: center;
+      padding: 8px 12px; border-bottom: 1px dashed rgba(122,48,16,0.08);
+      font-size: 13px;
+    }
+    .campus-classroom-row:last-of-type { border-bottom: none; }
+    .campus-classroom-row .ccr-name { color: var(--clay); font-weight: 700; }
+    .campus-classroom-row .ccr-cap  { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .campus-classroom-row .ccr-del {
+      all: unset; cursor: pointer; padding: 4px 12px;
+      border-radius: 999px; border: 1px solid var(--line);
+      font-size: 11.5px; color: #8e3d21;
+    }
+    .campus-classroom-row .ccr-del:hover { border-color: rgba(196,106,77,0.6); }
+    .campus-classroom-add {
+      display: grid; grid-template-columns: 1fr 100px auto;
+      gap: 8px; margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(122,48,16,0.12);
+    }
+    .campus-classroom-add input {
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 7px 10px; font: inherit; font-size: 12.5px; background: #fff;
+    }
+    .campus-classroom-empty {
+      padding: 18px; text-align: center; color: var(--muted); font-size: 12.5px;
+      background: rgba(248,250,252,0.55);
+      border: 1px dashed var(--line); border-radius: 10px;
+    }
+
+    #campusNoticeBody {
+      width: 100%; box-sizing: border-box;
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 10px 12px; font: inherit; font-size: 13px;
+      resize: vertical; background: #fff;
+    }
+
     /* Shift handover panel (ops overview) */
     .ops-shift-entry {
       padding: 10px 12px; border-bottom: 1px dashed rgba(122,48,16,0.08);
@@ -4027,6 +4089,62 @@
             </div>
           </div>
         </section>
+
+        <!-- Campus operating hours — per-weekday open/close pickers.
+             Stored at minddo_campus_hours keyed by campus key. -->
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="settingsHoursTitle"></h3>
+              <p data-i18n="settingsHoursSub" class="dash-zone-sub"></p>
+            </div>
+            <div class="dash-zone-actions">
+              <button type="button" class="btn-primary" id="campusHoursSaveBtn" style="padding:8px 18px;font-size:13px;"><span data-i18n="settingsSave"></span></button>
+            </div>
+          </div>
+          <article class="panel">
+            <div class="campus-hours-grid" id="campusHoursGrid"></div>
+            <div id="campusHoursMsg" class="settings-result"></div>
+          </article>
+        </section>
+
+        <!-- Classroom list — campus-scoped roster of physical rooms.
+             Stored at minddo_classrooms keyed by campus key. -->
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="settingsClassroomsTitle"></h3>
+              <p data-i18n="settingsClassroomsSub" class="dash-zone-sub"></p>
+            </div>
+          </div>
+          <article class="panel">
+            <div id="campusClassroomList"></div>
+            <div class="campus-classroom-add">
+              <input type="text" id="campusClassroomName" placeholder="" />
+              <input type="number" id="campusClassroomCap" min="1" placeholder="" />
+              <button type="button" id="campusClassroomAddBtn" class="mo-lead-secondary" data-i18n="settingsClassroomAdd"></button>
+            </div>
+          </article>
+        </section>
+
+        <!-- Campus notice — short message shown campus-wide. Stored at
+             minddo_campus_notice keyed by campus key. -->
+        <section class="dash-zone">
+          <div class="dash-zone-head">
+            <div class="dash-zone-text">
+              <h3 data-i18n="settingsNoticeTitle"></h3>
+              <p data-i18n="settingsNoticeSub" class="dash-zone-sub"></p>
+            </div>
+            <div class="dash-zone-actions">
+              <button type="button" class="btn-primary" id="campusNoticeSaveBtn" style="padding:8px 18px;font-size:13px;"><span data-i18n="settingsSave"></span></button>
+            </div>
+          </div>
+          <article class="panel">
+            <textarea id="campusNoticeBody" rows="3" placeholder=""></textarea>
+            <div id="campusNoticeMeta" class="settings-hint"></div>
+            <div id="campusNoticeMsg" class="settings-result"></div>
+          </article>
+        </section>
       </section>
 
       </div>
@@ -5435,6 +5553,26 @@
           opsShiftSaved: "已记录",
           opsShiftEmptyInput: "请输入交班内容",
           opsShiftMeFmt: "{name} · {time}",
+          settingsHoursTitle: "校区营业时段",
+          settingsHoursSub: "每天的对外营业时段，留空表示当日休息。仅本校区生效。",
+          settingsHoursClosed: "休息",
+          settingsHoursOpen: "开始",
+          settingsHoursClose: "结束",
+          settingsHoursWeekday: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+          settingsHoursSaved: "营业时段已保存",
+          settingsClassroomsTitle: "教室列表",
+          settingsClassroomsSub: "本校区可用教室与最大容量。",
+          settingsClassroomEmpty: "暂无教室，先添加一个。",
+          settingsClassroomNamePh: "教室名称（如 A 室）",
+          settingsClassroomCapPh: "容量",
+          settingsClassroomAdd: "新增教室",
+          settingsClassroomRemove: "删除",
+          settingsClassroomCapFmt: "{n} 人",
+          settingsNoticeTitle: "校区公告",
+          settingsNoticeSub: "一条短公告，可写当周注意事项 / 临时通知。",
+          settingsNoticePlaceholder: "如：暑期班 7/1 开班，A 室空调维修请改用 B 室。",
+          settingsNoticeSaved: "公告已更新",
+          settingsNoticeMetaFmt: "{time} · {who}",
           opsAbsentHead: "昨日缺勤跟进",
           opsAbsentEmpty: "昨天没有缺勤记录。",
           opsClassActionAttendance: "录考勤",
@@ -6457,6 +6595,26 @@
           opsShiftSaved: "Saved",
           opsShiftEmptyInput: "Type something first",
           opsShiftMeFmt: "{name} · {time}",
+          settingsHoursTitle: "Operating Hours",
+          settingsHoursSub: "Daily public hours. Leave blank for closed days. Applies to this campus only.",
+          settingsHoursClosed: "Closed",
+          settingsHoursOpen: "Open",
+          settingsHoursClose: "Close",
+          settingsHoursWeekday: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          settingsHoursSaved: "Hours saved",
+          settingsClassroomsTitle: "Classrooms",
+          settingsClassroomsSub: "Physical rooms at this campus and their max capacity.",
+          settingsClassroomEmpty: "No classrooms — add one to start.",
+          settingsClassroomNamePh: "Name (e.g. Room A)",
+          settingsClassroomCapPh: "Capacity",
+          settingsClassroomAdd: "Add room",
+          settingsClassroomRemove: "Remove",
+          settingsClassroomCapFmt: "{n} seats",
+          settingsNoticeTitle: "Campus Notice",
+          settingsNoticeSub: "A short note for the week — reminders or one-off announcements.",
+          settingsNoticePlaceholder: "e.g. Summer term starts 7/1. Use Room B while Room A AC is being fixed.",
+          settingsNoticeSaved: "Notice updated",
+          settingsNoticeMetaFmt: "{time} · {who}",
           opsAbsentHead: "Yesterday's Absentees",
           opsAbsentEmpty: "No absentees yesterday.",
           opsClassActionAttendance: "Attendance",
@@ -14553,7 +14711,191 @@
             : t.zoneSettingsTrialDescTpl.replace("{campus}", settingsCampusLabel());
         }
         renderSettingsPreview(slots, t);
+        renderCampusHours(t, key);
+        renderCampusClassrooms(t, key);
+        renderCampusNotice(t, key);
       }
+
+      // ---- 校区设置: hours / classrooms / notice ----
+      function readBucket(storageKey) {
+        try {
+          var raw = localStorage.getItem(storageKey);
+          return raw ? JSON.parse(raw) : {};
+        } catch (_) { return {}; }
+      }
+      function writeBucket(storageKey, obj) {
+        try { localStorage.setItem(storageKey, JSON.stringify(obj || {})); } catch (_) {}
+      }
+      var DAY_KEYS_LIST = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+
+      function renderCampusHours(t, campusKey) {
+        var grid = document.getElementById("campusHoursGrid");
+        if (!grid) return;
+        var all = readBucket("minddo_campus_hours");
+        var cur = all[campusKey] || {};
+        var labels = t.settingsHoursWeekday || ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+        grid.innerHTML = DAY_KEYS_LIST.map(function (dk, i) {
+          var rec = cur[dk] || {};
+          var closed = !!rec.closed;
+          return "<div class='campus-hours-row" + (closed ? " is-closed" : "") + "' data-day='" + dk + "'>"
+            + "<span class='chr-day'>" + escHTML(labels[i]) + "</span>"
+            + "<input type='time' data-chr='open' value='" + escHTML(rec.open || "") + "' aria-label='open' />"
+            + "<input type='time' data-chr='close' value='" + escHTML(rec.close || "") + "' aria-label='close' />"
+            + "<label class='chr-closed'><input type='checkbox' data-chr='closed'" + (closed ? " checked" : "") + " />"
+            +   "<span>" + escHTML(t.settingsHoursClosed) + "</span></label>"
+            + "</div>";
+        }).join("");
+      }
+      function saveCampusHours(t, campusKey) {
+        var grid = document.getElementById("campusHoursGrid");
+        if (!grid) return;
+        var rec = {};
+        grid.querySelectorAll("[data-day]").forEach(function (row) {
+          var dk = row.getAttribute("data-day");
+          rec[dk] = {
+            open: row.querySelector("[data-chr='open']").value || "",
+            close: row.querySelector("[data-chr='close']").value || "",
+            closed: !!row.querySelector("[data-chr='closed']").checked
+          };
+        });
+        var all = readBucket("minddo_campus_hours");
+        all[campusKey] = rec;
+        writeBucket("minddo_campus_hours", all);
+        var msg = document.getElementById("campusHoursMsg");
+        if (msg) {
+          msg.className = "settings-result success";
+          msg.textContent = t.settingsHoursSaved;
+          setTimeout(function () { msg.textContent = ""; msg.className = ""; }, 2000);
+        }
+      }
+
+      function renderCampusClassrooms(t, campusKey) {
+        var listEl = document.getElementById("campusClassroomList");
+        var nameInp = document.getElementById("campusClassroomName");
+        var capInp = document.getElementById("campusClassroomCap");
+        if (!listEl) return;
+        if (nameInp) nameInp.placeholder = t.settingsClassroomNamePh;
+        if (capInp) capInp.placeholder = t.settingsClassroomCapPh;
+        var all = readBucket("minddo_classrooms");
+        var rooms = all[campusKey] || [];
+        if (!rooms.length) {
+          listEl.innerHTML = "<div class='campus-classroom-empty'>" + escHTML(t.settingsClassroomEmpty) + "</div>";
+          return;
+        }
+        listEl.innerHTML = rooms.map(function (r) {
+          return "<div class='campus-classroom-row' data-room-id='" + escHTML(r.id) + "'>"
+            + "<span class='ccr-name'>" + escHTML(r.name) + "</span>"
+            + "<span class='ccr-cap'>" + (t.settingsClassroomCapFmt || "{n}").replace("{n}", r.capacity) + "</span>"
+            + "<button type='button' class='ccr-del' data-classroom-del='" + escHTML(r.id) + "'>" + escHTML(t.settingsClassroomRemove) + "</button>"
+            + "</div>";
+        }).join("");
+      }
+
+      function renderCampusNotice(t, campusKey) {
+        var bodyEl = document.getElementById("campusNoticeBody");
+        var metaEl = document.getElementById("campusNoticeMeta");
+        if (!bodyEl) return;
+        bodyEl.placeholder = t.settingsNoticePlaceholder;
+        var all = readBucket("minddo_campus_notice");
+        var cur = all[campusKey] || null;
+        bodyEl.value = (cur && cur.body) || "";
+        if (metaEl) {
+          if (cur && cur.updatedAt) {
+            var d = new Date(cur.updatedAt);
+            var when = "";
+            try { when = d.toLocaleString(state.lang === "en" ? "en-US" : "zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }); } catch (_) {}
+            var who = cur.by || "—";
+            metaEl.textContent = (t.settingsNoticeMetaFmt || "{time} · {who}")
+              .replace("{time}", when).replace("{who}", who);
+          } else {
+            metaEl.textContent = "";
+          }
+        }
+      }
+
+      // Save handlers — wire once.
+      var __campusSettingsWired = false;
+      function wireCampusSettingsOnce() {
+        if (__campusSettingsWired) return;
+        __campusSettingsWired = true;
+
+        // Hours save
+        var hoursSave = document.getElementById("campusHoursSaveBtn");
+        if (hoursSave) {
+          hoursSave.addEventListener("click", function () {
+            var t = I18N[state.lang];
+            saveCampusHours(t, settingsCampusKey());
+          });
+        }
+        // Hours: toggle disabled inputs when "closed" checkbox flipped
+        var hoursGrid = document.getElementById("campusHoursGrid");
+        if (hoursGrid) {
+          hoursGrid.addEventListener("change", function (e) {
+            var box = e.target.closest("[data-chr='closed']");
+            if (!box) return;
+            var row = box.closest(".campus-hours-row");
+            if (row) row.classList.toggle("is-closed", box.checked);
+          });
+        }
+        // Classroom add
+        var addBtn = document.getElementById("campusClassroomAddBtn");
+        if (addBtn) {
+          addBtn.addEventListener("click", function () {
+            var t = I18N[state.lang];
+            var name = (document.getElementById("campusClassroomName").value || "").trim();
+            var cap = Number(document.getElementById("campusClassroomCap").value) || 0;
+            if (!name) return;
+            var key = settingsCampusKey();
+            var all = readBucket("minddo_classrooms");
+            all[key] = all[key] || [];
+            all[key].push({
+              id: "CR-" + Date.now() + "-" + Math.random().toString(36).slice(2, 5),
+              name: name, capacity: cap
+            });
+            writeBucket("minddo_classrooms", all);
+            document.getElementById("campusClassroomName").value = "";
+            document.getElementById("campusClassroomCap").value = "";
+            renderCampusClassrooms(t, key);
+          });
+        }
+        // Classroom delete (delegated)
+        var listEl = document.getElementById("campusClassroomList");
+        if (listEl) {
+          listEl.addEventListener("click", function (e) {
+            var del = e.target.closest("[data-classroom-del]");
+            if (!del) return;
+            var id = del.getAttribute("data-classroom-del");
+            var key = settingsCampusKey();
+            var all = readBucket("minddo_classrooms");
+            all[key] = (all[key] || []).filter(function (r) { return r.id !== id; });
+            writeBucket("minddo_classrooms", all);
+            renderCampusClassrooms(I18N[state.lang], key);
+          });
+        }
+        // Notice save
+        var noticeSave = document.getElementById("campusNoticeSaveBtn");
+        if (noticeSave) {
+          noticeSave.addEventListener("click", function () {
+            var t = I18N[state.lang];
+            var body = (document.getElementById("campusNoticeBody").value || "").trim();
+            var key = settingsCampusKey();
+            var all = readBucket("minddo_campus_notice");
+            var flow = window.MindDoFlow;
+            var active = flow && flow.getActiveOpsUser && flow.getActiveOpsUser();
+            var actor = (active && active.staff && active.staff.id) || "ops";
+            all[key] = { body: body, updatedAt: new Date().toISOString(), by: actor };
+            writeBucket("minddo_campus_notice", all);
+            var msg = document.getElementById("campusNoticeMsg");
+            if (msg) {
+              msg.className = "settings-result success";
+              msg.textContent = t.settingsNoticeSaved;
+              setTimeout(function () { msg.textContent = ""; msg.className = ""; }, 2000);
+            }
+            renderCampusNotice(t, key);
+          });
+        }
+      }
+      wireCampusSettingsOnce();
 
       // Live preview as the user types — no save needed to see the rendered chips
       function previewFromInputs() {

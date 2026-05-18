@@ -237,6 +237,44 @@ records the academic placement level). Keyed by `lead.createdAt`.
 }
 ```
 
+### `minddo_campus_hours` 🟢 (object)
+Per-campus operating hours, written from the campus settings tab.
+Keyed by campus key (e.g. `"irvine"`, `"_default"`). Each campus is a
+day→record map.
+
+```js
+{
+  "irvine": {
+    mon: { open: "10:00", close: "20:00", closed: false },
+    tue: { open: "10:00", close: "20:00", closed: false },
+    sun: { open: "",      close: "",      closed: true }
+  }
+}
+```
+
+### `minddo_classrooms` 🟢 (object)
+Per-campus classroom list, keyed by campus.
+
+```js
+{
+  "irvine": [
+    { id: "CR-<ts>-<rand>", name: "A 室", capacity: 12 }
+  ]
+}
+```
+
+### `minddo_campus_notice` 🟢 (object)
+Per-campus short notice (one record per campus), keyed by campus.
+
+```js
+{
+  "irvine": { body, updatedAt, by }
+}
+```
+
+Permission: all three are written via 校区设置 (gated by `settings.view.campus`,
+which campus-ops + principal + super-admin all have).
+
 ### `minddo_shift_notes` 🟢 (array)
 Campus shift-handover notes written from the campus-ops overview's
 交班记录 panel. Filtered by active campus on read.
