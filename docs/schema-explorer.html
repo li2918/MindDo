@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schema Explorer · localStorage 字典 | MindDo</title>
+  <style>
+    :root {
+      --bg: #fef8ee; --card: #ffffff; --line: #e4ddd4;
+      --clay: #7a3010; --brand: #d8551c; --gold: #d97706; --gold-deep: #b45309;
+      --muted: #6b7280; --text: #1f2937;
+      --stable: #6e8b58; --evolving: #d97706; --demo: #c46a4d;
+      --cat-student: #d8551c; --cat-academic: #4d9c6e; --cat-family: #b45309;
+      --cat-marketing: #e8702a; --cat-finance: #c44d4d; --cat-internal: #6b5b95;
+      --cat-system: #6b7280;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    .topbar { position: sticky; top: 0; z-index: 50; background: rgba(254, 248, 238, 0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; color: var(--clay); font-size: 15px; letter-spacing: -0.01em; text-decoration: none; }
+    .topbar .brand .dot { display: inline-block; width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #fde68a, var(--gold)); color: var(--clay); font-size: 13px; font-weight: 900; text-align: center; line-height: 22px; }
+    .topbar nav { display: flex; gap: 14px; font-size: 13px; }
+    .topbar nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
+    .topbar nav a:hover { color: var(--clay); }
+
+    main { max-width: 1180px; margin: 0 auto; padding: 32px 24px 80px; }
+
+    .hero {
+      background: linear-gradient(135deg, #0d2841 0%, #1f3f5e 100%);
+      color: #fef3c7; border-radius: 20px;
+      padding: 32px 36px;
+      box-shadow: 0 18px 44px rgba(13, 40, 65, 0.18);
+      margin-bottom: 22px;
+    }
+    .hero .eyebrow { font-size: 11.5px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #60a5fa; margin-bottom: 8px; }
+    .hero h1 { margin: 0 0 8px; font-size: 30px; letter-spacing: -0.02em; font-weight: 900; }
+    .hero .sub { font-size: 14.5px; color: rgba(254, 243, 199, 0.78); max-width: 70ch; line-height: 1.65; }
+    .stats-row {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px; margin-top: 18px;
+    }
+    .stat {
+      background: rgba(254, 243, 199, 0.1);
+      border: 1px solid rgba(254, 243, 199, 0.22);
+      border-radius: 12px; padding: 12px 14px;
+    }
+    .stat .v { font-size: 20px; font-weight: 900; color: #fef3c7; }
+    .stat .l { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(254, 243, 199, 0.66); margin-top: 2px; }
+
+    /* Toolbar */
+    .toolbar {
+      position: sticky; top: 56px; z-index: 40;
+      background: rgba(254, 248, 238, 0.96);
+      backdrop-filter: blur(8px);
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      margin: 0 -24px 22px;
+      padding-left: 24px; padding-right: 24px;
+    }
+    .toolbar-row {
+      max-width: 1180px; margin: 0 auto;
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .search-wrap {
+      flex: 1 1 280px; position: relative;
+      max-width: 360px;
+    }
+    .search-wrap input {
+      width: 100%; box-sizing: border-box;
+      padding: 8px 12px 8px 36px; font: inherit; font-size: 13px;
+      border: 1px solid var(--line); border-radius: 999px;
+      background: #fff; color: var(--text);
+    }
+    .search-wrap input:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: transparent; }
+    .search-wrap::before {
+      content: "🔍";
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%); font-size: 14px;
+      pointer-events: none;
+    }
+    .filter-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+    .filter-pills button {
+      all: unset; cursor: pointer; padding: 6px 12px;
+      border-radius: 999px; font-size: 12px; font-weight: 700;
+      color: var(--muted); border: 1px solid var(--line); background: #fff;
+    }
+    .filter-pills button:hover { border-color: var(--gold); color: var(--clay); }
+    .filter-pills button.active {
+      background: var(--brand); color: #fff; border-color: transparent;
+    }
+    .results-meta {
+      font-size: 12px; color: var(--muted);
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Category nav */
+    .cat-nav {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+    .cat-nav a {
+      padding: 5px 12px; border-radius: 999px;
+      font-size: 12px; font-weight: 700;
+      color: var(--muted); text-decoration: none;
+      background: #fff; border: 1px solid var(--line);
+      transition: 0.12s;
+    }
+    .cat-nav a:hover { color: var(--clay); border-color: var(--gold); }
+
+    /* Category section */
+    .cat-section {
+      margin-bottom: 32px;
+    }
+    .cat-head {
+      display: flex; align-items: baseline; gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--line);
+    }
+    .cat-head h2 {
+      margin: 0; font-size: 17px; font-weight: 900; color: var(--clay);
+      letter-spacing: -0.01em;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cat-head .swatch {
+      display: inline-block; width: 14px; height: 14px;
+      border-radius: 4px;
+    }
+    .cat-head .count {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+
+    /* Card grid */
+    .card-grid {
+      display: grid; gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    }
+    .schema-card {
+      background: #fff; border: 1px solid var(--line);
+      border-radius: 14px; padding: 16px 18px;
+      box-shadow: 0 4px 12px rgba(122, 48, 16, 0.04);
+      position: relative; overflow: hidden;
+      transition: 0.15s;
+    }
+    .schema-card::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: var(--cat-color, var(--brand));
+    }
+    .schema-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--cat-color, var(--gold));
+      box-shadow: 0 14px 32px rgba(122, 48, 16, 0.1);
+    }
+    .schema-card[hidden] { display: none; }
+    .schema-card .card-head {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 8px; flex-wrap: wrap;
+    }
+    .schema-card .key-name {
+      font-family: ui-monospace, "Courier New", monospace;
+      font-size: 13px; font-weight: 800;
+      color: var(--clay); flex: 1 1 auto; min-width: 0;
+      word-break: break-all;
+    }
+    .schema-card .status-dot {
+      font-size: 14px;
+    }
+    .schema-card .type-chip {
+      font-size: 10px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+      padding: 2px 8px; border-radius: 999px;
+      background: rgba(122, 48, 16, 0.05);
+      border: 1px solid var(--line);
+    }
+    .schema-card .type-chip.array { color: #2c5f8d; background: rgba(44, 95, 141, 0.08); border-color: rgba(44, 95, 141, 0.24); }
+    .schema-card .type-chip.object { color: #6e4d8d; background: rgba(110, 77, 141, 0.08); border-color: rgba(110, 77, 141, 0.24); }
+    .schema-card .type-chip.scalar { color: #8d4d2c; background: rgba(141, 77, 44, 0.08); border-color: rgba(141, 77, 44, 0.24); }
+    .schema-card .desc {
+      font-size: 12.5px; color: var(--text); line-height: 1.55;
+      margin: 4px 0 10px;
+    }
+    .schema-card .desc strong { color: var(--clay); }
+    .schema-card .toggle-schema {
+      all: unset; cursor: pointer; padding: 4px 10px;
+      border-radius: 999px; font-size: 11px; font-weight: 700;
+      color: var(--brand); border: 1px solid var(--brand); background: #fff;
+    }
+    .schema-card .toggle-schema:hover { background: var(--brand); color: #fff; }
+    .schema-card pre {
+      margin: 10px 0 0; padding: 10px 12px;
+      background: #1f2937; color: #fef3c7;
+      border-radius: 8px; font-size: 11.5px; line-height: 1.55;
+      font-family: ui-monospace, "Courier New", monospace;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .schema-card pre .k { color: #93c5fd; }
+    .schema-card pre .s { color: #fbbf24; }
+    .schema-card pre .c { color: #94a3b8; font-style: italic; }
+    .schema-card pre[hidden] { display: none; }
+    .schema-card .refs {
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px dashed rgba(122, 48, 16, 0.1);
+      font-size: 11px; color: var(--muted);
+    }
+    .schema-card .refs strong { color: var(--clay); }
+    .schema-card .refs code {
+      font-family: ui-monospace, monospace;
+      color: var(--brand); background: rgba(216, 85, 28, 0.06);
+      padding: 1px 5px; border-radius: 3px; font-size: 11px;
+    }
+
+    .empty-state {
+      padding: 30px; text-align: center; color: var(--muted);
+      font-size: 13px; background: rgba(248, 250, 252, 0.55);
+      border: 1px dashed var(--line); border-radius: 12px;
+    }
+    .empty-state[hidden] { display: none; }
+
+    /* Footer help */
+    .footnote {
+      margin-top: 40px;
+      padding: 18px 22px;
+      background: rgba(248,250,252,0.6);
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .footnote strong { color: var(--clay); }
+    .footnote a { color: var(--brand); text-decoration: none; font-weight: 700; }
+    .footnote a:hover { text-decoration: underline; }
+    .footnote ol { padding-left: 20px; margin: 8px 0 0; }
+    .footnote ol li { padding: 2px 0; }
+    .footnote code {
+      font-family: ui-monospace, monospace;
+      color: var(--brand); background: rgba(216, 85, 28, 0.06);
+      padding: 1px 5px; border-radius: 3px; font-size: 11.5px;
+    }
+
+    footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px dashed var(--line);
+      font-size: 11.5px; color: var(--muted); text-align: center;
+    }
+    footer code { font-family: ui-monospace, monospace; color: var(--brand); }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="../index.html" class="brand">
+    <span class="dot">M</span>
+    <span>MindDo · Docs</span>
+  </a>
+  <nav>
+    <a href="user-flows.html">User Flows</a>
+    <a href="../dashboard.html">运营 Dashboard</a>
+    <a href="SCHEMA.md">SCHEMA.md (源)</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="eyebrow">Schema Explorer</div>
+    <h1>localStorage 数据字典</h1>
+    <p class="sub">MindDo 是 frontend-only prototype，所有数据存在浏览器的 localStorage 里。本页把 <code style="font-family:ui-monospace,monospace;background:rgba(254,243,199,0.18);padding:1px 6px;border-radius:4px;color:#fef3c7;">docs/SCHEMA.md</code> 里的 38 个 <code style="font-family:ui-monospace,monospace;background:rgba(254,243,199,0.18);padding:1px 6px;border-radius:4px;color:#fef3c7;">minddo_*</code> key 变成可搜索 / 过滤的卡片。每张卡显示字段 schema，点击可展开完整代码块。改 schema 时也别忘了同步更新源文件 + MIGRATIONS。</p>
+    <div class="stats-row">
+      <div class="stat"><div class="v" id="statTotal">—</div><div class="l">Total Keys</div></div>
+      <div class="stat"><div class="v" id="statStable">—</div><div class="l">🟢 Stable</div></div>
+      <div class="stat"><div class="v" id="statEvolving">—</div><div class="l">🟡 Evolving</div></div>
+      <div class="stat"><div class="v" id="statDemo">—</div><div class="l">🔴 Demo-only</div></div>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <div class="toolbar-row">
+      <div class="search-wrap">
+        <input type="search" id="schemaSearch" placeholder="搜索 key 名 / 描述..." autocomplete="off" />
+      </div>
+      <div class="filter-pills" id="statusPills">
+        <button data-status="all" class="active">全部</button>
+        <button data-status="stable">🟢 Stable</button>
+        <button data-status="evolving">🟡 Evolving</button>
+        <button data-status="demo">🔴 Demo</button>
+      </div>
+      <span class="results-meta" id="resultsMeta">显示 <strong>—</strong> / —</span>
+    </div>
+  </div>
+
+  <div class="cat-nav">
+    <a href="#cat-student">🎓 Core Student Journey</a>
+    <a href="#cat-academic">📘 Academic Catalog</a>
+    <a href="#cat-family">👨‍👩‍👧 Family + Accounts</a>
+    <a href="#cat-marketing">📣 Marketing / Ops</a>
+    <a href="#cat-finance">💰 Operations / Finance</a>
+    <a href="#cat-internal">🛠 Internal Management</a>
+    <a href="#cat-system">⚙️ System / Housekeeping</a>
+  </div>
+
+  <div class="empty-state" id="emptyState" hidden>
+    没有匹配的 key，试试别的关键字或清空过滤。
+  </div>
+
+  <div id="categories"></div>
+
+  <!-- Footer help -->
+  <div class="footnote">
+    <strong>新增一个 key 的检查清单</strong>
+    <ol>
+      <li>在 <code>assets/minddo-flow.js</code> 顶部的 <code>KEYS</code> 对象里加新 key</li>
+      <li>在 <a href="SCHEMA.md"><code>docs/SCHEMA.md</code></a> 里加字段说明（🟡 evolving 状态开始）</li>
+      <li>需要让老用户也获得新结构 → 加 <code>MIGRATIONS</code> 条目（在 <code>minddo-flow.js</code> 底部）</li>
+      <li>更新读取 helper（<code>getX</code> / <code>findX</code>）补默认值</li>
+      <li>本页（schema-explorer.html）的 SCHEMA 数组里加一条用于可视化</li>
+    </ol>
+  </div>
+
+  <footer>
+    生成于 <code>docs/schema-explorer.html</code> · 源数据：<a href="SCHEMA.md" style="color:var(--brand);">SCHEMA.md</a>
+  </footer>
+
+</main>
+
+<script>
+  // =======================================================================
+  // Schema data — mirrors docs/SCHEMA.md. When you add a new minddo_* key
+  // or rename one, update both this array AND the markdown source.
+  // =======================================================================
+  const SCHEMA = [
+    // ========== Core student journey ==========
+    { name: "minddo_current_student", status: "stable", type: "object", category: "student",
+      desc: "The single '正在查看' student. Read on every parent-side page to hydrate hero / nav / metadata.",
+      schema: `{
+  studentName: "李若安",
+  name: "李若安",            // alias kept for older code paths
+  email: "leo.li@example.com",
+  phone: "317-555-0188",
+  city: "Indianapolis",
+  grade: "六年级",
+  birthday: "2014-05-18",
+  parentName: "李女士",
+  provider: "email",         // "email" | "google" | "microsoft" | "apple"
+  goal: "AI创造力提升",
+  studentId: "MD2026-0417"   // format MD{YYYY}-{MMDD}
+}`,
+      refs: ["minddo_students", "minddo_signup_users"] },
+
+    { name: "minddo_trial_leads", status: "stable", type: "array", category: "student",
+      desc: "试课线索 funnel · 每行是一个预约试课的家长 / 学员。校区市场运营的核心数据源。",
+      schema: `{
+  studentName, studentId, grade, birthday,
+  parentName, phone, city, email,
+  subject, subjectLabel,
+  trialDate, trialTime,
+  channel, channelLabel,
+  goal, timeNote, consent,
+  createdAt,                       // ISO timestamp
+  crmStatus,                       // "new" | "contacted" | "follow" | "won" | "lost"
+  trialStatus,                     // "scheduled" | "completed" | "noshow"
+  // Marketing CRM extensions (all optional):
+  lastContactAt,                   // ISO of most recent contact
+  nextContactAt,                   // "YYYY-MM-DD" — scheduled callback
+  tags,                            // ["高意向", "中文家长", ...]
+  contactLog,                      // [{at, by, channel, note}]
+  note                             // free-text marketing note
+}`,
+      refs: ["minddo_trial_feedback", "minddo_trial_evaluations", "minddo_payments"] },
+
+    { name: "minddo_assessments", status: "stable", type: "array", category: "student",
+      desc: "学员评估记录（按 email 去重 upsert）。",
+      schema: `{ name, studentName, studentId, email,
+  level, goal, learningStyle, confidence,
+  quizScore, recommendation, notes, createdAt }`,
+      refs: ["minddo_student_levels"] },
+
+    { name: "minddo_signup_users", status: "evolving", type: "array", category: "student",
+      desc: "注册账号 · 按 email upsert。⚠️ password 字段以 \"plain:<value>\" 明文存储，demo only。",
+      schema: `{ provider, studentName, email, studentId, password, createdAt }`,
+      refs: ["minddo_accounts"] },
+
+    { name: "minddo_payments", status: "stable", type: "array", category: "student",
+      desc: "付款记录 · 财务页面和校长 KPI 的数据源。",
+      schema: `{ email, amount, source, studentId,
+  method,        // "alipay" | "wechat" | "card" | "email"
+  status,        // "paid" | "refunded" | ...
+  createdAt }`,
+      refs: ["minddo_membership_orders"] },
+
+    { name: "minddo_membership_orders", status: "stable", type: "array", category: "student",
+      desc: "活跃 membership 订单 · 每行的 sessions[] 决定该学员选了哪些班次。续费看板的数据源。",
+      schema: `{ email, studentName, studentId,
+  plan,                        // "weekly1" | "weekly2" | "weekly3" | ...
+  addons: ["addon-1on1", ...],
+  classMode,                   // "small" | "1v1"
+  billingCycle,                // "monthly" | "annual"
+  sessions: [
+    { offeringId, courseName, courseNameZh, courseNameEn,
+      level, teacher, classMode,
+      dayKey, weekday, weekdayZh, weekdayEn,
+      slotKey, slotLabel, timeSlot }
+  ],
+  weekday, timeSlot,
+  totalMonthly,
+  createdAt }`,
+      refs: ["minddo_class_offerings", "minddo_payments"] },
+
+    { name: "minddo_feedback", status: "stable", type: "array", category: "student",
+      desc: "家长侧试课反馈表单。",
+      schema: `{ studentName, email, studentId,
+  trialDate, trialTime, subject,
+  rating, nextStep, highlights, suggestion,
+  createdAt }` },
+
+    { name: "minddo_schedule_requests", status: "stable", type: "array", category: "student",
+      desc: "请假 / 改期申请。校区运营的 approve.schedule 权限可处理。",
+      schema: `{ type: "leave" | "reschedule",
+  targetLabel, reason,
+  email, studentName, studentId,
+  status: "pending" | "approved" | "rejected" | "completed",
+  createdAt, updatedAt }`,
+      refs: ["minddo_students"] },
+
+    // ========== Academic catalog ==========
+    { name: "minddo_class_offerings", status: "stable", type: "array", category: "academic",
+      desc: "班级目录 · 家长选课页 + 运营 course-offerings.html 编辑的数据。",
+      schema: `{ id,                          // e.g. "ai-fund-mon-16"
+  courseName: { zh, en },
+  level: { zh, en },           // Beginner | Intermediate | Advanced | Competition | Project Camp
+  teacher,
+  classMode: "small" | "1v1",
+  dayKey,                      // "mon" .. "sun"
+  weekday: { zh, en },
+  slotKey,                     // "t09" .. "t20"
+  timeSlot,                    // "16:00 – 17:00"
+  seatsTotal, seatsTaken }`,
+      refs: ["minddo_attendance", "minddo_membership_orders", "minddo_teacher_availability"] },
+
+    { name: "minddo_student_levels", status: "stable", type: "object", category: "academic",
+      desc: "学员 Level 映射 { studentId: levelEn }。决定家长选课页能看到哪些班。",
+      schema: `{
+  "MD2026-0417": "Intermediate",
+  "MD2026-0518": "Advanced",
+  ...
+}`,
+      refs: ["minddo_assessments", "minddo_students"] },
+
+    { name: "minddo_trial_slots", status: "stable", type: "object", category: "academic",
+      desc: "试课时段配置，按校区 keyed。_default 是没单独配置的校区的回退。",
+      schema: `{
+  "_default": { weekday: ["15:00", ...], weekend: ["09:00", ...] },
+  "<campusKey>": { weekday: [...], weekend: [...] }
+}` },
+
+    { name: "minddo_portfolio", status: "stable", type: "array", category: "academic",
+      desc: "学员作品集 · 家长侧 Portfolio panel 显示。" },
+
+    { name: "minddo_growth_records", status: "stable", type: "array", category: "academic",
+      desc: "学员月度技能评分 · 成长曲线图的数据源。" },
+
+    { name: "minddo_assignments", status: "stable", type: "array", category: "academic",
+      desc: "作业生命周期记录（assigned → in_progress → submitted → graded）。" },
+
+    // ========== Family + multi-account ==========
+    { name: "minddo_families", status: "stable", type: "array", category: "family",
+      desc: "家庭记录 · 把学员 + 监护人聚合到一个 familyId 下。",
+      schema: `{ familyId, studentIds: [], guardianIds: [], createdAt }`,
+      refs: ["minddo_students", "minddo_guardians", "minddo_billing_profile"] },
+
+    { name: "minddo_students", status: "stable", type: "array", category: "family",
+      desc: "每个孩子的学员档案。与 current_student 分离 · 一个家庭可有多个 student 行。可选字段：status (active|paused|withdrawn)、statusReason、statusChangedAt。",
+      schema: `{ id, name, email, phone,
+  grade, birthday, parentName, goal,
+  // Campus-ops extensions:
+  status?,                    // "active" | "paused" | "withdrawn"
+  statusReason?, statusChangedAt? }`,
+      refs: ["minddo_families", "minddo_attendance", "minddo_student_levels"] },
+
+    { name: "minddo_guardians", status: "stable", type: "array", category: "family",
+      desc: "家长 / 共同监护人记录，通过 familyId 关联到家庭。",
+      refs: ["minddo_families", "minddo_accounts"] },
+
+    { name: "minddo_accounts", status: "stable", type: "array", category: "family",
+      desc: "登录账号 + 账号类型（guardian_primary / guardian_secondary / student）。",
+      refs: ["minddo_guardians", "minddo_invite_tokens"] },
+
+    { name: "minddo_invite_tokens", status: "stable", type: "array", category: "family",
+      desc: "共同监护人 + 学员账号的一次性邀请 token。" },
+
+    { name: "minddo_account_invites", status: "evolving", type: "array", category: "family",
+      desc: "试课后邀请家长建账号的邮件历史。" },
+
+    { name: "minddo_billing_profile", status: "stable", type: "array", category: "family",
+      desc: "家庭账单卡片 + 订阅状态（按 familyId keyed）。",
+      refs: ["minddo_families"] },
+
+    // ========== Marketing / ops ==========
+    { name: "minddo_referrals", status: "stable", type: "array", category: "marketing",
+      desc: "推荐记录 · 通过 referrerAccountId 关联到推荐人账号。",
+      schema: `{ id, referrerAccountId, referrerCode,
+  refereeName, refereeEmail,
+  status: "sent" | "signed_up" | "paid",
+  rewardClaimedAt, createdAt }`,
+      refs: ["minddo_accounts"] },
+
+    { name: "minddo_trial_evaluations", status: "stable", type: "array", category: "marketing",
+      desc: "运营在 new-trials.html 录入的学术评估（决定学员 Level）。与 trial_feedback 不同。",
+      refs: ["minddo_trial_leads", "minddo_student_levels"] },
+
+    { name: "minddo_trial_completions", status: "stable", type: "array", category: "marketing",
+      desc: "运营标记完成的试课快照 · 从 leads 镜像出来给老页面读。",
+      refs: ["minddo_trial_leads"] },
+
+    { name: "minddo_email_outbox", status: "evolving", type: "array", category: "marketing",
+      desc: "Mock 邮件日志 · 给 email-outbox.html 显示发送历史用。" },
+
+    { name: "minddo_marketing_templates", status: "stable", type: "array", category: "marketing",
+      desc: "市场专员的常用话术模板 · 首次访问自动播种 4 条（试课确认 / 试课提醒 / 试课后跟进 / 重新激活）。",
+      schema: `{ id, title, body, createdAt }` },
+
+    { name: "minddo_trial_feedback", status: "stable", type: "object", category: "marketing",
+      desc: "试课后市场反馈 · 按 lead.createdAt keyed。区别于 trial_evaluations（学术评估）。",
+      schema: `{
+  "<lead.createdAt iso>": {
+    leadId, intent,                    // 1-5 stars
+    ready,                             // "yes" | "maybe" | "no"
+    note, by, updatedAt
+  }
+}`,
+      refs: ["minddo_trial_leads"] },
+
+    { name: "minddo_campus_hours", status: "stable", type: "object", category: "marketing",
+      desc: "校区营业时段 · 按 campus key 分隔。每天可独立设置开关 + 时间。",
+      schema: `{
+  "irvine": {
+    mon: { open: "10:00", close: "20:00", closed: false },
+    tue: { open: "10:00", close: "20:00", closed: false },
+    sun: { open: "",      close: "",      closed: true }
+  }
+}` },
+
+    { name: "minddo_classrooms", status: "stable", type: "object", category: "marketing",
+      desc: "校区教室列表 · 按 campus key 分隔。",
+      schema: `{
+  "irvine": [
+    { id: "CR-<ts>-<rand>", name: "A 室", capacity: 12 }
+  ]
+}` },
+
+    { name: "minddo_campus_notice", status: "stable", type: "object", category: "marketing",
+      desc: "校区公告 · 一个校区一条记录。",
+      schema: `{
+  "irvine": { body, updatedAt, by }
+}` },
+
+    { name: "minddo_shift_notes", status: "stable", type: "array", category: "marketing",
+      desc: "校区交班记录 · 在 campus-ops 首页底部 panel 显示。仅 shift.write 权限可写。",
+      schema: `{
+  id: "SN-<ts>-<random>",
+  campus,                          // campus key
+  by,                              // staff id
+  atIso,                           // ISO timestamp
+  body                             // free-text handover note
+}`,
+      refs: ["minddo_staff"] },
+
+    { name: "minddo_marketing_targets", status: "stable", type: "object", category: "marketing",
+      desc: "个人月度目标 · 按 {staffId}_{YYYY-MM} keyed。市场作战首页的进度条数据源。",
+      schema: `{
+  "M2026-0042_2026-05": {
+    leads: 60, trials: 30, won: 12, revenue: 24000
+  }
+}`,
+      refs: ["minddo_staff"] },
+
+    { name: "minddo_newsletter", status: "evolving", type: "array", category: "marketing",
+      desc: "Newsletter 订阅者邮箱（index.html 收集）。" },
+
+    // ========== Operations / finance ==========
+    { name: "minddo_payroll", status: "stable", type: "array", category: "finance",
+      desc: "工资记录 · 校长 / 超管可见。",
+      schema: `{ teacher, role, classes, hours, rate, total, status: "paid" | "pending" }` },
+
+    { name: "minddo_contracts", status: "stable", type: "array", category: "finance",
+      desc: "电子合同 · 入学 / 雇佣 / 租赁 / 其他类型。",
+      schema: `{ id, type: "enrollment" | "employment" | "lease" | "other",
+  party, signedAt, expiresAt,
+  status: "pending" | "signed" | "expiring" | "expired" }` },
+
+    { name: "minddo_approvals", status: "stable", type: "array", category: "finance",
+      desc: "审批请求 · 退款 / 报销 等。校长的 approve.finance 权限可处理。",
+      schema: `{ id, type, requester, detail, amount, submittedAt,
+  status: "pending" | "approved" | "rejected" }` },
+
+    // ========== Internal management ==========
+    { name: "minddo_staff", status: "stable", type: "array", category: "internal",
+      desc: "员工花名册 · 跨校区。roleId 决定其登录后看到的界面。",
+      schema: `{ id, name, roleId, department, email, phone, campus,
+  status: "active" | "leave" | "inactive",
+  joinedAt }`,
+      refs: ["minddo_roles", "minddo_active_ops_user"] },
+
+    { name: "minddo_roles", status: "stable", type: "array", category: "internal",
+      desc: "角色定义 · 4 个简化模板（super-admin / principal / campus-ops / campus-marketing）。",
+      schema: `{ id, name, nameEn,
+  category: "admin" | "academic" | "ops",
+  desc, descEn,
+  permissions: ["*.write" | "staff.write" | ...] }`,
+      refs: ["minddo_staff"] },
+
+    { name: "minddo_audit_log", status: "stable", type: "array", category: "internal",
+      desc: "审计日志 · 限 500 条循环。所有写操作（学员档案、试课接待、批量操作等）都追加一条。",
+      schema: `{
+  id,                       // "AU-<ts>-<random>"
+  at,                       // ISO timestamp
+  actor,                    // staff id or "ops"
+  kind,                     // e.g. "student.update" | "trial.reception.checkin"
+  target,                   // entity id this entry is about
+  summary,                  // human-readable one-liner
+  before, after             // full snapshots for diffing
+}` },
+
+    { name: "minddo_attendance", status: "stable", type: "array", category: "internal",
+      desc: "考勤记录 · 一行 = 一个 (学员 × 上课日) 组合。replace-set 语义。",
+      schema: `{
+  id,                       // "AT-<offeringId>-<classDate>-<studentId>"
+  offeringId,               // -> minddo_class_offerings.id
+  classDate,                // "YYYY-MM-DD"
+  studentId,
+  status,                   // "present" | "absent" | "late" | "excused"
+  note,
+  recordedBy,               // staff id or "ops"
+  recordedAt                // ISO timestamp
+}`,
+      refs: ["minddo_class_offerings", "minddo_students"] },
+
+    { name: "minddo_teacher_availability", status: "stable", type: "object", category: "internal",
+      desc: "教师可用时段 · 按教师名 keyed。course-offerings.html 用来检测冲突。",
+      schema: `{
+  "Dr. Sarah Chen": {
+    mon: { enabled: true, start: "14:00", end: "21:00" },
+    ...
+  }
+}`,
+      refs: ["minddo_class_offerings"] },
+
+    // ========== System / housekeeping ==========
+    { name: "minddo_lang", status: "stable", type: "scalar", category: "system",
+      desc: "当前语言 · \"zh-CN\" | \"en\"。镜像到 <html lang>。",
+      schema: `"zh-CN"  // or "en"` },
+
+    { name: "minddo_seed_version", status: "stable", type: "scalar", category: "system",
+      desc: "首次访问标记 · seedDemoData() 写入。返回访客用 MIGRATIONS 框架而非重新 seed。",
+      schema: `"2026-04-12"  // seed timestamp`,
+      refs: ["minddo_migrations_applied"] },
+
+    { name: "minddo_migrations_applied", status: "stable", type: "array", category: "system",
+      desc: "已应用的 migration id 数组 · 每个 migration 在浏览器最多执行一次。",
+      schema: `["2026-04-add-trial-status",
+ "2026-05-rbac-collapse-roles",
+ "2026-05-rbac-split-approvals",
+ ...]` },
+
+    { name: "minddo_active_ops_user", status: "stable", type: "scalar", category: "system",
+      desc: "当前 mock auth 登录的 staff id · 顶栏右上「切换身份」菜单控制。默认是最高权限的 staff（owner → admin → campus-manager）。",
+      schema: `"EM001"  // staff id`,
+      refs: ["minddo_staff"] },
+
+    { name: "minddo_dashboard_tab / minddo_dash_<area>_subtab / minddo_acct_*", status: "stable", type: "scalar", category: "system",
+      desc: "Sticky tab / sub-tab 选择 · 刷新后回到原页面。清空不损失数据。" },
+
+    { name: "minddo_franchise_inquiries / minddo_franchise_draft", status: "stable", type: "array", category: "system",
+      desc: "招商加盟咨询表单提交 + auto-saved 草稿。仅超管可见。" }
+  ];
+
+  // =======================================================================
+  // Render
+  // =======================================================================
+  const CATEGORIES = [
+    { id: "student",   label: "🎓 Core Student Journey",  color: "var(--cat-student)" },
+    { id: "academic",  label: "📘 Academic Catalog",      color: "var(--cat-academic)" },
+    { id: "family",    label: "👨‍👩‍👧 Family + Accounts", color: "var(--cat-family)" },
+    { id: "marketing", label: "📣 Marketing / Ops",       color: "var(--cat-marketing)" },
+    { id: "finance",   label: "💰 Operations / Finance",  color: "var(--cat-finance)" },
+    { id: "internal",  label: "🛠 Internal Management",   color: "var(--cat-internal)" },
+    { id: "system",    label: "⚙️ System / Housekeeping", color: "var(--cat-system)" }
+  ];
+
+  const STATUS_DOT = { stable: "🟢", evolving: "🟡", demo: "🔴" };
+  const STATUS_FILTER_KEY = { all: null, stable: "stable", evolving: "evolving", demo: "demo" };
+
+  function escHTML(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[ch])); }
+  function highlightCode(s) {
+    return escHTML(s)
+      .replace(/(\/\/[^\n]*)/g, '<span class="c">$1</span>')
+      .replace(/"([^"\\]|\\.)*"/g, m => '<span class="s">' + m + '</span>')
+      .replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '<span class="k">$1</span>:');
+  }
+
+  function renderCategories() {
+    const root = document.getElementById("categories");
+    root.innerHTML = CATEGORIES.map(cat => {
+      const items = SCHEMA.filter(s => s.category === cat.id);
+      const cards = items.map(s => renderCard(s, cat.color)).join("");
+      return `
+        <section class="cat-section" id="cat-${cat.id}">
+          <div class="cat-head">
+            <h2><span class="swatch" style="background:${cat.color};"></span>${cat.label}</h2>
+            <span class="count">${items.length} key${items.length === 1 ? "" : "s"}</span>
+          </div>
+          <div class="card-grid">${cards}</div>
+        </section>
+      `;
+    }).join("");
+  }
+
+  function renderCard(s, color) {
+    const refs = s.refs && s.refs.length
+      ? `<div class="refs"><strong>关联：</strong>${s.refs.map(r => `<code>${escHTML(r)}</code>`).join(" ")}</div>`
+      : "";
+    const schema = s.schema
+      ? `<pre hidden>${highlightCode(s.schema)}</pre>`
+      : "";
+    return `
+      <div class="schema-card" data-name="${escHTML(s.name)}" data-desc="${escHTML(s.desc)}" data-status="${s.status}" style="--cat-color:${color};">
+        <div class="card-head">
+          <span class="status-dot" title="${s.status}">${STATUS_DOT[s.status]}</span>
+          <span class="key-name">${escHTML(s.name)}</span>
+          <span class="type-chip ${s.type}">${s.type}</span>
+        </div>
+        <div class="desc">${escHTML(s.desc)}</div>
+        ${s.schema ? `<button type="button" class="toggle-schema">展开 schema ▾</button>` : ""}
+        ${schema}
+        ${refs}
+      </div>
+    `;
+  }
+
+  function renderStats() {
+    const total = SCHEMA.length;
+    const stable = SCHEMA.filter(s => s.status === "stable").length;
+    const evolving = SCHEMA.filter(s => s.status === "evolving").length;
+    const demo = SCHEMA.filter(s => s.status === "demo").length;
+    document.getElementById("statTotal").textContent = total;
+    document.getElementById("statStable").textContent = stable;
+    document.getElementById("statEvolving").textContent = evolving;
+    document.getElementById("statDemo").textContent = demo;
+    updateResultsMeta(total, total);
+  }
+
+  function updateResultsMeta(shown, total) {
+    document.getElementById("resultsMeta").innerHTML = `显示 <strong>${shown}</strong> / ${total}`;
+  }
+
+  // Filter / search
+  let activeStatus = "all";
+  let activeSearch = "";
+
+  function applyFilter() {
+    const total = SCHEMA.length;
+    let shown = 0;
+    document.querySelectorAll(".schema-card").forEach(card => {
+      const name = (card.dataset.name || "").toLowerCase();
+      const desc = (card.dataset.desc || "").toLowerCase();
+      const status = card.dataset.status;
+      const matchesStatus = activeStatus === "all" || status === activeStatus;
+      const matchesSearch = !activeSearch || name.includes(activeSearch) || desc.includes(activeSearch);
+      const visible = matchesStatus && matchesSearch;
+      card.hidden = !visible;
+      if (visible) shown++;
+    });
+    // Hide section if empty
+    document.querySelectorAll(".cat-section").forEach(sec => {
+      const hasVisible = sec.querySelector(".schema-card:not([hidden])");
+      sec.style.display = hasVisible ? "" : "none";
+    });
+    document.getElementById("emptyState").hidden = shown > 0;
+    updateResultsMeta(shown, total);
+  }
+
+  // Event wiring
+  document.addEventListener("DOMContentLoaded", () => {
+    renderCategories();
+    renderStats();
+
+    document.getElementById("schemaSearch").addEventListener("input", e => {
+      activeSearch = e.target.value.trim().toLowerCase();
+      applyFilter();
+    });
+
+    document.getElementById("statusPills").addEventListener("click", e => {
+      const btn = e.target.closest("[data-status]");
+      if (!btn) return;
+      document.querySelectorAll("#statusPills button").forEach(b => b.classList.toggle("active", b === btn));
+      activeStatus = btn.dataset.status;
+      applyFilter();
+    });
+
+    document.getElementById("categories").addEventListener("click", e => {
+      const tog = e.target.closest(".toggle-schema");
+      if (!tog) return;
+      const pre = tog.nextElementSibling;
+      const isHidden = pre.hidden;
+      pre.hidden = !isHidden;
+      tog.textContent = isHidden ? "收起 schema ▴" : "展开 schema ▾";
+    });
+  });
+</script>
+
+</body>
+</html>
