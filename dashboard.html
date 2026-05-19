@@ -4613,6 +4613,47 @@
   </div>
 
   <!-- ================================================================
+       Approval detail modal — opens from the financial approval table
+       and from the principal-overview pending row. Shows full request
+       record (type / requester / amount / reason / submittedAt) and a
+       decision form with required reason + audit on decide.
+       ================================================================ -->
+  <div class="mo-lead-overlay" id="approvalDetailOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="mo-lead-card" style="max-width:580px;">
+      <header class="mo-lead-head">
+        <div>
+          <h3 data-i18n="approvalDetailTitle"></h3>
+          <p id="approvalDetailSubTitle" class="muted" style="margin:0;font-size:13px;color:var(--muted);"></p>
+        </div>
+        <button type="button" class="mo-lead-close" id="approvalDetailCloseBtn" aria-label="Close">×</button>
+      </header>
+      <div class="mo-lead-form" style="padding:0 22px 22px;">
+        <dl class="lead-detail-grid" id="approvalDetailFields"></dl>
+        <div class="lead-detail-edit" style="grid-template-columns:1fr;">
+          <label class="mo-field">
+            <span data-i18n="approvalDetailDecisionLabel"></span>
+            <select id="approvalDetailDecision">
+              <option value="approved" data-i18n="approvalDetailApprove"></option>
+              <option value="rejected" data-i18n="approvalDetailReject"></option>
+            </select>
+          </label>
+          <label class="mo-field">
+            <span data-i18n="approvalDetailReasonLabel"></span>
+            <textarea id="approvalDetailReason" rows="3" placeholder=""></textarea>
+          </label>
+        </div>
+        <div class="mo-lead-foot">
+          <span id="approvalDetailMsg" class="mo-lead-msg"></span>
+          <div style="display:flex;gap:8px;">
+            <button type="button" id="approvalDetailCancelBtn" class="mo-lead-secondary" data-i18n="approvalDetailCancel"></button>
+            <button type="button" id="approvalDetailSubmitBtn" class="mo-lead-primary" data-i18n="approvalDetailSubmit"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
        Post-trial marketing feedback modal — captures the marketer's
        qualitative read on the parent's intent after a trial class.
        Stored in localStorage at minddo_trial_feedback, keyed by
@@ -5374,6 +5415,27 @@
           finApprovalsTypeExpense: "报销",
           finApprovalsTypePayroll: "工资调整",
           finApprovalToastApproved: "已通过 {who} 的{type}申请",
+          finApprovalActionReview: "审批",
+          approvalDetailTitle: "审批申请",
+          approvalDetailFieldType: "类型",
+          approvalDetailFieldRequester: "申请人",
+          approvalDetailFieldDetail: "申请说明",
+          approvalDetailFieldAmount: "金额",
+          approvalDetailFieldSubmitted: "提交时间",
+          approvalDetailFieldStatus: "当前状态",
+          approvalDetailFieldDecidedAt: "决策时间",
+          approvalDetailFieldDecidedBy: "决策人",
+          approvalDetailFieldDecisionReason: "决策原因",
+          approvalDetailDecisionLabel: "决策",
+          approvalDetailApprove: "批准",
+          approvalDetailReject: "拒绝",
+          approvalDetailReasonLabel: "决策原因（必填）",
+          approvalDetailReasonPlaceholder: "记录这次决策的理由，例如：金额合理且符合退课政策 / 金额超限需要总部审批",
+          approvalDetailCancel: "取消",
+          approvalDetailSubmit: "提交决策",
+          approvalDetailMissingReason: "请先填写决策原因",
+          approvalDetailDone: "决策已记录",
+          approvalDetailNoPerm: "没有权限审批此类申请",
           finApprovalToastRejected: "已驳回 {who} 的{type}申请",
           // 账单管理
           zoneFinBillingTitle: "账单概览",
@@ -6509,6 +6571,27 @@
           finApprovalsTypeExpense: "Expense",
           finApprovalsTypePayroll: "Payroll Adj.",
           finApprovalToastApproved: "Approved {who}'s {type} request",
+          finApprovalActionReview: "Review",
+          approvalDetailTitle: "Approval Request",
+          approvalDetailFieldType: "Type",
+          approvalDetailFieldRequester: "Requester",
+          approvalDetailFieldDetail: "Details",
+          approvalDetailFieldAmount: "Amount",
+          approvalDetailFieldSubmitted: "Submitted",
+          approvalDetailFieldStatus: "Status",
+          approvalDetailFieldDecidedAt: "Decided at",
+          approvalDetailFieldDecidedBy: "Decided by",
+          approvalDetailFieldDecisionReason: "Decision reason",
+          approvalDetailDecisionLabel: "Decision",
+          approvalDetailApprove: "Approve",
+          approvalDetailReject: "Reject",
+          approvalDetailReasonLabel: "Decision reason (required)",
+          approvalDetailReasonPlaceholder: "Why are you making this decision? e.g. Refund matches our policy / Amount exceeds limit, needs HQ.",
+          approvalDetailCancel: "Cancel",
+          approvalDetailSubmit: "Submit decision",
+          approvalDetailMissingReason: "Decision reason is required",
+          approvalDetailDone: "Decision recorded",
+          approvalDetailNoPerm: "You don't have permission to approve this type",
           finApprovalToastRejected: "Rejected {who}'s {type} request",
           zoneFinBillingTitle: "Billing Overview",
           zoneFinBillingSub: "This-month revenue, AR / collected, monthly comparison, invoice details.",
@@ -13016,12 +13099,13 @@
           var dateText = r.submittedAt
             ? new Date(r.submittedAt).toLocaleDateString(state.lang === "en" ? "en-US" : "zh-CN", { month: "short", day: "numeric" })
             : "—";
-          var actions = (r.status === "pending")
-            ? "<div class='fin-actions'>"
-              + "<button class='approve' data-fin-approval-action='approve' data-aid='" + escHTML(r.id) + "'>" + escHTML(t.finApprovalsActionApprove) + "</button>"
-              + "<button class='reject' data-fin-approval-action='reject' data-aid='" + escHTML(r.id) + "'>" + escHTML(t.finApprovalsActionReject) + "</button>"
-              + "</div>"
-            : "—";
+          var actions = "<div class='fin-actions'>"
+            + "<button data-fin-approval-action='review' data-aid='" + escHTML(r.id) + "'>" + escHTML(t.finApprovalActionReview) + "</button>"
+            + (r.status === "pending" ? (
+                "<button class='approve' data-fin-approval-action='approve' data-aid='" + escHTML(r.id) + "'>" + escHTML(t.finApprovalsActionApprove) + "</button>"
+                + "<button class='reject' data-fin-approval-action='reject' data-aid='" + escHTML(r.id) + "'>" + escHTML(t.finApprovalsActionReject) + "</button>"
+              ) : "")
+            + "</div>";
           return "<tr>"
             + "<td><span class='fin-typepill " + r.type + "'>" + escHTML(typeLabel) + "</span></td>"
             + "<td>" + escHTML(r.requester || "—") + "</td>"
@@ -13253,8 +13337,10 @@
         }).join("");
       }
 
-      // Approval action delegation — Approve / Reject buttons mutate the
-      // record in localStorage and re-render. Toast confirms.
+      // Approval action delegation — both the old inline Approve/Reject
+      // buttons and the new [审批] button (which opens the detail modal).
+      // Inline path stays for backwards-compat; the new path captures a
+      // required decision reason and writes an audit row.
       (function () {
         var tBody = document.getElementById("finApprovalsBody");
         if (!tBody) return;
@@ -13263,6 +13349,12 @@
           if (!btn) return;
           var aid = btn.getAttribute("data-aid");
           var action = btn.getAttribute("data-fin-approval-action");
+          if (action === "review") {
+            if (typeof window.__minddoOpenApprovalDetail === "function") {
+              window.__minddoOpenApprovalDetail(aid);
+            }
+            return;
+          }
           var f = window.MindDoFlow;
           if (!f || !f.readJson || !f.writeJson) return;
           var list = f.readJson(f.keys.approvals) || [];
@@ -13278,6 +13370,161 @@
           }
           if (typeof render === "function") render();
         });
+      })();
+
+      // Approval detail modal — full request review + decision capture.
+      (function () {
+        var overlay = document.getElementById("approvalDetailOverlay");
+        if (!overlay) return;
+        var subTitleEl = document.getElementById("approvalDetailSubTitle");
+        var fieldsEl = document.getElementById("approvalDetailFields");
+        var decisionEl = document.getElementById("approvalDetailDecision");
+        var reasonEl = document.getElementById("approvalDetailReason");
+        var msgEl = document.getElementById("approvalDetailMsg");
+        var submitBtn = document.getElementById("approvalDetailSubmitBtn");
+        var cancelBtn = document.getElementById("approvalDetailCancelBtn");
+        var closeBtn = document.getElementById("approvalDetailCloseBtn");
+        var currentId = null;
+
+        function fmtIso(iso) {
+          if (!iso) return "—";
+          try {
+            return new Date(iso).toLocaleString(state.lang === "en" ? "en-US" : "zh-CN", {
+              year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"
+            });
+          } catch (_) { return iso; }
+        }
+
+        function needsPerm(type) {
+          // schedule.* requests use approve.schedule; everything else uses approve.finance
+          if (!type) return "approve.finance";
+          var lower = String(type).toLowerCase();
+          if (lower.indexOf("leave") >= 0 || lower.indexOf("reschedule") >= 0 || lower.indexOf("schedule") >= 0) {
+            return "approve.schedule";
+          }
+          return "approve.finance";
+        }
+
+        function openModal(aid) {
+          var flow = window.MindDoFlow;
+          if (!flow) return;
+          var list = flow.readJson(flow.keys.approvals) || [];
+          var hit = list.filter(function (r) { return r && r.id === aid; })[0];
+          if (!hit) return;
+          currentId = aid;
+          var t = I18N[state.lang] || I18N["zh-CN"];
+
+          var typeLabel = t["finApprovalsType" + (hit.type || "").charAt(0).toUpperCase() + (hit.type || "").slice(1)] || hit.type || "—";
+          var statusLabel = t["finApprovalsStatus" + (hit.status || "pending").charAt(0).toUpperCase() + (hit.status || "pending").slice(1)] || hit.status || "pending";
+          if (subTitleEl) subTitleEl.textContent = (hit.id || "") + " · " + typeLabel;
+
+          var fields = [
+            [t.approvalDetailFieldType, typeLabel],
+            [t.approvalDetailFieldRequester, hit.requester || "—"],
+            [t.approvalDetailFieldDetail, hit.detail || "—"],
+            [t.approvalDetailFieldAmount, hit.amount ? safeMoney(Math.round(hit.amount)) : "—"],
+            [t.approvalDetailFieldSubmitted, fmtIso(hit.submittedAt)],
+            [t.approvalDetailFieldStatus, statusLabel]
+          ];
+          if (hit.decidedAt) fields.push([t.approvalDetailFieldDecidedAt, fmtIso(hit.decidedAt)]);
+          if (hit.decidedBy) {
+            var staff = (flow.readJson(flow.keys.staff) || []).filter(function (s) { return s.id === hit.decidedBy; })[0];
+            fields.push([t.approvalDetailFieldDecidedBy, (staff && staff.name) ? staff.name + " (" + hit.decidedBy + ")" : hit.decidedBy]);
+          }
+          if (hit.decisionReason) fields.push([t.approvalDetailFieldDecisionReason, hit.decisionReason]);
+
+          fieldsEl.innerHTML = fields.map(function (f) {
+            return "<dt>" + escHTML(f[0]) + "</dt><dd>" + escHTML(f[1]) + "</dd>";
+          }).join("");
+
+          // Pre-fill if already decided
+          if (decisionEl) decisionEl.value = hit.status === "rejected" ? "rejected" : "approved";
+          if (reasonEl) {
+            reasonEl.value = hit.decisionReason || "";
+            reasonEl.placeholder = t.approvalDetailReasonPlaceholder || "";
+          }
+          if (msgEl) { msgEl.textContent = ""; msgEl.className = "mo-lead-msg"; }
+
+          // Hide submit if user can't approve this type
+          var permKey = needsPerm(hit.type);
+          var hasPerm = flow.hasPerm && flow.hasPerm(permKey);
+          if (submitBtn) {
+            submitBtn.style.display = hasPerm ? "" : "none";
+            if (decisionEl) decisionEl.disabled = !hasPerm;
+            if (reasonEl) reasonEl.disabled = !hasPerm;
+          }
+          if (!hasPerm && msgEl) {
+            msgEl.textContent = t.approvalDetailNoPerm;
+            msgEl.className = "mo-lead-msg err";
+          }
+
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+          if (reasonEl && !reasonEl.disabled) reasonEl.focus();
+        }
+
+        function closeModal() {
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+          currentId = null;
+        }
+        window.__minddoOpenApprovalDetail = openModal;
+
+        if (closeBtn) closeBtn.addEventListener("click", closeModal);
+        if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+        overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && overlay.classList.contains("open")) closeModal();
+        });
+
+        if (submitBtn) {
+          submitBtn.addEventListener("click", function () {
+            if (!currentId) return;
+            var flow = window.MindDoFlow;
+            if (!flow) return;
+            var t = I18N[state.lang] || I18N["zh-CN"];
+            var decision = decisionEl ? decisionEl.value : "approved";
+            var reason = reasonEl ? reasonEl.value.trim() : "";
+            if (!reason) {
+              if (msgEl) {
+                msgEl.textContent = t.approvalDetailMissingReason;
+                msgEl.className = "mo-lead-msg err";
+              }
+              return;
+            }
+            var list = flow.readJson(flow.keys.approvals) || [];
+            var idx = list.findIndex(function (r) { return r && r.id === currentId; });
+            if (idx < 0) return;
+            var before = Object.assign({}, list[idx]);
+            var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+            var actorId = (active && active.staff && active.staff.id) || "ops";
+            list[idx].status = decision;
+            list[idx].decidedAt = new Date().toISOString();
+            list[idx].decidedBy = actorId;
+            list[idx].decisionReason = reason;
+            flow.writeJson(flow.keys.approvals, list);
+            if (flow.appendAudit) {
+              var typeLabel = t["finApprovalsType" + (list[idx].type || "").charAt(0).toUpperCase() + (list[idx].type || "").slice(1)] || list[idx].type || "";
+              flow.appendAudit({
+                actor: actorId,
+                kind: "approval.decision",
+                target: list[idx].id,
+                summary: (decision === "approved" ? "批准" : "拒绝") + " · " + typeLabel + " · " + (list[idx].requester || "") + (list[idx].amount ? " · " + safeMoney(list[idx].amount) : "") + " · " + reason,
+                before: before, after: list[idx]
+              });
+            }
+            if (msgEl) {
+              msgEl.textContent = t.approvalDetailDone;
+              msgEl.className = "mo-lead-msg ok";
+            }
+            setTimeout(function () {
+              closeModal();
+              if (typeof render === "function") render();
+            }, 400);
+          });
+        }
       })();
 
       // Finance sub-tab handler — same pattern as the marketing /
