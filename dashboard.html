@@ -1943,6 +1943,64 @@
       border-color: rgba(110, 143, 87, 0.36);
     }
 
+    /* Super-admin cross-campus comparison table */
+    .super-compare-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .super-compare-table th {
+      text-align: left; padding: 10px 12px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+      border-bottom: 1px solid var(--line);
+      background: rgba(122, 48, 16, 0.04);
+    }
+    .super-compare-table td {
+      padding: 10px 12px;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.08);
+      vertical-align: middle;
+    }
+    .super-compare-table tbody tr:hover { background: rgba(248, 250, 252, 0.55); }
+    .super-compare-table .num { font-variant-numeric: tabular-nums; }
+    .super-compare-table .pill-bar {
+      position: relative; height: 6px; min-width: 80px;
+      background: rgba(122, 48, 16, 0.07); border-radius: 999px; overflow: hidden;
+      margin-top: 4px;
+    }
+    .super-compare-table .pill-bar .fill {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      background: linear-gradient(90deg, #fde68a, var(--gold-deep));
+      border-radius: 999px;
+    }
+    .super-compare-table .pill-bar .fill.good { background: linear-gradient(90deg, #bbf7d0, #16a34a); }
+    .super-compare-table .pill-bar .fill.warn { background: linear-gradient(90deg, #fed7aa, #f59e0b); }
+    .super-compare-table .pill-bar .fill.bad  { background: linear-gradient(90deg, #fecaca, #ef4444); }
+    .super-compare-table .leader { font-weight: 800; color: var(--clay); }
+    .super-compare-table .laggard { color: var(--danger); }
+
+    .super-list-row {
+      display: grid; grid-template-columns: 26px 1fr auto;
+      gap: 10px; align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.06);
+      font-size: 12.5px;
+    }
+    .super-list-row:last-child { border-bottom: none; }
+    .super-list-row .sl-icon { font-size: 16px; }
+    .super-list-row strong { color: var(--clay); }
+    .super-list-row .meta { font-size: 11px; color: var(--muted); display: block; margin-top: 1px; }
+    .super-list-row .badge {
+      font-weight: 800; padding: 2px 8px; border-radius: 999px;
+      font-size: 11.5px; font-variant-numeric: tabular-nums;
+      background: rgba(122, 48, 16, 0.06); color: var(--clay);
+      border: 1px solid var(--line);
+    }
+    .super-list-row .badge.warn {
+      background: rgba(245, 158, 11, 0.18); color: var(--gold-deep);
+      border-color: rgba(245, 158, 11, 0.36);
+    }
+    .super-list-row .badge.ok {
+      background: rgba(110, 143, 87, 0.18); color: #3f5d26;
+      border-color: rgba(110, 143, 87, 0.36);
+    }
+
     .ops-class-row {
       display: grid; grid-template-columns: 92px 1fr auto auto;
       gap: 12px; align-items: center;
@@ -3371,6 +3429,46 @@
             </div>
             <div id="prinChannelBody"></div>
           </article>
+        </section>
+
+        <!-- ============================================================
+             Super-admin first-screen — cross-campus comparison, system
+             health (audit volume, recent migrations), franchise inquiries
+             count. Only shows when active user holds super-admin template.
+             ============================================================ -->
+        <section id="superAdminOverview" hidden>
+          <section class="grid" id="superKpiMetrics"></section>
+          <article class="panel">
+            <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+              <h2 data-i18n="superCompareHead" style="margin:0;"></h2>
+              <span class="muted" data-i18n="superCompareHint" style="font-size:12px;color:var(--muted);"></span>
+            </div>
+            <div class="table-wrap">
+              <table class="super-compare-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="superColCampus"></th>
+                    <th data-i18n="superColActive"></th>
+                    <th data-i18n="superColRevenue"></th>
+                    <th data-i18n="superColLeads"></th>
+                    <th data-i18n="superColConversion"></th>
+                    <th data-i18n="superColAttendance"></th>
+                  </tr>
+                </thead>
+                <tbody id="superCompareBody"></tbody>
+              </table>
+            </div>
+          </article>
+          <div class="principal-split">
+            <article class="panel">
+              <h2 data-i18n="superFranchiseHead" style="margin:0 0 12px;"></h2>
+              <div id="superFranchiseList"></div>
+            </article>
+            <article class="panel">
+              <h2 data-i18n="superSystemHead" style="margin:0 0 12px;"></h2>
+              <div id="superSystemList"></div>
+            </article>
+          </div>
         </section>
       </section>
 
@@ -5834,6 +5932,36 @@
           prinSentinelWithdrawnSub: "趋势监控",
           prinTopChannelHead: "本月渠道效果",
           prinTopChannelHint: "本校区线索 / 试课 / 付费分布。",
+          // ---- Super-admin first-screen ----
+          superKpiCampuses: "活跃校区",
+          superKpiRevenue: "本月总收入",
+          superKpiStudents: "全公司在读",
+          superKpiStaff: "在职员工",
+          superKpiCampusesSub: "有数据的校区",
+          superKpiRevenueSub: "全公司汇总",
+          superKpiStudentsSub: "status = active",
+          superKpiStaffSub: "全部校区",
+          superCompareHead: "校区横向对比 · 本月",
+          superCompareHint: "点击行进入该校区视图（mock）。",
+          superCompareEmpty: "暂无校区数据。",
+          superColCampus: "校区",
+          superColActive: "在读",
+          superColRevenue: "本月收入",
+          superColLeads: "线索",
+          superColConversion: "转化率",
+          superColAttendance: "出勤率",
+          superFranchiseHead: "招商加盟动向",
+          superFranchiseEmpty: "暂无新加盟咨询。",
+          superFranchiseCount: "{n} 条待回复",
+          superSystemHead: "系统状态",
+          superSystemAuditFmt: "近 7 天审计 {n} 条",
+          superSystemAuditSub: "全公司操作量",
+          superSystemMigrationsFmt: "已应用 {n} 个 migration",
+          superSystemMigrationsSub: "最近: {last}",
+          superSystemStorageFmt: "Storage 估算 {n} KB",
+          superSystemStorageSub: "localStorage 占用",
+          superSystemHealthOk: "系统正常",
+          superSystemHealthWarn: "需关注",
           mktTrialActionFeedback: "市场反馈",
           mktTrialActionEditFeedback: "修改反馈",
           mktTrialFbChipPrefix: "意向 ",
@@ -6926,6 +7054,36 @@
           prinSentinelWithdrawnSub: "Trend monitor",
           prinTopChannelHead: "Channel Mix · This Month",
           prinTopChannelHint: "Leads / trials / paid by source.",
+          // ---- Super-admin first-screen ----
+          superKpiCampuses: "Active Campuses",
+          superKpiRevenue: "Total Revenue",
+          superKpiStudents: "Active Students",
+          superKpiStaff: "Active Staff",
+          superKpiCampusesSub: "with data",
+          superKpiRevenueSub: "company-wide MTD",
+          superKpiStudentsSub: "status = active",
+          superKpiStaffSub: "all campuses",
+          superCompareHead: "Campus Comparison · This Month",
+          superCompareHint: "Click a row to drill into that campus.",
+          superCompareEmpty: "No campus data yet.",
+          superColCampus: "Campus",
+          superColActive: "Active",
+          superColRevenue: "Revenue",
+          superColLeads: "Leads",
+          superColConversion: "Conv %",
+          superColAttendance: "Attend %",
+          superFranchiseHead: "Franchise Pipeline",
+          superFranchiseEmpty: "No franchise inquiries.",
+          superFranchiseCount: "{n} awaiting follow-up",
+          superSystemHead: "System Health",
+          superSystemAuditFmt: "{n} audits last 7 days",
+          superSystemAuditSub: "company-wide volume",
+          superSystemMigrationsFmt: "{n} migrations applied",
+          superSystemMigrationsSub: "latest: {last}",
+          superSystemStorageFmt: "Storage approx {n} KB",
+          superSystemStorageSub: "localStorage footprint",
+          superSystemHealthOk: "All systems normal",
+          superSystemHealthWarn: "Needs attention",
           mktTrialActionFeedback: "Mkt feedback",
           mktTrialActionEditFeedback: "Edit feedback",
           mktTrialFbChipPrefix: "Intent ",
@@ -9403,6 +9561,13 @@
         return !!(t && t.id === "principal");
       }
 
+      function superAdminRoleActive() {
+        var flow = window.MindDoFlow;
+        if (!flow || !flow.getActivePermissions) return false;
+        var t = flow.getActivePermissions();
+        return !!(t && t.id === "super-admin");
+      }
+
       // Apply the role swap: when campus-marketing is active, show
       // #marketingOverview; when campus-ops is active, show #opsOverview.
       // In both cases hide every sibling inside the overview panel
@@ -9412,19 +9577,22 @@
         var moEl = document.getElementById("marketingOverview");
         var opsEl = document.getElementById("opsOverview");
         var prinEl = document.getElementById("principalOverview");
+        var superEl = document.getElementById("superAdminOverview");
         var fab = document.getElementById("moNewLeadFab");
         var moOn = moRoleActive();
         var opsOn = opsRoleActive();
         var prinOn = principalRoleActive();
+        var superOn = superAdminRoleActive();
         if (moEl) moEl.hidden = !moOn;
         if (opsEl) opsEl.hidden = !opsOn;
         if (prinEl) prinEl.hidden = !prinOn;
+        if (superEl) superEl.hidden = !superOn;
         if (fab) fab.hidden = !moOn;
-        var anyRole = moOn || opsOn || prinOn;
+        var anyRole = moOn || opsOn || prinOn || superOn;
         var panel = document.querySelector('[data-tab-panel="overview"]');
         if (panel) {
           Array.prototype.forEach.call(panel.children, function (child) {
-            if (child === moEl || child === opsEl || child === prinEl) return;
+            if (child === moEl || child === opsEl || child === prinEl || child === superEl) return;
             child.style.display = anyRole ? "none" : "";
           });
         }
@@ -9432,6 +9600,7 @@
         if (moOn) renderMarketingOverview(t);
         if (opsOn) renderOpsOverview(t);
         if (prinOn) renderPrincipalOverview(t);
+        if (superOn) renderSuperAdminOverview(t);
       }
       window.__minddoApplyRoleOverview = applyRoleSpecificOverview;
       window.__minddoRender = function () {
@@ -9970,6 +10139,225 @@
                     + "</div>";
                 }).join("");
           }
+        }
+      }
+
+      // ============================================================
+      // 超管专属首页 (#superAdminOverview) — cross-campus comparison,
+      // franchise inquiries inbox, system health (audit volume,
+      // migrations, storage estimate).
+      // ============================================================
+      function renderSuperAdminOverview(t) {
+        var flow = window.MindDoFlow;
+        if (!flow) return;
+        var now = new Date();
+        var today0 = new Date(now); today0.setHours(0, 0, 0, 0);
+        var monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        var thirtyAgo = new Date(today0); thirtyAgo.setDate(today0.getDate() - 30);
+        var sevenAgo = new Date(today0); sevenAgo.setDate(today0.getDate() - 7);
+
+        var leads = flow.readJson(flow.keys.leads) || [];
+        var payments = flow.readJson(flow.keys.payments) || [];
+        var students = flow.readJson(flow.keys.students) || [];
+        var staff = flow.readJson(flow.keys.staff) || [];
+        var attendance = flow.readJson(flow.keys.attendance) || [];
+        var auditRows = flow.readJson(flow.keys.auditLog) || [];
+        var franchiseRows = (function () {
+          try { return JSON.parse(localStorage.getItem("minddo_franchise_inquiries") || "[]"); }
+          catch (_) { return []; }
+        })();
+        var migrationsApplied = (function () {
+          try { return JSON.parse(localStorage.getItem("minddo_migrations_applied") || "[]"); }
+          catch (_) { return []; }
+        })();
+
+        // Discover active campuses from staff + leads
+        var campusSet = {};
+        staff.forEach(function (s) { if (s && s.campus) campusSet[s.campus] = true; });
+        leads.forEach(function (l) { if (l && l.campus) campusSet[l.campus] = true; });
+        var campusKeys = Object.keys(campusSet);
+
+        // KPIs
+        var totalRevenue = payments.reduce(function (acc, p) {
+          if (!p || !p.createdAt) return acc;
+          var d = new Date(p.createdAt);
+          if (!isFinite(d.getTime()) || d < monthStart) return acc;
+          return acc + (Number(p.amount) || 0);
+        }, 0);
+        var totalActive = students.filter(function (s) { return s && (s.status === "active" || !s.status); }).length;
+        var activeStaff = staff.filter(function (s) { return s && s.status === "active"; }).length;
+
+        var kpiEl = document.getElementById("superKpiMetrics");
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.superKpiCampuses, value: campusKeys.length, sub: t.superKpiCampusesSub,
+              nav: { tab: "data" } },
+            { label: t.superKpiRevenue, value: safeMoney(Math.round(totalRevenue)),
+              sub: t.superKpiRevenueSub, nav: { tab: "finance" } },
+            { label: t.superKpiStudents, value: totalActive, sub: t.superKpiStudentsSub,
+              nav: { tab: "academic" } },
+            { label: t.superKpiStaff, value: activeStaff, sub: t.superKpiStaffSub,
+              nav: { tab: "internal" } }
+          ]);
+        }
+
+        // Cross-campus comparison table
+        var compareEl = document.getElementById("superCompareBody");
+        if (compareEl) {
+          if (!campusKeys.length) {
+            compareEl.innerHTML = "<tr><td colspan='6' style='text-align:center;color:var(--muted);padding:24px;'>"
+              + escHTML(t.superCompareEmpty) + "</td></tr>";
+          } else {
+            // Build per-campus stats
+            var rows = campusKeys.map(function (campusKey) {
+              var campusStudents = students.filter(function (s) {
+                // Match via membership/lead crossref since student rows don't carry campus directly
+                // Fallback: count all students if no campus info
+                return s && (s.campus === campusKey || !s.campus);
+              });
+              // Better: count from staff association (mock)
+              var campusActiveCount = students.filter(function (s) {
+                return s && (s.status === "active" || !s.status);
+              }).filter(function (s) {
+                // Crude: use the email -> leads campus map
+                var l = leads.filter(function (ll) { return ll.email && s.email && ll.email === s.email; })[0];
+                return l && l.campus === campusKey;
+              }).length;
+
+              var campusRevenue = payments.reduce(function (acc, p) {
+                if (!p || !p.createdAt) return acc;
+                var d = new Date(p.createdAt);
+                if (!isFinite(d.getTime()) || d < monthStart) return acc;
+                var l = leads.filter(function (ll) { return ll.email && p.email && ll.email === p.email; })[0];
+                if (l && l.campus === campusKey) return acc + (Number(p.amount) || 0);
+                return acc;
+              }, 0);
+
+              var campusLeads = leads.filter(function (l) {
+                var t2 = new Date(l.createdAt || 0).getTime();
+                return l.campus === campusKey && isFinite(t2) && t2 >= monthStart.getTime();
+              });
+
+              var monthPaidEmails = {};
+              payments.forEach(function (p) {
+                if (!p || !p.createdAt || !p.email) return;
+                var d = new Date(p.createdAt);
+                if (isFinite(d.getTime()) && d >= monthStart) {
+                  monthPaidEmails[String(p.email).toLowerCase()] = true;
+                }
+              });
+              var won = campusLeads.filter(function (l) {
+                return l.email && monthPaidEmails[String(l.email).toLowerCase()];
+              }).length;
+              var convPct = campusLeads.length ? Math.round(won / campusLeads.length * 100) : 0;
+
+              // Attendance: last 30 days for this campus's offerings
+              var attBy = { p: 0, t: 0 };
+              attendance.forEach(function (a) {
+                if (!a || !a.classDate) return;
+                var d = new Date(a.classDate + "T00:00:00");
+                if (!isFinite(d.getTime()) || d < thirtyAgo) return;
+                // Mock: we don't have per-record campus, so just include all
+                attBy.t++;
+                if (a.status === "present" || a.status === "late") attBy.p++;
+              });
+              var attPct = attBy.t ? Math.round(attBy.p / attBy.t * 100) : 0;
+
+              return {
+                campus: campusKey,
+                active: campusActiveCount,
+                revenue: campusRevenue,
+                leads: campusLeads.length,
+                convPct: convPct,
+                attPct: attPct
+              };
+            }).sort(function (a, b) { return b.revenue - a.revenue; });
+
+            var campusLabels = ((t.campusOptions || []).reduce(function (m, o) {
+              m[o.value] = o.label; return m;
+            }, {}));
+
+            compareEl.innerHTML = rows.map(function (r, idx) {
+              var label = campusLabels[r.campus] || r.campus;
+              var convCls = r.convPct >= 30 ? "good" : r.convPct >= 15 ? "warn" : "bad";
+              var attCls = r.attPct >= 85 ? "good" : r.attPct >= 70 ? "warn" : "bad";
+              var leaderCls = idx === 0 ? " class='leader'" : "";
+              var laggardCls = idx === rows.length - 1 && rows.length > 1 ? " class='laggard'" : "";
+              return "<tr>"
+                + "<td" + leaderCls + ">" + escHTML(label) + "</td>"
+                + "<td class='num'" + laggardCls + ">" + r.active + "</td>"
+                + "<td class='num'>" + escHTML(safeMoney(Math.round(r.revenue))) + "</td>"
+                + "<td class='num'>" + r.leads + "</td>"
+                + "<td class='num'>" + r.convPct + "%"
+                +   "<div class='pill-bar'><div class='fill " + convCls + "' style='width:" + Math.max(2, r.convPct) + "%;'></div></div>"
+                + "</td>"
+                + "<td class='num'>" + r.attPct + "%"
+                +   "<div class='pill-bar'><div class='fill " + attCls + "' style='width:" + Math.max(2, r.attPct) + "%;'></div></div>"
+                + "</td>"
+                + "</tr>";
+            }).join("");
+          }
+        }
+
+        // Franchise pipeline
+        var franchiseEl = document.getElementById("superFranchiseList");
+        if (franchiseEl) {
+          if (!franchiseRows.length) {
+            franchiseEl.innerHTML = "<div class='ops-overview-empty'>" + escHTML(t.superFranchiseEmpty) + "</div>";
+          } else {
+            var pendingFranchise = franchiseRows.filter(function (r) {
+              return !r.status || r.status === "new" || r.status === "pending";
+            });
+            franchiseEl.innerHTML = franchiseRows.slice(0, 5).map(function (r) {
+              var who = r.name || r.contact || r.email || "—";
+              var city = r.city || r.region || "—";
+              var when = r.createdAt
+                ? new Date(r.createdAt).toLocaleDateString(state.lang === "en" ? "en-US" : "zh-CN", { month: "2-digit", day: "2-digit" })
+                : "—";
+              var status = r.status || "new";
+              return "<div class='super-list-row'>"
+                + "<span class='sl-icon'>💎</span>"
+                + "<div><strong>" + escHTML(who) + "</strong>"
+                +   "<span class='meta'>" + escHTML(city) + " · " + escHTML(when) + "</span></div>"
+                + "<span class='badge " + (status === "new" ? "warn" : "ok") + "'>" + escHTML(status) + "</span>"
+                + "</div>";
+            }).join("");
+          }
+        }
+
+        // System health
+        var systemEl = document.getElementById("superSystemList");
+        if (systemEl) {
+          var recentAudits = auditRows.filter(function (r) {
+            var d = new Date(r.at || 0);
+            return isFinite(d.getTime()) && d >= sevenAgo;
+          }).length;
+          // Approx storage size — sum length of all minddo_* localStorage values
+          var storageKb = 0;
+          try {
+            for (var i = 0; i < localStorage.length; i++) {
+              var k = localStorage.key(i);
+              if (k && k.indexOf("minddo_") === 0) {
+                storageKb += ((localStorage.getItem(k) || "").length + k.length);
+              }
+            }
+            storageKb = Math.round(storageKb / 1024);
+          } catch (_) { storageKb = 0; }
+          var lastMigration = migrationsApplied.length ? migrationsApplied[migrationsApplied.length - 1] : "—";
+
+          var rows = [
+            { icon: "📋", label: (t.superSystemAuditFmt || "").replace("{n}", recentAudits), sub: t.superSystemAuditSub, badge: recentAudits, cls: recentAudits > 100 ? "warn" : "ok" },
+            { icon: "🔄", label: (t.superSystemMigrationsFmt || "").replace("{n}", migrationsApplied.length), sub: (t.superSystemMigrationsSub || "").replace("{last}", lastMigration), badge: migrationsApplied.length, cls: "ok" },
+            { icon: "💾", label: (t.superSystemStorageFmt || "").replace("{n}", storageKb), sub: t.superSystemStorageSub, badge: storageKb + "K", cls: storageKb > 1024 ? "warn" : "ok" }
+          ];
+          systemEl.innerHTML = rows.map(function (r) {
+            return "<div class='super-list-row'>"
+              + "<span class='sl-icon'>" + r.icon + "</span>"
+              + "<div><strong>" + escHTML(r.label) + "</strong>"
+              +   "<span class='meta'>" + escHTML(r.sub) + "</span></div>"
+              + "<span class='badge " + r.cls + "'>" + escHTML(String(r.badge)) + "</span>"
+              + "</div>";
+          }).join("");
         }
       }
 
