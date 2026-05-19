@@ -730,9 +730,99 @@
     .fin-subpanel { display: none; }
     .fin-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
 
-    /* Internal Management sub-panels (staff / roles) */
+    /* Internal Management sub-panels (staff / roles / audit) */
     .int-subpanel { display: none; }
     .int-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
+
+    /* Audit log viewer */
+    .audit-filters {
+      display: grid; gap: 10px;
+      grid-template-columns: 160px 160px 130px 130px 1fr auto;
+      align-items: end;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.1);
+    }
+    .audit-filters .af-field { display: flex; flex-direction: column; gap: 4px; }
+    .audit-filters .af-field span {
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .audit-filters .af-field input, .audit-filters .af-field select {
+      border: 1px solid var(--line); border-radius: 8px;
+      padding: 7px 10px; font: inherit; font-size: 12.5px;
+      background: #fff;
+    }
+    .audit-filters .btn {
+      padding: 7px 14px; font-size: 12.5px;
+    }
+    @media (max-width: 900px) {
+      .audit-filters { grid-template-columns: 1fr 1fr; }
+      .audit-filters .af-field-grow { grid-column: 1 / -1; }
+    }
+    .audit-list {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .audit-row {
+      display: grid; grid-template-columns: 140px 120px 1fr auto;
+      gap: 12px; align-items: start;
+      padding: 10px 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 12.5px;
+      transition: 0.12s;
+    }
+    .audit-row:hover { border-color: rgba(217, 119, 6, 0.32); }
+    .audit-row .au-time {
+      color: var(--muted); font-variant-numeric: tabular-nums;
+      font-size: 11.5px;
+    }
+    .audit-row .au-kind {
+      font-family: ui-monospace, monospace; font-size: 11px; font-weight: 800;
+      padding: 3px 8px; border-radius: 999px;
+      background: rgba(216, 85, 28, 0.08); color: var(--brand);
+      white-space: nowrap;
+      align-self: center;
+    }
+    .audit-row .au-summary { color: var(--text); line-height: 1.55; }
+    .audit-row .au-summary .au-actor {
+      font-size: 11px; color: var(--muted); margin-left: 4px;
+    }
+    .audit-row .au-diff-btn {
+      all: unset; cursor: pointer; padding: 3px 10px;
+      border-radius: 999px; font-size: 11px; font-weight: 700;
+      color: var(--muted); border: 1px solid var(--line); background: #fff;
+      white-space: nowrap; align-self: center;
+    }
+    .audit-row .au-diff-btn:hover { color: var(--clay); border-color: var(--gold); }
+    .audit-diff {
+      grid-column: 1 / -1;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(122, 48, 16, 0.1);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    @media (max-width: 720px) {
+      .audit-diff { grid-template-columns: 1fr; }
+      .audit-row { grid-template-columns: 1fr; }
+    }
+    .audit-diff .au-side { background: rgba(248, 250, 252, 0.6); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+    .audit-diff .au-side-head { font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .audit-diff .au-side.before .au-side-head { color: #c46a4d; }
+    .audit-diff .au-side.after  .au-side-head { color: #6e8b58; }
+    .audit-diff pre {
+      margin: 0; padding: 0; background: transparent;
+      font-family: ui-monospace, "Courier New", monospace;
+      font-size: 11px; color: var(--text); line-height: 1.5;
+      white-space: pre-wrap; word-break: break-word;
+      max-height: 240px; overflow-y: auto;
+    }
+    .audit-empty {
+      padding: 28px; text-align: center; color: var(--muted); font-size: 13px;
+      background: rgba(248,250,252,0.55);
+      border: 1px dashed var(--line); border-radius: 12px;
+    }
 
     /* Business Settings sub-panels (trial / hours / classrooms / notice / offerings) */
     .settings-subpanel { display: none; }
@@ -2922,6 +3012,9 @@
           <button type="button" class="sidebar-subitem int-subtab" data-int-subtab="roles" data-perm-required="internal.view" role="tab">
             <span class="ms-icon" aria-hidden="true">🛡️</span><span class="ms-label" data-i18n="intSubtabRoles"></span>
           </button>
+          <button type="button" class="sidebar-subitem int-subtab" data-int-subtab="audit" role="tab">
+            <span class="ms-icon" aria-hidden="true">📜</span><span class="ms-label" data-i18n="intSubtabAudit"></span>
+          </button>
         </div>
         <button type="button" class="sidebar-item" data-tab="settings" data-perm-required="settings.view.campus" role="tab">
           <span class="si-icon" aria-hidden="true">⚙️</span><span class="si-label" data-i18n="navBizSettings"></span>
@@ -4021,6 +4114,45 @@
           </section>
         </div>
 
+        <!-- Sub-panel 3: Audit Log — filterable history of every write
+             operation across the dashboard. Bounded to 500 rows via the
+             appendAudit helper. Filterable by actor / kind / target /
+             keyword + date range. -->
+        <div class="int-subpanel" data-int-subpanel="audit" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+                <h2 data-i18n="auditHead" style="margin:0;"></h2>
+                <span class="muted" id="auditCount" style="font-size:12px;color:var(--muted);"></span>
+              </div>
+              <div class="audit-filters">
+                <label class="af-field">
+                  <span data-i18n="auditFilterKind"></span>
+                  <select id="auditFilterKind"></select>
+                </label>
+                <label class="af-field">
+                  <span data-i18n="auditFilterActor"></span>
+                  <select id="auditFilterActor"></select>
+                </label>
+                <label class="af-field">
+                  <span data-i18n="auditFilterFrom"></span>
+                  <input type="date" id="auditFilterFrom" />
+                </label>
+                <label class="af-field">
+                  <span data-i18n="auditFilterTo"></span>
+                  <input type="date" id="auditFilterTo" />
+                </label>
+                <label class="af-field af-field-grow">
+                  <span data-i18n="auditFilterSearch"></span>
+                  <input type="search" id="auditFilterSearch" placeholder="" autocomplete="off" />
+                </label>
+                <button type="button" class="btn" id="auditFilterReset" data-i18n="auditFilterReset"></button>
+              </div>
+              <div class="audit-list" id="auditList"></div>
+            </article>
+          </section>
+        </div>
+
       </section>
 
       <!-- ========== Business Settings ========== -->
@@ -4927,6 +5059,24 @@
           // ---- Internal Management ----
           intSubtabStaff: "员工管理",
           intSubtabRoles: "角色管理",
+          intSubtabAudit: "审计日志",
+          auditHead: "操作日志",
+          auditCountFmt: "{shown} / {total} 条",
+          auditFilterKind: "类型",
+          auditFilterActor: "操作人",
+          auditFilterFrom: "起",
+          auditFilterTo: "止",
+          auditFilterSearch: "搜索摘要",
+          auditFilterSearchPh: "按 target / summary 关键字搜...",
+          auditFilterReset: "重置",
+          auditFilterAllKinds: "全部类型",
+          auditFilterAllActors: "全部操作人",
+          auditDiff: "diff",
+          auditDiffHide: "收起",
+          auditBefore: "Before",
+          auditAfter: "After",
+          auditEmpty: "没有匹配的记录。",
+          auditAnyActor: "ops",
           // 员工管理
           zoneIntStaffTitle: "员工管理",
           zoneIntStaffSub: "全部员工与岗位、所属部门、联系方式与在职状态。",
@@ -5989,6 +6139,24 @@
           tabSettings: "Course Settings",
           intSubtabStaff: "Staff",
           intSubtabRoles: "Roles",
+          intSubtabAudit: "Audit Log",
+          auditHead: "Operation History",
+          auditCountFmt: "{shown} / {total}",
+          auditFilterKind: "Kind",
+          auditFilterActor: "Actor",
+          auditFilterFrom: "From",
+          auditFilterTo: "To",
+          auditFilterSearch: "Search summary",
+          auditFilterSearchPh: "Match target / summary keywords...",
+          auditFilterReset: "Reset",
+          auditFilterAllKinds: "All kinds",
+          auditFilterAllActors: "All actors",
+          auditDiff: "diff",
+          auditDiffHide: "hide",
+          auditBefore: "Before",
+          auditAfter: "After",
+          auditEmpty: "No matching entries.",
+          auditAnyActor: "ops",
           zoneIntStaffTitle: "Staff Management",
           zoneIntStaffSub: "All employees with role, department, contact, and status.",
           intStaffHead: "Staff list",
@@ -12535,7 +12703,7 @@
         var bar = document.getElementById("intSubtabs");
         if (!bar) return;
         var KEY = "minddo_dash_int_subtab";
-        var KNOWN = ["staff", "roles"];
+        var KNOWN = ["staff", "roles", "audit"];
         function applySub(key) {
           if (KNOWN.indexOf(key) === -1) key = "staff";
           bar.querySelectorAll("[data-int-subtab]").forEach(function (b) {
@@ -12547,6 +12715,9 @@
             p.hidden = !match;
           });
           try { localStorage.setItem(KEY, key); } catch (_) {}
+          if (key === "audit" && typeof renderAuditLog === "function") {
+            renderAuditLog(I18N[state.lang] || I18N["zh-CN"]);
+          }
         }
         bar.addEventListener("click", function (e) {
           var b = e.target.closest("[data-int-subtab]");
@@ -12556,6 +12727,177 @@
         var saved;
         try { saved = localStorage.getItem(KEY); } catch (_) {}
         applySub(saved || "staff");
+      })();
+
+      // ============================================================
+      // 审计日志查看器 — filterable list of every write operation.
+      // ============================================================
+      var __auditFilter = {
+        kind: "",
+        actor: "",
+        from: "",
+        to: "",
+        search: ""
+      };
+      var __auditExpanded = {};
+
+      function renderAuditLog(t) {
+        var listEl = document.getElementById("auditList");
+        if (!listEl) return;
+        var flow = window.MindDoFlow;
+        if (!flow) return;
+        var rows = (flow.readJson(flow.keys.auditLog) || []).slice();
+        rows.sort(function (a, b) { return new Date(b.at || 0) - new Date(a.at || 0); });
+
+        // Hydrate dropdowns once
+        hydrateAuditDropdowns(t, rows);
+
+        // Filter
+        var filtered = rows.filter(function (r) {
+          if (__auditFilter.kind && r.kind !== __auditFilter.kind) return false;
+          if (__auditFilter.actor && r.actor !== __auditFilter.actor) return false;
+          if (__auditFilter.from) {
+            var fromD = new Date(__auditFilter.from + "T00:00:00");
+            if (new Date(r.at || 0) < fromD) return false;
+          }
+          if (__auditFilter.to) {
+            var toD = new Date(__auditFilter.to + "T00:00:00");
+            toD.setDate(toD.getDate() + 1);
+            if (new Date(r.at || 0) >= toD) return false;
+          }
+          if (__auditFilter.search) {
+            var hay = ((r.summary || "") + " " + (r.target || "") + " " + (r.kind || "")).toLowerCase();
+            if (hay.indexOf(__auditFilter.search.toLowerCase()) < 0) return false;
+          }
+          return true;
+        });
+
+        var countEl = document.getElementById("auditCount");
+        if (countEl) {
+          countEl.textContent = (t.auditCountFmt || "{shown} / {total}")
+            .replace("{shown}", filtered.length).replace("{total}", rows.length);
+        }
+
+        if (!filtered.length) {
+          listEl.innerHTML = "<div class='audit-empty'>" + escHTML(t.auditEmpty || "—") + "</div>";
+          return;
+        }
+
+        var staff = flow.readJson(flow.keys.staff) || [];
+        var staffById = {};
+        staff.forEach(function (s) { if (s && s.id) staffById[s.id] = s; });
+        var lang = state.lang === "en" ? "en-US" : "zh-CN";
+
+        listEl.innerHTML = filtered.slice(0, 200).map(function (r) {
+          var when = "";
+          try {
+            when = new Date(r.at).toLocaleString(lang, { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+          } catch (_) {}
+          var actorName = staffById[r.actor] ? staffById[r.actor].name : (r.actor || "—");
+          var isOpen = !!__auditExpanded[r.id];
+          var diffBtn = (r.before || r.after)
+            ? "<button type='button' class='au-diff-btn' data-au-toggle='" + escHTML(r.id) + "'>"
+              + escHTML(isOpen ? (t.auditDiffHide || "hide") : (t.auditDiff || "diff"))
+              + "</button>"
+            : "";
+          var diffPanel = "";
+          if (isOpen && (r.before || r.after)) {
+            diffPanel = "<div class='audit-diff'>"
+              + "<div class='au-side before'><div class='au-side-head'>" + escHTML(t.auditBefore) + "</div>"
+              +   "<pre>" + escHTML(JSON.stringify(r.before || null, null, 2)) + "</pre></div>"
+              + "<div class='au-side after'><div class='au-side-head'>" + escHTML(t.auditAfter) + "</div>"
+              +   "<pre>" + escHTML(JSON.stringify(r.after || null, null, 2)) + "</pre></div>"
+              + "</div>";
+          }
+          return "<div class='audit-row' data-au-id='" + escHTML(r.id) + "'>"
+            + "<span class='au-time'>" + escHTML(when) + "</span>"
+            + "<span class='au-kind'>" + escHTML(r.kind || "—") + "</span>"
+            + "<div class='au-summary'>" + escHTML(r.summary || r.target || "—")
+            +   "<span class='au-actor'>· " + escHTML(actorName) + "</span></div>"
+            + diffBtn
+            + diffPanel
+            + "</div>";
+        }).join("");
+      }
+
+      function hydrateAuditDropdowns(t, rows) {
+        var kindEl = document.getElementById("auditFilterKind");
+        var actorEl = document.getElementById("auditFilterActor");
+        if (!kindEl || !actorEl) return;
+        if (kindEl.dataset.hydrated !== "1" || actorEl.dataset.hydrated !== "1") {
+          var flow = window.MindDoFlow;
+          var staff = flow ? (flow.readJson(flow.keys.staff) || []) : [];
+          var staffById = {};
+          staff.forEach(function (s) { if (s && s.id) staffById[s.id] = s; });
+
+          var kinds = {}; var actors = {};
+          rows.forEach(function (r) {
+            if (r.kind) kinds[r.kind] = true;
+            if (r.actor) actors[r.actor] = true;
+          });
+          kindEl.innerHTML = "<option value=''>" + escHTML(t.auditFilterAllKinds) + "</option>"
+            + Object.keys(kinds).sort().map(function (k) {
+                return "<option value='" + escHTML(k) + "'>" + escHTML(k) + "</option>";
+              }).join("");
+          actorEl.innerHTML = "<option value=''>" + escHTML(t.auditFilterAllActors) + "</option>"
+            + Object.keys(actors).sort().map(function (id) {
+                var n = staffById[id] ? staffById[id].name : id;
+                return "<option value='" + escHTML(id) + "'>" + escHTML(n) + " (" + escHTML(id) + ")</option>";
+              }).join("");
+          kindEl.dataset.hydrated = "1";
+          actorEl.dataset.hydrated = "1";
+          kindEl.value = __auditFilter.kind;
+          actorEl.value = __auditFilter.actor;
+        }
+      }
+
+      (function wireAuditFilters() {
+        var kindEl = document.getElementById("auditFilterKind");
+        var actorEl = document.getElementById("auditFilterActor");
+        var fromEl = document.getElementById("auditFilterFrom");
+        var toEl = document.getElementById("auditFilterTo");
+        var searchEl = document.getElementById("auditFilterSearch");
+        var resetEl = document.getElementById("auditFilterReset");
+        var listEl = document.getElementById("auditList");
+        if (!listEl) return;
+
+        function onChange() {
+          __auditFilter.kind = kindEl ? kindEl.value : "";
+          __auditFilter.actor = actorEl ? actorEl.value : "";
+          __auditFilter.from = fromEl ? fromEl.value : "";
+          __auditFilter.to = toEl ? toEl.value : "";
+          __auditFilter.search = searchEl ? searchEl.value.trim() : "";
+          renderAuditLog(I18N[state.lang] || I18N["zh-CN"]);
+        }
+        if (kindEl) kindEl.addEventListener("change", onChange);
+        if (actorEl) actorEl.addEventListener("change", onChange);
+        if (fromEl) fromEl.addEventListener("change", onChange);
+        if (toEl) toEl.addEventListener("change", onChange);
+        if (searchEl) searchEl.addEventListener("input", onChange);
+        if (resetEl) {
+          resetEl.addEventListener("click", function () {
+            __auditFilter = { kind: "", actor: "", from: "", to: "", search: "" };
+            if (kindEl) kindEl.value = "";
+            if (actorEl) actorEl.value = "";
+            if (fromEl) fromEl.value = "";
+            if (toEl) toEl.value = "";
+            if (searchEl) searchEl.value = "";
+            renderAuditLog(I18N[state.lang] || I18N["zh-CN"]);
+          });
+        }
+        // Toggle diff panels
+        listEl.addEventListener("click", function (e) {
+          var btn = e.target.closest("[data-au-toggle]");
+          if (!btn) return;
+          var id = btn.getAttribute("data-au-toggle");
+          __auditExpanded[id] = !__auditExpanded[id];
+          renderAuditLog(I18N[state.lang] || I18N["zh-CN"]);
+        });
+        // Set placeholder
+        if (searchEl) {
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          searchEl.placeholder = t.auditFilterSearchPh || "";
+        }
       })();
 
       // ============================================================
