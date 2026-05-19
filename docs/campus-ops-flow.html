@@ -389,7 +389,7 @@
         <span class="duty-freq">每节课结束 / 每日开班前</span>
       </div>
       <ul class="duty-items">
-        <li>逐人录入每节课的出勤（出勤 / 缺勤 / 迟到 / 请假）</li>
+        <li>逐人录入每节课的出勤（出勤 / 缺勤 / 请假）</li>
         <li>次日早上：联系昨日缺勤家长、了解原因</li>
         <li>必要时调整学员当日上课计划</li>
       </ul>
@@ -639,7 +639,7 @@ flowchart TD
       <p class="muted">从首页"今日课程"行的 <strong>[录考勤]</strong> 按钮一键跳转。</p>
       <ol class="steps">
         <li>选 (offering, classDate)</li>
-        <li>显示班级名单 + 4 个状态按钮（出勤 / 缺勤 / 迟到 / 请假）</li>
+        <li>显示班级名单 + 3 个状态按钮（出勤 / 缺勤 / 请假）</li>
         <li>逐人或批量打卡</li>
         <li>写入 <code>minddo_attendance</code>，replace-set 语义（同一节课重复录入会覆盖）</li>
         <li>次日的"昨日缺勤跟进"会从这里读取 absent + noshow 行</li>
