@@ -2262,6 +2262,55 @@
       resize: vertical; background: #fff;
     }
 
+    /* Auto-draft messages panel (ops overview) */
+    .ops-draft-row {
+      display: grid; grid-template-columns: 80px 1fr auto;
+      gap: 10px; align-items: start;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      background: rgba(248, 250, 252, 0.4);
+    }
+    .ops-draft-row .odr-kind {
+      font-size: 10.5px; font-weight: 800;
+      padding: 3px 8px; border-radius: 999px;
+      text-align: center; white-space: nowrap;
+      align-self: center;
+    }
+    .ops-draft-row .odr-kind.renew {
+      background: rgba(245, 158, 11, 0.18); color: var(--gold-deep);
+      border: 1px solid rgba(245, 158, 11, 0.36);
+    }
+    .ops-draft-row .odr-kind.absent {
+      background: rgba(196, 106, 77, 0.16); color: #8e3d21;
+      border: 1px solid rgba(196, 106, 77, 0.32);
+    }
+    .ops-draft-row .odr-body strong { color: var(--clay); }
+    .ops-draft-row .odr-body .meta { font-size: 11.5px; color: var(--muted); display: block; margin-top: 2px; }
+    .ops-draft-row .odr-body .text {
+      font-size: 12.5px; color: var(--text); margin-top: 6px; line-height: 1.55;
+      padding: 6px 8px;
+      background: #fff; border: 1px dashed var(--line); border-radius: 6px;
+      white-space: pre-wrap;
+    }
+    .ops-draft-row .odr-actions {
+      display: flex; flex-direction: column; gap: 5px;
+      align-items: stretch;
+    }
+    .ops-draft-row .odr-actions button {
+      all: unset; cursor: pointer; padding: 5px 12px;
+      border-radius: 999px; font-size: 11.5px; font-weight: 700;
+      text-align: center;
+      border: 1px solid var(--line); background: #fff;
+    }
+    .ops-draft-row .odr-actions button.send {
+      background: var(--brand, #d8551c); color: #fff; border-color: transparent;
+    }
+    .ops-draft-row .odr-actions button.send:hover { filter: brightness(1.05); }
+    .ops-draft-row .odr-actions button.skip { color: var(--muted); }
+    .ops-draft-row .odr-actions button.skip:hover { color: var(--clay); border-color: var(--gold); }
+
     /* Shift handover panel (ops overview) */
     .ops-shift-entry {
       padding: 10px 12px; border-bottom: 1px dashed rgba(122,48,16,0.08);
@@ -3503,6 +3552,16 @@
           <article class="panel">
             <h2 data-i18n="opsAbsentHead" style="margin:0 0 12px;"></h2>
             <div id="opsAbsentList"></div>
+          </article>
+          <!-- 建议外发消息 — auto-generated drafts for renewals + absentees.
+               Each row has [发送] / [跳过]. Sent drafts go to email_outbox
+               and won't re-appear for the same (kind, studentId, date). -->
+          <article class="panel">
+            <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+              <h2 data-i18n="opsDraftHead" style="margin:0;"></h2>
+              <span class="muted" data-i18n="opsDraftHint" style="font-size:12px;color:var(--muted);"></span>
+            </div>
+            <div id="opsDraftList"></div>
           </article>
           <!-- 交班记录 — campus-scoped handover notes. The textbox is
                gated by shift.write so non-ops viewers see the log
@@ -6163,6 +6222,16 @@
           opsAbsentContact: "联系家长",
           opsCapacityLabel: "{taken}/{total}",
           opsClassNow: "进行中",
+          opsDraftHead: "建议外发消息",
+          opsDraftHint: "续费 + 缺勤 自动生成草稿，确认后入 outbox。",
+          opsDraftEmpty: "暂无待处理消息草稿 ✦ 都跟进过了。",
+          opsDraftKindRenew: "续费",
+          opsDraftKindAbsent: "缺勤",
+          opsDraftRenewBodyFmt: "您好，{studentName} 的课时即将在 {expires} 到期，希望尽快续费以免影响后续上课，有问题请联系我们。",
+          opsDraftAbsentBodyFmt: "您好，{studentName} 昨天 ({date}) 没到课，希望了解原因，是否需要补课或调整？",
+          opsDraftSend: "发送",
+          opsDraftSkip: "跳过",
+          opsDraftSent: "已加入发件箱",
           // ---- Principal first-screen ----
           prinKpiRevenue: "本月收入",
           prinKpiActive: "在读学员",
@@ -7333,6 +7402,16 @@
           opsAbsentContact: "Contact",
           opsCapacityLabel: "{taken}/{total}",
           opsClassNow: "Now",
+          opsDraftHead: "Suggested Messages",
+          opsDraftHint: "Auto-drafts for renewals + absences. Confirm to send.",
+          opsDraftEmpty: "No drafts pending — all follow-ups handled.",
+          opsDraftKindRenew: "Renewal",
+          opsDraftKindAbsent: "Absence",
+          opsDraftRenewBodyFmt: "Hi, {studentName}'s membership expires on {expires}. Please renew soon to avoid interrupting classes.",
+          opsDraftAbsentBodyFmt: "Hi, {studentName} missed class yesterday ({date}). Let us know if there's anything we can help with or a make-up class needed.",
+          opsDraftSend: "Send",
+          opsDraftSkip: "Skip",
+          opsDraftSent: "Added to outbox",
           // ---- Principal first-screen ----
           prinKpiRevenue: "This Month Revenue",
           prinKpiActive: "Active Students",
@@ -11157,7 +11236,151 @@
 
         // Shift handover — campus-scoped notes; latest 6 shown.
         renderShiftNotes(t, campus);
+
+        // Auto-draft messages — renewals + absentees
+        renderOpsDrafts(t, campus, yesterdayStr, sevenOut, today0);
       }
+
+      // Auto-draft outbox messages — renewals (memberships expiring in
+      // next 7 days) + absentees (yesterday). Each (kind, target, date)
+      // combo is tracked in minddo_draft_actions so once sent or skipped,
+      // it won't show up again the same day.
+      function readDraftActions() {
+        try { return JSON.parse(localStorage.getItem("minddo_draft_actions") || "{}"); }
+        catch (_) { return {}; }
+      }
+      function writeDraftActions(obj) {
+        try { localStorage.setItem("minddo_draft_actions", JSON.stringify(obj || {})); } catch (_) {}
+      }
+      function renderOpsDrafts(t, campus, yesterdayStr, sevenOut, today0) {
+        var listEl = document.getElementById("opsDraftList");
+        if (!listEl) return;
+        var flow = window.MindDoFlow;
+        if (!flow) return;
+        var todayStr = (function () {
+          var p = function (n) { return n < 10 ? "0" + n : "" + n; };
+          return today0.getFullYear() + "-" + p(today0.getMonth() + 1) + "-" + p(today0.getDate());
+        })();
+        var actions = readDraftActions();
+
+        // Build candidate drafts
+        var drafts = [];
+
+        // Renewals — memberships expiring within next 7 days
+        var memberships = flow.readJson(flow.keys.memberships) || [];
+        memberships.forEach(function (m) {
+          if (!m || !m.expiresAt) return;
+          var d = new Date(m.expiresAt);
+          if (!isFinite(d.getTime()) || d < today0 || d > sevenOut) return;
+          var dkey = "renew_" + (m.studentId || m.email || "") + "_" + todayStr;
+          if (actions[dkey]) return;
+          var body = (t.opsDraftRenewBodyFmt || "")
+            .replace("{studentName}", m.studentName || "—")
+            .replace("{expires}", m.expiresAt.slice(0, 10));
+          drafts.push({
+            key: dkey, kind: "renew",
+            studentName: m.studentName || "—",
+            email: m.email || "",
+            parentName: m.parentName || "",
+            phone: m.phone || "",
+            meta: (m.email || "—") + " · " + m.expiresAt.slice(0, 10),
+            body: body
+          });
+        });
+
+        // Absentees — yesterday's attendance status=absent/noshow
+        var attendance = flow.readJson(flow.keys.attendance) || [];
+        var yAbs = attendance.filter(function (a) {
+          if (!a || a.classDate !== yesterdayStr) return false;
+          return a.status === "absent" || a.status === "noshow";
+        });
+        yAbs.forEach(function (a) {
+          var dkey = "absent_" + a.studentId + "_" + todayStr;
+          if (actions[dkey]) return;
+          var stu = (flow.findStudentById && flow.findStudentById(a.studentId)) || {};
+          var name = stu.name || a.studentId || "—";
+          var body = (t.opsDraftAbsentBodyFmt || "")
+            .replace("{studentName}", name)
+            .replace("{date}", yesterdayStr);
+          drafts.push({
+            key: dkey, kind: "absent",
+            studentName: name,
+            email: stu.email || "",
+            parentName: stu.parentName || "",
+            phone: stu.phone || "",
+            meta: (stu.email || stu.phone || "—") + " · " + yesterdayStr,
+            body: body
+          });
+        });
+
+        if (!drafts.length) {
+          listEl.innerHTML = "<div class='ops-overview-empty'>" + escHTML(t.opsDraftEmpty) + "</div>";
+          return;
+        }
+
+        var kindLabels = { renew: t.opsDraftKindRenew, absent: t.opsDraftKindAbsent };
+        listEl.innerHTML = drafts.slice(0, 8).map(function (d) {
+          return "<div class='ops-draft-row' data-draft-key='" + escHTML(d.key) + "'>"
+            + "<span class='odr-kind " + d.kind + "'>" + escHTML(kindLabels[d.kind]) + "</span>"
+            + "<div class='odr-body'><strong>" + escHTML(d.studentName) + "</strong>"
+            +   "<span class='meta'>" + escHTML(d.meta) + "</span>"
+            +   "<div class='text'>" + escHTML(d.body) + "</div>"
+            + "</div>"
+            + "<div class='odr-actions'>"
+            +   "<button type='button' class='send' data-draft-act='send'>" + escHTML(t.opsDraftSend) + "</button>"
+            +   "<button type='button' class='skip' data-draft-act='skip'>" + escHTML(t.opsDraftSkip) + "</button>"
+            + "</div>"
+            + "</div>";
+        }).join("");
+      }
+
+      // Draft action handler — send (push to outbox + mark done) / skip (just mark done).
+      document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-draft-act]");
+        if (!b) return;
+        var row = b.closest(".ops-draft-row");
+        if (!row) return;
+        var key = row.getAttribute("data-draft-key");
+        var act = b.getAttribute("data-draft-act");
+        var actions = readDraftActions();
+        var flow = window.MindDoFlow;
+        if (act === "send" && flow) {
+          // Extract body + meta from the row
+          var bodyEl = row.querySelector(".odr-body .text");
+          var nameEl = row.querySelector(".odr-body strong");
+          var metaEl = row.querySelector(".odr-body .meta");
+          var body = bodyEl ? bodyEl.textContent : "";
+          var name = nameEl ? nameEl.textContent : "";
+          var meta = metaEl ? metaEl.textContent : "";
+          var outbox = flow.readJson(flow.keys.outbox) || [];
+          outbox.push({
+            id: "MAIL-" + Date.now(),
+            to: meta.split(" · ")[0] || "",
+            subject: name + " · " + (key.indexOf("renew") === 0 ? "续费提醒" : "缺勤关心"),
+            body: body,
+            createdAt: new Date().toISOString(),
+            status: "queued",
+            sourceKind: key.indexOf("renew") === 0 ? "renew" : "absent"
+          });
+          flow.writeJson(flow.keys.outbox, outbox);
+          if (flow.appendAudit) {
+            var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+            flow.appendAudit({
+              actor: (active && active.staff && active.staff.id) || "ops",
+              kind: "message.draft.send",
+              target: key,
+              summary: "发送草稿 · " + name + " · " + (key.indexOf("renew") === 0 ? "续费" : "缺勤"),
+              before: null, after: { key: key, name: name }
+            });
+          }
+          if (typeof showOpsToast === "function") {
+            showOpsToast((I18N[state.lang] || I18N["zh-CN"]).opsDraftSent || "Sent");
+          }
+        }
+        actions[key] = { action: act, at: new Date().toISOString() };
+        writeDraftActions(actions);
+        if (typeof renderOpsOverview === "function") renderOpsOverview(I18N[state.lang] || I18N["zh-CN"]);
+      });
 
       // 交班记录 — read/write minddo_shift_notes. Each entry carries:
       // { id, campus, by, atIso, body }. The textbox is shown only when
