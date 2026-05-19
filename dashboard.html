@@ -3169,6 +3169,49 @@
     }
     .lead-dup-warn .ldw-actions button:hover { border-color: var(--gold); }
     .lead-dup-warn .ldw-actions button.primary:hover { filter: brightness(1.05); }
+    /* ====================================================================
+       Print styles — hide chrome, show the active panel readable on paper.
+       Used for ops to print monthly reports, attendance sheets, audit
+       extracts, etc. Page break: each .dash-panel.active gets its own.
+       ==================================================================== */
+    @media print {
+      :root { --bg: #ffffff; }
+      * { box-shadow: none !important; }
+      body { background: #fff !important; color: #000 !important; }
+      /* Hide chrome */
+      .topbar, .sidebar, .topbar-page-title, .ops-toolbar,
+      .topbar-right, #userMenu, #moNewLeadFab, .mo-lead-overlay,
+      .gs-overlay, .sd-overlay, .cls-roster-overlay, .tv-wall-overlay,
+      .toggle-schema, .csv-export-btn, .audit-filters,
+      .crm-bulk-bar, .ops-shift-add, button:not(.print-keep),
+      .si-arrow, .si-icon, .tab-pill, .sidebar-subnav {
+        display: none !important;
+      }
+      .portal-layout {
+        display: block !important;
+        grid-template-columns: none !important;
+      }
+      .portal-main {
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .portal-main-inner { max-width: 100% !important; }
+      .dash-panel { padding: 0 !important; }
+      .dash-panel:not(.active) { display: none !important; }
+      .panel, .ops-class-row, .ops-trial-row, .audit-row,
+      .integrity-card, .schema-card, .kpi-card {
+        border: 1px solid #ccc !important;
+        page-break-inside: avoid;
+        background: #fff !important;
+      }
+      .hero { background: #fff !important; color: #000 !important; border: 1px solid #ccc !important; }
+      .hero h1, .hero .sub, .hero .eyebrow { color: #000 !important; }
+      .duty-list-wrap, .panel, article.panel { box-shadow: none !important; }
+      a[href]::after { content: ""; }  /* don't print URLs */
+      .audit-diff pre, .ic-list { max-height: none !important; }
+      /* Force a page break before each major section */
+      .dash-zone { page-break-inside: avoid; margin-bottom: 14pt; }
+    }
   </style>
   <link rel="stylesheet" href="assets/minddo-theme.css" />
   <link rel="stylesheet" href="assets/minddo-responsive.css" />
