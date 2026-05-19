@@ -107,6 +107,63 @@
     .panel p { margin: 0 0 10px; font-size: 13.5px; color: var(--text); }
     .panel p.muted { color: var(--muted); font-size: 12.5px; }
 
+    /* Duty / responsibilities grid — sits above the KPI strip and
+       enumerates what campus-ops actually does every day. 2-col on
+       desktop, single-col on mobile. */
+    .duty-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px; margin: 18px 0 28px;
+    }
+    .duty-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      box-shadow: 0 4px 12px rgba(122, 48, 16, 0.04);
+      transition: 0.15s;
+    }
+    .duty-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(217, 119, 6, 0.42);
+      box-shadow: 0 14px 32px rgba(245, 158, 11, 0.12);
+    }
+    .duty-card .duty-head {
+      display: flex; align-items: flex-start; gap: 12px;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.1);
+    }
+    .duty-card .duty-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 19px; flex-shrink: 0;
+    }
+    .duty-card .duty-title {
+      font-size: 14px; font-weight: 900; color: var(--clay);
+      letter-spacing: -0.01em;
+    }
+    .duty-card .duty-freq {
+      font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--muted);
+      margin-top: 2px;
+    }
+    .duty-card .duty-list {
+      list-style: none; padding: 0; margin: 0;
+    }
+    .duty-card .duty-list li {
+      position: relative;
+      padding: 4px 0 4px 18px;
+      font-size: 12.5px; color: var(--text);
+      line-height: 1.55;
+    }
+    .duty-card .duty-list li::before {
+      content: "▸";
+      position: absolute; left: 0; top: 4px;
+      color: var(--brand); font-weight: 900; font-size: 11px;
+    }
+    .duty-card .duty-list li strong { color: var(--clay); }
+
     /* Daily KPI cards on the hero strip */
     .kpi-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -303,10 +360,137 @@
     </div>
   </section>
 
+  <!-- ===== Responsibilities ===== -->
+  <div class="section-head">
+    <h2>核心职责 · 校区运营每天要做的事</h2>
+    <span class="num">01</span>
+  </div>
+  <div class="duty-grid">
+    <div class="duty-card">
+      <div class="duty-head">
+        <span class="duty-icon">🏫</span>
+        <div>
+          <div class="duty-title">现场接待与课程</div>
+          <div class="duty-freq">每节课 / 全天滚动</div>
+        </div>
+      </div>
+      <ul class="duty-list">
+        <li>接待今日试课家庭：签到 → 试课中 → 完成 / 未到</li>
+        <li>盯今日课程时间轴，识别「进行中」与容量预警（满班 / 近满 / 空班）</li>
+        <li>协调教师到位、教室准备</li>
+      </ul>
+    </div>
+
+    <div class="duty-card">
+      <div class="duty-head">
+        <span class="duty-icon">✅</span>
+        <div>
+          <div class="duty-title">考勤与缺勤跟进</div>
+          <div class="duty-freq">每节课结束 / 每日开班前</div>
+        </div>
+      </div>
+      <ul class="duty-list">
+        <li>逐人录入每节课的出勤（出勤 / 缺勤 / 迟到 / 请假）</li>
+        <li>次日早上：联系昨日缺勤家长、了解原因</li>
+        <li>必要时调整学员当日上课计划</li>
+      </ul>
+    </div>
+
+    <div class="duty-card">
+      <div class="duty-head">
+        <span class="duty-icon">📨</span>
+        <div>
+          <div class="duty-title">家校申请审批</div>
+          <div class="duty-freq">待办收到即处理</div>
+        </div>
+      </div>
+      <ul class="duty-list">
+        <li>审批家长发起的 <strong>请假</strong> / <strong>调课</strong> 申请</li>
+        <li>查看 reason / 影响课次，决定批准 / 拒绝</li>
+        <li>退款 / 报销审批由校长处理（看不到）</li>
+      </ul>
+    </div>
+
+    <div class="duty-card">
+      <div class="duty-head">
+        <span class="duty-icon">👥</span>
+        <div>
+          <div class="duty-title">学员档案维护</div>
+          <div class="duty-freq">按需 / 通常每周几次</div>
+        </div>
+      </div>
+      <ul class="duty-list">
+        <li>更新学员基本信息、年级、Level</li>
+        <li>暂停 / 退课流程（带原因 + 写入 audit）</li>
+        <li>跟进 7 天内到期学员的续费</li>
+      </ul>
+    </div>
+
+    <div class="duty-card">
+      <div class="duty-head">
+        <span class="duty-icon">📅</span>
+        <div>
+          <div class="duty-title">排课与教师值班</div>
+          <div class="duty-freq">每周回顾 / 临时调整</div>
+        </div>
+      </div>
+      <ul class="duty-list">
+        <li>查看周课表、教师值班分布与周课时</li>
+        <li>识别同教师时段冲突</li>
+        <li>协调代课 / 调班</li>
+      </ul>
+    </div>
+
+    <div class="duty-card">
+      <div class="duty-head">
+        <span class="duty-icon">⚙️</span>
+        <div>
+          <div class="duty-title">校区基础配置</div>
+          <div class="duty-freq">不常改 / 有变动才动</div>
+        </div>
+      </div>
+      <ul class="duty-list">
+        <li>营业时段、试课时段维护</li>
+        <li>教室列表与容量管理</li>
+        <li>校区公告发布（临时通知 / 注意事项）</li>
+      </ul>
+    </div>
+
+    <div class="duty-card">
+      <div class="duty-head">
+        <span class="duty-icon">📝</span>
+        <div>
+          <div class="duty-title">交班与协作</div>
+          <div class="duty-freq">下班前 / 跨班沟通</div>
+        </div>
+      </div>
+      <ul class="duty-list">
+        <li>下班前写一条交班记录给下一班</li>
+        <li>与市场专员对接试课 → 转化信息</li>
+        <li>与教务 / 校长上报异常情况</li>
+      </ul>
+    </div>
+
+    <div class="duty-card">
+      <div class="duty-head">
+        <span class="duty-icon">📞</span>
+        <div>
+          <div class="duty-title">家长沟通</div>
+          <div class="duty-freq">每天若干次</div>
+        </div>
+      </div>
+      <ul class="duty-list">
+        <li>一键拨号缺勤家长（昨日缺勤跟进面板）</li>
+        <li>试课家庭到场前确认、试课后简短反馈</li>
+        <li>处理临时变更（请假、改期）</li>
+      </ul>
+    </div>
+  </div>
+
   <!-- ===== Daily KPI strip ===== -->
   <div class="section-head">
     <h2>一日开始 · 校区运营首页 4 个 KPI</h2>
-    <span class="num">01</span>
+    <span class="num">02</span>
   </div>
   <div class="kpi-grid">
     <div class="kpi-card">
@@ -334,7 +518,7 @@
   <!-- ===== Main flowchart ===== -->
   <div class="section-head">
     <h2>主流程 · 全日活动轨迹</h2>
-    <span class="num">02</span>
+    <span class="num">03</span>
   </div>
   <div class="flow-wrap">
     <div class="mermaid">
@@ -396,7 +580,7 @@ flowchart TD
   <!-- ===== Trial reception state machine ===== -->
   <div class="section-head">
     <h2>子流程 · 试课接待状态机</h2>
-    <span class="num">03</span>
+    <span class="num">04</span>
   </div>
   <div class="panel">
     <p>校区运营在首页"今日试课接待"列表上推动每个家庭的状态。每步会盖时间戳到 lead 记录上，并写入 <code style="font-family:ui-monospace;color:var(--brand);background:rgba(216,85,28,0.08);padding:1px 5px;border-radius:3px;">trial.reception.&lt;action&gt;</code> audit 记录。</p>
@@ -437,7 +621,7 @@ flowchart TD
   <!-- ===== Student status change ===== -->
   <div class="section-head">
     <h2>子流程 · 学员状态变更</h2>
-    <span class="num">04</span>
+    <span class="num">05</span>
   </div>
   <div class="panel">
     <p>在 教务中心 · 学员名单 任意一行点击 <strong>改状态</strong> 触发。受 <code style="font-family:ui-monospace;color:var(--brand);background:rgba(216,85,28,0.08);padding:1px 5px;border-radius:3px;">students.status</code> 权限保护。</p>
@@ -460,7 +644,7 @@ flowchart TD
   <!-- ===== Attendance + Approvals + Shift handover ===== -->
   <div class="section-head">
     <h2>其他高频操作</h2>
-    <span class="num">05</span>
+    <span class="num">06</span>
   </div>
   <div class="two-col">
     <div class="panel">
@@ -511,7 +695,7 @@ flowchart TD
   <!-- ===== Permission matrix ===== -->
   <div class="section-head">
     <h2>权限矩阵 · 哪些能看 / 不能看</h2>
-    <span class="num">06</span>
+    <span class="num">07</span>
   </div>
   <div class="panel" style="padding:0;overflow:hidden;">
     <table class="perm">
@@ -609,7 +793,7 @@ flowchart TD
   <!-- ===== Storage touched ===== -->
   <div class="section-head">
     <h2>触达的 localStorage 键</h2>
-    <span class="num">07</span>
+    <span class="num">08</span>
   </div>
   <div class="storage-grid">
     <div class="storage-item">
@@ -665,7 +849,7 @@ flowchart TD
   <!-- ===== Audit trail ===== -->
   <div class="section-head">
     <h2>审计 (Audit Log) 留痕</h2>
-    <span class="num">08</span>
+    <span class="num">09</span>
   </div>
   <div class="panel">
     <p class="muted" style="margin-bottom:14px;">每一次写操作都会追加一条到 <code>minddo_audit_log</code>，bound 在 500 条。校长 / 超管可在 内部管理 看到。</p>
