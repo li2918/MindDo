@@ -1885,6 +1885,63 @@
        feel like siblings. */
     .ops-split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; margin: 14px 0; }
     @media (max-width: 1080px) { .ops-split { grid-template-columns: 1fr; } }
+    .principal-split { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin: 14px 0; }
+    @media (max-width: 1080px) { .principal-split { grid-template-columns: 1fr; } }
+
+    /* Principal pending-approval rows */
+    .prin-approval-row {
+      display: grid; grid-template-columns: 1fr auto auto;
+      gap: 12px; align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.08);
+      font-size: 13px;
+    }
+    .prin-approval-row:last-child { border-bottom: none; }
+    .prin-approval-row .pa-info strong { color: var(--clay); }
+    .prin-approval-row .pa-info .meta { font-size: 11.5px; color: var(--muted); display: block; margin-top: 2px; }
+    .prin-approval-row .pa-amt {
+      font-weight: 800; color: var(--clay); font-variant-numeric: tabular-nums;
+    }
+    .prin-approval-row .pa-actions { display: flex; gap: 6px; }
+    .prin-approval-row .pa-actions button {
+      all: unset; cursor: pointer; padding: 4px 10px;
+      border-radius: 999px; font-size: 11.5px; font-weight: 700;
+      border: 1px solid var(--line); background: #fff;
+    }
+    .prin-approval-row .pa-actions button.approve {
+      background: var(--success, #6e8b58); color: #fff; border-color: transparent;
+    }
+    .prin-approval-row .pa-actions button.reject {
+      color: var(--danger, #c46a4d); border-color: rgba(196,106,77,0.4);
+    }
+    .prin-approval-row .pa-actions button:hover { filter: brightness(1.05); }
+
+    /* Sentinel rows */
+    .prin-sentinel-row {
+      display: grid; grid-template-columns: 22px 1fr auto;
+      gap: 10px; align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.06);
+      font-size: 12.5px;
+    }
+    .prin-sentinel-row:last-child { border-bottom: none; }
+    .prin-sentinel-row .ps-icon { font-size: 16px; }
+    .prin-sentinel-row .ps-label strong { color: var(--clay); }
+    .prin-sentinel-row .ps-label .meta { font-size: 11px; color: var(--muted); display: block; margin-top: 1px; }
+    .prin-sentinel-row .ps-count {
+      font-weight: 800; padding: 2px 8px; border-radius: 999px;
+      font-size: 11.5px; font-variant-numeric: tabular-nums;
+      background: rgba(245, 158, 11, 0.16); color: var(--gold-deep);
+      border: 1px solid rgba(245, 158, 11, 0.32);
+    }
+    .prin-sentinel-row .ps-count.danger {
+      background: rgba(196, 106, 77, 0.18); color: #8e3d21;
+      border-color: rgba(196, 106, 77, 0.4);
+    }
+    .prin-sentinel-row .ps-count.ok {
+      background: rgba(110, 143, 87, 0.18); color: #3f5d26;
+      border-color: rgba(110, 143, 87, 0.36);
+    }
 
     .ops-class-row {
       display: grid; grid-template-columns: 92px 1fr auto auto;
@@ -3282,6 +3339,37 @@
               <textarea id="opsShiftInput" rows="2" placeholder=""></textarea>
               <button type="button" id="opsShiftAddBtn" class="mo-lead-primary" data-i18n="opsShiftAddBtn"></button>
             </div>
+          </article>
+        </section>
+
+        <!-- ============================================================
+             Principal first-screen — health-dashboard view: 4 financial /
+             enrollment KPIs, pending-approval queue with quick-decide,
+             risk sentinels (low attendance, expiring memberships, stale
+             approvals). Revealed only when active user has the principal
+             template.
+             ============================================================ -->
+        <section id="principalOverview" hidden>
+          <section class="grid" id="principalKpiMetrics"></section>
+          <div class="principal-split">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
+                <h2 data-i18n="prinPendingHead" style="margin:0;"></h2>
+                <span class="muted" id="prinPendingCount" style="font-size:12px;color:var(--muted);"></span>
+              </div>
+              <div id="prinPendingList"></div>
+            </article>
+            <article class="panel">
+              <h2 data-i18n="prinSentinelHead" style="margin:0 0 12px;"></h2>
+              <div id="prinSentinelList"></div>
+            </article>
+          </div>
+          <article class="panel">
+            <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
+              <h2 data-i18n="prinTopChannelHead" style="margin:0;"></h2>
+              <span class="muted" data-i18n="prinTopChannelHint" style="font-size:12px;color:var(--muted);"></span>
+            </div>
+            <div id="prinChannelBody"></div>
           </article>
         </section>
       </section>
@@ -5719,6 +5807,33 @@
           opsAbsentContact: "联系家长",
           opsCapacityLabel: "{taken}/{total}",
           opsClassNow: "进行中",
+          // ---- Principal first-screen ----
+          prinKpiRevenue: "本月收入",
+          prinKpiActive: "在读学员",
+          prinKpiConversion: "本月转化率",
+          prinKpiRenewalRate: "续费率(30d)",
+          prinKpiRevenueSub: "本月累计",
+          prinKpiActiveSub: "状态 = active",
+          prinKpiConversionSub: "{won}/{total} 已转化",
+          prinKpiRenewalRateSub: "{renewed}/{expired}",
+          prinPendingHead: "待处理审批",
+          prinPendingEmpty: "没有待处理的审批 ✦ 都清空了。",
+          prinPendingCountFmt: "{n} 项待处理",
+          prinPendingDays: "{n} 天前提交",
+          prinPendingApprove: "批准",
+          prinPendingReject: "拒绝",
+          prinSentinelHead: "异常哨兵",
+          prinSentinelEmpty: "本校区一切正常。",
+          prinSentinelLowAttFmt: "出勤率偏低的学员",
+          prinSentinelLowAttSub: "近 30 天 < 70%",
+          prinSentinelExpiringFmt: "7 天内到期",
+          prinSentinelExpiringSub: "需主动跟进续费",
+          prinSentinelStaleFmt: "超过 3 天未审批",
+          prinSentinelStaleSub: "建议尽快处理",
+          prinSentinelWithdrawnFmt: "本月退课",
+          prinSentinelWithdrawnSub: "趋势监控",
+          prinTopChannelHead: "本月渠道效果",
+          prinTopChannelHint: "本校区线索 / 试课 / 付费分布。",
           mktTrialActionFeedback: "市场反馈",
           mktTrialActionEditFeedback: "修改反馈",
           mktTrialFbChipPrefix: "意向 ",
@@ -6784,6 +6899,33 @@
           opsAbsentContact: "Contact",
           opsCapacityLabel: "{taken}/{total}",
           opsClassNow: "Now",
+          // ---- Principal first-screen ----
+          prinKpiRevenue: "This Month Revenue",
+          prinKpiActive: "Active Students",
+          prinKpiConversion: "Monthly Conv",
+          prinKpiRenewalRate: "Renewal Rate (30d)",
+          prinKpiRevenueSub: "month-to-date",
+          prinKpiActiveSub: "status = active",
+          prinKpiConversionSub: "{won}/{total} won",
+          prinKpiRenewalRateSub: "{renewed}/{expired}",
+          prinPendingHead: "Pending Approvals",
+          prinPendingEmpty: "All clear — nothing pending.",
+          prinPendingCountFmt: "{n} pending",
+          prinPendingDays: "{n}d ago",
+          prinPendingApprove: "Approve",
+          prinPendingReject: "Reject",
+          prinSentinelHead: "Risk Sentinels",
+          prinSentinelEmpty: "Campus is healthy.",
+          prinSentinelLowAttFmt: "Low-attendance students",
+          prinSentinelLowAttSub: "< 70% over last 30d",
+          prinSentinelExpiringFmt: "Expiring in 7 days",
+          prinSentinelExpiringSub: "Renewal outreach needed",
+          prinSentinelStaleFmt: "Approvals 3+ days old",
+          prinSentinelStaleSub: "Please review",
+          prinSentinelWithdrawnFmt: "Withdrawals this month",
+          prinSentinelWithdrawnSub: "Trend monitor",
+          prinTopChannelHead: "Channel Mix · This Month",
+          prinTopChannelHint: "Leads / trials / paid by source.",
           mktTrialActionFeedback: "Mkt feedback",
           mktTrialActionEditFeedback: "Edit feedback",
           mktTrialFbChipPrefix: "Intent ",
@@ -9254,6 +9396,13 @@
         return !!(t && t.id === "campus-ops");
       }
 
+      function principalRoleActive() {
+        var flow = window.MindDoFlow;
+        if (!flow || !flow.getActivePermissions) return false;
+        var t = flow.getActivePermissions();
+        return !!(t && t.id === "principal");
+      }
+
       // Apply the role swap: when campus-marketing is active, show
       // #marketingOverview; when campus-ops is active, show #opsOverview.
       // In both cases hide every sibling inside the overview panel
@@ -9262,23 +9411,27 @@
       function applyRoleSpecificOverview() {
         var moEl = document.getElementById("marketingOverview");
         var opsEl = document.getElementById("opsOverview");
+        var prinEl = document.getElementById("principalOverview");
         var fab = document.getElementById("moNewLeadFab");
         var moOn = moRoleActive();
         var opsOn = opsRoleActive();
+        var prinOn = principalRoleActive();
         if (moEl) moEl.hidden = !moOn;
         if (opsEl) opsEl.hidden = !opsOn;
+        if (prinEl) prinEl.hidden = !prinOn;
         if (fab) fab.hidden = !moOn;
-        var anyRole = moOn || opsOn;
+        var anyRole = moOn || opsOn || prinOn;
         var panel = document.querySelector('[data-tab-panel="overview"]');
         if (panel) {
           Array.prototype.forEach.call(panel.children, function (child) {
-            if (child === moEl || child === opsEl) return;
+            if (child === moEl || child === opsEl || child === prinEl) return;
             child.style.display = anyRole ? "none" : "";
           });
         }
         var t = I18N[state.lang] || I18N["zh-CN"];
         if (moOn) renderMarketingOverview(t);
         if (opsOn) renderOpsOverview(t);
+        if (prinOn) renderPrincipalOverview(t);
       }
       window.__minddoApplyRoleOverview = applyRoleSpecificOverview;
       window.__minddoRender = function () {
@@ -9589,6 +9742,266 @@
       // Reads from KEYS.classOfferings + KEYS.leads + KEYS.attendance +
       // KEYS.requests + KEYS.memberships; campus-filtered.
       // ============================================================
+      // ============================================================
+      // 校长专属首页 (#principalOverview) — 4 health KPIs, pending
+      // approvals queue with quick-decide, risk sentinels, channel mix.
+      // ============================================================
+      function renderPrincipalOverview(t) {
+        var flow = window.MindDoFlow;
+        if (!flow) return;
+        var campus = (typeof moActiveCampus === "function") ? moActiveCampus() : null;
+        var now = new Date();
+        var today0 = new Date(now); today0.setHours(0, 0, 0, 0);
+        var monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        var sevenAhead = new Date(today0); sevenAhead.setDate(today0.getDate() + 7);
+        var threeAgo = new Date(today0); threeAgo.setDate(today0.getDate() - 3);
+
+        var leads = (flow.readJson(flow.keys.leads) || []).filter(function (l) {
+          return !campus || !l.campus || l.campus === campus;
+        });
+        var payments = flow.readJson(flow.keys.payments) || [];
+        var students = (flow.readJson(flow.keys.students) || []);
+        var memberships = (flow.readJson(flow.keys.memberships) || []);
+        var approvals = (flow.readJson(flow.keys.approvals) || []);
+
+        // KPI 1 — 本月收入
+        var monthRevenue = payments.reduce(function (acc, p) {
+          if (!p || !p.createdAt) return acc;
+          var d = new Date(p.createdAt);
+          if (!isFinite(d.getTime()) || d < monthStart) return acc;
+          return acc + (Number(p.amount) || 0);
+        }, 0);
+
+        // KPI 2 — 在读学员
+        var activeStudents = students.filter(function (s) {
+          return s && (s.status === "active" || !s.status);
+        }).length;
+
+        // KPI 3 — 本月转化率
+        var monthLeads = leads.filter(function (l) {
+          var t2 = new Date(l.createdAt || 0).getTime();
+          return isFinite(t2) && t2 >= monthStart.getTime();
+        });
+        var paidEmails = {};
+        payments.forEach(function (p) {
+          if (!p || !p.createdAt) return;
+          var dt = new Date(p.createdAt);
+          if (isFinite(dt.getTime()) && dt >= monthStart && p.email) {
+            paidEmails[String(p.email).toLowerCase()] = true;
+          }
+        });
+        var won = monthLeads.filter(function (l) {
+          return l.email && paidEmails[String(l.email).toLowerCase()];
+        }).length;
+        var convRate = monthLeads.length ? Math.round(won / monthLeads.length * 100) + "%" : "—";
+
+        // KPI 4 — 续费率 (30 天)
+        var thirtyAhead = new Date(today0); thirtyAhead.setDate(today0.getDate() + 30);
+        var thirtyAgo = new Date(today0); thirtyAgo.setDate(today0.getDate() - 30);
+        var expiredRecent = memberships.filter(function (m) {
+          if (!m || !m.expiresAt) return false;
+          var d = new Date(m.expiresAt);
+          return isFinite(d.getTime()) && d >= thirtyAgo && d <= today0;
+        });
+        var renewed = expiredRecent.filter(function (m) {
+          // Heuristic: a renewal exists if a newer membership for the same email exists
+          return memberships.some(function (m2) {
+            return m2 !== m && m2.email && m.email &&
+              m2.email === m.email &&
+              new Date(m2.createdAt || 0) > new Date(m.expiresAt || 0);
+          });
+        }).length;
+        var renewRate = expiredRecent.length ? Math.round(renewed / expiredRecent.length * 100) + "%" : "—";
+
+        var kpiEl = document.getElementById("principalKpiMetrics");
+        if (kpiEl) {
+          renderMetricCards(kpiEl, [
+            { label: t.prinKpiRevenue, value: safeMoney(Math.round(monthRevenue)),
+              sub: t.prinKpiRevenueSub,
+              nav: { tab: "finance" } },
+            { label: t.prinKpiActive, value: activeStudents,
+              sub: t.prinKpiActiveSub,
+              nav: { tab: "academic" } },
+            { label: t.prinKpiConversion, value: convRate,
+              sub: (t.prinKpiConversionSub || "").replace("{won}", won).replace("{total}", monthLeads.length),
+              nav: { tab: "enrollment", subtab: "crm" } },
+            { label: t.prinKpiRenewalRate, value: renewRate,
+              sub: (t.prinKpiRenewalRateSub || "").replace("{renewed}", renewed).replace("{expired}", expiredRecent.length),
+              nav: { tab: "finance" } }
+          ]);
+        }
+
+        // Pending approvals — sorted by submittedAt asc (oldest first)
+        var pendingApprovals = approvals.filter(function (a) {
+          return a && (a.status || "pending") === "pending";
+        }).sort(function (a, b) {
+          return new Date(a.submittedAt || 0) - new Date(b.submittedAt || 0);
+        });
+        var pendingEl = document.getElementById("prinPendingList");
+        var pendingCountEl = document.getElementById("prinPendingCount");
+        if (pendingCountEl) {
+          pendingCountEl.textContent = pendingApprovals.length
+            ? (t.prinPendingCountFmt || "").replace("{n}", pendingApprovals.length)
+            : "";
+        }
+        if (pendingEl) {
+          if (!pendingApprovals.length) {
+            pendingEl.innerHTML = "<div class='ops-overview-empty'>" + escHTML(t.prinPendingEmpty) + "</div>";
+          } else {
+            pendingEl.innerHTML = pendingApprovals.slice(0, 6).map(function (a) {
+              var days = Math.max(0, Math.floor((Date.now() - new Date(a.submittedAt || 0).getTime()) / 86400000));
+              var daysLabel = (t.prinPendingDays || "{n}d").replace("{n}", days);
+              var typeLabel = a.type || "—";
+              var who = a.requester || "—";
+              var amt = a.amount ? safeMoney(Math.round(a.amount)) : "";
+              return "<div class='prin-approval-row' data-aid='" + escHTML(a.id) + "'>"
+                + "<div class='pa-info'><strong>" + escHTML(typeLabel) + "</strong> · " + escHTML(who)
+                +   "<span class='meta'>" + escHTML(a.detail || "—") + " · " + escHTML(daysLabel) + "</span>"
+                + "</div>"
+                + "<span class='pa-amt'>" + escHTML(amt) + "</span>"
+                + "<div class='pa-actions'>"
+                +   "<button type='button' class='approve' data-prin-approval='approve' data-aid='" + escHTML(a.id) + "'>" + escHTML(t.prinPendingApprove) + "</button>"
+                +   "<button type='button' class='reject' data-prin-approval='reject' data-aid='" + escHTML(a.id) + "'>" + escHTML(t.prinPendingReject) + "</button>"
+                + "</div>"
+                + "</div>";
+            }).join("");
+          }
+        }
+
+        // Risk sentinels
+        var sentinelEl = document.getElementById("prinSentinelList");
+        if (sentinelEl) {
+          // Low attendance students (last 30 days < 70%)
+          var attendance = flow.readJson(flow.keys.attendance) || [];
+          var attBy = {};
+          attendance.forEach(function (a) {
+            if (!a || !a.studentId || !a.classDate) return;
+            var d = new Date(a.classDate + "T00:00:00");
+            if (!isFinite(d.getTime()) || d < thirtyAgo) return;
+            if (!attBy[a.studentId]) attBy[a.studentId] = { p: 0, t: 0 };
+            attBy[a.studentId].t++;
+            if (a.status === "present" || a.status === "late") attBy[a.studentId].p++;
+          });
+          var lowAttCount = 0;
+          Object.keys(attBy).forEach(function (sid) {
+            var rec = attBy[sid];
+            if (rec.t >= 3 && (rec.p / rec.t) < 0.7) lowAttCount++;
+          });
+
+          // Memberships expiring within 7 days
+          var expiringCount = memberships.filter(function (m) {
+            if (!m || !m.expiresAt) return false;
+            var d = new Date(m.expiresAt);
+            return isFinite(d.getTime()) && d >= today0 && d <= sevenAhead;
+          }).length;
+
+          // Approvals pending > 3 days
+          var staleApprovals = pendingApprovals.filter(function (a) {
+            return new Date(a.submittedAt || 0) < threeAgo;
+          }).length;
+
+          // Withdrawals this month
+          var withdrawn = students.filter(function (s) {
+            if (!s || s.status !== "withdrawn") return false;
+            var d = s.statusChangedAt ? new Date(s.statusChangedAt) : null;
+            return d && isFinite(d.getTime()) && d >= monthStart;
+          }).length;
+
+          var entries = [
+            { icon: "📉", label: t.prinSentinelLowAttFmt, sub: t.prinSentinelLowAttSub, count: lowAttCount, danger: lowAttCount >= 3 },
+            { icon: "📅", label: t.prinSentinelExpiringFmt, sub: t.prinSentinelExpiringSub, count: expiringCount, danger: expiringCount >= 5 },
+            { icon: "⏰", label: t.prinSentinelStaleFmt, sub: t.prinSentinelStaleSub, count: staleApprovals, danger: staleApprovals > 0 },
+            { icon: "🚪", label: t.prinSentinelWithdrawnFmt, sub: t.prinSentinelWithdrawnSub, count: withdrawn, danger: withdrawn >= 3 }
+          ];
+          var anyTriggered = entries.some(function (e) { return e.count > 0; });
+          if (!anyTriggered) {
+            sentinelEl.innerHTML = "<div class='ops-overview-empty'>" + escHTML(t.prinSentinelEmpty) + "</div>";
+          } else {
+            sentinelEl.innerHTML = entries.filter(function (e) { return e.count > 0; }).map(function (e) {
+              var cls = e.danger ? "danger" : "";
+              return "<div class='prin-sentinel-row'>"
+                + "<span class='ps-icon'>" + e.icon + "</span>"
+                + "<div class='ps-label'><strong>" + escHTML(e.label) + "</strong>"
+                +   "<span class='meta'>" + escHTML(e.sub) + "</span></div>"
+                + "<span class='ps-count " + cls + "'>" + e.count + "</span>"
+                + "</div>";
+            }).join("");
+          }
+        }
+
+        // Channel mix this month (reuse logic from marketing overview)
+        var chEl = document.getElementById("prinChannelBody");
+        if (chEl) {
+          var byChan = {};
+          monthLeads.forEach(function (l) {
+            var k = l.channel || "other";
+            var lbl = l.channelLabel || k;
+            if (!byChan[k]) byChan[k] = { name: lbl, leads: 0, trials: 0, paid: 0 };
+            byChan[k].leads++;
+            if (l.trialDate) byChan[k].trials++;
+            if (l.email && paidEmails[String(l.email).toLowerCase()]) byChan[k].paid++;
+          });
+          var chans = Object.values(byChan).sort(function (a, b) {
+            var ra = a.leads ? a.paid / a.leads : 0;
+            var rb = b.leads ? b.paid / b.leads : 0;
+            return rb - ra;
+          }).slice(0, 5);
+          if (!chans.length) {
+            chEl.innerHTML = "<div class='ops-overview-empty'>" + escHTML(t.moChannelEmpty) + "</div>";
+          } else {
+            chEl.innerHTML = "<div class='mo-ch-head'>"
+              + "<span>" + escHTML(t.moChannelColName) + "</span>"
+              + "<span>" + escHTML(t.moChannelColLeads) + "</span>"
+              + "<span>" + escHTML(t.moChannelColTrials) + "</span>"
+              + "<span>" + escHTML(t.moChannelColPaid) + "</span>"
+              + "<span style='text-align:right;'>" + escHTML(t.moChannelColConv) + "</span>"
+              + "</div>"
+              + chans.map(function (c) {
+                  var pct = c.leads ? Math.round((c.paid / c.leads) * 100) : 0;
+                  return "<div class='mo-ch-row'>"
+                    + "<span class='ch-name'>" + escHTML(c.name) + "</span>"
+                    + "<span class='ch-v'>" + c.leads + "</span>"
+                    + "<span class='ch-v'>" + c.trials + "</span>"
+                    + "<span class='ch-v'>" + c.paid + "</span>"
+                    + "<span class='ch-pct'>" + pct + "%</span>"
+                    + "<span class='ch-bar' style='grid-column:1/-1;'>"
+                    +   "<span class='fill' style='width:" + Math.max(2, pct) + "%;'></span>"
+                    + "</span>"
+                    + "</div>";
+                }).join("");
+          }
+        }
+      }
+
+      // Wire pending-approval quick-decide actions on the principal overview.
+      document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-prin-approval]");
+        if (!b) return;
+        var flow = window.MindDoFlow;
+        if (!flow || !flow.hasPerm || !flow.hasPerm("approve.finance")) return;
+        var aid = b.getAttribute("data-aid");
+        var action = b.getAttribute("data-prin-approval");
+        var list = flow.readJson(flow.keys.approvals) || [];
+        var hit = list.filter(function (a) { return a && a.id === aid; })[0];
+        if (!hit) return;
+        var before = Object.assign({}, hit);
+        hit.status = action === "approve" ? "approved" : "rejected";
+        hit.decidedAt = new Date().toISOString();
+        var active = flow.getActiveOpsUser && flow.getActiveOpsUser();
+        hit.decidedBy = (active && active.staff && active.staff.id) || "ops";
+        flow.writeJson(flow.keys.approvals, list);
+        if (flow.appendAudit) {
+          flow.appendAudit({
+            actor: hit.decidedBy,
+            kind: "approval.decision",
+            target: aid,
+            summary: (action === "approve" ? "批准" : "拒绝") + " · " + (hit.type || "") + " · " + (hit.requester || "") + (hit.amount ? " · " + safeMoney(hit.amount) : ""),
+            before: before, after: hit
+          });
+        }
+        if (typeof render === "function") render();
+      });
+
       function renderOpsOverview(t) {
         var flow = window.MindDoFlow;
         if (!flow) return;
