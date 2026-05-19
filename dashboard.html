@@ -826,6 +826,68 @@
     .int-subpanel { display: none; }
     .int-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
 
+    /* Data integrity check */
+    .integrity-card {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      margin-bottom: 10px;
+    }
+    .integrity-card.severity-ok     { border-left: 4px solid var(--success); }
+    .integrity-card.severity-warn   { border-left: 4px solid var(--gold-deep); }
+    .integrity-card.severity-danger { border-left: 4px solid var(--danger); }
+    .integrity-card .ic-head {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .integrity-card .ic-title {
+      font-size: 14px; font-weight: 800; color: var(--clay); flex: 1 1 auto;
+    }
+    .integrity-card .ic-count {
+      font-size: 11.5px; font-weight: 800; letter-spacing: 0.04em;
+      padding: 3px 10px; border-radius: 999px;
+      background: rgba(122, 48, 16, 0.06); color: var(--clay);
+      border: 1px solid var(--line);
+      font-variant-numeric: tabular-nums;
+    }
+    .integrity-card.severity-warn .ic-count {
+      background: rgba(245, 158, 11, 0.18); color: var(--gold-deep);
+      border-color: rgba(245, 158, 11, 0.36);
+    }
+    .integrity-card.severity-danger .ic-count {
+      background: rgba(196, 106, 77, 0.18); color: #8e3d21;
+      border-color: rgba(196, 106, 77, 0.36);
+    }
+    .integrity-card.severity-ok .ic-count {
+      background: rgba(110, 143, 87, 0.18); color: #3f5d26;
+      border-color: rgba(110, 143, 87, 0.32);
+    }
+    .integrity-card .ic-toggle {
+      all: unset; cursor: pointer; padding: 3px 12px;
+      border-radius: 999px; font-size: 11px; font-weight: 700;
+      color: var(--brand); border: 1px solid var(--brand); background: #fff;
+    }
+    .integrity-card .ic-toggle:hover { background: var(--brand); color: #fff; }
+    .integrity-card .ic-desc {
+      font-size: 12px; color: var(--muted); margin-top: 6px;
+    }
+    .integrity-card .ic-list {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: rgba(248, 250, 252, 0.6);
+      border: 1px solid var(--line); border-radius: 8px;
+      font-family: ui-monospace, monospace;
+      font-size: 11.5px;
+      max-height: 240px; overflow-y: auto;
+      line-height: 1.7;
+    }
+    .integrity-card .ic-list[hidden] { display: none; }
+    .integrity-card .ic-list .item {
+      padding: 2px 0;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.06);
+    }
+    .integrity-card .ic-list .item:last-child { border-bottom: none; }
+
     /* Teacher roster sub-tab */
     .teacher-rate-input {
       width: 90px; padding: 5px 8px;
@@ -3300,6 +3362,9 @@
           <button type="button" class="sidebar-subitem int-subtab" data-int-subtab="audit" role="tab">
             <span class="ms-icon" aria-hidden="true">📜</span><span class="ms-label" data-i18n="intSubtabAudit"></span>
           </button>
+          <button type="button" class="sidebar-subitem int-subtab" data-int-subtab="integrity" data-perm-required="internal.view" role="tab">
+            <span class="ms-icon" aria-hidden="true">🔬</span><span class="ms-label" data-i18n="intSubtabIntegrity"></span>
+          </button>
         </div>
         <button type="button" class="sidebar-item" data-tab="settings" data-perm-required="settings.view.campus" role="tab">
           <span class="si-icon" aria-hidden="true">⚙️</span><span class="si-label" data-i18n="navBizSettings"></span>
@@ -4512,6 +4577,23 @@
           </section>
         </div>
 
+        <!-- Sub-panel: Data Integrity Check — super-admin / principal only.
+             Runs 8 integrity checks across all minddo_* keys and reports
+             orphaned / inconsistent records as expandable cards. -->
+        <div class="int-subpanel" data-int-subpanel="integrity" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+                <h2 data-i18n="integrityHead" style="margin:0;"></h2>
+                <span class="muted" id="integritySummary" style="font-size:12px;color:var(--muted);"></span>
+              </div>
+              <p class="muted" data-i18n="integrityHint" style="margin:0 0 16px;font-size:12.5px;color:var(--muted);"></p>
+              <button type="button" class="btn-primary" id="integrityRunBtn" style="padding:8px 18px;font-size:13px;margin-bottom:14px;"><span data-i18n="integrityRun"></span></button>
+              <div id="integrityResults"></div>
+            </article>
+          </section>
+        </div>
+
         <!-- Sub-panel 3: Audit Log — filterable history of every write
              operation across the dashboard. Bounded to 500 rows via the
              appendAudit helper. Filterable by actor / kind / target /
@@ -5516,6 +5598,34 @@
           intSubtabRoles: "角色管理",
           intSubtabAudit: "审计日志",
           intSubtabTeachers: "教师管理",
+          intSubtabIntegrity: "数据健康",
+          integrityHead: "数据完整性检查",
+          integrityHint: "扫描所有 minddo_* 键，识别孤立记录、不一致引用、容量异常等。只读，仅诊断。",
+          integrityRun: "▶ 运行检查",
+          integritySummaryFmt: "{issues} 处问题 · {ok} 通过",
+          integrityHealthOk: "数据健康",
+          integrityViewItems: "查看",
+          integrityHideItems: "收起",
+          integrityCheckTitles: {
+            "orphan-payment-email": "付款找不到对应学员",
+            "orphan-membership-offering": "套餐引用了不存在的班次",
+            "orphan-attendance-student": "考勤记录的学员不存在",
+            "won-no-payment": "线索状态为 won 但没找到付款",
+            "staff-bad-role": "员工的 roleId 不在 roles 表中",
+            "capacity-overflow": "班次的座位数 > 容量",
+            "trial-feedback-orphan": "试课反馈对应的线索不存在",
+            "storage-size": "localStorage 占用大小"
+          },
+          integrityCheckDescs: {
+            "orphan-payment-email": "付款的 email 在 students / leads 里都查不到。",
+            "orphan-membership-offering": "membership.sessions 引用了已删除或不存在的 offeringId。",
+            "orphan-attendance-student": "出勤记录的 studentId 在 students 表里不存在。",
+            "won-no-payment": "线索已标记成交，但该邮箱没有付款记录。",
+            "staff-bad-role": "员工的 roleId 在 minddo_roles 中查不到，会导致权限解析失败。",
+            "capacity-overflow": "seatsTaken 超过了 seatsTotal，可能是重复报名或数据错误。",
+            "trial-feedback-orphan": "trial_feedback 的 key (lead.createdAt) 找不到对应的 lead。",
+            "storage-size": "近似 localStorage 用量（KB），超过 4096KB 建议清理。"
+          },
           teachersHead: "教师花名册",
           teachersCountFmt: "{n} 位教师",
           teachersEmpty: "本校区暂无教师排课记录。",
@@ -6711,6 +6821,34 @@
           intSubtabRoles: "Roles",
           intSubtabAudit: "Audit Log",
           intSubtabTeachers: "Teachers",
+          intSubtabIntegrity: "Data Health",
+          integrityHead: "Data Integrity Check",
+          integrityHint: "Scans every minddo_* key for orphan records, broken refs, capacity anomalies. Read-only diagnostic.",
+          integrityRun: "▶ Run checks",
+          integritySummaryFmt: "{issues} issues · {ok} passed",
+          integrityHealthOk: "Healthy",
+          integrityViewItems: "View",
+          integrityHideItems: "Hide",
+          integrityCheckTitles: {
+            "orphan-payment-email": "Payments without matching student",
+            "orphan-membership-offering": "Memberships referencing missing offerings",
+            "orphan-attendance-student": "Attendance records with missing students",
+            "won-no-payment": "Leads marked 'won' without a payment",
+            "staff-bad-role": "Staff with broken roleId",
+            "capacity-overflow": "Offerings over capacity",
+            "trial-feedback-orphan": "Trial feedback without matching lead",
+            "storage-size": "localStorage footprint"
+          },
+          integrityCheckDescs: {
+            "orphan-payment-email": "Payment email matches no row in students or leads.",
+            "orphan-membership-offering": "membership.sessions references an offeringId not in class_offerings.",
+            "orphan-attendance-student": "attendance.studentId is missing from students.",
+            "won-no-payment": "Lead.crmStatus = won but no payment found for that email.",
+            "staff-bad-role": "Staff.roleId isn't in minddo_roles — permission lookup will fail.",
+            "capacity-overflow": "seatsTaken > seatsTotal — duplicate enrollment or stale data.",
+            "trial-feedback-orphan": "trial_feedback keyed by a lead.createdAt that doesn't exist.",
+            "storage-size": "Approximate localStorage usage (KB). Clean up if > 4096KB."
+          },
           teachersHead: "Teacher Roster",
           teachersCountFmt: "{n} teachers",
           teachersEmpty: "No teachers scheduled in this campus.",
@@ -14444,7 +14582,7 @@
         var bar = document.getElementById("intSubtabs");
         if (!bar) return;
         var KEY = "minddo_dash_int_subtab";
-        var KNOWN = ["staff", "teachers", "roles", "audit"];
+        var KNOWN = ["staff", "teachers", "roles", "audit", "integrity"];
         function applySub(key) {
           if (KNOWN.indexOf(key) === -1) key = "staff";
           bar.querySelectorAll("[data-int-subtab]").forEach(function (b) {
@@ -14471,6 +14609,220 @@
         var saved;
         try { saved = localStorage.getItem(KEY); } catch (_) {}
         applySub(saved || "staff");
+      })();
+
+      // ============================================================
+      // 数据完整性检查 — runs 8 cross-key consistency checks and
+      // reports orphan records / broken references. Read-only.
+      // ============================================================
+      function runIntegrityChecks() {
+        var flow = window.MindDoFlow;
+        if (!flow) return [];
+        var students = flow.readJson(flow.keys.students) || [];
+        var leads = flow.readJson(flow.keys.leads) || [];
+        var payments = flow.readJson(flow.keys.payments) || [];
+        var memberships = flow.readJson(flow.keys.memberships) || [];
+        var offerings = flow.readJson(flow.keys.classOfferings) || [];
+        var attendance = flow.readJson(flow.keys.attendance) || [];
+        var staff = flow.readJson(flow.keys.staff) || [];
+        var roles = flow.readJson(flow.keys.roles) || [];
+        var feedback = (function () {
+          try { return JSON.parse(localStorage.getItem("minddo_trial_feedback") || "{}"); }
+          catch (_) { return {}; }
+        })();
+
+        var studentEmails = {};
+        students.forEach(function (s) { if (s.email) studentEmails[String(s.email).toLowerCase()] = true; });
+        var leadEmails = {};
+        leads.forEach(function (l) { if (l.email) leadEmails[String(l.email).toLowerCase()] = true; });
+        var studentIds = {};
+        students.forEach(function (s) { if (s.id) studentIds[s.id] = true; });
+        var offeringIds = {};
+        offerings.forEach(function (o) { if (o.id) offeringIds[o.id] = true; });
+        var roleIds = {};
+        roles.forEach(function (r) { if (r.id) roleIds[r.id] = true; });
+        var leadCreatedAts = {};
+        leads.forEach(function (l) { if (l.createdAt) leadCreatedAts[l.createdAt] = true; });
+
+        var checks = [];
+
+        // 1. Orphan payments
+        var orphanPays = payments.filter(function (p) {
+          if (!p || !p.email) return false;
+          var em = String(p.email).toLowerCase();
+          return !studentEmails[em] && !leadEmails[em];
+        });
+        checks.push({
+          id: "orphan-payment-email",
+          severity: orphanPays.length === 0 ? "ok" : "warn",
+          count: orphanPays.length,
+          items: orphanPays.slice(0, 50).map(function (p) {
+            return p.email + " · $" + (p.amount || "?") + " · " + (p.createdAt || "");
+          })
+        });
+
+        // 2. Membership referencing missing offering
+        var badMember = [];
+        memberships.forEach(function (m) {
+          if (!m || !Array.isArray(m.sessions)) return;
+          m.sessions.forEach(function (s) {
+            if (s.offeringId && !offeringIds[s.offeringId]) {
+              badMember.push((m.studentName || m.email || "?") + " → " + s.offeringId);
+            }
+          });
+        });
+        checks.push({
+          id: "orphan-membership-offering",
+          severity: badMember.length === 0 ? "ok" : "danger",
+          count: badMember.length,
+          items: badMember.slice(0, 50)
+        });
+
+        // 3. Orphan attendance
+        var orphanAtt = attendance.filter(function (a) {
+          return a && a.studentId && !studentIds[a.studentId];
+        });
+        checks.push({
+          id: "orphan-attendance-student",
+          severity: orphanAtt.length === 0 ? "ok" : "danger",
+          count: orphanAtt.length,
+          items: orphanAtt.slice(0, 50).map(function (a) {
+            return a.studentId + " · " + a.classDate + " · " + a.status;
+          })
+        });
+
+        // 4. Won lead without payment
+        var paidEmails = {};
+        payments.forEach(function (p) { if (p && p.email) paidEmails[String(p.email).toLowerCase()] = true; });
+        var wonNoPay = leads.filter(function (l) {
+          return l && l.crmStatus === "won" && l.email && !paidEmails[String(l.email).toLowerCase()];
+        });
+        checks.push({
+          id: "won-no-payment",
+          severity: wonNoPay.length === 0 ? "ok" : "warn",
+          count: wonNoPay.length,
+          items: wonNoPay.slice(0, 50).map(function (l) {
+            return (l.studentName || l.parentName || "?") + " · " + l.email;
+          })
+        });
+
+        // 5. Staff with broken role
+        var badStaff = staff.filter(function (s) {
+          return s && s.roleId && !roleIds[s.roleId];
+        });
+        checks.push({
+          id: "staff-bad-role",
+          severity: badStaff.length === 0 ? "ok" : "danger",
+          count: badStaff.length,
+          items: badStaff.slice(0, 50).map(function (s) {
+            return s.id + " (" + s.name + ") → roleId='" + s.roleId + "'";
+          })
+        });
+
+        // 6. Offerings over capacity
+        var overCap = offerings.filter(function (o) {
+          return o && (o.seatsTaken || 0) > (o.seatsTotal || 0);
+        });
+        checks.push({
+          id: "capacity-overflow",
+          severity: overCap.length === 0 ? "ok" : "warn",
+          count: overCap.length,
+          items: overCap.slice(0, 50).map(function (o) {
+            return o.id + " · " + o.seatsTaken + "/" + o.seatsTotal;
+          })
+        });
+
+        // 7. Orphan trial feedback
+        var orphanFb = Object.keys(feedback).filter(function (k) {
+          return !leadCreatedAts[k];
+        });
+        checks.push({
+          id: "trial-feedback-orphan",
+          severity: orphanFb.length === 0 ? "ok" : "warn",
+          count: orphanFb.length,
+          items: orphanFb.slice(0, 50)
+        });
+
+        // 8. Storage size (KB)
+        var sizeBytes = 0;
+        try {
+          for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i);
+            if (k && k.indexOf("minddo_") === 0) {
+              sizeBytes += ((localStorage.getItem(k) || "").length + k.length);
+            }
+          }
+        } catch (_) {}
+        var sizeKb = Math.round(sizeBytes / 1024);
+        var sizeSev = sizeKb > 4096 ? "warn" : "ok";
+        checks.push({
+          id: "storage-size",
+          severity: sizeSev,
+          count: sizeKb,
+          countUnit: "KB",
+          items: [sizeKb + " KB used by minddo_* keys"]
+        });
+
+        return checks;
+      }
+
+      function renderIntegrityResults(checks) {
+        var resultsEl = document.getElementById("integrityResults");
+        var summaryEl = document.getElementById("integritySummary");
+        if (!resultsEl) return;
+        var t = I18N[state.lang] || I18N["zh-CN"];
+        var titles = t.integrityCheckTitles || {};
+        var descs = t.integrityCheckDescs || {};
+        var issues = 0;
+        var oks = 0;
+        checks.forEach(function (c) {
+          if (c.severity === "ok") oks++; else issues++;
+        });
+        if (summaryEl) {
+          summaryEl.textContent = (t.integritySummaryFmt || "")
+            .replace("{issues}", issues).replace("{ok}", oks);
+        }
+        resultsEl.innerHTML = checks.map(function (c) {
+          var title = titles[c.id] || c.id;
+          var desc = descs[c.id] || "";
+          var sev = "severity-" + c.severity;
+          var hasItems = c.items && c.items.length;
+          var unit = c.countUnit ? " " + c.countUnit : "";
+          return "<div class='integrity-card " + sev + "' data-icid='" + c.id + "'>"
+            + "<div class='ic-head'>"
+            +   "<span class='ic-title'>" + escHTML(title) + "</span>"
+            +   "<span class='ic-count'>" + c.count + escHTML(unit) + "</span>"
+            +   (hasItems ? "<button type='button' class='ic-toggle'>" + escHTML(t.integrityViewItems) + "</button>" : "")
+            + "</div>"
+            + "<div class='ic-desc'>" + escHTML(desc) + "</div>"
+            + (hasItems
+                ? "<div class='ic-list' hidden>" + c.items.map(function (i) {
+                    return "<div class='item'>" + escHTML(String(i)) + "</div>";
+                  }).join("") + "</div>"
+                : "")
+            + "</div>";
+        }).join("");
+        // Wire toggles
+        resultsEl.querySelectorAll(".ic-toggle").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var card = btn.closest(".integrity-card");
+            if (!card) return;
+            var list = card.querySelector(".ic-list");
+            if (!list) return;
+            var open = list.hidden;
+            list.hidden = !open;
+            btn.textContent = open ? (t.integrityHideItems || "Hide") : (t.integrityViewItems || "View");
+          });
+        });
+      }
+
+      (function wireIntegrityButton() {
+        var btn = document.getElementById("integrityRunBtn");
+        if (!btn) return;
+        btn.addEventListener("click", function () {
+          var checks = runIntegrityChecks();
+          renderIntegrityResults(checks);
+        });
       })();
 
       // ============================================================
