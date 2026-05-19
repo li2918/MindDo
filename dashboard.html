@@ -730,6 +730,98 @@
     .fin-subpanel { display: none; }
     .fin-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
 
+    /* Global search palette */
+    .gs-overlay {
+      position: fixed; inset: 0; z-index: 2500;
+      background: rgba(13, 40, 65, 0.55);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: flex-start; justify-content: center;
+      padding: 14vh 16px 16px;
+    }
+    .gs-overlay.open { display: flex; animation: gsFade 0.14s ease-out; }
+    @keyframes gsFade { from { opacity: 0; } to { opacity: 1; } }
+    .gs-card {
+      background: #fff; border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 22px 50px rgba(13, 40, 65, 0.35);
+      width: 100%; max-width: 640px;
+      max-height: 70vh; display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .gs-input-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .gs-input-row .gs-icon { font-size: 17px; color: var(--muted); }
+    .gs-input-row input {
+      all: unset; flex: 1 1 auto;
+      font-size: 15px; color: var(--text);
+    }
+    .gs-input-row input::placeholder { color: var(--muted); }
+    .gs-input-row .gs-hint {
+      font-size: 11px; color: var(--muted);
+      font-weight: 700; padding: 3px 8px; border-radius: 6px;
+      background: rgba(122, 48, 16, 0.06); border: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    .gs-results {
+      flex: 1 1 auto; min-height: 0; overflow-y: auto;
+      padding: 6px 0;
+    }
+    .gs-group {
+      padding: 6px 0;
+    }
+    .gs-group .gs-group-head {
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted);
+      padding: 8px 18px 4px;
+    }
+    .gs-item {
+      display: grid; grid-template-columns: 28px 1fr auto;
+      gap: 10px; align-items: center;
+      padding: 9px 18px;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .gs-item:hover, .gs-item.selected {
+      background: rgba(254, 243, 199, 0.5);
+    }
+    .gs-item.selected {
+      border-left: 3px solid var(--brand);
+      padding-left: 15px;
+    }
+    .gs-item .gs-ic { font-size: 16px; }
+    .gs-item .gs-body strong { color: var(--clay); font-size: 13.5px; }
+    .gs-item .gs-body .gs-meta { font-size: 11.5px; color: var(--muted); display: block; margin-top: 1px; }
+    .gs-item .gs-tag {
+      font-size: 10.5px; font-weight: 800;
+      padding: 2px 8px; border-radius: 999px;
+      color: var(--muted); background: rgba(122, 48, 16, 0.06);
+      border: 1px solid var(--line);
+    }
+    .gs-empty {
+      padding: 28px 18px; text-align: center; color: var(--muted); font-size: 13px;
+    }
+    .gs-empty .hint { display: block; margin-top: 6px; font-size: 11.5px; }
+
+    /* Topbar search trigger */
+    .gs-trigger {
+      all: unset; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; border-radius: 999px;
+      font-size: 12.5px; color: var(--muted);
+      border: 1px solid var(--line); background: #fff;
+      font-weight: 700;
+    }
+    .gs-trigger:hover { color: var(--clay); border-color: var(--gold); }
+    .gs-trigger .gs-trigger-hint {
+      font-size: 10.5px; font-weight: 800; color: var(--muted);
+      padding: 2px 6px; border-radius: 4px;
+      background: rgba(122, 48, 16, 0.06); margin-left: 2px;
+    }
+
     /* Internal Management sub-panels (staff / roles / audit) */
     .int-subpanel { display: none; }
     .int-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
@@ -2960,6 +3052,12 @@
     </a>
     <span class="topbar-page-title" id="topbarPageTitle" data-i18n="tabOverview"></span>
     <div class="topbar-right">
+      <!-- Global search trigger — clicking opens the ⌘K palette. -->
+      <button type="button" class="gs-trigger" id="globalSearchTrigger" aria-label="Search">
+        <span aria-hidden="true">🔍</span>
+        <span data-i18n="gsTriggerLabel"></span>
+        <span class="gs-trigger-hint">⌘K</span>
+      </button>
       <!-- Global campus selector — one position, applies to every tab.
            Replaces the per-page chip that used to sit in .ops-toolbar. -->
       <div class="topbar-campus" title="">
@@ -4613,6 +4711,22 @@
   </div>
 
   <!-- ================================================================
+       Global search palette — triggered by ⌘K / Ctrl+K (or the topbar
+       search hint). Cross-key fuzzy search over students, leads,
+       classes, staff, etc. ↑↓ to navigate, Enter to open, Esc to close.
+       ================================================================ -->
+  <div class="gs-overlay" id="globalSearchOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="gs-card" role="dialog">
+      <div class="gs-input-row">
+        <span class="gs-icon" aria-hidden="true">🔍</span>
+        <input type="search" id="globalSearchInput" placeholder="" autocomplete="off" autocapitalize="off" spellcheck="false" />
+        <span class="gs-hint" data-i18n="gsHint"></span>
+      </div>
+      <div class="gs-results" id="globalSearchResults" role="listbox"></div>
+    </div>
+  </div>
+
+  <!-- ================================================================
        Approval detail modal — opens from the financial approval table
        and from the principal-overview pending row. Shows full request
        record (type / requester / amount / reason / submittedAt) and a
@@ -5436,6 +5550,18 @@
           approvalDetailMissingReason: "请先填写决策原因",
           approvalDetailDone: "决策已记录",
           approvalDetailNoPerm: "没有权限审批此类申请",
+          gsTriggerLabel: "搜索",
+          gsPlaceholder: "搜索学员 / 线索 / 班级 / 员工...",
+          gsHint: "↑↓ 移动 · Enter 打开 · Esc 关闭",
+          gsEmpty: "输入关键字开始搜索",
+          gsEmptyHint: "可搜：学员姓名 / 手机 / 邮箱 / 教师 / 班级 / 员工 id",
+          gsNoResults: "没有匹配的结果",
+          gsGroupStudent: "学员",
+          gsGroupLead: "线索",
+          gsGroupClass: "班级",
+          gsGroupStaff: "员工",
+          gsGroupPayment: "付款",
+          gsResultMore: "（还有 {n} 条...）",
           finApprovalToastRejected: "已驳回 {who} 的{type}申请",
           // 账单管理
           zoneFinBillingTitle: "账单概览",
@@ -6592,6 +6718,18 @@
           approvalDetailMissingReason: "Decision reason is required",
           approvalDetailDone: "Decision recorded",
           approvalDetailNoPerm: "You don't have permission to approve this type",
+          gsTriggerLabel: "Search",
+          gsPlaceholder: "Search students / leads / classes / staff...",
+          gsHint: "↑↓ navigate · Enter open · Esc close",
+          gsEmpty: "Type a keyword to search",
+          gsEmptyHint: "Match: student name / phone / email / teacher / class / staff id",
+          gsNoResults: "No matches",
+          gsGroupStudent: "Students",
+          gsGroupLead: "Leads",
+          gsGroupClass: "Classes",
+          gsGroupStaff: "Staff",
+          gsGroupPayment: "Payments",
+          gsResultMore: "(+{n} more)",
           finApprovalToastRejected: "Rejected {who}'s {type} request",
           zoneFinBillingTitle: "Billing Overview",
           zoneFinBillingSub: "This-month revenue, AR / collected, monthly comparison, invoice details.",
@@ -9994,6 +10132,253 @@
       // Reads from KEYS.classOfferings + KEYS.leads + KEYS.attendance +
       // KEYS.requests + KEYS.memberships; campus-filtered.
       // ============================================================
+      // ============================================================
+      // 全局搜索 ⌘K — palette modal, cross-key fuzzy search.
+      // ============================================================
+      (function () {
+        var overlay = document.getElementById("globalSearchOverlay");
+        var input = document.getElementById("globalSearchInput");
+        var resultsEl = document.getElementById("globalSearchResults");
+        var trigger = document.getElementById("globalSearchTrigger");
+        if (!overlay || !input || !resultsEl) return;
+        var openFlag = false;
+        var selectedIdx = -1;
+        var flatResults = [];
+
+        function open() {
+          if (openFlag) return;
+          openFlag = true;
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          input.placeholder = t.gsPlaceholder || "";
+          input.value = "";
+          renderResults("");
+          overlay.classList.add("open");
+          overlay.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+          setTimeout(function () { input.focus(); }, 30);
+        }
+        function close() {
+          openFlag = false;
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+
+        function fuzzyMatch(needle, hay) {
+          if (!needle) return true;
+          var n = String(needle || "").toLowerCase();
+          var h = String(hay || "").toLowerCase();
+          return h.indexOf(n) >= 0;
+        }
+
+        function buildResults(q) {
+          var flow = window.MindDoFlow;
+          if (!flow) return [];
+          var groups = [];
+          var qLow = (q || "").trim();
+          if (!qLow) return groups;
+
+          // Students
+          var students = flow.readJson(flow.keys.students) || [];
+          var stuMatches = students.filter(function (s) {
+            if (!s) return false;
+            return fuzzyMatch(qLow, s.name) || fuzzyMatch(qLow, s.id) ||
+                   fuzzyMatch(qLow, s.email) || fuzzyMatch(qLow, s.phone) ||
+                   fuzzyMatch(qLow, s.parentName);
+          }).slice(0, 6);
+          if (stuMatches.length) {
+            groups.push({
+              key: "students", items: stuMatches.map(function (s) {
+                return {
+                  icon: "🎓", title: s.name || "—",
+                  meta: [s.id, s.email, s.phone, s.parentName].filter(Boolean).join(" · "),
+                  tag: "student",
+                  action: function () { close(); if (typeof setActiveTab === "function") setActiveTab("academic"); }
+                };
+              })
+            });
+          }
+
+          // Leads
+          var leads = flow.readJson(flow.keys.leads) || [];
+          var leadMatches = leads.filter(function (l) {
+            if (!l) return false;
+            return fuzzyMatch(qLow, l.studentName) || fuzzyMatch(qLow, l.parentName) ||
+                   fuzzyMatch(qLow, l.phone) || fuzzyMatch(qLow, l.email) ||
+                   fuzzyMatch(qLow, l.channelLabel);
+          }).slice(0, 6);
+          if (leadMatches.length) {
+            groups.push({
+              key: "leads", items: leadMatches.map(function (l) {
+                return {
+                  icon: "🎯", title: l.studentName || l.parentName || "—",
+                  meta: [l.phone, l.email, l.channelLabel, l.crmStatus].filter(Boolean).join(" · "),
+                  tag: "lead",
+                  action: function () {
+                    close();
+                    if (typeof window.__minddoOpenLeadDetail === "function") {
+                      if (typeof setActiveTab === "function") setActiveTab("enrollment");
+                      if (typeof window.__minddoSetMktSubtab === "function") window.__minddoSetMktSubtab("crm");
+                      setTimeout(function () { window.__minddoOpenLeadDetail(l.createdAt); }, 80);
+                    }
+                  }
+                };
+              })
+            });
+          }
+
+          // Classes
+          var offerings = (flow.getClassOfferings && flow.getClassOfferings()) || flow.readJson(flow.keys.classOfferings) || [];
+          var lang = state.lang === "en" ? "en" : "zh";
+          var clsMatches = offerings.filter(function (o) {
+            if (!o) return false;
+            var nameZ = o.courseName ? (o.courseName.zh || "") + " " + (o.courseName.en || "") : "";
+            return fuzzyMatch(qLow, nameZ) || fuzzyMatch(qLow, o.teacher) || fuzzyMatch(qLow, o.id);
+          }).slice(0, 6);
+          if (clsMatches.length) {
+            groups.push({
+              key: "classes", items: clsMatches.map(function (o) {
+                var name = (o.courseName && (lang === "en" ? o.courseName.en : o.courseName.zh)) || "—";
+                var level = (o.level && (lang === "en" ? o.level.en : o.level.zh)) || "";
+                return {
+                  icon: "🏫", title: name + (level ? " · " + level : ""),
+                  meta: [o.teacher, o.timeSlot, o.dayKey].filter(Boolean).join(" · "),
+                  tag: "class",
+                  action: function () {
+                    close();
+                    if (typeof setActiveTab === "function") setActiveTab("academic");
+                    if (typeof window.__minddoSetAcadSubtab === "function") window.__minddoSetAcadSubtab("classes");
+                  }
+                };
+              })
+            });
+          }
+
+          // Staff
+          var staff = flow.readJson(flow.keys.staff) || [];
+          var staffMatches = staff.filter(function (s) {
+            if (!s) return false;
+            return fuzzyMatch(qLow, s.name) || fuzzyMatch(qLow, s.id) ||
+                   fuzzyMatch(qLow, s.email) || fuzzyMatch(qLow, s.department);
+          }).slice(0, 6);
+          if (staffMatches.length) {
+            groups.push({
+              key: "staff", items: staffMatches.map(function (s) {
+                return {
+                  icon: "👤", title: s.name || s.id,
+                  meta: [s.id, s.roleId, s.campus, s.department, s.email].filter(Boolean).join(" · "),
+                  tag: "staff",
+                  action: function () { close(); if (typeof setActiveTab === "function") setActiveTab("internal"); }
+                };
+              })
+            });
+          }
+
+          return groups;
+        }
+
+        function renderResults(q) {
+          var t = I18N[state.lang] || I18N["zh-CN"];
+          flatResults = [];
+          selectedIdx = -1;
+          if (!q || !q.trim()) {
+            resultsEl.innerHTML = "<div class='gs-empty'>" + escHTML(t.gsEmpty)
+              + "<span class='hint'>" + escHTML(t.gsEmptyHint) + "</span></div>";
+            return;
+          }
+          var groups = buildResults(q);
+          if (!groups.length) {
+            resultsEl.innerHTML = "<div class='gs-empty'>" + escHTML(t.gsNoResults) + "</div>";
+            return;
+          }
+          var groupLabels = {
+            students: t.gsGroupStudent,
+            leads: t.gsGroupLead,
+            classes: t.gsGroupClass,
+            staff: t.gsGroupStaff,
+            payments: t.gsGroupPayment
+          };
+          resultsEl.innerHTML = groups.map(function (g) {
+            return "<div class='gs-group'>"
+              + "<div class='gs-group-head'>" + escHTML(groupLabels[g.key] || g.key) + "</div>"
+              + g.items.map(function (it, idx) {
+                  var fi = flatResults.length;
+                  flatResults.push(it);
+                  return "<div class='gs-item' data-gs-idx='" + fi + "'>"
+                    + "<span class='gs-ic'>" + it.icon + "</span>"
+                    + "<div class='gs-body'><strong>" + escHTML(it.title) + "</strong>"
+                    +   "<span class='gs-meta'>" + escHTML(it.meta) + "</span></div>"
+                    + "<span class='gs-tag'>" + escHTML(it.tag) + "</span>"
+                    + "</div>";
+                }).join("")
+              + "</div>";
+          }).join("");
+          if (flatResults.length) {
+            selectedIdx = 0;
+            highlightSelected();
+          }
+        }
+
+        function highlightSelected() {
+          resultsEl.querySelectorAll(".gs-item").forEach(function (el) {
+            var idx = Number(el.getAttribute("data-gs-idx"));
+            el.classList.toggle("selected", idx === selectedIdx);
+            if (idx === selectedIdx) {
+              try { el.scrollIntoView({ block: "nearest" }); } catch (_) {}
+            }
+          });
+        }
+
+        // Input typing
+        input.addEventListener("input", function () { renderResults(input.value); });
+
+        // Click on result
+        resultsEl.addEventListener("click", function (e) {
+          var item = e.target.closest(".gs-item");
+          if (!item) return;
+          var idx = Number(item.getAttribute("data-gs-idx"));
+          var r = flatResults[idx];
+          if (r && r.action) r.action();
+        });
+
+        // Keyboard
+        document.addEventListener("keydown", function (e) {
+          // Open with ⌘K / Ctrl+K (or / outside input fields)
+          if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+            e.preventDefault();
+            if (openFlag) close(); else open();
+            return;
+          }
+          if (!openFlag) return;
+          if (e.key === "Escape") { e.preventDefault(); close(); }
+          else if (e.key === "ArrowDown") {
+            e.preventDefault();
+            if (flatResults.length) {
+              selectedIdx = Math.min(selectedIdx + 1, flatResults.length - 1);
+              highlightSelected();
+            }
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            if (flatResults.length) {
+              selectedIdx = Math.max(selectedIdx - 1, 0);
+              highlightSelected();
+            }
+          } else if (e.key === "Enter") {
+            e.preventDefault();
+            var r = flatResults[selectedIdx];
+            if (r && r.action) r.action();
+          }
+        });
+
+        // Overlay click closes
+        overlay.addEventListener("click", function (e) {
+          if (e.target === overlay) close();
+        });
+
+        // Topbar trigger
+        if (trigger) trigger.addEventListener("click", open);
+      })();
+
       // ============================================================
       // 校长专属首页 (#principalOverview) — 4 health KPIs, pending
       // approvals queue with quick-decide, risk sentinels, channel mix.
