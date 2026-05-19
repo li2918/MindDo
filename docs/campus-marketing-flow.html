@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>校区市场运营 · User Flow | MindDo</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #fef8ee; --card: #ffffff; --line: #e4ddd4;
+      --clay: #7a3010; --brand: #d8551c; --gold: #d97706; --gold-deep: #b45309;
+      --muted: #6b7280; --text: #1f2937; --success: #6e8b58; --danger: #c46a4d;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    .topbar { position: sticky; top: 0; z-index: 50; background: rgba(254, 248, 238, 0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; color: var(--clay); font-size: 15px; letter-spacing: -0.01em; text-decoration: none; }
+    .topbar .brand .dot { display: inline-block; width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #fde68a, var(--gold)); color: var(--clay); font-size: 13px; font-weight: 900; text-align: center; line-height: 22px; }
+    .topbar nav { display: flex; gap: 14px; font-size: 13px; }
+    .topbar nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
+    .topbar nav a:hover { color: var(--clay); }
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+    .hero { background: linear-gradient(135deg, #0d2841 0%, #1f3f5e 100%); color: #fef3c7; border-radius: 20px; padding: 32px 36px; box-shadow: 0 18px 44px rgba(13, 40, 65, 0.18); margin-bottom: 28px; }
+    .hero .eyebrow { font-size: 11.5px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #fb923c; margin-bottom: 8px; }
+    .hero h1 { margin: 0 0 8px; font-size: 32px; letter-spacing: -0.02em; font-weight: 900; }
+    .hero .sub { font-size: 14.5px; color: rgba(254, 243, 199, 0.78); max-width: 70ch; line-height: 1.65; }
+    .hero .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .hero .meta-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: rgba(254, 243, 199, 0.12); border: 1px solid rgba(254, 243, 199, 0.28); font-size: 12px; font-weight: 700; }
+    .hero .meta-chip strong { color: #fef3c7; }
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; margin: 36px 0 14px; }
+    .section-head h2 { margin: 0; font-size: 18px; font-weight: 900; color: var(--clay); letter-spacing: -0.01em; }
+    .section-head .num { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 18px 44px rgba(122, 48, 16, 0.06); margin-bottom: 18px; }
+    .panel h3 { margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .panel p { margin: 0 0 10px; font-size: 13.5px; color: var(--text); }
+    .panel p.muted { color: var(--muted); font-size: 12.5px; }
+    .duty-list-wrap { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 8px 0; box-shadow: 0 18px 44px rgba(122, 48, 16, 0.06); margin: 18px 0 28px; }
+    .duty-row { padding: 14px 22px; border-bottom: 1px dashed rgba(122, 48, 16, 0.08); }
+    .duty-row:last-child { border-bottom: none; }
+    .duty-row .duty-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .duty-row .duty-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #fef3c7, #fde68a); display: inline-flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .duty-row .duty-title { font-size: 14.5px; font-weight: 900; color: var(--clay); letter-spacing: -0.01em; flex: 1 1 auto; }
+    .duty-row .duty-freq { font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); padding: 3px 9px; border-radius: 999px; background: rgba(122, 48, 16, 0.05); border: 1px solid var(--line); white-space: nowrap; }
+    .duty-row .duty-items { list-style: none; padding: 0; margin: 0 0 0 46px; }
+    .duty-row .duty-items li { position: relative; padding: 3px 0 3px 16px; font-size: 13px; color: var(--text); line-height: 1.6; }
+    .duty-row .duty-items li::before { content: "▸"; position: absolute; left: 0; top: 3px; color: var(--brand); font-weight: 900; font-size: 11px; }
+    .duty-row .duty-items li strong { color: var(--clay); }
+    @media (max-width: 600px) { .duty-row { padding: 12px 16px; } .duty-row .duty-items { margin-left: 0; } .duty-row .duty-freq { font-size: 10px; padding: 2px 7px; } }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 18px 0 28px; }
+    .kpi-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; box-shadow: 0 4px 12px rgba(122, 48, 16, 0.04); }
+    .kpi-card .icon { font-size: 22px; margin-bottom: 6px; }
+    .kpi-card .label { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .kpi-card .body { font-size: 13px; color: var(--text); margin-top: 4px; line-height: 1.5; }
+    .flow-wrap { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 18px 44px rgba(122, 48, 16, 0.06); overflow-x: auto; margin-bottom: 18px; }
+    .mermaid { background: transparent; text-align: center; }
+    table.perm { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.perm thead th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); background: rgba(122, 48, 16, 0.04); }
+    table.perm tbody td { padding: 10px 12px; border-bottom: 1px dashed rgba(122, 48, 16, 0.08); }
+    table.perm tbody tr:last-child td { border-bottom: none; }
+    table.perm .check { font-size: 16px; font-weight: 900; }
+    table.perm .check.yes { color: var(--success); }
+    table.perm .check.no  { color: var(--danger); }
+    table.perm .check.partial { color: var(--gold); }
+    table.perm tbody tr:hover { background: rgba(248, 250, 252, 0.55); }
+    .storage-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .storage-item { padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .storage-item code { font-family: ui-monospace, "Courier New", monospace; font-size: 12px; font-weight: 700; color: var(--brand); background: rgba(216, 85, 28, 0.08); padding: 2px 6px; border-radius: 4px; }
+    .storage-item .what { font-size: 12.5px; color: var(--text); margin-top: 6px; }
+    .storage-item .what strong { color: var(--clay); }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } .hero { padding: 22px 24px; } .hero h1 { font-size: 24px; } }
+    ol.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+    ol.steps li { counter-increment: step; position: relative; padding: 10px 12px 10px 44px; border-bottom: 1px dashed rgba(122, 48, 16, 0.08); font-size: 13px; }
+    ol.steps li:last-child { border-bottom: none; }
+    ol.steps li::before { content: counter(step); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; border-radius: 999px; background: var(--brand); color: #fff; font-size: 11px; font-weight: 900; display: inline-flex; align-items: center; justify-content: center; }
+    ol.steps li strong { color: var(--clay); }
+    ol.steps li code { font-family: ui-monospace, monospace; font-size: 11.5px; color: var(--brand); background: rgba(216, 85, 28, 0.08); padding: 1px 5px; border-radius: 3px; }
+    footer { margin-top: 50px; padding-top: 20px; border-top: 1px dashed var(--line); font-size: 11.5px; color: var(--muted); text-align: center; }
+    footer code { font-family: ui-monospace, monospace; color: var(--brand); }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="../index.html" class="brand">
+    <span class="dot">M</span>
+    <span>MindDo · Docs</span>
+  </a>
+  <nav>
+    <a href="user-flows.html">← 全部角色</a>
+    <a href="../dashboard.html">运营 Dashboard</a>
+    <a href="SCHEMA.md">SCHEMA</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="eyebrow">User Flow</div>
+    <h1>校区市场运营 · Campus Marketing</h1>
+    <p class="sub">单校区获客与转化型角色：从线索录入、跟进、试课预约到付费转化的全链路负责。本流程图覆盖一个市场专员的标准工作日所有触达的页面、状态机、写入的存储与审计记录。</p>
+    <div class="meta-row">
+      <span class="meta-chip">校区范围 · <strong>单一</strong></span>
+      <span class="meta-chip">金额 · <strong>不可见</strong></span>
+      <span class="meta-chip">审批权限 · <strong>无</strong></span>
+      <span class="meta-chip">权限模板 · <strong>campus-marketing</strong></span>
+    </div>
+  </section>
+
+  <!-- ===== Responsibilities ===== -->
+  <div class="section-head">
+    <h2>核心职责 · 市场专员每天要做的事</h2>
+    <span class="num">01</span>
+  </div>
+  <div class="duty-list-wrap">
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">🎯</span>
+        <span class="duty-title">线索跟进</span>
+        <span class="duty-freq">每天若干次 · 高优先级</span>
+      </div>
+      <ul class="duty-items">
+        <li>从「今日待跟进」队列依次联系：📞 拨号 / ✉️ 邮件</li>
+        <li>每次接触都用 <strong>添加跟进</strong> 记录（电话 / 微信 / 邮件 / 到访）</li>
+        <li>跟进结束时设置 <strong>下次跟进日期</strong>，状态升级（new → contacted → follow → won/lost）</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">📋</span>
+        <span class="duty-title">新线索录入</span>
+        <span class="duty-freq">每天若干次</span>
+      </div>
+      <ul class="duty-items">
+        <li>单条录入：右下角 <strong>+ 新线索</strong> FAB，自动查重（手机/邮箱）</li>
+        <li>批量导入 CSV / TSV：预览 → 标记重复 → 只写合法行</li>
+        <li>所有新线索自动归到本校区，状态默认 new</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">🏷️</span>
+        <span class="duty-title">客户标签与画像</span>
+        <span class="duty-freq">每天</span>
+      </div>
+      <ul class="duty-items">
+        <li>打意向标签（高 / 中 / 低 / 需家长决策 / 时间冲突 / 重新联系）</li>
+        <li>维护联系历史，每条记录带时间、渠道、备注</li>
+        <li>批量操作：多选 → 改状态 / 加标签 / 标记已联系</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">🎤</span>
+        <span class="duty-title">试课预约与跟进</span>
+        <span class="duty-freq">每天</span>
+      </div>
+      <ul class="duty-items">
+        <li>预约前确认：和家长沟通试课时间、地点</li>
+        <li>试课当天与校区运营对接（接待 / 签到）</li>
+        <li>试课完成后录入 <strong>市场反馈</strong>：1-5 星意向 + 付费倾向 + 备注</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">📊</span>
+        <span class="duty-title">渠道分析</span>
+        <span class="duty-freq">每周回顾</span>
+      </div>
+      <ul class="duty-items">
+        <li>查看渠道效果表（线索 / 试课 / 付费 / 转化率 / 金额 / 占比）</li>
+        <li>识别高转化渠道，反馈给上级建议加大投放</li>
+        <li>关注个人在团队排行榜中的位置</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">📈</span>
+        <span class="duty-title">个人业绩追踪</span>
+        <span class="duty-freq">每月 / 目标管理</span>
+      </div>
+      <ul class="duty-items">
+        <li>设置月度目标：线索数 / 试课数 / 转化数 / 业绩金额</li>
+        <li>看 4 条进度条：实际 vs 目标，颜色显示达标情况</li>
+        <li>临近月底加大跟进力度，冲刺目标</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">💬</span>
+        <span class="duty-title">沟通话术维护</span>
+        <span class="duty-freq">按需 / 不常改</span>
+      </div>
+      <ul class="duty-items">
+        <li>维护沟通模板（试课确认 / 试课提醒 / 试课后跟进 / 重新激活）</li>
+        <li>记录跟进时 📋 一键插入模板，省去重复打字</li>
+        <li>必要时根据反馈调整话术</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">🤝</span>
+        <span class="duty-title">跨角色协作</span>
+        <span class="duty-freq">持续</span>
+      </div>
+      <ul class="duty-items">
+        <li>与校区运营：试课家庭到场前确认、试课中回访</li>
+        <li>与校长：转化困难线索升级、特殊优惠申请</li>
+        <li>试课完成后与运营核对市场反馈</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== Daily KPI strip ===== -->
+  <div class="section-head">
+    <h2>一日开始 · 市场作战首页 4 个 KPI</h2>
+    <span class="num">02</span>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="icon">🎯</div>
+      <div class="label">今日待跟进</div>
+      <div class="body">基于 <code>nextContactAt ≤ today</code> 或「冷线索 ≥ 1 天」。<br/>点击 → CRM 客户管理（filter=today-follow）。</div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon">🆕</div>
+      <div class="label">本周新线索</div>
+      <div class="body">本周一以来新建的所有线索。<br/>点击 → CRM 客户管理（filter=week-new）。</div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon">💎</div>
+      <div class="label">本月转化率</div>
+      <div class="body">本月线索中已成单数 / 总线索数。<br/>点击 → CRM 客户管理（filter=won）。</div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon">🏆</div>
+      <div class="label">我的排名</div>
+      <div class="body">在本校区市场专员中的转化排名。<br/>点击 → 市场中心 · 渠道效果。</div>
+    </div>
+  </div>
+
+  <!-- ===== Main flowchart ===== -->
+  <div class="section-head">
+    <h2>主流程 · 全日活动轨迹</h2>
+    <span class="num">03</span>
+  </div>
+  <div class="flow-wrap">
+    <div class="mermaid">
+flowchart TD
+    A[🔐 登录 dashboard.html] --> B[市场作战首页<br/>#marketingOverview]
+    B --> KPI{4 个 KPI 卡片<br/>都可点击}
+    KPI -->|今日待跟进| D[CRM filter=today-follow]
+    KPI -->|本周新线索| E[CRM filter=week-new]
+    KPI -->|本月转化率| F[CRM filter=won]
+    KPI -->|我的排名| G[渠道效果 · 排行榜]
+
+    B --> Q[今日待跟进队列]
+    Q -->|📞 拨号| Q1[tel: link]
+    Q -->|✉️ 邮件| Q2[mailto: link]
+    Q -->|标记联系| Q3[stamp lastContactAt]
+
+    B --> T[本月 Top 渠道]
+    B --> U[我的本月业绩]
+    U --> U1[设置目标]
+    U --> U2[4 条进度条]
+
+    B --> FAB[➕ 新线索 FAB]
+    FAB --> M[查重<br/>phone / email]
+    M -->|有重复| O[警告 + 查看已有 / 仍然新建]
+    M -->|无重复| P[创建 + audit]
+
+    A --> Sidebar{侧栏导航}
+    Sidebar --> Mkt[市场中心]
+    Sidebar --> Data[招生数据]
+
+    Mkt --> Mkt1[市场核心指标<br/>注册 / 试课 / 转化 KPI]
+    Mkt --> Mkt2[CRM 客户管理]
+    Mkt --> Mkt3[试课管理]
+    Mkt --> Mkt4[渠道效果]
+    Mkt --> Mkt5[品牌物料]
+
+    Mkt2 --> CRM1[列表 + 7 个 filter pill]
+    CRM1 --> CRM2[多选 → 批量操作]
+    CRM1 --> CRM3[详情模态框<br/>详见 章节 04]
+    CRM1 --> CRM4[CSV 批量导入]
+
+    Mkt3 --> Tr1[今日试课表]
+    Tr1 --> Tr2[评估 / 邀请注册 /<br/>市场反馈 ★]
+
+    A -.->|❌ 看不到| NoFin[财务详情]
+    A -.->|❌ 看不到| NoApprove[请假 / 退款审批]
+    A -.->|❌ 看不到| NoSettings[业务设置]
+
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#7a3010;
+    classDef kpi fill:#fff,stroke:#d97706,color:#7a3010;
+    classDef hot fill:#dcfce7,stroke:#6e8b58,color:#3f5d26;
+    classDef nope fill:#fef2f2,stroke:#c46a4d,color:#8e3d21,stroke-dasharray: 4 4;
+    class A entry
+    class KPI,Sidebar kpi
+    class CRM3,Tr2,FAB hot
+    class NoFin,NoApprove,NoSettings nope
+    </div>
+  </div>
+
+  <!-- ===== Lead detail modal sub-flow ===== -->
+  <div class="section-head">
+    <h2>子流程 · 线索详情模态框</h2>
+    <span class="num">04</span>
+  </div>
+  <div class="panel">
+    <p>从 CRM 列表任意一行的 <strong>详情</strong> 按钮触发。整合 客户标签 · 下次跟进日期 · 联系历史 · 状态变更 · 备注 五个独立子模块。</p>
+    <ol class="steps">
+      <li><strong>打开</strong>：渲染只读字段网格（学员 / 家长 / 电话 / 邮箱 / 渠道 / 意向 / 校区 / 试课时间 / 进入时间 / 最近联系）</li>
+      <li><strong>客户标签</strong>：现有标签以 chip 显示，可×删除；右侧 6 个常用建议（高意向 / 中意向 / 低意向 / 需家长决策 / 时间冲突 / 重新联系），自由输入支持回车追加</li>
+      <li><strong>下次跟进</strong>：date picker。设置后 CRM 行显示 📅 倒计时徽章；今日到期变金色，逾期变红色</li>
+      <li><strong>状态 + 备注</strong>：5 选 1 状态下拉（new / contacted / follow / won / lost）+ 自由文本备注</li>
+      <li><strong>联系历史</strong>：滚动列表（最新在上），每条带时间、渠道、备注</li>
+      <li><strong>添加跟进</strong>：channel select（电话 / 微信 / 邮件 / 到访 / 其他）+ 备注 + 📋 模板插入 → 点击 <strong>添加跟进</strong></li>
+      <li><strong>保存</strong>：写回 <code>minddo_trial_leads</code>，追加 <code>lead.update</code> audit，re-render CRM 列表</li>
+      <li><strong>标记已联系</strong>：快捷键 — 一键 stamp lastContactAt + 状态从 new → contacted</li>
+    </ol>
+  </div>
+
+  <!-- ===== New lead with dup check ===== -->
+  <div class="section-head">
+    <h2>子流程 · 新建线索 + 查重</h2>
+    <span class="num">05</span>
+  </div>
+  <div class="panel">
+    <p>从 FAB 触发。提交时 <code>findDupLead()</code> 扫描已有 <code>minddo_trial_leads</code>，按手机号（去空白 + 小写）和邮箱（trim + 小写）匹配。</p>
+    <ol class="steps">
+      <li><strong>FAB 点击</strong>：仅 campus-marketing 角色可见</li>
+      <li><strong>表单填写</strong>：学员 / 家长 / 电话（必填）/ 邮箱 / 渠道 / 意向 / 备注</li>
+      <li><strong>提交</strong>：先 <code>findDupLead(phone, email)</code></li>
+      <li><strong>有重复</strong> → 警告横幅 ⚠️：「该手机号已存在 / 该邮箱已存在 / 都已存在」+ 3 个动作
+        <ul style="margin:6px 0 0 0; font-size:12.5px; color:var(--muted);">
+          <li><strong>查看已有线索</strong> → 关闭新建模态框，打开线索详情模态框</li>
+          <li><strong>仍然新建</strong> → 强制提交（设 pendingForceSubmit=true）</li>
+          <li><strong>取消</strong> → 关闭警告，等待用户修改</li>
+        </ul>
+      </li>
+      <li><strong>无重复</strong> → 写入 <code>minddo_trial_leads</code>，<code>crmStatus="new"</code>, <code>trialStatus="scheduled"</code>, 当前 ISO 时间</li>
+      <li><strong>Audit</strong>：<code>lead.create</code></li>
+    </ol>
+  </div>
+
+  <!-- ===== Bulk + CSV + Templates + Feedback ===== -->
+  <div class="section-head">
+    <h2>其他高频操作</h2>
+    <span class="num">06</span>
+  </div>
+  <div class="two-col">
+    <div class="panel">
+      <h3>📥 CSV 批量导入</h3>
+      <p class="muted">线索清单一次性导入，自动跳过重复。</p>
+      <ol class="steps">
+        <li>CRM 头部 <strong>📥 批量导入</strong> 按钮</li>
+        <li>上传 .csv / .tsv 或粘贴文本（首行表头）</li>
+        <li>必需列：studentName + phone（支持 学员 / 姓名 / 电话 别名）</li>
+        <li>解析后预览表格，每行标记 <strong>可导入 / 重复 / 异常</strong></li>
+        <li>确认 → 只写合法行，跳过重复</li>
+        <li>每条新线索写 audit <code>lead.import</code></li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>🔢 批量操作</h3>
+      <p class="muted">CRM 多选后底部浮动操作条。</p>
+      <ol class="steps">
+        <li>勾选行的 checkbox，或表头「本页全选」</li>
+        <li>底部弹出操作条，显示「已选 N 条」</li>
+        <li>三种动作：<strong>标记已联系</strong> / <strong>改状态</strong>（下拉 + 应用） / <strong>添加标签</strong>（输入框）</li>
+        <li>每个动作都弹确认框防误操作</li>
+        <li>逐条写 audit <code>lead.bulk.&lt;action&gt;</code></li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>📋 沟通模板</h3>
+      <p class="muted">常用话术一键插入。</p>
+      <ol class="steps">
+        <li>线索详情 / 添加跟进 行的 📋 按钮</li>
+        <li>弹出 popover 列出所有模板（标题 + 预览）</li>
+        <li>点击模板 → 内容插入到备注 textarea</li>
+        <li>可编辑后保存，原模板不动</li>
+        <li>「管理模板…」入口 → 模板管理器（增删）</li>
+        <li>首次使用自动播种 4 条（试课确认 / 试课提醒 / 试课后跟进 / 重新激活）</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>⭐ 试课后市场反馈</h3>
+      <p class="muted">试课完成后捕捉市场视角的转化信号。</p>
+      <ol class="steps">
+        <li>试课管理 → 任意 done 状态的行 → <strong>市场反馈</strong> 按钮</li>
+        <li>1-5 星意向打分（有 hint 文字）</li>
+        <li>付费倾向：可成交 / 需再跟进 / 暂不考虑</li>
+        <li>自由备注</li>
+        <li>保存到 <code>minddo_trial_feedback</code></li>
+        <li>试课行显示「意向 N★」chip（绿/金/红色）</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ===== Permission matrix ===== -->
+  <div class="section-head">
+    <h2>权限矩阵 · 哪些能看 / 不能看</h2>
+    <span class="num">07</span>
+  </div>
+  <div class="panel" style="padding:0;overflow:hidden;">
+    <table class="perm">
+      <thead>
+        <tr>
+          <th>模块</th>
+          <th>市场专员</th>
+          <th>同事的权限（对比）</th>
+          <th>说明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>市场作战首页</strong></td>
+          <td><span class="check yes">✓</span> 专属</td>
+          <td>仅自己看到</td>
+          <td>角色切换时通过 <code>applyRoleSpecificOverview</code> 显示 <code>#marketingOverview</code></td>
+        </tr>
+        <tr>
+          <td><strong>市场中心 (CRM / 试课 / 渠道 / 品牌)</strong></td>
+          <td><span class="check yes">✓</span> 读写</td>
+          <td>校区运营只读 · 校长 + 超管也读写</td>
+          <td><code>marketing.write</code> 权限</td>
+        </tr>
+        <tr>
+          <td><strong>+ 新线索 FAB</strong></td>
+          <td><span class="check yes">✓</span></td>
+          <td>仅市场专员</td>
+          <td>按角色显示</td>
+        </tr>
+        <tr>
+          <td><strong>招生数据</strong></td>
+          <td><span class="check yes">✓</span></td>
+          <td>所有角色</td>
+          <td>data.view（无 finance）</td>
+        </tr>
+        <tr>
+          <td><strong>数据中心 · 财务</strong></td>
+          <td><span class="check no">✗</span></td>
+          <td>校长 / 超管</td>
+          <td>无 <code>data.finance</code></td>
+        </tr>
+        <tr>
+          <td><strong>数据大屏</strong></td>
+          <td><span class="check no">✗</span></td>
+          <td>校长 / 超管</td>
+          <td>财务数据敏感，不开放</td>
+        </tr>
+        <tr>
+          <td><strong>财务中心 / 订单 / 续费</strong></td>
+          <td><span class="check no">✗</span></td>
+          <td>校长 + 超管看真金额</td>
+          <td>无 <code>finance.view</code></td>
+        </tr>
+        <tr>
+          <td><strong>教务中心</strong></td>
+          <td><span class="check no">✗</span></td>
+          <td>校区运营读写</td>
+          <td>无 <code>academic.view</code></td>
+        </tr>
+        <tr>
+          <td><strong>待办 / 审批</strong></td>
+          <td><span class="check no">✗</span></td>
+          <td>校区运营 / 校长 / 超管</td>
+          <td>无 <code>inbox.view</code></td>
+        </tr>
+        <tr>
+          <td><strong>业务设置</strong></td>
+          <td><span class="check no">✗</span></td>
+          <td>校区运营 / 校长 / 超管</td>
+          <td>无 <code>settings.view.campus</code></td>
+        </tr>
+        <tr>
+          <td><strong>内部管理</strong></td>
+          <td><span class="check no">✗</span></td>
+          <td>校区运营 / 校长 / 超管</td>
+          <td>无 <code>internal.view.campus</code></td>
+        </tr>
+        <tr>
+          <td><strong>招商加盟</strong></td>
+          <td><span class="check no">✗</span></td>
+          <td>仅超管</td>
+          <td>侧栏链接看不到</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== Storage touched ===== -->
+  <div class="section-head">
+    <h2>触达的 localStorage 键</h2>
+    <span class="num">08</span>
+  </div>
+  <div class="storage-grid">
+    <div class="storage-item">
+      <code>minddo_trial_leads</code>
+      <div class="what"><strong>读+写</strong>：CRM 核心数据。状态流转、tags、contactLog、nextContactAt 全在这里</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_payments</code>
+      <div class="what"><strong>读</strong>：本月转化率 KPI、渠道效果的"付费"列</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_marketing_templates</code>
+      <div class="what"><strong>读+写</strong>：沟通模板，首次访问自动播种 4 条</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_marketing_targets</code>
+      <div class="what"><strong>读+写</strong>：个人月度目标（按 staffId + YYYY-MM keyed）</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_trial_feedback</code>
+      <div class="what"><strong>读+写</strong>：试课后市场反馈（intent / ready / note）</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_staff</code>
+      <div class="what"><strong>读</strong>：渠道效果排行榜需要本校区市场专员列表</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_active_ops_user</code>
+      <div class="what"><strong>读</strong>：判断当前是市场专员身份 → 展示作战首页</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_email_outbox</code>
+      <div class="what"><strong>写</strong>：试课邀请发出时追加到 outbox</div>
+    </div>
+    <div class="storage-item">
+      <code>minddo_audit_log</code>
+      <div class="what"><strong>写</strong>：lead.create / lead.update / lead.contact / lead.import / lead.bulk.* / trial.feedback</div>
+    </div>
+  </div>
+
+  <!-- ===== Audit trail ===== -->
+  <div class="section-head">
+    <h2>审计 (Audit Log) 留痕</h2>
+    <span class="num">09</span>
+  </div>
+  <div class="panel">
+    <p class="muted" style="margin-bottom:14px;">每一次写操作都会追加一条到 <code>minddo_audit_log</code>，bound 在 500 条。校长 / 超管可在 内部管理 看到。</p>
+    <table class="perm">
+      <thead>
+        <tr>
+          <th>audit kind</th>
+          <th>触发动作</th>
+          <th>summary 示例</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>lead.create</code></td><td>FAB 录入新线索</td><td>新建线索 · 李同学</td></tr>
+        <tr><td><code>lead.update</code></td><td>线索详情保存（状态 / tags / nextContactAt / 备注）</td><td>更新线索 · 李同学</td></tr>
+        <tr><td><code>lead.contact</code></td><td>添加联系记录</td><td>记录跟进 · 李同学 · call</td></tr>
+        <tr><td><code>lead.import</code></td><td>CSV 批量导入每行</td><td>导入线索 · 张同学</td></tr>
+        <tr><td><code>lead.bulk.mark-contacted</code></td><td>批量 · 标记已联系</td><td>批量·mark-contacted · 李同学</td></tr>
+        <tr><td><code>lead.bulk.status</code></td><td>批量 · 改状态</td><td>批量·status · 李同学</td></tr>
+        <tr><td><code>lead.bulk.add-tag</code></td><td>批量 · 添加标签</td><td>批量·add-tag · 李同学</td></tr>
+        <tr><td><code>trial.feedback</code></td><td>试课后市场反馈</td><td>试课反馈 · 意向 4★ · 需再跟进</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    生成于 <code>docs/campus-marketing-flow.html</code> · 数据来源：
+    <a href="SCHEMA.md" style="color:var(--brand);">SCHEMA.md</a> +
+    <a href="../dashboard.html" style="color:var(--brand);">dashboard.html</a> ·
+    渲染：Mermaid via CDN
+  </footer>
+
+</main>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "base",
+    themeVariables: {
+      primaryColor: "#fef3c7", primaryTextColor: "#7a3010", primaryBorderColor: "#d97706",
+      lineColor: "#7a3010", secondaryColor: "#fff8ee", tertiaryColor: "#ffffff",
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif',
+      fontSize: "13px"
+    },
+    flowchart: { curve: "basis", htmlLabels: true, nodeSpacing: 30, rankSpacing: 50 }
+  });
+</script>
+
+</body>
+</html>

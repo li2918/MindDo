@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Flows · 角色全景 | MindDo</title>
+  <style>
+    :root {
+      --bg: #fef8ee; --card: #ffffff; --line: #e4ddd4;
+      --clay: #7a3010; --brand: #d8551c; --gold: #d97706; --gold-deep: #b45309;
+      --muted: #6b7280; --text: #1f2937;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    .topbar { position: sticky; top: 0; z-index: 50; background: rgba(254, 248, 238, 0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; color: var(--clay); font-size: 15px; letter-spacing: -0.01em; text-decoration: none; }
+    .topbar .brand .dot { display: inline-block; width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #fde68a, var(--gold)); color: var(--clay); font-size: 13px; font-weight: 900; text-align: center; line-height: 22px; }
+    .topbar nav { display: flex; gap: 14px; font-size: 13px; }
+    .topbar nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
+    .topbar nav a:hover { color: var(--clay); }
+
+    main { max-width: 980px; margin: 0 auto; padding: 40px 24px 80px; }
+    .hero { background: linear-gradient(135deg, #0d2841 0%, #1f3f5e 100%); color: #fef3c7; border-radius: 20px; padding: 40px 40px; box-shadow: 0 18px 44px rgba(13, 40, 65, 0.18); margin-bottom: 32px; }
+    .hero .eyebrow { font-size: 11.5px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #fbbf24; margin-bottom: 8px; }
+    .hero h1 { margin: 0 0 12px; font-size: 36px; letter-spacing: -0.02em; font-weight: 900; }
+    .hero .sub { font-size: 15px; color: rgba(254, 243, 199, 0.78); max-width: 70ch; line-height: 1.65; }
+
+    .role-grid {
+      display: grid; gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    }
+
+    .role-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px 26px;
+      box-shadow: 0 12px 28px rgba(122, 48, 16, 0.06);
+      text-decoration: none;
+      color: inherit;
+      transition: 0.18s;
+      display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+    }
+    .role-card::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+      background: var(--accent, var(--brand));
+    }
+    .role-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent, var(--brand));
+      box-shadow: 0 24px 56px rgba(122, 48, 16, 0.14);
+    }
+    .role-card .role-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; margin-bottom: 12px;
+    }
+    .role-card .role-icon {
+      width: 50px; height: 50px; border-radius: 14px;
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 28px; flex-shrink: 0;
+    }
+    .role-card .role-template {
+      font-size: 10px; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent, var(--brand));
+      padding: 3px 9px; border-radius: 999px;
+      background: rgba(216, 85, 28, 0.08);
+      border: 1px solid rgba(216, 85, 28, 0.2);
+      white-space: nowrap;
+    }
+    .role-card h2 {
+      margin: 0 0 4px; font-size: 21px; font-weight: 900;
+      color: var(--clay); letter-spacing: -0.02em;
+    }
+    .role-card .role-name-en {
+      font-size: 12.5px; font-weight: 700;
+      color: var(--muted); letter-spacing: 0.02em;
+      margin-bottom: 14px;
+    }
+    .role-card .role-sub {
+      font-size: 13.5px; color: var(--text); line-height: 1.6;
+      margin-bottom: 14px;
+    }
+    .role-card .role-stats {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin-bottom: 14px;
+    }
+    .role-card .role-stat {
+      font-size: 11.5px; color: var(--muted);
+    }
+    .role-card .role-stat strong {
+      display: block; color: var(--clay); font-size: 13px; font-weight: 800;
+      margin-top: 2px;
+    }
+    .role-card .role-cta {
+      margin-top: auto; font-size: 13px; font-weight: 800;
+      color: var(--accent, var(--brand));
+      display: flex; align-items: center; gap: 6px;
+    }
+    .role-card .role-cta::after {
+      content: "→"; transition: 0.15s;
+    }
+    .role-card:hover .role-cta::after { transform: translateX(4px); }
+
+    /* Role accent colors — applied per card */
+    .role-card.super-admin   { --accent: #c44d4d; }
+    .role-card.principal     { --accent: #4d9c6e; }
+    .role-card.campus-ops    { --accent: #d97706; }
+    .role-card.campus-marketing { --accent: #e8702a; }
+
+    .footnote {
+      margin-top: 40px;
+      padding: 18px 22px;
+      background: rgba(248,250,252,0.6);
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .footnote strong { color: var(--clay); }
+    .footnote a { color: var(--brand); text-decoration: none; font-weight: 700; }
+    .footnote a:hover { text-decoration: underline; }
+
+    footer {
+      margin-top: 30px; font-size: 11.5px; color: var(--muted); text-align: center;
+    }
+    footer code { font-family: ui-monospace, monospace; color: var(--brand); }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="../index.html" class="brand">
+    <span class="dot">M</span>
+    <span>MindDo · Docs</span>
+  </a>
+  <nav>
+    <a href="../dashboard.html">运营 Dashboard</a>
+    <a href="SCHEMA.md">SCHEMA</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="eyebrow">User Flow Index</div>
+    <h1>角色全景 · 4 个 ops 身份</h1>
+    <p class="sub">MindDo 运营 dashboard 当前的 RBAC 由 4 个角色模板驱动。每个角色都有专属的核心职责、首页、可操作的模块和数据权限。点击下方任一卡片查看该角色的完整 user flow。</p>
+  </section>
+
+  <div class="role-grid">
+
+    <a href="super-admin-flow.html" class="role-card super-admin">
+      <div class="role-head">
+        <div class="role-icon">🌐</div>
+        <span class="role-template">super-admin</span>
+      </div>
+      <h2>超级管理员</h2>
+      <div class="role-name-en">Super Admin · 跨校区</div>
+      <p class="role-sub">跨校区最高权限，全公司巡检与全局配置。负责员工 / 角色 / 招商加盟 / 重大决策。</p>
+      <div class="role-stats">
+        <div class="role-stat">校区范围<strong>全部</strong></div>
+        <div class="role-stat">金额<strong>全部可见</strong></div>
+        <div class="role-stat">审批<strong>全部</strong></div>
+        <div class="role-stat">独家入口<strong>招商加盟 · 角色编辑</strong></div>
+      </div>
+      <div class="role-cta">查看完整 flow</div>
+    </a>
+
+    <a href="principal-flow.html" class="role-card principal">
+      <div class="role-head">
+        <div class="role-icon">🏛️</div>
+        <span class="role-template">principal</span>
+      </div>
+      <h2>校长</h2>
+      <div class="role-name-en">Principal · 单校区全权</div>
+      <p class="role-sub">单校区全权管理，看真实金额、批退款、做关键决策。日常巡检 + 上报 + 决策。</p>
+      <div class="role-stats">
+        <div class="role-stat">校区范围<strong>单一</strong></div>
+        <div class="role-stat">金额<strong>真实可见</strong></div>
+        <div class="role-stat">审批<strong>全部 (含退款)</strong></div>
+        <div class="role-stat">独家入口<strong>财务详情 · 退款审批</strong></div>
+      </div>
+      <div class="role-cta">查看完整 flow</div>
+    </a>
+
+    <a href="campus-ops-flow.html" class="role-card campus-ops">
+      <div class="role-head">
+        <div class="role-icon">🏫</div>
+        <span class="role-template">campus-ops</span>
+      </div>
+      <h2>校区运营</h2>
+      <div class="role-name-en">Campus Operations · 现场操作</div>
+      <p class="role-sub">单校区现场操作型角色，每天处理上课、试课接待、考勤、请假审批、续费提醒、交班。</p>
+      <div class="role-stats">
+        <div class="role-stat">校区范围<strong>单一</strong></div>
+        <div class="role-stat">金额<strong>脱敏 ($***)</strong></div>
+        <div class="role-stat">审批<strong>仅请假 / 调课</strong></div>
+        <div class="role-stat">专属首页<strong>校区运营首页</strong></div>
+      </div>
+      <div class="role-cta">查看完整 flow</div>
+    </a>
+
+    <a href="campus-marketing-flow.html" class="role-card campus-marketing">
+      <div class="role-head">
+        <div class="role-icon">📣</div>
+        <span class="role-template">campus-marketing</span>
+      </div>
+      <h2>校区市场运营</h2>
+      <div class="role-name-en">Campus Marketing · 获客与转化</div>
+      <p class="role-sub">单校区获客与转化型角色，从线索录入、跟进、试课预约到付费转化的全链路负责。</p>
+      <div class="role-stats">
+        <div class="role-stat">校区范围<strong>单一</strong></div>
+        <div class="role-stat">金额<strong>不可见</strong></div>
+        <div class="role-stat">审批<strong>无</strong></div>
+        <div class="role-stat">专属首页<strong>市场作战首页</strong></div>
+      </div>
+      <div class="role-cta">查看完整 flow</div>
+    </a>
+
+  </div>
+
+  <div class="footnote">
+    <strong>权限模板配置</strong> 在 <a href="../assets/minddo-flow.js"><code style="font-family:ui-monospace,monospace;color:var(--brand);background:rgba(216,85,28,0.08);padding:1px 5px;border-radius:3px;">assets/minddo-flow.js</code></a> 顶部的 <code style="font-family:ui-monospace,monospace;color:var(--brand);background:rgba(216,85,28,0.08);padding:1px 5px;border-radius:3px;">PERMISSION_TEMPLATES</code> 对象。每个角色的 perms 数组决定其可访问的模块。<br/>
+    <strong>登录</strong> 由 <code style="font-family:ui-monospace,monospace;color:var(--brand);background:rgba(216,85,28,0.08);padding:1px 5px;border-radius:3px;">minddo_active_ops_user</code> 控制 — 即 dashboard 顶栏右上角的"切换身份"菜单（demo 用）。<br/>
+    <strong>所有 user flow</strong> 都按统一模板（核心职责 · KPI · 主流程图 · 子流程 · 权限矩阵 · 存储 · 审计）生成，方便横向对比。
+  </div>
+
+  <footer>
+    生成于 <code>docs/user-flows.html</code> ·
+    <a href="SCHEMA.md" style="color:var(--brand);">SCHEMA.md</a> ·
+    <a href="../dashboard.html" style="color:var(--brand);">dashboard.html</a>
+  </footer>
+
+</main>
+
+</body>
+</html>

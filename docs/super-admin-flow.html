@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>超级管理员 · User Flow | MindDo</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #fef8ee; --card: #ffffff; --line: #e4ddd4;
+      --clay: #7a3010; --brand: #d8551c; --gold: #d97706; --gold-deep: #b45309;
+      --muted: #6b7280; --text: #1f2937; --success: #6e8b58; --danger: #c46a4d;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    .topbar { position: sticky; top: 0; z-index: 50; background: rgba(254, 248, 238, 0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; color: var(--clay); font-size: 15px; letter-spacing: -0.01em; text-decoration: none; }
+    .topbar .brand .dot { display: inline-block; width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #fde68a, var(--gold)); color: var(--clay); font-size: 13px; font-weight: 900; text-align: center; line-height: 22px; }
+    .topbar nav { display: flex; gap: 14px; font-size: 13px; }
+    .topbar nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
+    .topbar nav a:hover { color: var(--clay); }
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+    .hero { background: linear-gradient(135deg, #0d2841 0%, #1f3f5e 100%); color: #fef3c7; border-radius: 20px; padding: 32px 36px; box-shadow: 0 18px 44px rgba(13, 40, 65, 0.18); margin-bottom: 28px; }
+    .hero .eyebrow { font-size: 11.5px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #f87171; margin-bottom: 8px; }
+    .hero h1 { margin: 0 0 8px; font-size: 32px; letter-spacing: -0.02em; font-weight: 900; }
+    .hero .sub { font-size: 14.5px; color: rgba(254, 243, 199, 0.78); max-width: 70ch; line-height: 1.65; }
+    .hero .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .hero .meta-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: rgba(254, 243, 199, 0.12); border: 1px solid rgba(254, 243, 199, 0.28); font-size: 12px; font-weight: 700; }
+    .hero .meta-chip strong { color: #fef3c7; }
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; margin: 36px 0 14px; }
+    .section-head h2 { margin: 0; font-size: 18px; font-weight: 900; color: var(--clay); letter-spacing: -0.01em; }
+    .section-head .num { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 18px 44px rgba(122, 48, 16, 0.06); margin-bottom: 18px; }
+    .panel h3 { margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .panel p { margin: 0 0 10px; font-size: 13.5px; color: var(--text); }
+    .panel p.muted { color: var(--muted); font-size: 12.5px; }
+    .duty-list-wrap { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 8px 0; box-shadow: 0 18px 44px rgba(122, 48, 16, 0.06); margin: 18px 0 28px; }
+    .duty-row { padding: 14px 22px; border-bottom: 1px dashed rgba(122, 48, 16, 0.08); }
+    .duty-row:last-child { border-bottom: none; }
+    .duty-row .duty-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .duty-row .duty-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #fef3c7, #fde68a); display: inline-flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .duty-row .duty-title { font-size: 14.5px; font-weight: 900; color: var(--clay); letter-spacing: -0.01em; flex: 1 1 auto; }
+    .duty-row .duty-freq { font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); padding: 3px 9px; border-radius: 999px; background: rgba(122, 48, 16, 0.05); border: 1px solid var(--line); white-space: nowrap; }
+    .duty-row .duty-items { list-style: none; padding: 0; margin: 0 0 0 46px; }
+    .duty-row .duty-items li { position: relative; padding: 3px 0 3px 16px; font-size: 13px; color: var(--text); line-height: 1.6; }
+    .duty-row .duty-items li::before { content: "▸"; position: absolute; left: 0; top: 3px; color: var(--brand); font-weight: 900; font-size: 11px; }
+    .duty-row .duty-items li strong { color: var(--clay); }
+    @media (max-width: 600px) { .duty-row { padding: 12px 16px; } .duty-row .duty-items { margin-left: 0; } .duty-row .duty-freq { font-size: 10px; padding: 2px 7px; } }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 18px 0 28px; }
+    .kpi-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; box-shadow: 0 4px 12px rgba(122, 48, 16, 0.04); }
+    .kpi-card .icon { font-size: 22px; margin-bottom: 6px; }
+    .kpi-card .label { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .kpi-card .body { font-size: 13px; color: var(--text); margin-top: 4px; line-height: 1.5; }
+    .flow-wrap { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 18px 44px rgba(122, 48, 16, 0.06); overflow-x: auto; margin-bottom: 18px; }
+    .mermaid { background: transparent; text-align: center; }
+    table.perm { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.perm thead th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); background: rgba(122, 48, 16, 0.04); }
+    table.perm tbody td { padding: 10px 12px; border-bottom: 1px dashed rgba(122, 48, 16, 0.08); }
+    table.perm tbody tr:last-child td { border-bottom: none; }
+    table.perm .check { font-size: 16px; font-weight: 900; }
+    table.perm .check.yes { color: var(--success); }
+    table.perm .check.no  { color: var(--danger); }
+    table.perm .check.partial { color: var(--gold); }
+    table.perm tbody tr:hover { background: rgba(248, 250, 252, 0.55); }
+    .storage-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .storage-item { padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .storage-item code { font-family: ui-monospace, "Courier New", monospace; font-size: 12px; font-weight: 700; color: var(--brand); background: rgba(216, 85, 28, 0.08); padding: 2px 6px; border-radius: 4px; }
+    .storage-item .what { font-size: 12.5px; color: var(--text); margin-top: 6px; }
+    .storage-item .what strong { color: var(--clay); }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } .hero { padding: 22px 24px; } .hero h1 { font-size: 24px; } }
+    ol.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+    ol.steps li { counter-increment: step; position: relative; padding: 10px 12px 10px 44px; border-bottom: 1px dashed rgba(122, 48, 16, 0.08); font-size: 13px; }
+    ol.steps li:last-child { border-bottom: none; }
+    ol.steps li::before { content: counter(step); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; border-radius: 999px; background: var(--brand); color: #fff; font-size: 11px; font-weight: 900; display: inline-flex; align-items: center; justify-content: center; }
+    ol.steps li strong { color: var(--clay); }
+    ol.steps li code { font-family: ui-monospace, monospace; font-size: 11.5px; color: var(--brand); background: rgba(216, 85, 28, 0.08); padding: 1px 5px; border-radius: 3px; }
+    footer { margin-top: 50px; padding-top: 20px; border-top: 1px dashed var(--line); font-size: 11.5px; color: var(--muted); text-align: center; }
+    footer code { font-family: ui-monospace, monospace; color: var(--brand); }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="../index.html" class="brand">
+    <span class="dot">M</span>
+    <span>MindDo · Docs</span>
+  </a>
+  <nav>
+    <a href="user-flows.html">← 全部角色</a>
+    <a href="../dashboard.html">运营 Dashboard</a>
+    <a href="SCHEMA.md">SCHEMA</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="eyebrow">User Flow</div>
+    <h1>超级管理员 · Super Admin</h1>
+    <p class="sub">跨校区最高权限：可查看与编辑全部校区的所有功能。日常以巡检 + 全局配置 + 异常处理为主，授权 校长 / 校区运营 / 市场专员 做具体执行。承担数据合规、招商加盟、组织架构调整的最终决策。</p>
+    <div class="meta-row">
+      <span class="meta-chip">校区范围 · <strong>全部</strong></span>
+      <span class="meta-chip">金额 · <strong>全部可见</strong></span>
+      <span class="meta-chip">审批权限 · <strong>全部</strong></span>
+      <span class="meta-chip">权限模板 · <strong>super-admin (*)</strong></span>
+    </div>
+  </section>
+
+  <!-- ===== Responsibilities ===== -->
+  <div class="section-head">
+    <h2>核心职责 · 超管每天 / 每周要做的事</h2>
+    <span class="num">01</span>
+  </div>
+  <div class="duty-list-wrap">
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">🌐</span>
+        <span class="duty-title">跨校区数据巡检</span>
+        <span class="duty-freq">每天 / 每周</span>
+      </div>
+      <ul class="duty-items">
+        <li>切换校区筛选器到「全部」，查看全公司汇总指标</li>
+        <li>对比各校区收入、转化、续费率，识别落后校区</li>
+        <li>注意：异常增长 / 异常下滑都要追查</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">👥</span>
+        <span class="duty-title">员工与角色管理</span>
+        <span class="duty-freq">按需 / 招聘季密集</span>
+      </div>
+      <ul class="duty-items">
+        <li>员工管理（增 / 删 / 改）— 跨校区视角</li>
+        <li>角色权限调整（仅超管可改 4 个模板）</li>
+        <li>身份切换（mock auth）方便测试不同角色视图</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">💼</span>
+        <span class="duty-title">公司级财务审批与汇总</span>
+        <span class="duty-freq">每周 / 月底</span>
+      </div>
+      <ul class="duty-items">
+        <li>审批校长上报的大额退款 / 报销</li>
+        <li>查看跨校区总账单、工资、合同</li>
+        <li>处理特殊财务事项（重大优惠、坏账）</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">📺</span>
+        <span class="duty-title">数据大屏深度分析</span>
+        <span class="duty-freq">每周</span>
+      </div>
+      <ul class="duty-items">
+        <li>对比所有校区在 TV-wall 视图（财务 + 招生 + 教务）</li>
+        <li>识别行业 / 季节趋势</li>
+        <li>制定下月 / 下季度全局策略</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">🏢</span>
+        <span class="duty-title">招商加盟跟进</span>
+        <span class="duty-freq">按需</span>
+      </div>
+      <ul class="duty-items">
+        <li>查看 franchise.html 加盟咨询表单提交</li>
+        <li>跟进意向加盟商，输出合作方案</li>
+        <li>新校区开业前期协调</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">⚙️</span>
+        <span class="duty-title">全局业务设置</span>
+        <span class="duty-freq">不常改</span>
+      </div>
+      <ul class="duty-items">
+        <li>所有校区的设置都可改（试课时段、营业时段、教室、公告）</li>
+        <li>设置默认配置 (_default) 适用未单独配置的校区</li>
+        <li>课程时段 / Offerings 管理</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">🛡️</span>
+        <span class="duty-title">审计与合规检查</span>
+        <span class="duty-freq">每月</span>
+      </div>
+      <ul class="duty-items">
+        <li>查看完整 <code>minddo_audit_log</code>（最多 500 条）</li>
+        <li>追查异常操作（大量删除、权限变更、退款）</li>
+        <li>必要时同步给法务 / HR</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">🚨</span>
+        <span class="duty-title">重大异常决策</span>
+        <span class="duty-freq">按需</span>
+      </div>
+      <ul class="duty-items">
+        <li>校区危机处理（投诉升级、合规事件、人事冲突）</li>
+        <li>系统级问题（数据异常、批量错误）</li>
+        <li>支持 reseedDemoData() 重置 demo 环境（仅 demo 用）</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== Daily KPI strip ===== -->
+  <div class="section-head">
+    <h2>一日开始 · 全公司汇总 4 个核心指标</h2>
+    <span class="num">02</span>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="icon">🏫</div>
+      <div class="label">活跃校区数</div>
+      <div class="body">来自 <code>i18n.campusOptions</code> + 当前有数据的校区。<br/>点击 → 校区选择器。</div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon">💵</div>
+      <div class="label">本月总收入</div>
+      <div class="body">全部校区的 <code>minddo_payments</code> 汇总。<br/>点击 → 数据中心 · 财务。</div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon">🎓</div>
+      <div class="label">总在读学员</div>
+      <div class="body">全公司 <code>minddo_students</code> status=active 汇总。<br/>点击 → 教务中心 · 学员名单。</div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon">👤</div>
+      <div class="label">总员工数</div>
+      <div class="body">全部 <code>minddo_staff</code> status=active。<br/>点击 → 内部管理 · 员工。</div>
+    </div>
+  </div>
+
+  <!-- ===== Main flowchart ===== -->
+  <div class="section-head">
+    <h2>主流程 · 跨校区一日</h2>
+    <span class="num">03</span>
+  </div>
+  <div class="flow-wrap">
+    <div class="mermaid">
+flowchart TD
+    A[🔐 登录 dashboard.html] --> B[首页]
+    B --> CS{校区选择器}
+    CS -->|全部| Cross[跨校区汇总视图]
+    CS -->|单一| Single[聚焦该校区 - 临时下钻]
+
+    A --> Side{侧栏全开<br/>无任何权限限制}
+
+    Side --> Data[数据中心]
+    Data --> D1[📺 数据大屏 - 跨校区]
+    Data --> D2[招生数据]
+    Data --> D3[教务数据]
+    Data --> D4[财务数据 - 全部金额]
+
+    Side --> Fin[财务中心]
+    Fin --> F1[订单 / 账单 / 工资 / 合同]
+    Fin --> F2[审批 - 含大额退款]
+    Fin --> F3[续费看板 - 全公司]
+
+    Side --> Mkt[市场中心]
+    Side --> Acad[教务中心]
+    Side --> Inbox[待办 - 所有审批]
+
+    Side --> Int[内部管理]
+    Int --> Staff[员工管理<br/>跨校区 · 增删改]
+    Int --> Role[角色管理<br/>4 个模板可编辑]
+
+    Side --> Set[业务设置]
+    Set --> S0[任意校区配置]
+    Set --> S1[_default 默认配置]
+
+    Side --> Franchise[💎 招商加盟<br/>franchise.html]
+    Franchise --> Fr1[加盟咨询列表]
+
+    Side --> Audit[审计日志<br/>全部 500 条]
+
+    B --> Switch[切换身份测试]
+    Switch -.->|mock auth| TestRole[查看其他角色视图]
+
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#7a3010;
+    classDef power fill:#dcfce7,stroke:#6e8b58,color:#3f5d26;
+    classDef sys fill:#fde2e2,stroke:#c46a4d,color:#8e3d21;
+    class A entry
+    class Cross,Role,Audit power
+    class Franchise,Switch sys
+    </div>
+  </div>
+
+  <!-- ===== Cross-campus comparison sub-flow ===== -->
+  <div class="section-head">
+    <h2>子流程 · 跨校区数据对比</h2>
+    <span class="num">04</span>
+  </div>
+  <div class="panel">
+    <p>超管独有的"全公司视角"。每个 dashboard 模块都尊重校区筛选器：切换到「全部」时显示汇总，切到某一校区时下钻。</p>
+    <ol class="steps">
+      <li><strong>顶栏校区选择器</strong>：默认「全部校区（汇总）」。切换会立即重渲染当前 tab</li>
+      <li><strong>数据中心 → 数据大屏</strong>：全公司财务 + 招生 + 教务的"指挥中心"视图</li>
+      <li><strong>财务中心 → 订单</strong>：可按校区分组查看，识别哪个校区贡献最大</li>
+      <li><strong>教务中心 → 学员名单</strong>：全公司学员花名册</li>
+      <li><strong>市场中心 → CRM</strong>：全部线索，可按校区过滤分析</li>
+      <li><strong>对比维度</strong>：本月收入 / 转化率 / 在读 / 续费率 / 出勤率，识别 top / bottom 校区</li>
+      <li><strong>下钻调查</strong>：临时切换到某一校区视角，看具体数据；查完切回「全部」</li>
+    </ol>
+  </div>
+
+  <!-- ===== Other key operations ===== -->
+  <div class="section-head">
+    <h2>其他独家操作</h2>
+    <span class="num">05</span>
+  </div>
+  <div class="two-col">
+    <div class="panel">
+      <h3>🛡️ 角色权限管理</h3>
+      <p class="muted">仅超管可改 4 个角色模板的权限配置。</p>
+      <ol class="steps">
+        <li>内部管理 → 角色 sub-tab</li>
+        <li>看到 4 个角色（super-admin / principal / campus-ops / campus-marketing）</li>
+        <li>编辑某角色的 permissions 数组（添加 / 删除权限字符串）</li>
+        <li>变更立即生效（hasPerm 实时读取）</li>
+        <li>谨慎操作：误删 super-admin 的 "*" 会锁死自己</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>👥 员工增删（跨校区）</h3>
+      <p class="muted">新员工入职 / 离职管理。</p>
+      <ol class="steps">
+        <li>内部管理 → 员工 sub-tab</li>
+        <li>看所有校区的员工（默认）或按校区筛选</li>
+        <li>新员工：填写 id / name / roleId / campus / department / 邮箱 / 电话</li>
+        <li>状态调整：active / leave / inactive</li>
+        <li>新员工默认 roleId 决定其登录后看到的界面</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>💎 招商加盟跟进</h3>
+      <p class="muted">侧栏底部 💎 招商加盟入口。</p>
+      <ol class="steps">
+        <li>查看 franchise.html 提交的咨询表单（minddo_franchise_inquiries）</li>
+        <li>评估意向 + 经验 + 资金</li>
+        <li>跟进沟通 / 输出合作方案</li>
+        <li>签约后协调新校区开业流程</li>
+        <li>仅超管可见，其他角色看不到此入口</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>🔄 身份切换（测试）</h3>
+      <p class="muted">顶栏右上角"切换身份"菜单。</p>
+      <ol class="steps">
+        <li>显示按角色排序的所有 active 员工</li>
+        <li>点击任一员工 → 系统以该员工身份重渲染</li>
+        <li>用于查看其他角色看到的界面是什么样</li>
+        <li>本质是 mock auth，写 <code>minddo_active_ops_user</code></li>
+        <li>切换回 super-admin 恢复全权限</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ===== Permission matrix ===== -->
+  <div class="section-head">
+    <h2>权限矩阵 · 超管能做的事</h2>
+    <span class="num">06</span>
+  </div>
+  <div class="panel" style="padding:0;overflow:hidden;">
+    <table class="perm">
+      <thead>
+        <tr>
+          <th>模块</th>
+          <th>超级管理员</th>
+          <th>对比 · 其他角色</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>跨校区数据访问</strong></td><td><span class="check yes">✓ 唯一</span></td><td>其他角色 single-campus 锁定</td></tr>
+        <tr><td><strong>财务全部模块 + 真实金额</strong></td><td><span class="check yes">✓</span></td><td>校长也有 / 校区运营脱敏 / 市场专员看不到</td></tr>
+        <tr><td><strong>退款审批</strong></td><td><span class="check yes">✓</span></td><td>校长也有（approve.finance）</td></tr>
+        <tr><td><strong>角色权限编辑</strong></td><td><span class="check yes">✓ 唯一</span></td><td>校长只读 / 其他完全看不到</td></tr>
+        <tr><td><strong>员工管理（跨校区增删改）</strong></td><td><span class="check yes">✓</span></td><td>校长仅本校区</td></tr>
+        <tr><td><strong>业务设置 - 任意校区</strong></td><td><span class="check yes">✓</span></td><td>校长 / 校区运营仅本校区</td></tr>
+        <tr><td><strong>招商加盟入口</strong></td><td><span class="check yes">✓ 唯一</span></td><td>其他角色侧栏看不到</td></tr>
+        <tr><td><strong>身份切换（mock auth）</strong></td><td><span class="check yes">✓</span></td><td>其他角色无此权限</td></tr>
+        <tr><td><strong>数据大屏 - 全公司</strong></td><td><span class="check yes">✓</span></td><td>校长仅本校区</td></tr>
+        <tr><td><strong>审计日志全量查看</strong></td><td><span class="check yes">✓</span></td><td>校长仅本校区相关</td></tr>
+        <tr><td><strong>Reseed demo data</strong></td><td><span class="check yes">✓</span></td><td>开发用，重置整个 localStorage</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== Storage ===== -->
+  <div class="section-head">
+    <h2>触达的 localStorage 键</h2>
+    <span class="num">07</span>
+  </div>
+  <p class="muted" style="margin:0 0 14px;font-size:12.5px;color:var(--muted);">超管能读写 <strong>所有</strong> minddo_* 键。下面列举与超管特有职责最相关的：</p>
+  <div class="storage-grid">
+    <div class="storage-item"><code>minddo_staff</code><div class="what"><strong>读+写</strong>：跨校区员工花名册，增删改</div></div>
+    <div class="storage-item"><code>minddo_roles</code><div class="what"><strong>读+写</strong>：4 个角色模板的权限配置（独家）</div></div>
+    <div class="storage-item"><code>minddo_active_ops_user</code><div class="what"><strong>读+写</strong>：身份切换 mock auth</div></div>
+    <div class="storage-item"><code>minddo_franchise_inquiries</code><div class="what"><strong>读</strong>：加盟咨询表单（独家）</div></div>
+    <div class="storage-item"><code>minddo_payments</code><div class="what"><strong>读+写</strong>：全部校区订单</div></div>
+    <div class="storage-item"><code>minddo_approvals</code><div class="what"><strong>读+写</strong>：所有审批</div></div>
+    <div class="storage-item"><code>minddo_audit_log</code><div class="what"><strong>读</strong>：500 条历史，安全审查</div></div>
+    <div class="storage-item"><code>minddo_migrations_applied</code><div class="what"><strong>读</strong>：迁移版本，开发调试用</div></div>
+    <div class="storage-item"><code>minddo_trial_slots</code> · <code>_campus_hours</code> · <code>_classrooms</code> · <code>_campus_notice</code><div class="what"><strong>读+写</strong>：所有校区的业务设置 + _default 默认值</div></div>
+    <div class="storage-item"><code>minddo_class_offerings</code><div class="what"><strong>读+写</strong>：跨校区课程时段</div></div>
+    <div class="storage-item"><code>minddo_seed_version</code><div class="what"><strong>读+写</strong>：reseedDemoData 控制</div></div>
+  </div>
+
+  <!-- ===== Audit ===== -->
+  <div class="section-head">
+    <h2>审计 (Audit Log) 留痕</h2>
+    <span class="num">08</span>
+  </div>
+  <div class="panel">
+    <p class="muted" style="margin-bottom:14px;">超管的操作 + 全公司其他角色的所有写操作都在 <code>minddo_audit_log</code> 里。独家 audit kinds：</p>
+    <table class="perm">
+      <thead>
+        <tr><th>audit kind</th><th>触发动作</th><th>summary 示例</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>role.update</code></td><td>角色权限调整</td><td>更新角色 · campus-marketing · 加 lead.export</td></tr>
+        <tr><td><code>staff.create</code></td><td>新员工入职</td><td>新员工 · 王老师 · campus-ops · irvine</td></tr>
+        <tr><td><code>staff.delete</code></td><td>员工删除</td><td>删除员工 · 旧员工 EM099</td></tr>
+        <tr><td><code>identity.switch</code></td><td>身份切换（mock auth）</td><td>切换为 · principal · diamond-bar</td></tr>
+        <tr><td><code>franchise.contact</code></td><td>加盟咨询跟进</td><td>跟进 · 张老板 · 待签约</td></tr>
+        <tr><td><code>system.reseed</code></td><td>重置 demo 数据</td><td>系统 · reseedDemoData</td></tr>
+      </tbody>
+    </table>
+    <p class="muted" style="margin-top:14px;font-size:12px;">注：所有其他角色（校长 / 校区运营 / 市场专员）的 audit 也会在这里看到，超管视角是全量。</p>
+  </div>
+
+  <footer>
+    生成于 <code>docs/super-admin-flow.html</code> · 数据来源：
+    <a href="SCHEMA.md" style="color:var(--brand);">SCHEMA.md</a> +
+    <a href="../dashboard.html" style="color:var(--brand);">dashboard.html</a> ·
+    渲染：Mermaid via CDN
+  </footer>
+
+</main>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "base",
+    themeVariables: {
+      primaryColor: "#fef3c7", primaryTextColor: "#7a3010", primaryBorderColor: "#d97706",
+      lineColor: "#7a3010", secondaryColor: "#fff8ee", tertiaryColor: "#ffffff",
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif',
+      fontSize: "13px"
+    },
+    flowchart: { curve: "basis", htmlLabels: true, nodeSpacing: 30, rankSpacing: 50 }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>校长 · User Flow | MindDo</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #fef8ee; --card: #ffffff; --line: #e4ddd4;
+      --clay: #7a3010; --brand: #d8551c; --gold: #d97706; --gold-deep: #b45309;
+      --muted: #6b7280; --text: #1f2937; --success: #6e8b58; --danger: #c46a4d;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    .topbar { position: sticky; top: 0; z-index: 50; background: rgba(254, 248, 238, 0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; color: var(--clay); font-size: 15px; letter-spacing: -0.01em; text-decoration: none; }
+    .topbar .brand .dot { display: inline-block; width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #fde68a, var(--gold)); color: var(--clay); font-size: 13px; font-weight: 900; text-align: center; line-height: 22px; }
+    .topbar nav { display: flex; gap: 14px; font-size: 13px; }
+    .topbar nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
+    .topbar nav a:hover { color: var(--clay); }
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+    .hero { background: linear-gradient(135deg, #0d2841 0%, #1f3f5e 100%); color: #fef3c7; border-radius: 20px; padding: 32px 36px; box-shadow: 0 18px 44px rgba(13, 40, 65, 0.18); margin-bottom: 28px; }
+    .hero .eyebrow { font-size: 11.5px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #34d399; margin-bottom: 8px; }
+    .hero h1 { margin: 0 0 8px; font-size: 32px; letter-spacing: -0.02em; font-weight: 900; }
+    .hero .sub { font-size: 14.5px; color: rgba(254, 243, 199, 0.78); max-width: 70ch; line-height: 1.65; }
+    .hero .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .hero .meta-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: rgba(254, 243, 199, 0.12); border: 1px solid rgba(254, 243, 199, 0.28); font-size: 12px; font-weight: 700; }
+    .hero .meta-chip strong { color: #fef3c7; }
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; margin: 36px 0 14px; }
+    .section-head h2 { margin: 0; font-size: 18px; font-weight: 900; color: var(--clay); letter-spacing: -0.01em; }
+    .section-head .num { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 18px 44px rgba(122, 48, 16, 0.06); margin-bottom: 18px; }
+    .panel h3 { margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--clay); letter-spacing: -0.01em; }
+    .panel p { margin: 0 0 10px; font-size: 13.5px; color: var(--text); }
+    .panel p.muted { color: var(--muted); font-size: 12.5px; }
+    .duty-list-wrap { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 8px 0; box-shadow: 0 18px 44px rgba(122, 48, 16, 0.06); margin: 18px 0 28px; }
+    .duty-row { padding: 14px 22px; border-bottom: 1px dashed rgba(122, 48, 16, 0.08); }
+    .duty-row:last-child { border-bottom: none; }
+    .duty-row .duty-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .duty-row .duty-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #fef3c7, #fde68a); display: inline-flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .duty-row .duty-title { font-size: 14.5px; font-weight: 900; color: var(--clay); letter-spacing: -0.01em; flex: 1 1 auto; }
+    .duty-row .duty-freq { font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); padding: 3px 9px; border-radius: 999px; background: rgba(122, 48, 16, 0.05); border: 1px solid var(--line); white-space: nowrap; }
+    .duty-row .duty-items { list-style: none; padding: 0; margin: 0 0 0 46px; }
+    .duty-row .duty-items li { position: relative; padding: 3px 0 3px 16px; font-size: 13px; color: var(--text); line-height: 1.6; }
+    .duty-row .duty-items li::before { content: "▸"; position: absolute; left: 0; top: 3px; color: var(--brand); font-weight: 900; font-size: 11px; }
+    .duty-row .duty-items li strong { color: var(--clay); }
+    @media (max-width: 600px) { .duty-row { padding: 12px 16px; } .duty-row .duty-items { margin-left: 0; } .duty-row .duty-freq { font-size: 10px; padding: 2px 7px; } }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 18px 0 28px; }
+    .kpi-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; box-shadow: 0 4px 12px rgba(122, 48, 16, 0.04); }
+    .kpi-card .icon { font-size: 22px; margin-bottom: 6px; }
+    .kpi-card .label { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .kpi-card .body { font-size: 13px; color: var(--text); margin-top: 4px; line-height: 1.5; }
+    .flow-wrap { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 18px 44px rgba(122, 48, 16, 0.06); overflow-x: auto; margin-bottom: 18px; }
+    .mermaid { background: transparent; text-align: center; }
+    table.perm { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.perm thead th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); background: rgba(122, 48, 16, 0.04); }
+    table.perm tbody td { padding: 10px 12px; border-bottom: 1px dashed rgba(122, 48, 16, 0.08); }
+    table.perm tbody tr:last-child td { border-bottom: none; }
+    table.perm .check { font-size: 16px; font-weight: 900; }
+    table.perm .check.yes { color: var(--success); }
+    table.perm .check.no  { color: var(--danger); }
+    table.perm .check.partial { color: var(--gold); }
+    table.perm tbody tr:hover { background: rgba(248, 250, 252, 0.55); }
+    .storage-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .storage-item { padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .storage-item code { font-family: ui-monospace, "Courier New", monospace; font-size: 12px; font-weight: 700; color: var(--brand); background: rgba(216, 85, 28, 0.08); padding: 2px 6px; border-radius: 4px; }
+    .storage-item .what { font-size: 12.5px; color: var(--text); margin-top: 6px; }
+    .storage-item .what strong { color: var(--clay); }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } .hero { padding: 22px 24px; } .hero h1 { font-size: 24px; } }
+    ol.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+    ol.steps li { counter-increment: step; position: relative; padding: 10px 12px 10px 44px; border-bottom: 1px dashed rgba(122, 48, 16, 0.08); font-size: 13px; }
+    ol.steps li:last-child { border-bottom: none; }
+    ol.steps li::before { content: counter(step); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; border-radius: 999px; background: var(--brand); color: #fff; font-size: 11px; font-weight: 900; display: inline-flex; align-items: center; justify-content: center; }
+    ol.steps li strong { color: var(--clay); }
+    ol.steps li code { font-family: ui-monospace, monospace; font-size: 11.5px; color: var(--brand); background: rgba(216, 85, 28, 0.08); padding: 1px 5px; border-radius: 3px; }
+    footer { margin-top: 50px; padding-top: 20px; border-top: 1px dashed var(--line); font-size: 11.5px; color: var(--muted); text-align: center; }
+    footer code { font-family: ui-monospace, monospace; color: var(--brand); }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="../index.html" class="brand">
+    <span class="dot">M</span>
+    <span>MindDo · Docs</span>
+  </a>
+  <nav>
+    <a href="user-flows.html">← 全部角色</a>
+    <a href="../dashboard.html">运营 Dashboard</a>
+    <a href="SCHEMA.md">SCHEMA</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="eyebrow">User Flow</div>
+    <h1>校长 · Principal</h1>
+    <p class="sub">单校区全权管理者：能看到本校区所有功能与真实金额，能批退款 / 报销，需要在教务、财务、市场、运营之间做关键决策。日常以巡检 + 决策 + 上报为主，授权 校区运营 / 市场专员 做具体执行。</p>
+    <div class="meta-row">
+      <span class="meta-chip">校区范围 · <strong>单一</strong></span>
+      <span class="meta-chip">金额 · <strong>真实可见</strong></span>
+      <span class="meta-chip">审批权限 · <strong>全部（含退款）</strong></span>
+      <span class="meta-chip">权限模板 · <strong>principal (*)</strong></span>
+    </div>
+  </section>
+
+  <!-- ===== Responsibilities ===== -->
+  <div class="section-head">
+    <h2>核心职责 · 校长每天要做的事</h2>
+    <span class="num">01</span>
+  </div>
+  <div class="duty-list-wrap">
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">🩺</span>
+        <span class="duty-title">校区健康度晨检</span>
+        <span class="duty-freq">每天上午</span>
+      </div>
+      <ul class="duty-items">
+        <li>打开数据中心 / 数据大屏，扫一眼本校区今日核心指标</li>
+        <li>注意：在读学员数、本月收入、转化率、续费率</li>
+        <li>识别异常波动（突然下跌、超出预期），追问运营 / 市场</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">💰</span>
+        <span class="duty-title">财务详情与审批</span>
+        <span class="duty-freq">每天 · 待办触发</span>
+      </div>
+      <ul class="duty-items">
+        <li>审批 <strong>退款</strong> / <strong>报销</strong>（独家权限：approve.finance）</li>
+        <li>查看完整账单 / 工资 / 合同（无金额脱敏）</li>
+        <li>核对每日订单与流水</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">📣</span>
+        <span class="duty-title">市场转化复盘</span>
+        <span class="duty-freq">每周</span>
+      </div>
+      <ul class="duty-items">
+        <li>看渠道效果表 + 漏斗，找出高 / 低转化渠道</li>
+        <li>评估市场专员的本月业绩</li>
+        <li>调整下月投放策略 / 推广预算</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">📚</span>
+        <span class="duty-title">教务质量监督</span>
+        <span class="duty-freq">每天 / 不定期巡视</span>
+      </div>
+      <ul class="duty-items">
+        <li>看学员名单、班级容量、上座率</li>
+        <li>检查考勤完成率、识别迟交的教师</li>
+        <li>处理重大学员投诉 / 续费谈判</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">🔁</span>
+        <span class="duty-title">续费谈判与跟进</span>
+        <span class="duty-freq">每周</span>
+      </div>
+      <ul class="duty-items">
+        <li>查看 7 天 / 30 天内到期学员</li>
+        <li>识别高风险流失学员（出勤率低 / 反馈差）</li>
+        <li>与家长直接沟通 / 给出特殊优惠决策</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">👥</span>
+        <span class="duty-title">员工管理（本校区）</span>
+        <span class="duty-freq">每周 / 季度</span>
+      </div>
+      <ul class="duty-items">
+        <li>查看本校区员工花名册（教师 / 运营 / 市场）</li>
+        <li>调整员工状态（在职 / 休假 / 离职）</li>
+        <li>新员工入职填报基础信息</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">⚙️</span>
+        <span class="duty-title">校区业务设置</span>
+        <span class="duty-freq">按需 / 不常改</span>
+      </div>
+      <ul class="duty-items">
+        <li>授权运营调整营业时段 / 试课时段 / 教室 / 公告</li>
+        <li>重大配置变更亲自把关</li>
+      </ul>
+    </div>
+
+    <div class="duty-row">
+      <div class="duty-head">
+        <span class="duty-icon">📊</span>
+        <span class="duty-title">月底业绩复盘</span>
+        <span class="duty-freq">每月</span>
+      </div>
+      <ul class="duty-items">
+        <li>导出本月订单、转化、教务、出勤数据</li>
+        <li>评估各团队（运营 / 市场 / 教师）KPI</li>
+        <li>向超管 / 总部上报关键数据</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== Daily KPI strip ===== -->
+  <div class="section-head">
+    <h2>一日开始 · 校区健康度 4 个核心指标</h2>
+    <span class="num">02</span>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="icon">💵</div>
+      <div class="label">本月收入</div>
+      <div class="body">来自 <code>minddo_payments</code> · 完整金额可见。<br/>点击 → 财务中心 · 订单。</div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon">🎓</div>
+      <div class="label">在读学员</div>
+      <div class="body">来自 <code>minddo_students</code> 且 <code>status="active"</code>。<br/>点击 → 教务中心 · 学员名单。</div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon">📈</div>
+      <div class="label">本月转化率</div>
+      <div class="body">本月线索付费数 / 总线索数。<br/>点击 → 市场中心 · CRM。</div>
+    </div>
+    <div class="kpi-card">
+      <div class="icon">🔁</div>
+      <div class="label">续费率（30d）</div>
+      <div class="body">本期到期学员中已续费的比例。<br/>点击 → 财务中心 · 续费看板。</div>
+    </div>
+  </div>
+
+  <!-- ===== Main flowchart ===== -->
+  <div class="section-head">
+    <h2>主流程 · 全日活动轨迹</h2>
+    <span class="num">03</span>
+  </div>
+  <div class="flow-wrap">
+    <div class="mermaid">
+flowchart TD
+    A[🔐 登录 dashboard.html] --> B[首页 · 校区总览]
+    B --> KPI{核心 KPI 卡片<br/>全字段可见}
+
+    A --> Sidebar{侧栏全开}
+    Sidebar --> Data[数据中心]
+    Sidebar --> Fin[财务中心]
+    Sidebar --> Mkt[市场中心]
+    Sidebar --> Acad[教务中心]
+    Sidebar --> Inbox[待办]
+    Sidebar --> Int[内部管理]
+    Sidebar --> Set[业务设置]
+
+    Data --> D1[📺 数据大屏<br/>本校区全维度]
+    Data --> D2[招生数据]
+    Data --> D3[教务数据]
+    Data --> D4[财务数据<br/>含真实金额]
+
+    Fin --> F1[订单 + 真实金额]
+    Fin --> F2[审批 · 含退款]
+    F2 -->|approve.finance| F2A[批准 / 拒绝]
+    Fin --> F3[账单 / 工资 / 合同 / 续费]
+
+    Mkt --> M1[CRM 客户管理<br/>读写]
+    Mkt --> M2[试课管理]
+    Mkt --> M3[渠道效果]
+
+    Acad --> A1[学员名单<br/>含改状态]
+    Acad --> A2[班级管理]
+    Acad --> A3[排课 + 教师值班]
+    Acad --> A4[考勤监督]
+
+    Inbox --> I1[请假 / 调课审批]
+    Inbox --> I2[退款审批]
+
+    Int --> N1[本校区员工管理]
+    Int -.->|只读| N2[角色权限]
+
+    Set --> S1[营业 / 试课时段]
+    Set --> S2[教室 / 公告]
+
+    A -.->|❌ 不能看跨校区| Cross[其他校区数据]
+    A -.->|❌ 不能改全局角色| GlobalRole[全局角色权限]
+
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#7a3010;
+    classDef kpi fill:#fff,stroke:#d97706,color:#7a3010;
+    classDef money fill:#dcfce7,stroke:#6e8b58,color:#3f5d26;
+    classDef nope fill:#fef2f2,stroke:#c46a4d,color:#8e3d21,stroke-dasharray: 4 4;
+    class A entry
+    class KPI,Sidebar kpi
+    class F2A,F1,D4 money
+    class Cross,GlobalRole nope
+    </div>
+  </div>
+
+  <!-- ===== Refund approval sub-flow ===== -->
+  <div class="section-head">
+    <h2>子流程 · 退款审批</h2>
+    <span class="num">04</span>
+  </div>
+  <div class="panel">
+    <p>退款 / 报销审批是校长独有的关键权限（campus-ops 看不到）。流程：待办收到 → 校长进入审批 → 决定 → 写回 + audit。</p>
+    <ol class="steps">
+      <li><strong>触发</strong>：家长或员工发起退款请求，写入 <code>minddo_approvals</code>，status=pending</li>
+      <li><strong>通知</strong>：校长侧栏 待办 / 财务 · 审批 出现红色徽章</li>
+      <li><strong>查看详情</strong>：requester、amount、reason、submittedAt 一目了然</li>
+      <li><strong>决策</strong>：金额（真实可见）、家长背景、退款理由综合判断</li>
+      <li><strong>点击 [批准] / [拒绝]</strong>：写入 status=approved/rejected + updatedAt + 审批人 id</li>
+      <li><strong>Audit</strong>：<code>approval.decision</code> 带 before/after</li>
+      <li><strong>下游</strong>：若批准，财务核心相应退款流程（人工或自动）</li>
+    </ol>
+  </div>
+
+  <!-- ===== Other tasks ===== -->
+  <div class="section-head">
+    <h2>其他重要操作</h2>
+    <span class="num">05</span>
+  </div>
+  <div class="two-col">
+    <div class="panel">
+      <h3>📺 数据大屏使用</h3>
+      <p class="muted">本校区跨域数据的"指挥中心"视图。</p>
+      <ol class="steps">
+        <li>数据中心 → 数据大屏 → <strong>进入大屏模式</strong></li>
+        <li>全屏显示：在读 / 线索 / 试课 / 出勤 / 收入 / 销售排行 / 公告</li>
+        <li>右上角时段选择（本月 / 本周 / 全部 / 自定义）</li>
+        <li>每 30 秒自动刷新数据</li>
+        <li>Esc / ✕ / 退出全屏 都关</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>👥 员工管理（本校区）</h3>
+      <p class="muted">查看 + 调整状态，不能编辑全局角色。</p>
+      <ol class="steps">
+        <li>内部管理 → 员工 sub-tab</li>
+        <li>看到本校区所有员工（教师 / 运营 / 市场）</li>
+        <li>可编辑：状态（active / leave / inactive）、部门、联系方式</li>
+        <li>不能：删除员工、改全局角色 ID</li>
+        <li>新员工入职：另开员工档案，填写基础信息</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>🔁 续费跟进决策</h3>
+      <p class="muted">7 / 30 天到期学员的优惠 / 谈判决策。</p>
+      <ol class="steps">
+        <li>财务中心 → 续费看板</li>
+        <li>识别即将到期的学员，按时间排序</li>
+        <li>查看学员历史：上课次数、出勤率、反馈评分</li>
+        <li>必要时给特殊优惠（折扣 / 加赠课时）</li>
+        <li>追加 audit <code>membership.renew</code></li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>📊 月底业绩复盘</h3>
+      <p class="muted">导出数据，向上汇报。</p>
+      <ol class="steps">
+        <li>每个模块都有 <strong>CSV 导出</strong> 按钮（线索 / 学员 / 班级 / 订单 / 员工 / 渠道效果）</li>
+        <li>导出当月数据，整合成月报</li>
+        <li>查看审计日志了解关键决策时间线</li>
+        <li>向超管 / 总部汇报亮点 + 异常</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ===== Permission matrix ===== -->
+  <div class="section-head">
+    <h2>权限矩阵 · 哪些能看 / 不能看</h2>
+    <span class="num">06</span>
+  </div>
+  <div class="panel" style="padding:0;overflow:hidden;">
+    <table class="perm">
+      <thead>
+        <tr>
+          <th>模块</th>
+          <th>校长</th>
+          <th>说明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>本校区数据</strong></td><td><span class="check yes">✓</span> 全部</td><td>含真实金额、所有子模块</td></tr>
+        <tr><td><strong>其他校区数据</strong></td><td><span class="check no">✗</span></td><td>校区作用域：单一，campus-locked</td></tr>
+        <tr><td><strong>财务中心 · 全部子页</strong></td><td><span class="check yes">✓</span></td><td>订单 / 账单 / 工资 / 合同 / 续费</td></tr>
+        <tr><td><strong>退款审批</strong></td><td><span class="check yes">✓</span></td><td>独家权限 <code>approve.finance</code></td></tr>
+        <tr><td><strong>请假 / 调课审批</strong></td><td><span class="check yes">✓</span></td><td><code>approve.schedule</code>（与校区运营共享）</td></tr>
+        <tr><td><strong>市场中心 · 读写</strong></td><td><span class="check yes">✓</span></td><td><code>marketing.write</code></td></tr>
+        <tr><td><strong>教务中心 · 读写</strong></td><td><span class="check yes">✓</span></td><td><code>academic.write</code></td></tr>
+        <tr><td><strong>数据大屏</strong></td><td><span class="check yes">✓</span></td><td><code>data.finance</code> 解锁财务模块</td></tr>
+        <tr><td><strong>内部管理 · 员工</strong></td><td><span class="check yes">✓</span></td><td>本校区员工读写</td></tr>
+        <tr><td><strong>内部管理 · 角色</strong></td><td><span class="check partial">◐</span> 只读</td><td>无 <code>internal.write</code>，看得到但改不了</td></tr>
+        <tr><td><strong>业务设置</strong></td><td><span class="check yes">✓</span></td><td>本校区配置全开</td></tr>
+        <tr><td><strong>跨校区切换</strong></td><td><span class="check no">✗</span></td><td>campus filter 锁定在本校区</td></tr>
+        <tr><td><strong>招商加盟</strong></td><td><span class="check no">✗</span></td><td>仅超管</td></tr>
+        <tr><td><strong>审计日志</strong></td><td><span class="check yes">✓</span></td><td>本校区相关条目</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== Storage ===== -->
+  <div class="section-head">
+    <h2>触达的 localStorage 键</h2>
+    <span class="num">07</span>
+  </div>
+  <div class="storage-grid">
+    <div class="storage-item"><code>minddo_payments</code><div class="what"><strong>读+写</strong>：本校区订单（含真实金额）</div></div>
+    <div class="storage-item"><code>minddo_approvals</code><div class="what"><strong>读+写</strong>：退款 / 报销审批（独家）</div></div>
+    <div class="storage-item"><code>minddo_membership_orders</code><div class="what"><strong>读+写</strong>：续费管理 / 套餐调整</div></div>
+    <div class="storage-item"><code>minddo_students</code><div class="what"><strong>读+写</strong>：学员档案全字段</div></div>
+    <div class="storage-item"><code>minddo_trial_leads</code><div class="what"><strong>读+写</strong>：市场 CRM 复盘</div></div>
+    <div class="storage-item"><code>minddo_class_offerings</code><div class="what"><strong>读+写</strong>：班级 / 排课调整</div></div>
+    <div class="storage-item"><code>minddo_attendance</code><div class="what"><strong>读</strong>：监督考勤数据</div></div>
+    <div class="storage-item"><code>minddo_staff</code><div class="what"><strong>读+写</strong>：本校区员工管理</div></div>
+    <div class="storage-item"><code>minddo_schedule_requests</code><div class="what"><strong>读+写</strong>：请假 / 调课审批</div></div>
+    <div class="storage-item"><code>minddo_payroll</code><div class="what"><strong>读</strong>：工资管理</div></div>
+    <div class="storage-item"><code>minddo_contracts</code><div class="what"><strong>读</strong>：合同管理</div></div>
+    <div class="storage-item"><code>minddo_campus_hours / classrooms / notice</code><div class="what"><strong>读+写</strong>：本校区业务设置</div></div>
+    <div class="storage-item"><code>minddo_audit_log</code><div class="what"><strong>写</strong>：approval.decision / membership.renew / staff.update 等</div></div>
+  </div>
+
+  <!-- ===== Audit ===== -->
+  <div class="section-head">
+    <h2>审计 (Audit Log) 留痕</h2>
+    <span class="num">08</span>
+  </div>
+  <div class="panel">
+    <p class="muted" style="margin-bottom:14px;">校长做出的所有关键决策都进 audit。任何 audit 行都可在 内部管理 / 审计日志 看到。</p>
+    <table class="perm">
+      <thead>
+        <tr><th>audit kind</th><th>触发动作</th><th>summary 示例</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>approval.decision</code></td><td>退款 / 报销审批</td><td>批准退款 · ¥800 · 李同学家长</td></tr>
+        <tr><td><code>schedule.approve</code></td><td>请假 / 调课审批</td><td>批准请假 · 李同学 · 2026-05-22</td></tr>
+        <tr><td><code>student.update</code></td><td>学员档案变更</td><td>更新学员 · 李同学 · 改 Level</td></tr>
+        <tr><td><code>staff.update</code></td><td>员工状态变更</td><td>员工状态 · 王老师 · active → leave</td></tr>
+        <tr><td><code>membership.renew</code></td><td>续费 / 特殊优惠</td><td>续费 · 李同学 · 9 折优惠</td></tr>
+        <tr><td><code>payment.refund</code></td><td>财务退款执行</td><td>退款 · ¥800 · order#1234</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    生成于 <code>docs/principal-flow.html</code> · 数据来源：
+    <a href="SCHEMA.md" style="color:var(--brand);">SCHEMA.md</a> +
+    <a href="../dashboard.html" style="color:var(--brand);">dashboard.html</a> ·
+    渲染：Mermaid via CDN
+  </footer>
+
+</main>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "base",
+    themeVariables: {
+      primaryColor: "#fef3c7", primaryTextColor: "#7a3010", primaryBorderColor: "#d97706",
+      lineColor: "#7a3010", secondaryColor: "#fff8ee", tertiaryColor: "#ffffff",
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif',
+      fontSize: "13px"
+    },
+    flowchart: { curve: "basis", htmlLabels: true, nodeSpacing: 30, rankSpacing: 50 }
+  });
+</script>
+
+</body>
+</html>
