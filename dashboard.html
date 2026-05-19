@@ -826,6 +826,26 @@
     .int-subpanel { display: none; }
     .int-subpanel.active { display: block; animation: mktPanelIn 0.18s ease-out; }
 
+    /* Teacher roster sub-tab */
+    .teacher-rate-input {
+      width: 90px; padding: 5px 8px;
+      border: 1px solid var(--line); border-radius: 6px;
+      font: inherit; font-size: 12.5px; background: #fff;
+      font-variant-numeric: tabular-nums;
+    }
+    .teacher-rate-input:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: transparent; }
+    .tcr-week-inline { display: flex; gap: 3px; }
+    .tcr-week-inline .tcr-day {
+      font-size: 10.5px; font-weight: 800;
+      padding: 3px 6px; border-radius: 4px;
+      background: rgba(122, 48, 16, 0.05); color: var(--muted);
+      border: 1px solid var(--line);
+    }
+    .tcr-week-inline .tcr-day.has {
+      background: rgba(110, 143, 87, 0.18); color: #3f5d26;
+      border-color: rgba(110, 143, 87, 0.32);
+    }
+
     /* Audit log viewer */
     .audit-filters {
       display: grid; gap: 10px;
@@ -3222,6 +3242,9 @@
           <button type="button" class="sidebar-subitem int-subtab active" data-int-subtab="staff" role="tab">
             <span class="ms-icon" aria-hidden="true">👤</span><span class="ms-label" data-i18n="intSubtabStaff"></span>
           </button>
+          <button type="button" class="sidebar-subitem int-subtab" data-int-subtab="teachers" role="tab">
+            <span class="ms-icon" aria-hidden="true">🧑‍🏫</span><span class="ms-label" data-i18n="intSubtabTeachers"></span>
+          </button>
           <button type="button" class="sidebar-subitem int-subtab" data-int-subtab="roles" data-perm-required="internal.view" role="tab">
             <span class="ms-icon" aria-hidden="true">🛡️</span><span class="ms-label" data-i18n="intSubtabRoles"></span>
           </button>
@@ -4378,7 +4401,39 @@
           </section>
         </div>
 
-        <!-- Sub-panel 2: Roles -->
+        <!-- Sub-panel 2: Teachers — aggregated from class offerings +
+             teacher_availability + staff. Each teacher gets weekly hours,
+             subjects taught, students count, classes count, editable
+             hourly rate. -->
+        <div class="int-subpanel" data-int-subpanel="teachers" role="tabpanel" hidden>
+          <section class="dash-zone">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+                <h2 data-i18n="teachersHead" style="margin:0;"></h2>
+                <span class="muted" id="teachersCount" style="font-size:12px;color:var(--muted);"></span>
+              </div>
+              <div class="table-wrap">
+                <table class="acad-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="teachersColName"></th>
+                      <th data-i18n="teachersColSubjects"></th>
+                      <th data-i18n="teachersColClasses"></th>
+                      <th data-i18n="teachersColHours"></th>
+                      <th data-i18n="teachersColStudents"></th>
+                      <th data-i18n="teachersColRate"></th>
+                      <th data-i18n="teachersColPayroll"></th>
+                      <th data-i18n="teachersColAvailability"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="teachersBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </div>
+
+        <!-- Sub-panel 3: Roles -->
         <div class="int-subpanel" data-int-subpanel="roles" role="tabpanel" hidden>
           <section class="dash-zone">
             <div class="dash-zone-head">
@@ -5401,6 +5456,21 @@
           intSubtabStaff: "员工管理",
           intSubtabRoles: "角色管理",
           intSubtabAudit: "审计日志",
+          intSubtabTeachers: "教师管理",
+          teachersHead: "教师花名册",
+          teachersCountFmt: "{n} 位教师",
+          teachersEmpty: "本校区暂无教师排课记录。",
+          teachersColName: "教师",
+          teachersColSubjects: "授课等级",
+          teachersColClasses: "周班数",
+          teachersColHours: "周课时",
+          teachersColStudents: "学员数",
+          teachersColRate: "时薪",
+          teachersColPayroll: "周酬",
+          teachersColAvailability: "可用时段",
+          teachersRatePh: "时薪 ($)",
+          teachersAvailDay: ["一", "二", "三", "四", "五", "六", "日"],
+          teachersNoAvail: "未设置",
           auditHead: "操作日志",
           auditCountFmt: "{shown} / {total} 条",
           auditFilterKind: "类型",
@@ -6571,6 +6641,21 @@
           intSubtabStaff: "Staff",
           intSubtabRoles: "Roles",
           intSubtabAudit: "Audit Log",
+          intSubtabTeachers: "Teachers",
+          teachersHead: "Teacher Roster",
+          teachersCountFmt: "{n} teachers",
+          teachersEmpty: "No teachers scheduled in this campus.",
+          teachersColName: "Teacher",
+          teachersColSubjects: "Levels Taught",
+          teachersColClasses: "Weekly Classes",
+          teachersColHours: "Weekly Hours",
+          teachersColStudents: "Students",
+          teachersColRate: "Hourly Rate",
+          teachersColPayroll: "Weekly Pay",
+          teachersColAvailability: "Availability",
+          teachersRatePh: "Rate ($)",
+          teachersAvailDay: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+          teachersNoAvail: "Not set",
           auditHead: "Operation History",
           auditCountFmt: "{shown} / {total}",
           auditFilterKind: "Kind",
@@ -14136,7 +14221,7 @@
         var bar = document.getElementById("intSubtabs");
         if (!bar) return;
         var KEY = "minddo_dash_int_subtab";
-        var KNOWN = ["staff", "roles", "audit"];
+        var KNOWN = ["staff", "teachers", "roles", "audit"];
         function applySub(key) {
           if (KNOWN.indexOf(key) === -1) key = "staff";
           bar.querySelectorAll("[data-int-subtab]").forEach(function (b) {
@@ -14151,6 +14236,9 @@
           if (key === "audit" && typeof renderAuditLog === "function") {
             renderAuditLog(I18N[state.lang] || I18N["zh-CN"]);
           }
+          if (key === "teachers" && typeof renderTeacherRoster === "function") {
+            renderTeacherRoster(I18N[state.lang] || I18N["zh-CN"]);
+          }
         }
         bar.addEventListener("click", function (e) {
           var b = e.target.closest("[data-int-subtab]");
@@ -14161,6 +14249,126 @@
         try { saved = localStorage.getItem(KEY); } catch (_) {}
         applySub(saved || "staff");
       })();
+
+      // ============================================================
+      // 教师管理 — derived view that joins class_offerings (subjects /
+      // hours / classes) with teacher_availability (per-day hours)
+      // and the teacher_rates side-store (editable hourly rate). Each
+      // teacher row shows weekly load + computed weekly pay.
+      // ============================================================
+      function renderTeacherRoster(t) {
+        var bodyEl = document.getElementById("teachersBody");
+        var countEl = document.getElementById("teachersCount");
+        if (!bodyEl) return;
+        var flow = window.MindDoFlow;
+        if (!flow) return;
+        var campus = (typeof moActiveCampus === "function") ? moActiveCampus() : null;
+
+        var offerings = (flow.getClassOfferings && flow.getClassOfferings()) || flow.readJson(flow.keys.classOfferings) || [];
+        if (campus) {
+          offerings = offerings.filter(function (o) { return !o.campus || o.campus === campus; });
+        }
+        var availability = flow.readJson("minddo_teacher_availability") || {};
+        var rates = (function () {
+          try { return JSON.parse(localStorage.getItem("minddo_teacher_rates") || "{}"); }
+          catch (_) { return {}; }
+        })();
+        var memberships = flow.readJson(flow.keys.memberships) || [];
+        var lang = state.lang === "en" ? "en" : "zh";
+
+        // Group offerings by teacher
+        var byTeacher = {};
+        offerings.forEach(function (o) {
+          var tn = o.teacher || "—";
+          if (!byTeacher[tn]) byTeacher[tn] = {
+            name: tn, classes: 0, hours: 0, levels: {}, offeringIds: []
+          };
+          byTeacher[tn].classes++;
+          byTeacher[tn].offeringIds.push(o.id);
+          // Duration: parse timeSlot "16:00 – 17:00" → 1 hour
+          var slot = String(o.timeSlot || "").split("–").map(function (s) { return s.trim(); });
+          if (slot.length === 2) {
+            var p = function (hm) { var parts = hm.split(":"); return Number(parts[0]) * 60 + Number(parts[1]); };
+            var dur = (p(slot[1]) - p(slot[0])) / 60;
+            if (isFinite(dur) && dur > 0) byTeacher[tn].hours += dur;
+          } else {
+            byTeacher[tn].hours += 1; // fallback
+          }
+          var levelLabel = (o.level && (lang === "en" ? o.level.en : o.level.zh)) || "";
+          if (levelLabel) byTeacher[tn].levels[levelLabel] = true;
+        });
+
+        // Count students per teacher via memberships.sessions[].teacher
+        memberships.forEach(function (m) {
+          if (!m || !Array.isArray(m.sessions)) return;
+          m.sessions.forEach(function (s) {
+            var tn = s.teacher;
+            if (!tn || !byTeacher[tn]) return;
+            byTeacher[tn].students = (byTeacher[tn].students || 0) + 1;
+          });
+        });
+
+        var rows = Object.keys(byTeacher).map(function (tn) {
+          return byTeacher[tn];
+        }).sort(function (a, b) { return b.hours - a.hours || a.name.localeCompare(b.name); });
+
+        if (countEl) {
+          countEl.textContent = (t.teachersCountFmt || "{n}").replace("{n}", rows.length);
+        }
+        if (!rows.length) {
+          bodyEl.innerHTML = "<tr><td colspan='8' style='text-align:center;color:var(--muted);padding:28px;'>"
+            + escHTML(t.teachersEmpty) + "</td></tr>";
+          return;
+        }
+
+        var DAY_KEYS_LOCAL = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+        var dayLbls = t.teachersAvailDay || DAY_KEYS_LOCAL;
+
+        bodyEl.innerHTML = rows.map(function (r) {
+          var levels = Object.keys(r.levels).join(" · ") || "—";
+          var rate = Number(rates[r.name]) || 0;
+          var weeklyPay = rate * r.hours;
+          var avail = availability[r.name] || {};
+          var availDays = DAY_KEYS_LOCAL.map(function (dk, i) {
+            var d = avail[dk];
+            if (d && d.enabled) {
+              return "<span class='tcr-day has' title='" + escHTML(d.start + "–" + d.end) + "'>"
+                + escHTML(dayLbls[i]) + "</span>";
+            }
+            return "<span class='tcr-day'>" + escHTML(dayLbls[i]) + "</span>";
+          }).join("");
+          return "<tr>"
+            + "<td><strong>" + escHTML(r.name) + "</strong></td>"
+            + "<td>" + escHTML(levels) + "</td>"
+            + "<td class='num' style='text-align:right;'>" + r.classes + "</td>"
+            + "<td class='num' style='text-align:right;'>" + r.hours.toFixed(1) + "h</td>"
+            + "<td class='num' style='text-align:right;'>" + (r.students || 0) + "</td>"
+            + "<td><input type='number' min='0' step='0.5' value='" + (rate || "") + "' data-teacher-rate='" + escHTML(r.name) + "' placeholder='" + escHTML(t.teachersRatePh) + "' class='teacher-rate-input' /></td>"
+            + "<td class='num' style='text-align:right;'>" + (weeklyPay ? safeMoney(weeklyPay) : "—") + "</td>"
+            + "<td><div class='tcr-week-inline'>" + availDays + "</div></td>"
+            + "</tr>";
+        }).join("");
+
+        // Hourly rate edit wiring (once per render — input has unique handler each time)
+        bodyEl.querySelectorAll("[data-teacher-rate]").forEach(function (inp) {
+          inp.addEventListener("change", function () {
+            var teacher = inp.getAttribute("data-teacher-rate");
+            var v = Number(inp.value) || 0;
+            rates[teacher] = v;
+            try { localStorage.setItem("minddo_teacher_rates", JSON.stringify(rates)); } catch (_) {}
+            if (flow.appendAudit) {
+              flow.appendAudit({
+                actor: ((flow.getActiveOpsUser && flow.getActiveOpsUser() && flow.getActiveOpsUser().staff && flow.getActiveOpsUser().staff.id) || "ops"),
+                kind: "teacher.rate",
+                target: teacher,
+                summary: "教师时薪 · " + teacher + " · $" + v,
+                before: null, after: { teacher: teacher, rate: v }
+              });
+            }
+            renderTeacherRoster(t);
+          });
+        });
+      }
 
       // ============================================================
       // 审计日志查看器 — filterable list of every write operation.

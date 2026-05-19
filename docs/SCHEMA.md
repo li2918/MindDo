@@ -393,6 +393,18 @@ Helpers: `getAttendance({offeringId, classDate, studentId})`,
 `recordAttendance(offeringId, classDate, records, opts)` (replace-set
 semantics), `getStudentAttendanceSummary(studentId, sinceDays)`.
 
+### `minddo_teacher_rates` 🟢 (object, keyed by teacher name)
+Per-teacher hourly rate set on the 内部管理 · 教师管理 sub-tab. Used to
+compute weekly pay (rate × hours). Separate from `minddo_payroll` which
+records actual payments.
+
+```js
+{
+  "Dr. Sarah Chen": 75,
+  "Mr. Wang": 60
+}
+```
+
 ### `minddo_teacher_availability` 🟢 (object, keyed by teacher name)
 Used by `course-offerings.html` conflict detection.
 
