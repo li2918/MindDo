@@ -7373,45 +7373,5 @@
 
        ================================================================= -->
 
-  <!-- =================================================================
-       AI learning path recommendation — small section that auto-renders
-       under the schedule panel if the student has a level set.
-       ================================================================= -->
-  <script>
-    (function () {
-      var flow = window.MindDoFlow;
-      if (!flow || !flow.aiSuggest) return;
-      // Pick a host element — append after the schedule section if it exists
-      var host = document.querySelector("[data-section='schedule'], #schedulePanel, .schedule-panel");
-      if (!host) {
-        // Fallback: append to main content area
-        host = document.querySelector("main") || document.body;
-      }
-      if (document.getElementById("aiLearningPath")) return;
-      var card = document.createElement("section");
-      card.id = "aiLearningPath";
-      card.style.cssText = "background:#fff;border:1px solid #e4ddd4;border-radius:18px;padding:20px 22px;margin:18px 24px;box-shadow:0 18px 44px rgba(122,48,16,0.06);max-width:840px;";
-      card.innerHTML =
-        "<div style='display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;'>"
-        + "<h3 style='margin:0;color:#7a3010;font-size:15px;font-weight:800;'>✨ AI 学习路径建议</h3>"
-        + "<button id='aiPathBtn' style='all:unset;cursor:pointer;padding:6px 14px;border-radius:999px;background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff;font-size:12px;font-weight:700;'>生成建议</button>"
-        + "</div>"
-        + "<div id='aiPathOut' style='font-size:13px;color:#1f2937;line-height:1.6;white-space:pre-wrap;'></div>";
-      host.appendChild(card);
-      document.getElementById("aiPathBtn").addEventListener("click", function () {
-        var cur = flow.readJson(flow.keys.currentStudent || "minddo_current_student");
-        var levels = flow.readJson(flow.keys.studentLevels || "minddo_student_levels") || {};
-        var stuId = cur && cur.studentId;
-        var level = (stuId && levels[stuId]) || "Beginner";
-        var portfolio = flow.readJson(flow.keys.portfolio || "minddo_portfolio") || [];
-        if (stuId) portfolio = portfolio.filter(function (p) { return p.studentId === stuId; });
-        var out = document.getElementById("aiPathOut");
-        out.textContent = "正在分析...";
-        flow.aiSuggest({ kind: "learning-path", context: { level: level, portfolio: portfolio } }).then(function (r) {
-          out.textContent = r.text || "—";
-        });
-      });
-    })();
-  </script>
 </body>
 </html>
