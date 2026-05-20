@@ -3787,6 +3787,14 @@
             </div>
             <div id="prinChannelBody"></div>
           </article>
+          <!-- AI: monthly report draft -->
+          <article class="panel">
+            <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+              <h2 style="margin:0;">📊 月度运营报告</h2>
+              <button type="button" class="ai-btn" id="prinAiReportBtn"><span class="ai-spark">✨</span> AI 起草本月报告</button>
+            </div>
+            <div class="ai-output" id="prinAiReportOutput" hidden></div>
+          </article>
         </section>
 
         <!-- ============================================================
@@ -3827,6 +3835,14 @@
               <div id="superSystemList"></div>
             </article>
           </div>
+          <!-- AI: cross-campus anomaly detection -->
+          <article class="panel">
+            <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+              <h2 style="margin:0;">🔍 跨校区异常检测</h2>
+              <button type="button" class="ai-btn" id="superAiAnomalyBtn"><span class="ai-spark">✨</span> 运行分析</button>
+            </div>
+            <div class="ai-output" id="superAiAnomalyOutput" hidden></div>
+          </article>
         </section>
       </section>
 
@@ -4754,6 +4770,12 @@
                 <button type="button" class="btn" id="auditFilterReset" data-i18n="auditFilterReset"></button>
               </div>
               <div class="audit-list" id="auditList"></div>
+              <!-- AI anomaly detection on audit log -->
+              <div style="margin-top:16px;padding-top:12px;border-top:1px dashed rgba(122,48,16,0.12);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <button type="button" class="ai-btn" id="auditAiBtn"><span class="ai-spark">✨</span> AI 异常突发检测</button>
+                <span class="muted" style="font-size:11.5px;color:var(--muted);">分析 actor + kind + 时间窗，识别可疑批量操作</span>
+              </div>
+              <div class="ai-output" id="auditAiOutput" hidden style="margin-top:12px;"></div>
             </article>
           </section>
         </div>
@@ -5075,6 +5097,7 @@
           <label class="mo-field">
             <span data-i18n="approvalDetailReasonLabel"></span>
             <textarea id="approvalDetailReason" rows="3" placeholder=""></textarea>
+            <button type="button" class="ai-btn ai-btn-ghost" id="approvalAiReasonBtn" style="margin-top:6px;align-self:flex-start;"><span class="ai-spark">✨</span> AI 推荐理由</button>
           </label>
         </div>
         <div class="mo-lead-foot">
@@ -9643,6 +9666,180 @@
             out.hidden = false;
             out.innerHTML = "<div class='ai-head'>✨ AI 调度分析 <span class='ai-conf'>" + offerings.length + " 个班次</span></div>"
               + "<div class='ai-body'>" + escHTML(r.text) + "</div>";
+          });
+        });
+      })();
+
+      // Principal monthly report draft button
+      (function () {
+        var btn = document.getElementById("prinAiReportBtn");
+        var out = document.getElementById("prinAiReportOutput");
+        if (!btn || !out) return;
+        btn.addEventListener("click", function () {
+          var flow = window.MindDoFlow;
+          if (!flow) return;
+          var campus = (typeof moActiveCampus === "function") ? moActiveCampus() : null;
+          var now = new Date();
+          var monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+          var payments = flow.readJson(flow.keys.payments) || [];
+          var leads = (flow.readJson(flow.keys.leads) || []).filter(function (l) {
+            return !campus || !l.campus || l.campus === campus;
+          });
+          var students = flow.readJson(flow.keys.students) || [];
+          var approvals = flow.readJson(flow.keys.approvals) || [];
+          var monthRevenue = payments.reduce(function (acc, p) {
+            if (!p || !p.createdAt) return acc;
+            var d = new Date(p.createdAt);
+            if (!isFinite(d.getTime()) || d < monthStart) return acc;
+            return acc + (Number(p.amount) || 0);
+          }, 0);
+          var monthLeads = leads.filter(function (l) {
+            var t = new Date(l.createdAt || 0).getTime();
+            return isFinite(t) && t >= monthStart.getTime();
+          });
+          var paidEmails = {};
+          payments.forEach(function (p) {
+            if (!p || !p.createdAt || !p.email) return;
+            if (new Date(p.createdAt) >= monthStart) paidEmails[String(p.email).toLowerCase()] = true;
+          });
+          var won = monthLeads.filter(function (l) {
+            return l.email && paidEmails[String(l.email).toLowerCase()];
+          }).length;
+          var withdrawals = students.filter(function (s) {
+            if (!s || s.status !== "withdrawn") return false;
+            var d = s.statusChangedAt ? new Date(s.statusChangedAt) : null;
+            return d && d >= monthStart;
+          }).length;
+          var pending = approvals.filter(function (a) { return (a.status || "pending") === "pending"; }).length;
+          // Top channel
+          var byChan = {};
+          monthLeads.forEach(function (l) {
+            var k = l.channelLabel || l.channel || "—";
+            byChan[k] = (byChan[k] || 0) + 1;
+          });
+          var topChannel = Object.keys(byChan).sort(function (a, b) { return byChan[b] - byChan[a]; })[0];
+
+          btn.classList.add("loading");
+          btn.disabled = true;
+          var monthLabel = now.getFullYear() + "-" + (now.getMonth() + 1);
+          flow.aiSuggest({
+            kind: "monthly-report",
+            context: {
+              month: monthLabel,
+              kpis: {
+                revenue: safeMoney(Math.round(monthRevenue)),
+                activeStudents: students.filter(function (s) { return s && (s.status === "active" || !s.status); }).length,
+                leads: monthLeads.length, won: won,
+                conversion: monthLeads.length ? Math.round(won / monthLeads.length * 100) + "%" : "—",
+                renewalRate: "—",
+                withdrawals: withdrawals,
+                pendingApprovals: pending,
+                topChannel: topChannel
+              }
+            }
+          }).then(function (r) {
+            btn.classList.remove("loading");
+            btn.disabled = false;
+            out.hidden = false;
+            out.innerHTML = "<div class='ai-head'>✨ AI 月度报告草稿 <span class='ai-conf'>" + monthLabel + "</span></div>"
+              + "<div class='ai-body'>" + escHTML(r.text) + "</div>"
+              + "<div class='ai-actions'><button type='button' data-ai-copy>📋 复制</button></div>";
+          });
+        });
+        out.addEventListener("click", function (e) {
+          if (e.target.closest("[data-ai-copy]")) {
+            var body = out.querySelector(".ai-body");
+            if (body && navigator.clipboard) navigator.clipboard.writeText(body.textContent || "");
+          }
+        });
+      })();
+
+      // Super-admin cross-campus anomaly detection button
+      (function () {
+        var btn = document.getElementById("superAiAnomalyBtn");
+        var out = document.getElementById("superAiAnomalyOutput");
+        if (!btn || !out) return;
+        btn.addEventListener("click", function () {
+          var flow = window.MindDoFlow;
+          if (!flow) return;
+          var leads = flow.readJson(flow.keys.leads) || [];
+          var payments = flow.readJson(flow.keys.payments) || [];
+          var now = new Date();
+          var monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+          var campusSet = {};
+          leads.forEach(function (l) { if (l.campus) campusSet[l.campus] = true; });
+          var campuses = Object.keys(campusSet).map(function (ck) {
+            var clLeads = leads.filter(function (l) {
+              return l.campus === ck && new Date(l.createdAt || 0) >= monthStart;
+            });
+            var paidEm = {};
+            payments.forEach(function (p) {
+              if (!p || !p.email || !p.createdAt) return;
+              if (new Date(p.createdAt) >= monthStart) paidEm[String(p.email).toLowerCase()] = true;
+            });
+            var won = clLeads.filter(function (l) {
+              return l.email && paidEm[String(l.email).toLowerCase()];
+            }).length;
+            return { campus: ck, convPct: clLeads.length ? Math.round(won / clLeads.length * 100) : 0 };
+          });
+          btn.classList.add("loading");
+          btn.disabled = true;
+          flow.aiSuggest({ kind: "cross-campus-anomaly", context: { campuses: campuses } }).then(function (r) {
+            btn.classList.remove("loading");
+            btn.disabled = false;
+            out.hidden = false;
+            out.innerHTML = "<div class='ai-head'>✨ AI 异常检测 <span class='ai-conf'>" + campuses.length + " 个校区</span></div>"
+              + "<div class='ai-body'>" + escHTML(r.text) + "</div>";
+          });
+        });
+      })();
+
+      // Audit log AI anomaly detection
+      (function () {
+        var btn = document.getElementById("auditAiBtn");
+        var out = document.getElementById("auditAiOutput");
+        if (!btn || !out) return;
+        btn.addEventListener("click", function () {
+          var flow = window.MindDoFlow;
+          if (!flow) return;
+          var rows = flow.readJson(flow.keys.auditLog) || [];
+          btn.classList.add("loading");
+          btn.disabled = true;
+          flow.aiSuggest({ kind: "audit-anomaly", context: { rows: rows } }).then(function (r) {
+            btn.classList.remove("loading");
+            btn.disabled = false;
+            out.hidden = false;
+            out.innerHTML = "<div class='ai-head'>✨ 异常检测 <span class='ai-conf'>" + rows.length + " 条审计</span></div>"
+              + "<div class='ai-body'>" + escHTML(r.text) + "</div>";
+          });
+        });
+      })();
+
+      // Approval modal — AI reason suggestion button
+      (function () {
+        var btn = document.getElementById("approvalAiReasonBtn");
+        if (!btn) return;
+        btn.addEventListener("click", function () {
+          var flow = window.MindDoFlow;
+          if (!flow || typeof flow.aiSuggest !== "function") return;
+          var decisionEl = document.getElementById("approvalDetailDecision");
+          var reasonEl = document.getElementById("approvalDetailReason");
+          // Find the active approval — we can grab it from the subtitle id
+          var subEl = document.getElementById("approvalDetailSubTitle");
+          var aid = subEl ? subEl.textContent.split(" ·")[0].trim() : "";
+          var list = flow.readJson(flow.keys.approvals) || [];
+          var hit = list.filter(function (r) { return r && r.id === aid; })[0];
+          if (!hit) return;
+          var decision = decisionEl ? decisionEl.value : "approved";
+          btn.classList.add("loading");
+          btn.disabled = true;
+          flow.aiSuggest({ kind: "approval-reason", context: { request: hit, decision: decision } }).then(function (r) {
+            btn.classList.remove("loading");
+            btn.disabled = false;
+            if (reasonEl) {
+              reasonEl.value = r.text || "";
+              reasonEl.focus();
+            }
           });
         });
       })();
@@ -15159,6 +15356,7 @@
             +   "<span class='ic-title'>" + escHTML(title) + "</span>"
             +   "<span class='ic-count'>" + c.count + escHTML(unit) + "</span>"
             +   (hasItems ? "<button type='button' class='ic-toggle'>" + escHTML(t.integrityViewItems) + "</button>" : "")
+            +   (c.severity !== "ok" ? "<button type='button' class='ai-btn ai-btn-ghost ic-ai' data-icid='" + c.id + "'><span class='ai-spark'>✨</span> AI 修复建议</button>" : "")
             + "</div>"
             + "<div class='ic-desc'>" + escHTML(desc) + "</div>"
             + (hasItems
@@ -15166,8 +15364,27 @@
                     return "<div class='item'>" + escHTML(String(i)) + "</div>";
                   }).join("") + "</div>"
                 : "")
+            + "<div class='ic-ai-out' hidden></div>"
             + "</div>";
         }).join("");
+        // Wire AI fix suggestion buttons (delegated)
+        resultsEl.querySelectorAll(".ic-ai").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var card = btn.closest(".integrity-card");
+            var out = card.querySelector(".ic-ai-out");
+            var icid = btn.getAttribute("data-icid");
+            btn.classList.add("loading");
+            btn.disabled = true;
+            window.MindDoFlow.aiSuggest({ kind: "integrity-fix", context: { check: { id: icid } } }).then(function (r) {
+              btn.classList.remove("loading");
+              btn.disabled = false;
+              out.hidden = false;
+              out.className = "ai-output";
+              out.style.marginTop = "10px";
+              out.innerHTML = "<div class='ai-head'>✨ 修复建议</div><div class='ai-body'>" + escHTML(r.text) + "</div>";
+            });
+          });
+        });
         // Wire toggles
         resultsEl.querySelectorAll(".ic-toggle").forEach(function (btn) {
           btn.addEventListener("click", function () {
