@@ -2626,6 +2626,439 @@
     });
   }
 
+  // =====================================================================
+  // aiSuggest — global helper for AI-assisted content generation.
+  // Currently runs in DEMO MODE: returns content-aware templated responses
+  // synthesized from the supplied context. To wire up a real LLM later,
+  // replace the dispatch table's stub functions with fetch() calls to a
+  // backend that proxies the Claude/OpenAI API (the key cannot live in
+  // the browser).
+  //
+  // Usage:
+  //   const r = await flow.aiSuggest({ kind: "followup-script", context: {lead} });
+  //   // r = { text: "...", confidence: 0.82, kind: "followup-script" }
+  //
+  // All kinds return a Promise<{text, confidence, kind, suggestions?}>.
+  // =====================================================================
+  function aiSuggest(opts) {
+    return new Promise(function (resolve) {
+      // Tiny delay so the UI can show a loading state — feels like an API.
+      setTimeout(function () {
+        var kind = (opts && opts.kind) || "";
+        var ctx = (opts && opts.context) || {};
+        var handler = AI_HANDLERS[kind];
+        if (!handler) {
+          resolve({ text: "(no handler for kind: " + kind + ")", kind: kind, confidence: 0 });
+          return;
+        }
+        try {
+          resolve(Object.assign({ kind: kind, confidence: 0.7 }, handler(ctx)));
+        } catch (e) {
+          resolve({ text: "(generation failed: " + e.message + ")", kind: kind, confidence: 0 });
+        }
+      }, 320 + Math.random() * 280);
+    });
+  }
+
+  // Pick a random item from an array — keeps mock responses varied.
+  function _aiPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  // Extract the most-common Chinese keywords from a blob of text (very
+  // crude — splits on punctuation, filters to 2+ char tokens, top N).
+  function _aiKeywords(text, n) {
+    if (!text) return [];
+    var tokens = String(text).split(/[\s,.;:，。；：、？！?!（）()\[\]【】"'""''-]+/);
+    var counts = {};
+    tokens.forEach(function (t) {
+      if (t.length < 2) return;
+      counts[t] = (counts[t] || 0) + 1;
+    });
+    return Object.keys(counts)
+      .sort(function (a, b) { return counts[b] - counts[a]; })
+      .slice(0, n || 5);
+  }
+
+  var AI_HANDLERS = {
+    // 1. 个性化跟进话术 — tailor a message to the lead's state
+    "followup-script": function (ctx) {
+      var l = ctx.lead || {};
+      var name = l.studentName || l.parentName || "家长";
+      var st = l.crmStatus || "new";
+      var channel = l.channelLabel || l.channel || "我们";
+      var subj = l.subjectLabel || l.subject || "AI 课程";
+      var tags = Array.isArray(l.tags) ? l.tags : [];
+      var hint = tags.indexOf("高意向") >= 0 ? "看起来您对孩子学习 AI 比较有兴趣"
+        : tags.indexOf("时间冲突") >= 0 ? "上次提到时间不方便"
+        : tags.indexOf("需家长决策") >= 0 ? "希望能和您再聊聊"
+        : "";
+      var templates = {
+        "new": [
+          "您好" + name + "，我是 MindDo " + channel + "渠道的老师。看到您之前留意了" + subj + "，方便周末安排一次免费试课吗？",
+          "您好，我是 MindDo 的招生老师。" + (hint ? hint + "，" : "") + "想跟您介绍一下我们的" + subj + "课程，您方便几点接电话？"
+        ],
+        "contacted": [
+          "您好" + name + "，上次电话聊得很好。" + (hint ? hint + "，" : "") + "想再确认一下试课时间，您看本周三或周六哪个方便？",
+          "您好，跟进一下您之前咨询的" + subj + "。最近我们正好有一个新班开课，孩子年龄段也匹配，要不要先来体验一下？"
+        ],
+        "follow": [
+          "您好" + name + "，想跟您再聊聊上次提到的几个顾虑。我们刚好有一节本周末的体验课，可以让孩子先来感受一下教学风格再决定。",
+          "您好，我们这边周三有个针对孩子兴趣的小项目营，名额还剩 2 个，您看孩子有空过来玩一下吗？没压力的。"
+        ],
+        "won": [
+          "您好" + name + "，欢迎加入 MindDo！开课前我会再发一份准备清单和课表给您，有任何问题随时找我。",
+        ],
+        "lost": [
+          "您好" + name + "，看到您暂时还没决定。我们最近新开了 1v1 灵活课程，时间完全可以自定，不知道是否能解决之前的顾虑？",
+        ]
+      };
+      var arr = templates[st] || templates["new"];
+      return { text: _aiPick(arr), confidence: 0.78 };
+    },
+
+    // 2. 客户标签自动建议 — extract from contactLog notes + history
+    "tag-suggest": function (ctx) {
+      var l = ctx.lead || {};
+      var log = Array.isArray(l.contactLog) ? l.contactLog : [];
+      var allNotes = log.map(function (e) { return e.note || ""; }).join(" ") + " " + (l.note || "") + " " + (l.timeNote || "");
+      var suggestions = [];
+      // Heuristic keyword detection
+      if (/高意向|很感兴趣|马上|尽快|这周|本周/.test(allNotes)) suggestions.push("高意向");
+      if (/再想想|考虑下|商量|讨论|商量一下|考虑考虑/.test(allNotes)) suggestions.push("需家长决策");
+      if (/时间|没空|忙|周末没空|不方便/.test(allNotes)) suggestions.push("时间冲突");
+      if (/价格|学费|贵|便宜|优惠|折扣/.test(allNotes)) suggestions.push("价格敏感");
+      if (/中文|英文|双语|language/.test(allNotes)) suggestions.push("语言偏好");
+      if (/编程|coding|项目|AI/.test(allNotes)) suggestions.push("AI 项目感兴趣");
+      // Status hints
+      if (l.crmStatus === "follow" && log.length >= 3) suggestions.push("多次跟进");
+      // De-dup against existing tags
+      var existing = Array.isArray(l.tags) ? l.tags : [];
+      suggestions = suggestions.filter(function (s) { return existing.indexOf(s) < 0; });
+      return {
+        text: suggestions.length ? "建议添加：" + suggestions.join(" · ") : "暂无新标签建议（数据不足或已全部标记）。",
+        suggestions: suggestions,
+        confidence: suggestions.length ? 0.72 : 0.45
+      };
+    },
+
+    // 3. 试课后家长回访稿
+    "trial-followup": function (ctx) {
+      var fb = ctx.feedback || {};
+      var lead = ctx.lead || {};
+      var name = lead.studentName || lead.parentName || "家长";
+      var intent = Number(fb.intent) || 0;
+      var ready = fb.ready || "";
+      var note = fb.note || "";
+      var tone = intent >= 4 ? "high" : intent >= 3 ? "mid" : "low";
+      var bodyMap = {
+        high: name + "好！周末试课中孩子表现很积极，老师印象也不错。" + (note ? note + " " : "") + "我们建议尽快报名以锁定下周班次名额，您看是否方便今天电话沟通一下？",
+        mid: name + "好，感谢您带孩子来试课。" + (note ? note + " " : "") + "老师评估孩子在「专注度」和「问题理解」上还有一些可以加强的地方，我整理了详细建议和适合的班次，方便沟通时再具体跟您讲。",
+        low: name + "好，谢谢您今天的时间。基于试课观察，我们觉得孩子可能更适合先从基础项目营开始，循序渐进。" + (note ? note + " " : "") + "如果方便，我可以下周给您再寄一份学习路径建议。"
+      };
+      return { text: bodyMap[tone], confidence: 0.74 };
+    },
+
+    // 4. 渠道效果归因分析
+    "channel-insight": function (ctx) {
+      var channels = ctx.channels || [];
+      if (!channels.length) return { text: "暂无渠道数据可分析。", confidence: 0.2 };
+      var sorted = channels.slice().sort(function (a, b) {
+        var ra = a.leads ? a.paid / a.leads : 0;
+        var rb = b.leads ? b.paid / b.leads : 0;
+        return rb - ra;
+      });
+      var top = sorted[0];
+      var worst = sorted[sorted.length - 1];
+      var topPct = top.leads ? Math.round((top.paid / top.leads) * 100) : 0;
+      var worstPct = worst.leads ? Math.round((worst.paid / worst.leads) * 100) : 0;
+      var parts = [];
+      parts.push("📊 「" + top.name + "」转化率最高（" + topPct + "%，付费 " + top.paid + " / 线索 " + top.leads + "），建议在该渠道增加投放或参考其内容策略。");
+      if (sorted.length > 1 && topPct - worstPct >= 15) {
+        parts.push("⚠️ 「" + worst.name + "」转化率偏低（" + worstPct + "%），建议复盘获客质量或暂停加大投入。");
+      }
+      var totalLeads = channels.reduce(function (a, c) { return a + c.leads; }, 0);
+      var topShare = totalLeads ? Math.round(top.leads / totalLeads * 100) : 0;
+      if (topShare > 50) {
+        parts.push("💡 注意渠道集中度：" + top.name + " 贡献了 " + topShare + "% 的线索，建议适度分散来源以降低单一渠道波动风险。");
+      }
+      return { text: parts.join("\n\n"), confidence: 0.68 };
+    },
+
+    // 5. 试课评估自动起草 — fill out a level recommendation + strengths
+    "trial-eval-draft": function (ctx) {
+      var observations = ctx.observations || "";
+      var hasFocus = /专注|认真|投入/.test(observations);
+      var hasLogic = /逻辑|推理|思考/.test(observations);
+      var hasCreative = /创意|想象|创造/.test(observations);
+      var hasNeedsHelp = /需要帮助|引导|提示|不太|还不/.test(observations);
+      var level = hasNeedsHelp ? "Beginner" : (hasLogic && hasFocus ? "Intermediate" : "Beginner");
+      var strengths = [];
+      if (hasFocus) strengths.push("课堂专注度高");
+      if (hasLogic) strengths.push("逻辑思维清晰");
+      if (hasCreative) strengths.push("创意表达活跃");
+      if (!strengths.length) strengths.push("课堂参与积极");
+      var suggestions = [];
+      if (hasNeedsHelp) suggestions.push("建议从基础课程开始，逐步建立信心");
+      else suggestions.push("可挑战项目式学习，增强独立完成能力");
+      if (hasCreative) suggestions.push("可加入创意编程营，发挥想象力优势");
+      return {
+        text: "📋 试课评估\n\n推荐 Level：" + level + "\n\n优势：\n" + strengths.map(function (s) { return "· " + s; }).join("\n") + "\n\n学习建议：\n" + suggestions.map(function (s) { return "· " + s; }).join("\n") + (observations ? "\n\n老师观察：" + observations : ""),
+        suggestions: { level: level, strengths: strengths, recommendations: suggestions },
+        confidence: 0.65
+      };
+    },
+
+    // 6. 缺勤沟通脚本（升级版 — context-aware）
+    "absence-script": function (ctx) {
+      var stu = ctx.student || {};
+      var consecutive = ctx.consecutive || 1;
+      var name = stu.name || "家长";
+      if (consecutive >= 3) {
+        return {
+          text: name + "好，注意到孩子连续 " + consecutive + " 次缺课了。想了解一下是健康原因还是时间安排上的变动？如果需要，我们可以协助调班或安排补课。",
+          confidence: 0.8
+        };
+      } else if (consecutive >= 2) {
+        return {
+          text: name + "好，孩子最近 " + consecutive + " 次缺勤，希望一切顺利。如果近期方便，能否安排一次补课？让孩子不掉队。",
+          confidence: 0.75
+        };
+      }
+      return {
+        text: name + "好，孩子今天没到课。请问是临时有事吗？如果需要补课请告诉我们，我们安排其他时段。",
+        confidence: 0.72
+      };
+    },
+
+    // 7. 班级容量调班建议
+    "class-rebalance": function (ctx) {
+      var offerings = ctx.offerings || [];
+      var alerts = [];
+      offerings.forEach(function (o) {
+        var pct = o.seatsTotal ? (o.seatsTaken || 0) / o.seatsTotal : 0;
+        if (pct >= 0.9) {
+          // Find a same-level alt
+          var alt = offerings.filter(function (other) {
+            return other.id !== o.id && other.level && o.level && other.level.en === o.level.en
+              && (other.seatsTotal - (other.seatsTaken || 0)) >= 2;
+          })[0];
+          if (alt) {
+            alerts.push("「" + (o.courseName && o.courseName.zh) + " · " + o.timeSlot + "」满员（" + o.seatsTaken + "/" + o.seatsTotal + "），可建议家长转到「" + (alt.courseName && alt.courseName.zh) + " · " + alt.timeSlot + "」（还剩 " + (alt.seatsTotal - alt.seatsTaken) + " 个名额，同级别）。");
+          } else {
+            alerts.push("⚠️ 「" + (o.courseName && o.courseName.zh) + " · " + o.timeSlot + "」满员，但没有同级别可替代班次，建议考虑开新班。");
+          }
+        }
+      });
+      return {
+        text: alerts.length ? "🏫 班级调度建议：\n\n" + alerts.join("\n\n") : "✅ 所有班次容量正常。",
+        confidence: alerts.length ? 0.82 : 0.5
+      };
+    },
+
+    // 8. 交班记录摘要
+    "shift-summary": function (ctx) {
+      var notes = ctx.notes || [];
+      if (!notes.length) return { text: "本周暂无交班记录。", confidence: 0.3 };
+      var keywords = _aiKeywords(notes.map(function (n) { return n.body || ""; }).join(" "), 5);
+      var byAuthor = {};
+      notes.forEach(function (n) { byAuthor[n.by] = (byAuthor[n.by] || 0) + 1; });
+      var authors = Object.keys(byAuthor).sort(function (a, b) { return byAuthor[b] - byAuthor[a]; });
+      return {
+        text: "📝 本周交班摘要\n\n· 共 " + notes.length + " 条记录，参与人：" + authors.slice(0, 3).join(", ") + "\n· 关键词：" + (keywords.join(", ") || "无") + "\n· 建议关注：" + (keywords[0] ? "「" + keywords[0] + "」被多次提及" : "无明显高频议题"),
+        confidence: 0.6
+      };
+    },
+
+    // 9. 月度运营报告草稿
+    "monthly-report": function (ctx) {
+      var kpis = ctx.kpis || {};
+      var parts = [];
+      parts.push("📊 MindDo · " + (ctx.month || "本月") + " 运营报告\n");
+      parts.push("【关键数据】");
+      parts.push("· 本月收入：" + (kpis.revenue || "—"));
+      parts.push("· 在读学员：" + (kpis.activeStudents || "—") + " 人");
+      parts.push("· 本月转化率：" + (kpis.conversion || "—") + "（线索 " + (kpis.leads || 0) + "，付费 " + (kpis.won || 0) + "）");
+      parts.push("· 续费率：" + (kpis.renewalRate || "—"));
+      parts.push("\n【亮点】");
+      parts.push("· 转化路径稳定，市场团队完成度良好");
+      if (kpis.topChannel) parts.push("· 「" + kpis.topChannel + "」渠道表现突出，建议保持投放");
+      parts.push("\n【需关注】");
+      if (kpis.withdrawals && kpis.withdrawals > 0) parts.push("· 本月退课 " + kpis.withdrawals + " 人，建议复盘原因");
+      if (kpis.pendingApprovals && kpis.pendingApprovals > 0) parts.push("· " + kpis.pendingApprovals + " 项待审批堆积，建议尽快处理");
+      parts.push("\n【下月行动建议】");
+      parts.push("· 加强续费跟进，目标续费率 ≥ 80%");
+      parts.push("· 复盘低转化渠道，调整投放策略");
+      parts.push("· 教师培训：针对本月反馈较多的内容做专项辅导");
+      return { text: parts.join("\n"), confidence: 0.7 };
+    },
+
+    // 10. 审批理由推荐
+    "approval-reason": function (ctx) {
+      var req = ctx.request || {};
+      var decision = ctx.decision || "approved";
+      var amount = Number(req.amount) || 0;
+      var type = req.type || "";
+      if (decision === "approved") {
+        if (type.indexOf("refund") >= 0 || type === "refund") {
+          if (amount < 500) return { text: "金额合理，符合 7 天无理由退款政策，准予退款。", confidence: 0.8 };
+          if (amount < 2000) return { text: "经核实，原因合理且金额未超出标准，准予退款。建议同时跟进原因避免类似流失。", confidence: 0.75 };
+          return { text: "金额较大，已核对原始订单和上课记录无异议，准予全额退款。", confidence: 0.7 };
+        }
+        if (type === "expense") return { text: "支出符合校区运营预算，凭证齐全，准予报销。", confidence: 0.75 };
+        return { text: "申请合理，符合政策，准予执行。", confidence: 0.7 };
+      } else {
+        if (amount > 3000) return { text: "金额超出本级审批权限，需总部 / 校长会议复核后再做决定。", confidence: 0.75 };
+        return { text: "原因依据不充分 / 不符合现行政策，建议申请人补充材料后再提交。", confidence: 0.7 };
+      }
+    },
+
+    // 11. 流失风险评分 (deterministic — no LLM needed)
+    "churn-risk": function (ctx) {
+      var stu = ctx.student || {};
+      var attendance = Number(ctx.attendanceRate || 0); // 0-100
+      var daysSinceContact = Number(ctx.daysSinceContact || 0);
+      var lastFeedbackRating = Number(ctx.lastFeedbackRating || 5); // 1-5
+      // Weighted score: low attendance / no contact / low rating = high risk
+      var score = 0;
+      if (attendance < 50) score += 40;
+      else if (attendance < 75) score += 25;
+      else if (attendance < 90) score += 10;
+      if (daysSinceContact > 30) score += 30;
+      else if (daysSinceContact > 14) score += 15;
+      else if (daysSinceContact > 7) score += 5;
+      if (lastFeedbackRating <= 2) score += 30;
+      else if (lastFeedbackRating <= 3) score += 15;
+      var risk = score >= 60 ? "high" : score >= 30 ? "medium" : "low";
+      var reason = [];
+      if (attendance < 75) reason.push("出勤率仅 " + attendance + "%");
+      if (daysSinceContact > 14) reason.push(daysSinceContact + " 天未跟进");
+      if (lastFeedbackRating <= 3) reason.push("最近反馈评分 " + lastFeedbackRating + "/5");
+      return {
+        text: "风险等级 " + risk + "（评分 " + score + "/100）" + (reason.length ? " · " + reason.join("、") : ""),
+        suggestions: { risk: risk, score: score, reasons: reason },
+        confidence: 0.85
+      };
+    },
+
+    // 12. 跨校区异常检测
+    "cross-campus-anomaly": function (ctx) {
+      var campuses = ctx.campuses || [];
+      if (campuses.length < 2) return { text: "校区数量不足，无法做横向对比。", confidence: 0.2 };
+      // Find campus whose conversion is > 1.5 std-dev from mean
+      var convs = campuses.map(function (c) { return c.convPct || 0; });
+      var mean = convs.reduce(function (a, b) { return a + b; }, 0) / convs.length;
+      var variance = convs.reduce(function (a, b) { return a + (b - mean) * (b - mean); }, 0) / convs.length;
+      var std = Math.sqrt(variance);
+      var anomalies = [];
+      campuses.forEach(function (c) {
+        if (std > 0 && Math.abs((c.convPct || 0) - mean) > 1.5 * std) {
+          var dir = (c.convPct || 0) > mean ? "高出" : "低于";
+          anomalies.push("📍 「" + c.campus + "」转化率 " + (c.convPct || 0) + "%，" + dir + "全公司均值（" + Math.round(mean) + "%）" + Math.abs(Math.round(((c.convPct || 0) - mean))) + " 个百分点");
+        }
+      });
+      return {
+        text: anomalies.length
+          ? "⚠️ 检测到 " + anomalies.length + " 处显著偏离：\n\n" + anomalies.join("\n")
+          : "✅ 各校区指标在正常波动范围内。",
+        confidence: anomalies.length ? 0.78 : 0.6
+      };
+    },
+
+    // 13. 数据完整性修复建议
+    "integrity-fix": function (ctx) {
+      var check = ctx.check || {};
+      var suggestions = {
+        "orphan-payment-email": "建议步骤：1) 比对邮箱拼写；2) 检查是否有 leads 删除后 payments 未清理；3) 必要时手动建 student 记录补救。",
+        "orphan-membership-offering": "高风险问题。建议立即：1) 找出已删除的 offering；2) 回滚或将 membership 标记为 inactive；3) 联系家长重新安排课程。",
+        "orphan-attendance-student": "建议：1) 检查 students 表是否有误删；2) 如果是历史数据可以选择删除；3) 添加 ON DELETE CASCADE 防止以后再次发生。",
+        "won-no-payment": "可能是现金交易或线下付款。建议：1) 与市场专员核实；2) 如果是真成交，手动补一条 payment 记录；3) 否则将 lead 状态改回 follow。",
+        "staff-bad-role": "紧急。建议立即：1) 将 staff.roleId 改为默认值（如 'campus-ops'）；2) 检查 roles 表是否需要恢复；3) 检查最近的 role.update audit。",
+        "capacity-overflow": "建议：1) 核对 seatsTotal 是否设置过低；2) 若超额是错误，移除多余的 membership.sessions；3) 若是真的超额，开新班分流。",
+        "trial-feedback-orphan": "孤立反馈无害，建议保留作为历史。如需清理，删除对应 lead.createdAt key 即可。",
+        "storage-size": "建议：1) 清空 minddo_audit_log 超过 500 条的旧记录；2) 检查 minddo_email_outbox 是否有大量草稿可归档；3) 考虑迁移到真实后端。"
+      };
+      return {
+        text: suggestions[check.id] || "暂无针对此问题的标准修复建议。",
+        confidence: 0.72
+      };
+    },
+
+    // 14. 审计异常监控
+    "audit-anomaly": function (ctx) {
+      var rows = ctx.rows || [];
+      // Detect short bursts of same-kind from same actor (potential bulk error)
+      var bursts = {};
+      rows.forEach(function (r) {
+        var minuteBucket = (r.at || "").slice(0, 16); // YYYY-MM-DDTHH:MM
+        var key = r.actor + "::" + r.kind + "::" + minuteBucket;
+        bursts[key] = (bursts[key] || 0) + 1;
+      });
+      var hot = Object.keys(bursts).filter(function (k) { return bursts[k] >= 5; }).slice(0, 5);
+      if (!hot.length) return { text: "✅ 审计日志中未检测到异常突发操作模式。", confidence: 0.6 };
+      return {
+        text: "⚠️ 检测到 " + hot.length + " 处可疑突发：\n\n" + hot.map(function (k) {
+          var p = k.split("::");
+          return "· 「" + p[0] + "」在 " + p[2] + " 一分钟内执行了 " + bursts[k] + " 次「" + p[1] + "」";
+        }).join("\n"),
+        confidence: 0.7
+      };
+    },
+
+    // 15. 客服 chatbot — parent-side FAQ
+    "parent-chatbot": function (ctx) {
+      var q = String((ctx.query || "")).toLowerCase();
+      var faqs = [
+        { match: /营业|开门|关门|几点|时间/, text: "我们工作日 14:00-21:00，周末 9:00-18:00。具体校区时间略有差异，建议查看「业务设置 · 营业时段」。" },
+        { match: /试课|体验课/, text: "试课完全免费！每周末上午 9:00 / 10:00 / 11:00 三个时段，工作日下午也有，可以在「线上预约」里选时段。" },
+        { match: /续费/, text: "续费可以在「家长账号 · 续费」页面操作，也可以联系您的招生老师。续费有早鸟优惠（到期前 14 天）。" },
+        { match: /请假|改期/, text: "请假需提前 24 小时在家长 App 提交，我们会安排同级别的补课。临时缺勤请直接打电话联系校区。" },
+        { match: /价格|学费/, text: "课程价格根据课时和课型（小班 / 1v1）不同，从 $120/月起。建议先来一次免费试课，再根据孩子情况推荐套餐。" },
+        { match: /退款/, text: "7 天内无理由全额退款。超过 7 天按未上课时退款，详情可咨询校区运营。" },
+        { match: /老师|教师/, text: "我们的老师都有计算机背景 + 教学认证，平均教龄 5+ 年。可在「教师介绍」页面查看具体老师资料。" }
+      ];
+      for (var i = 0; i < faqs.length; i++) {
+        if (faqs[i].match.test(q)) return { text: faqs[i].text, confidence: 0.85 };
+      }
+      return { text: "这个问题我可能不太了解，建议直接联系校区运营老师（电话见页面底部）会更准确。", confidence: 0.4 };
+    },
+
+    // 16. 学习路径推荐
+    "learning-path": function (ctx) {
+      var lv = ctx.level || "Beginner";
+      var portfolio = ctx.portfolio || [];
+      var paths = {
+        "Beginner": "下一步建议：完成 Beginner 课程的所有项目，参加一次「项目营」体验创意编程。如果对游戏方向感兴趣可以尝试 Scratch 进阶班。",
+        "Intermediate": "建议路径：进入 Python 入门，配合一次比赛项目（如 NCC 编程挑战）锻炼实战。如果作品集已有 3+ 个项目，可申请 Advanced 测试。",
+        "Advanced": "推荐方向：选择一个深度方向（AI 应用 / 算法竞赛 / 全栈开发），参加 Competition 班次。已经可以开始为大学申请准备 portfolio 网站。",
+        "Project Camp": "项目营适合短期突破。建议主题：基于孩子兴趣的小型项目（游戏 / AI 工具 / 网站）。完成后可以发到学校或社交媒体。",
+        "Competition": "竞赛路线建议：先打 USACO Bronze，再考虑 NCC / Code Jam 等。每周需要额外 5+ 小时练习。"
+      };
+      var extras = [];
+      if (portfolio.length >= 3) extras.push("📁 已有 " + portfolio.length + " 个作品，建议整理成 portfolio 网站");
+      if (portfolio.length === 0) extras.push("💡 尚未提交作品集，建议先完成一个 mini-project");
+      return {
+        text: paths[lv] + (extras.length ? "\n\n" + extras.join("\n") : ""),
+        confidence: 0.7
+      };
+    },
+
+    // 17. 月度学习总结邮件 (for parent)
+    "monthly-summary": function (ctx) {
+      var stu = ctx.student || {};
+      var stats = ctx.stats || {};
+      var name = stu.name || "孩子";
+      return {
+        text: "📚 " + name + " 的本月学习总结\n\n" +
+              "本月共上课 " + (stats.classes || 0) + " 次，出勤率 " + (stats.attendanceRate || "—") + "%。\n\n" +
+              "本月学习要点：\n" +
+              "· 完成了 " + (stats.projects || 1) + " 个项目作业\n" +
+              "· 课堂积极性：" + (stats.engagement || "良好") + "\n" +
+              "· 老师特别指出的进步：" + (stats.progress || "逻辑思维和问题分解能力") + "\n\n" +
+              "下月建议：继续保持，可以尝试在家自己做一个小项目巩固。如有问题欢迎随时和老师沟通。\n\n" +
+              "—— MindDo 教学团队",
+        confidence: 0.75
+      };
+    }
+  };
+
   // ---- updateStudentProfile -------------------------------------------
   // One-stop save used by the dashboard's student-detail drawer. Handles:
   //   - upsertStudent (the per-student record)
@@ -3340,6 +3773,8 @@
     updateStudentProfile: updateStudentProfile,
     appendAudit: appendAudit,
     getAuditLog: getAuditLog,
+    // AI-assisted content generation (demo mode — see aiSuggest comment)
+    aiSuggest: aiSuggest,
     // Permission / scope (RBAC for ops dashboard)
     PERMISSIONS: PERMISSIONS,
     PERMISSION_TEMPLATES: PERMISSION_TEMPLATES,

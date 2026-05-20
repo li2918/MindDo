@@ -908,6 +908,74 @@
       border-color: rgba(110, 143, 87, 0.32);
     }
 
+    /* AI-assisted UI primitives */
+    .ai-btn {
+      all: unset; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+      transition: 0.15s;
+    }
+    .ai-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35); }
+    .ai-btn:disabled, .ai-btn.loading { opacity: 0.7; cursor: wait; }
+    .ai-btn .ai-spark { font-size: 12px; }
+    .ai-btn-ghost {
+      background: transparent; color: #7c3aed;
+      border: 1px solid rgba(124, 58, 237, 0.4); box-shadow: none;
+    }
+    .ai-btn-ghost:hover { background: rgba(124, 58, 237, 0.06); }
+
+    .ai-output {
+      margin-top: 10px;
+      padding: 12px 14px;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.08) 0%, rgba(124, 58, 237, 0.04) 100%);
+      border: 1px solid rgba(124, 58, 237, 0.24);
+      border-radius: 10px;
+      font-size: 12.5px; line-height: 1.6;
+      color: var(--text);
+      white-space: pre-wrap;
+      position: relative;
+    }
+    .ai-output[hidden] { display: none; }
+    .ai-output .ai-head {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: #7c3aed;
+      margin-bottom: 6px;
+    }
+    .ai-output .ai-conf {
+      font-size: 10px; color: var(--muted); font-weight: 700;
+      padding: 1px 8px; border-radius: 999px;
+      background: rgba(122, 48, 16, 0.05); border: 1px solid var(--line);
+      margin-left: auto;
+    }
+    .ai-output .ai-actions {
+      display: flex; gap: 6px; margin-top: 8px;
+    }
+    .ai-output .ai-actions button {
+      all: unset; cursor: pointer; padding: 4px 10px;
+      border-radius: 6px; font-size: 11px; font-weight: 700;
+      border: 1px solid var(--line); background: #fff; color: var(--clay);
+    }
+    .ai-output .ai-actions button.primary {
+      background: #7c3aed; color: #fff; border-color: transparent;
+    }
+    .ai-output .ai-actions button:hover { filter: brightness(1.05); }
+
+    .ai-tag-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 700;
+      background: rgba(124, 58, 237, 0.1); color: #7c3aed;
+      border: 1px solid rgba(124, 58, 237, 0.32);
+      cursor: pointer; margin: 2px;
+    }
+    .ai-tag-chip:hover { background: rgba(124, 58, 237, 0.2); }
+    .ai-tag-chip::before { content: "✨"; font-size: 10px; }
+
     /* Audit log viewer */
     .audit-filters {
       display: grid; gap: 10px;
@@ -2801,8 +2869,9 @@
     }
     .lead-log-row .ll-note { color: var(--text, #1f2937); word-break: break-word; }
     .lead-log-add {
-      display: grid; grid-template-columns: 110px 1fr auto auto; gap: 6px;
+      display: grid; grid-template-columns: 110px 1fr auto auto auto; gap: 6px;
     }
+    @media (max-width: 640px) { .lead-log-add { grid-template-columns: 1fr 1fr; } }
     .lead-log-add select, .lead-log-add input {
       border: 1px solid var(--line); border-radius: 8px;
       padding: 7px 10px; font: inherit; font-size: 12.5px; background: #fff;
@@ -3884,6 +3953,16 @@
         <div class="mkt-subpanel" data-mkt-subpanel="channel" role="tabpanel" hidden>
           <section class="dash-zone">
             <section class="grid" id="chKpiMetrics"></section>
+          </section>
+
+          <section class="dash-zone">
+            <article class="panel">
+              <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+                <h2 style="margin:0;">✨ AI 渠道洞察</h2>
+                <button type="button" class="ai-btn" id="chAiInsightBtn"><span class="ai-spark">✨</span> 生成洞察</button>
+              </div>
+              <div class="ai-output" id="chAiInsightOutput" hidden></div>
+            </article>
           </section>
 
           <section class="dash-zone">
@@ -5047,6 +5126,10 @@
           <label class="lead-edit-label" data-i18n="trialFbNoteLabel"></label>
           <textarea id="trialFbNote" rows="3"></textarea>
         </div>
+        <div class="trial-fb-section">
+          <button type="button" id="trialFbAiBtn" class="ai-btn"><span class="ai-spark">✨</span> AI 起草家长回访稿</button>
+          <div class="ai-output" id="trialFbAiOutput" hidden></div>
+        </div>
         <div class="mo-lead-foot">
           <span id="trialFbMsg" class="mo-lead-msg"></span>
           <div style="display:flex;gap:8px;">
@@ -5147,8 +5230,11 @@
              tag the lead) is at the top of the editing area. -->
         <div class="lead-tag-row">
           <div class="lead-tag-block">
-            <span class="lead-edit-label" data-i18n="leadDetailTagsLabel"></span>
+            <span class="lead-edit-label" data-i18n="leadDetailTagsLabel">
+              <button type="button" class="ai-btn ai-btn-ghost" id="leadAiTagBtn" style="margin-left:8px;"><span class="ai-spark">✨</span> AI 建议标签</button>
+            </span>
             <div class="lead-tag-chips" id="leadDetailTagChips"></div>
+            <div class="ai-output" id="leadAiTagOutput" hidden></div>
             <div class="lead-tag-input-row">
               <input type="text" id="leadDetailTagInput" placeholder="" autocomplete="off" />
               <button type="button" id="leadDetailTagAddBtn" class="mo-lead-secondary" data-i18n="leadDetailTagAdd"></button>
@@ -5196,10 +5282,12 @@
               <option value="other" data-i18n="leadDetailLogChOther"></option>
             </select>
             <input type="text" id="leadDetailLogNote" placeholder="" autocomplete="off" />
+            <button type="button" id="leadAiScriptBtn" class="ai-btn" title="AI 跟进话术"><span class="ai-spark">✨</span> 话术</button>
             <button type="button" id="leadTplPickBtn" class="tpl-pick-btn" aria-label="templates" title="">📋</button>
             <button type="button" id="leadDetailLogAddBtn" class="mo-lead-secondary" data-i18n="leadDetailLogAdd"></button>
             <div class="tpl-pick-popover" id="leadTplPicker" hidden></div>
           </div>
+          <div class="ai-output" id="leadAiScriptOutput" hidden></div>
         </section>
 
         <div class="mo-lead-foot">
@@ -9529,6 +9617,49 @@
       // teacher is double-booked (two offerings overlap in time on the
       // same day). Best-effort overlap detection uses the timeSlot
       // strings (e.g. "16:00 – 17:00") parsed into [start, end] HH:MM.
+      // Channel AI insight button — gathers current channel data and
+      // asks aiSuggest to generate a narrative analysis.
+      (function () {
+        var btn = document.getElementById("chAiInsightBtn");
+        var out = document.getElementById("chAiInsightOutput");
+        if (!btn || !out) return;
+        btn.addEventListener("click", function () {
+          var flow = window.MindDoFlow;
+          if (!flow) return;
+          var campus = (typeof moActiveCampus === "function") ? moActiveCampus() : null;
+          // Build channel stats same way renderChannelDeepDive does
+          var leads = (flow.readJson(flow.keys.leads) || []).filter(function (l) {
+            return !campus || !l.campus || l.campus === campus;
+          });
+          leads = leads.filter(function (l) { return inRange(l, state.range); });
+          var pays = flow.readJson(flow.keys.payments) || [];
+          var paidEmails = {};
+          pays.forEach(function (p) {
+            if (!p || !inRange(p, state.range) || !p.email) return;
+            paidEmails[String(p.email).toLowerCase()] = true;
+          });
+          var byChan = {};
+          leads.forEach(function (l) {
+            var k = l.channel || "other";
+            var lbl = l.channelLabel || k;
+            if (!byChan[k]) byChan[k] = { name: lbl, leads: 0, trials: 0, paid: 0 };
+            byChan[k].leads++;
+            if (l.trialDate) byChan[k].trials++;
+            if (l.email && paidEmails[String(l.email).toLowerCase()]) byChan[k].paid++;
+          });
+          var channels = Object.values(byChan);
+          btn.classList.add("loading");
+          btn.disabled = true;
+          flow.aiSuggest({ kind: "channel-insight", context: { channels: channels } }).then(function (r) {
+            btn.classList.remove("loading");
+            btn.disabled = false;
+            out.hidden = false;
+            out.innerHTML = "<div class='ai-head'>✨ AI 分析 <span class='ai-conf'>置信度 " + Math.round(r.confidence * 100) + "%</span></div>"
+              + "<div class='ai-body'>" + escHTML(r.text) + "</div>";
+          });
+        });
+      })();
+
       function renderTeacherCoverage(t) {
         var el = document.getElementById("teacherCoverList");
         if (!el) return;
@@ -12080,6 +12211,71 @@
             }
           });
         }
+
+        // ============ AI: tag suggestion ============
+        var aiTagBtn = document.getElementById("leadAiTagBtn");
+        var aiTagOut = document.getElementById("leadAiTagOutput");
+        if (aiTagBtn && aiTagOut) {
+          aiTagBtn.addEventListener("click", function () {
+            if (!current) return;
+            aiTagBtn.classList.add("loading");
+            aiTagBtn.disabled = true;
+            window.MindDoFlow.aiSuggest({ kind: "tag-suggest", context: { lead: current } }).then(function (r) {
+              aiTagBtn.classList.remove("loading");
+              aiTagBtn.disabled = false;
+              aiTagOut.hidden = false;
+              var chips = "";
+              if (r.suggestions && r.suggestions.length) {
+                chips = "<div style='margin-top:8px;'>" + r.suggestions.map(function (s) {
+                  return "<span class='ai-tag-chip' data-ai-tag='" + escHTML(s) + "'>" + escHTML(s) + "</span>";
+                }).join("") + "</div>";
+              }
+              aiTagOut.innerHTML = "<div class='ai-head'>✨ AI 建议 <span class='ai-conf'>置信度 " + Math.round(r.confidence * 100) + "%</span></div>"
+                + escHTML(r.text) + chips;
+            });
+          });
+          aiTagOut.addEventListener("click", function (e) {
+            var chip = e.target.closest("[data-ai-tag]");
+            if (!chip) return;
+            addTag(chip.getAttribute("data-ai-tag"));
+            chip.remove();
+          });
+        }
+
+        // ============ AI: followup-script ============
+        var aiScriptBtn = document.getElementById("leadAiScriptBtn");
+        var aiScriptOut = document.getElementById("leadAiScriptOutput");
+        var aiScriptText = "";
+        if (aiScriptBtn && aiScriptOut) {
+          aiScriptBtn.addEventListener("click", function () {
+            if (!current) return;
+            aiScriptBtn.classList.add("loading");
+            aiScriptBtn.disabled = true;
+            window.MindDoFlow.aiSuggest({ kind: "followup-script", context: { lead: current } }).then(function (r) {
+              aiScriptBtn.classList.remove("loading");
+              aiScriptBtn.disabled = false;
+              aiScriptOut.hidden = false;
+              aiScriptText = r.text || "";
+              aiScriptOut.innerHTML = "<div class='ai-head'>✨ AI 跟进话术 <span class='ai-conf'>置信度 " + Math.round(r.confidence * 100) + "%</span></div>"
+                + "<div class='ai-body'>" + escHTML(aiScriptText) + "</div>"
+                + "<div class='ai-actions'>"
+                +   "<button type='button' class='primary' data-ai-use='script'>插入到备注</button>"
+                +   "<button type='button' data-ai-regen='script'>重新生成</button>"
+                + "</div>";
+            });
+          });
+          aiScriptOut.addEventListener("click", function (e) {
+            if (e.target.closest("[data-ai-use='script']")) {
+              var noteInp = document.getElementById("leadDetailLogNote");
+              if (noteInp) {
+                noteInp.value = aiScriptText;
+                noteInp.focus();
+              }
+            } else if (e.target.closest("[data-ai-regen='script']")) {
+              aiScriptBtn.click();
+            }
+          });
+        }
       })();
 
       // CSV import — parse a pasted CSV/TSV blob into lead records,
@@ -12590,6 +12786,60 @@
             }
             closeModal();
             if (typeof render === "function") render();
+          });
+        }
+
+        // ============ AI: trial follow-up draft ============
+        var aiBtn = document.getElementById("trialFbAiBtn");
+        var aiOut = document.getElementById("trialFbAiOutput");
+        var aiText = "";
+        if (aiBtn && aiOut) {
+          aiBtn.addEventListener("click", function () {
+            if (!currentLeadId) return;
+            var flow = window.MindDoFlow;
+            var leads = flow.readJson(flow.keys.leads) || [];
+            var lead = leads.filter(function (l) { return l && l.createdAt === currentLeadId; })[0];
+            if (!lead) return;
+            aiBtn.classList.add("loading");
+            aiBtn.disabled = true;
+            var feedback = {
+              intent: workingIntent,
+              ready: workingReady,
+              note: noteEl ? noteEl.value : ""
+            };
+            flow.aiSuggest({ kind: "trial-followup", context: { lead: lead, feedback: feedback } }).then(function (r) {
+              aiBtn.classList.remove("loading");
+              aiBtn.disabled = false;
+              aiOut.hidden = false;
+              aiText = r.text || "";
+              aiOut.innerHTML = "<div class='ai-head'>✨ AI 回访稿草稿 <span class='ai-conf'>置信度 " + Math.round(r.confidence * 100) + "%</span></div>"
+                + "<div class='ai-body'>" + escHTML(aiText) + "</div>"
+                + "<div class='ai-actions'>"
+                +   "<button type='button' class='primary' data-ai-send>📨 加入发件箱草稿</button>"
+                +   "<button type='button' data-ai-regen>重新生成</button>"
+                + "</div>";
+            });
+          });
+          aiOut.addEventListener("click", function (e) {
+            if (e.target.closest("[data-ai-send]")) {
+              var flow = window.MindDoFlow;
+              if (!flow || !aiText) return;
+              var leads = flow.readJson(flow.keys.leads) || [];
+              var lead = leads.filter(function (l) { return l && l.createdAt === currentLeadId; })[0];
+              var outbox = flow.readJson(flow.keys.outbox) || [];
+              outbox.push({
+                id: "MAIL-AI-" + Date.now(),
+                to: (lead && lead.email) || "",
+                subject: "试课后跟进 · " + ((lead && lead.studentName) || ""),
+                body: aiText, createdAt: new Date().toISOString(),
+                status: "draft", sourceKind: "ai-trial-followup"
+              });
+              flow.writeJson(flow.keys.outbox, outbox);
+              if (typeof showOpsToast === "function") showOpsToast("已加入发件箱草稿");
+              aiOut.querySelector("[data-ai-send]").textContent = "✓ 已加入";
+            } else if (e.target.closest("[data-ai-regen]")) {
+              aiBtn.click();
+            }
           });
         }
       })();
