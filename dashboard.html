@@ -8236,6 +8236,7 @@
       }
 
       function renderRangeButtons() {
+        if (!rangeGroup) return;
         var t = I18N[state.lang];
         var pills = t.ranges.map(function (r) {
           var active = state.range === r.key;
@@ -12385,6 +12386,9 @@
         // write to `current.contactLog` / `.tags` in memory until save.
         var workingTags = [];
         var current = null;
+        // Token bumped on every open/close so stale AI promise callbacks
+        // (returning after the user has already moved on) can be ignored.
+        var aiReqId = 0;
 
         function fmtDate(iso) {
           if (!iso) return "";
@@ -12534,6 +12538,7 @@
           overlay.setAttribute("aria-hidden", "true");
           document.body.style.overflow = "";
           current = null;
+          aiReqId++;
         }
 
         function persist(extraPatch) {
@@ -12708,9 +12713,13 @@
         if (aiTagBtn && aiTagOut) {
           aiTagBtn.addEventListener("click", function () {
             if (!current) return;
+            var flow = window.MindDoFlow;
+            if (!flow || typeof flow.aiSuggest !== "function") return;
             aiTagBtn.classList.add("loading");
             aiTagBtn.disabled = true;
-            window.MindDoFlow.aiSuggest({ kind: "tag-suggest", context: { lead: current } }).then(function (r) {
+            var myReq = aiReqId;
+            flow.aiSuggest({ kind: "tag-suggest", context: { lead: current } }).then(function (r) {
+              if (myReq !== aiReqId) return;
               aiTagBtn.classList.remove("loading");
               aiTagBtn.disabled = false;
               aiTagOut.hidden = false;
@@ -12739,9 +12748,13 @@
         if (aiScriptBtn && aiScriptOut) {
           aiScriptBtn.addEventListener("click", function () {
             if (!current) return;
+            var flow = window.MindDoFlow;
+            if (!flow || typeof flow.aiSuggest !== "function") return;
             aiScriptBtn.classList.add("loading");
             aiScriptBtn.disabled = true;
-            window.MindDoFlow.aiSuggest({ kind: "followup-script", context: { lead: current } }).then(function (r) {
+            var myReq = aiReqId;
+            flow.aiSuggest({ kind: "followup-script", context: { lead: current } }).then(function (r) {
+              if (myReq !== aiReqId) return;
               aiScriptBtn.classList.remove("loading");
               aiScriptBtn.disabled = false;
               aiScriptOut.hidden = false;
@@ -15593,9 +15606,11 @@
             var card = btn.closest(".integrity-card");
             var out = card.querySelector(".ic-ai-out");
             var icid = btn.getAttribute("data-icid");
+            var flow = window.MindDoFlow;
+            if (!flow || typeof flow.aiSuggest !== "function") return;
             btn.classList.add("loading");
             btn.disabled = true;
-            window.MindDoFlow.aiSuggest({ kind: "integrity-fix", context: { check: { id: icid } } }).then(function (r) {
+            flow.aiSuggest({ kind: "integrity-fix", context: { check: { id: icid } } }).then(function (r) {
               btn.classList.remove("loading");
               btn.disabled = false;
               out.hidden = false;
@@ -16572,9 +16587,11 @@
           aiBtn.addEventListener("click", function () {
             var notesEl = document.getElementById("mktEvalNotes");
             var observations = notesEl ? notesEl.value.trim() : "";
+            var flow = window.MindDoFlow;
+            if (!flow || typeof flow.aiSuggest !== "function") return;
             aiBtn.classList.add("loading");
             aiBtn.disabled = true;
-            window.MindDoFlow.aiSuggest({ kind: "trial-eval-draft", context: { observations: observations } }).then(function (r) {
+            flow.aiSuggest({ kind: "trial-eval-draft", context: { observations: observations } }).then(function (r) {
               aiBtn.classList.remove("loading");
               aiBtn.disabled = false;
               aiOut.hidden = false;
@@ -16708,6 +16725,9 @@
       }
 
       function renderPaymentsTable(payments, t) {
+        // paymentTable was on the legacy overview which has since been
+        // replaced. Bail safely if the element no longer exists.
+        if (!paymentTable) return;
         if (!payments.length) {
           paymentTable.innerHTML = "<tr><td colspan='4'>" + t.noData + "</td></tr>";
           return;
