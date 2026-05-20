@@ -213,6 +213,19 @@ legacy page can read them.
 ### `minddo_email_outbox` 🟡 (array)
 Mock-email log used by `email-outbox.html`.
 
+### `minddo_chat_history` 🟢 (array, bounded to 50)
+Parent-side AI chatbot conversation history. Survives reloads within
+the same browser. Cleared via the "清空对话" button in the support panel
+or by clearing localStorage.
+
+```js
+{ who: "user" | "bot", text, at,
+  lowConf,                    // bot side only · true when confidence < 0.5
+  followups }                 // bot side only · suggested next questions
+```
+
+Bounded to 50 most-recent entries (older ones drop off).
+
 ### `minddo_marketing_templates` 🟢 (array)
 Communication templates the lead-detail "添加跟进" 📋 button inserts
 into the contact-log note. Seeded with 4 starter rows on first read.

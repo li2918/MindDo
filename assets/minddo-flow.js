@@ -3002,22 +3002,108 @@
       };
     },
 
-    // 15. 客服 chatbot — parent-side FAQ
+    // 15. 客服 chatbot — parent-side FAQ. Context-aware: knows what
+    // page the user is on + which student is active, so it can give
+    // page-specific answers (e.g. "this week's schedule" when called
+    // from the schedule page).
     "parent-chatbot": function (ctx) {
       var q = String((ctx.query || "")).toLowerCase();
-      var faqs = [
-        { match: /营业|开门|关门|几点|时间/, text: "我们工作日 14:00-21:00，周末 9:00-18:00。具体校区时间略有差异，建议查看「业务设置 · 营业时段」。" },
-        { match: /试课|体验课/, text: "试课完全免费！每周末上午 9:00 / 10:00 / 11:00 三个时段，工作日下午也有，可以在「线上预约」里选时段。" },
-        { match: /续费/, text: "续费可以在「家长账号 · 续费」页面操作，也可以联系您的招生老师。续费有早鸟优惠（到期前 14 天）。" },
-        { match: /请假|改期/, text: "请假需提前 24 小时在家长 App 提交，我们会安排同级别的补课。临时缺勤请直接打电话联系校区。" },
-        { match: /价格|学费/, text: "课程价格根据课时和课型（小班 / 1v1）不同，从 $120/月起。建议先来一次免费试课，再根据孩子情况推荐套餐。" },
-        { match: /退款/, text: "7 天内无理由全额退款。超过 7 天按未上课时退款，详情可咨询校区运营。" },
-        { match: /老师|教师/, text: "我们的老师都有计算机背景 + 教学认证，平均教龄 5+ 年。可在「教师介绍」页面查看具体老师资料。" }
+      var page = (ctx.pageHint || "").toLowerCase();
+      var stu = ctx.currentStudent || null;
+      var stuName = stu && (stu.studentName || stu.name) || "";
+      // Knowledge base — each entry has match regex, body, suggested
+      // follow-up questions, and confidence. Higher confidence = answer
+      // is well-defined; lower = fuzzy match where we should still answer
+      // but offer a "转人工" path.
+      var FAQ = [
+        { tag: "hours",   match: /营业|开门|关门|几点开|几点关|工作时间|上班|hours/,
+          text: "我们工作日 14:00-21:00，周末 9:00-18:00。具体校区时间略有差异，可以在校区主页查看详情。",
+          followups: ["哪些校区还有空位？", "周日有课吗？"], confidence: 0.9 },
+        { tag: "trial",   match: /试课|体验课|trial|demo/,
+          text: "试课完全免费！周末 9:00 / 10:00 / 11:00 三个时段，工作日下午也有，老师会做一对一评估。预约方式：可以在「免费试课」页面选择时段。",
+          followups: ["试课要带什么？", "试课多长时间？", "可以远程试课吗？"], confidence: 0.95 },
+        { tag: "trial-bring", match: /试课.*带|带什么|准备什么/,
+          text: "试课不用带任何东西，我们会提供电脑和学习材料。孩子只需穿轻便的衣服即可。如果年龄较小，建议家长一起到场。",
+          followups: ["试课多长时间？"], confidence: 0.85 },
+        { tag: "trial-duration", match: /试课.*(多.*久|多.*长|时间)/,
+          text: "试课 60 分钟，前 45 分钟为课程体验，后 15 分钟老师会和家长沟通学习评估。",
+          followups: ["试课后多久能开课？"], confidence: 0.9 },
+        { tag: "remote",  match: /远程|线上|网课|online|远端/,
+          text: "我们提供线上小班直播课，使用 Zoom 平台，每节 60 分钟。线上和线下的师资、内容一致，可以根据时间方便程度选择。",
+          followups: ["线上课要装什么软件？"], confidence: 0.85 },
+        { tag: "renew",   match: /续费|续课|继续/,
+          text: "续费可以在「家长账户 · 续费」页面操作，也可以联系招生老师。到期前 14 天续费有早鸟优惠（9 折）。",
+          followups: ["可以选不同的套餐吗？", "续费有折扣吗？"], confidence: 0.9 },
+        { tag: "leave",   match: /请假|缺课|不来|miss/,
+          text: "请假需提前 24 小时在家长 App 提交，我们会安排同级别的补课。临时缺勤请直接打电话联系校区。",
+          followups: ["补课怎么安排？", "请假几次会影响什么？"], confidence: 0.9 },
+        { tag: "makeup",  match: /补课|make.?up|补回/,
+          text: "请假后我们会在 3 天内联系您安排同级别的补课时间。补课需要在 30 天内完成，超过 30 天会作废处理。",
+          followups: ["补课在哪个校区？"], confidence: 0.85 },
+        { tag: "reschedule", match: /改期|调课|换时间|reschedule/,
+          text: "在「家长账户 · 课表」里找到该课次，点「申请改期」选新时段，运营 1 个工作日内确认。",
+          followups: ["可以临时改课吗？"], confidence: 0.85 },
+        { tag: "price",   match: /价格|学费|多少钱|收费|费用|price/,
+          text: "课程价格根据课时和课型（小班 / 1v1）不同，从 $120/月起。建议先来一次免费试课，再根据孩子情况推荐套餐。",
+          followups: ["套餐有哪些？", "有哪些优惠？"], confidence: 0.9 },
+        { tag: "package", match: /套餐|plan|课时包|课包/,
+          text: "我们有 4 种套餐：每周 1 节（$120/月）、每周 2 节（$220/月）、每周 3 节（$300/月）、一对一（$80/节）。年付有 8 折优惠。",
+          followups: ["哪个套餐适合我家孩子？"], confidence: 0.9 },
+        { tag: "discount", match: /优惠|折扣|便宜|discount/,
+          text: "优惠主要有 3 类：早鸟续费 9 折、年付 8 折、推荐家长各得 1 个月免费课。试课家庭报名首月也有 95 折。",
+          followups: ["怎么推荐家长？"], confidence: 0.85 },
+        { tag: "refund",  match: /退款|退课|不上了|refund/,
+          text: "7 天内无理由全额退款。超过 7 天按未上课时退款，需家长向校长正式申请。请联系您的招生老师协助处理。",
+          followups: ["退款多久能到账？"], confidence: 0.85 },
+        { tag: "teacher", match: /老师|教师|师资|teacher/,
+          text: "我们的老师都有计算机相关背景 + 教学认证，平均教龄 5+ 年。包括硅谷工程师、CMU / Stanford 毕业生。可在校区页面查看具体老师资料。",
+          followups: ["可以指定老师吗？"], confidence: 0.9 },
+        { tag: "age",     match: /年龄|多大|几岁|age/,
+          text: "我们的课程覆盖 6-18 岁：Scratch 启蒙（6-9 岁）、Python 入门（9-12 岁）、AI 项目营（10-15 岁）、竞赛进阶（12-18 岁）。",
+          followups: ["孩子还没接触过编程合适吗？"], confidence: 0.85 },
+        { tag: "schedule", match: /(课表|时间表|什么时候上|上课.*时间|schedule)/,
+          text: stuName ? (stuName + " 的课表可以在「家长账户 · 课表」里查看，已经为您筛选了她的所有课程。") : "您可以登录「家长账户 · 课表」查看孩子本周和下周的课程，包含时间、教师、教室。",
+          followups: ["这周有变动吗？"], confidence: 0.85 },
+        { tag: "attendance", match: /出勤|考勤|attendance/,
+          text: stuName ? (stuName + " 的出勤记录在「家长账户 · 学习记录」里。如果近期有缺勤，运营老师会主动联系您。") : "出勤记录在家长账户的学习记录页面查看。",
+          followups: ["缺勤会有补课吗？"], confidence: 0.85 },
+        { tag: "report",  match: /报告|总结|月报|学习情况|进度/,
+          text: stuName ? (stuName + " 每月会收到一份学习总结邮件，包含上课次数、出勤、本月进步点和老师建议。") : "孩子每月会收到一份学习总结邮件，包含上课次数、出勤、进步点和老师建议。",
+          followups: ["可以下载详细报告吗？"], confidence: 0.85 },
+        { tag: "addchild", match: /添加.*孩子|加孩子|二宝|另一个孩子/,
+          text: "「家长账户 · 概览 · 家庭成员 · +」可以添加另一个孩子。新加的孩子建议先安排一次试课评估。",
+          followups: ["二宝有什么优惠？"], confidence: 0.85 },
+        { tag: "campus",  match: /(校区|地址|位置|哪里|地点|address)/,
+          text: "我们在加州（尔湾 / 阿凯迪亚 / 钻石吧 / 圣地亚哥 / 好莱坞）、华州（雷德蒙德 / 博塞尔 / 法克托里亚）、印第安纳、加拿大渥太华都有校区。具体地址在校区页面。",
+          followups: ["最近的校区在哪？"], confidence: 0.85 },
+        { tag: "contact", match: /联系|电话|微信|找谁|加微信/,
+          text: "您可以微信搜索 MindDo-Service，或拨打 +1 (415) 555-0100，邮箱 support@minddo.com。工作时间内一般 5 分钟内回复。",
+          followups: [], confidence: 0.95 }
       ];
-      for (var i = 0; i < faqs.length; i++) {
-        if (faqs[i].match.test(q)) return { text: faqs[i].text, confidence: 0.85 };
+      for (var i = 0; i < FAQ.length; i++) {
+        if (FAQ[i].match.test(q)) {
+          return {
+            text: FAQ[i].text,
+            suggestions: { tag: FAQ[i].tag, followups: FAQ[i].followups || [] },
+            confidence: FAQ[i].confidence
+          };
+        }
       }
-      return { text: "这个问题我可能不太了解，建议直接联系校区运营老师（电话见页面底部）会更准确。", confidence: 0.4 };
+      // Page-context fallback — if the user is on a specific page and asks
+      // something vague, hint at what that page can do.
+      var pageHints = {
+        "schedule": "您当前在课表页，可以直接点击某节课查看详情，或点「申请改期」调整时间。",
+        "payment":  "您当前在付款页，可以查看历史订单、当前订阅状态。",
+        "trial":    "您当前在试课预约页，可以选择时段提交报名。",
+        "profile":  "您当前在个人资料页，修改信息后记得点保存。"
+      };
+      if (page && pageHints[page]) {
+        return { text: "这个问题我不太确定具体答案，不过 — " + pageHints[page] + " 如果还需要帮助，建议切到「📞 联系我们」直接微信或电话联系。", confidence: 0.45 };
+      }
+      return {
+        text: "这个问题我可能没法准确回答，建议切到「📞 联系我们」直接微信或电话联系运营老师，他们可以给您更详细的解答。",
+        confidence: 0.35
+      };
     },
 
     // 16. 学习路径推荐
