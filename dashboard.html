@@ -1304,6 +1304,46 @@
     .sd-list-item .head .when { color: var(--muted); font-size: 11px; }
     .sd-list-item .body { color: var(--muted); line-height: 1.55; }
 
+    /* Drawer · Assignments tab — status pill colors */
+    .sd-assign-pill {
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em;
+      padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+      background: rgba(122,48,16,0.06); color: var(--clay); border: 1px solid var(--line);
+    }
+    .sd-assign-pill.assigned   { background: rgba(122,48,16,0.06); color: var(--muted); }
+    .sd-assign-pill.progress   { background: rgba(245,158,11,0.18); color: var(--gold-deep); border-color: rgba(245,158,11,0.36); }
+    .sd-assign-pill.submitted  { background: rgba(245,158,11,0.18); color: #92400e; border-color: rgba(245,158,11,0.32); }
+    .sd-assign-pill.graded     { background: rgba(110,143,87,0.18); color: #3f5d26; border-color: rgba(110,143,87,0.36); }
+
+    /* Drawer · Growth tab — section headers + monthly score bars */
+    .sd-section { margin-bottom: 16px; }
+    .sd-section:last-child { margin-bottom: 0; }
+    .sd-section h4 {
+      margin: 0 0 8px; font-size: 11.5px; font-weight: 800;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+    }
+    .sd-section .sd-list-item { margin-bottom: 6px; }
+    .sd-growth-row {
+      display: grid; grid-template-columns: 70px 1fr 40px;
+      gap: 10px; align-items: center;
+      padding: 5px 0;
+      font-size: 12.5px;
+    }
+    .sd-growth-row .gr-month { font-weight: 700; color: var(--clay); font-variant-numeric: tabular-nums; }
+    .sd-growth-row .gr-bar {
+      position: relative; height: 8px;
+      background: rgba(122,48,16,0.06); border-radius: 999px; overflow: hidden;
+    }
+    .sd-growth-row .gr-bar .gr-fill {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      background: linear-gradient(90deg, #fde68a, var(--gold-deep));
+      border-radius: 999px;
+    }
+    .sd-growth-row .gr-score {
+      text-align: right; font-weight: 800; color: var(--clay);
+      font-variant-numeric: tabular-nums; font-size: 12.5px;
+    }
+
     /* Make student-name spans clickable wherever the drawer is wired. */
     [data-student-drawer] { cursor: pointer; }
     [data-student-drawer]:hover { text-decoration: underline; }
@@ -5418,10 +5458,13 @@
       <div class="sd-tabs" id="sdTabs">
         <button type="button" data-sd-tab="overview" class="active" data-i18n="sdTabOverview"></button>
         <button type="button" data-sd-tab="attendance" data-i18n="sdTabAttendance"></button>
+        <button type="button" data-sd-tab="assignments" data-i18n="sdTabAssignments"></button>
+        <button type="button" data-sd-tab="growth" data-i18n="sdTabGrowth"></button>
         <button type="button" data-sd-tab="payments" data-i18n="sdTabPayments"></button>
         <button type="button" data-sd-tab="feedback" data-i18n="sdTabFeedback"></button>
         <button type="button" data-sd-tab="requests" data-i18n="sdTabRequests"></button>
         <button type="button" data-sd-tab="portfolio" data-i18n="sdTabPortfolio"></button>
+        <button type="button" data-sd-tab="audit" data-i18n="sdTabAudit"></button>
       </div>
       <div class="sd-body" id="sdBody"></div>
     </div>
@@ -6082,6 +6125,23 @@
           sdTabFeedback: "反馈",
           sdTabRequests: "请求",
           sdTabPortfolio: "作品",
+          sdTabAssignments: "作业",
+          sdTabGrowth: "成长",
+          sdTabAudit: "变更历史",
+          sdEmptyAssignments: "暂无作业记录。",
+          sdEmptyGrowth: "暂无成长 / 评估数据。",
+          sdEmptyAudit: "暂无变更记录。",
+          sdAssignStatusAssigned: "待开始",
+          sdAssignStatusProgress: "进行中",
+          sdAssignStatusSubmitted: "已提交",
+          sdAssignStatusGraded: "已批改",
+          sdAssignDue: "截止",
+          sdAssignGrade: "评分",
+          sdGrowthTrialEvalHead: "试课学术评估",
+          sdGrowthTrialFbHead: "试课市场反馈",
+          sdGrowthRecordsHead: "月度技能评分",
+          sdGrowthEvalBy: "评估人：",
+          sdAuditBy: "操作人：",
           sdQuickLevel: "等级",
           sdQuickPlan: "套餐",
           sdQuickParent: "家长",
@@ -7288,6 +7348,23 @@
           sdTabFeedback: "Feedback",
           sdTabRequests: "Requests",
           sdTabPortfolio: "Portfolio",
+          sdTabAssignments: "Homework",
+          sdTabGrowth: "Growth",
+          sdTabAudit: "History",
+          sdEmptyAssignments: "No assignments yet.",
+          sdEmptyGrowth: "No growth / evaluation data yet.",
+          sdEmptyAudit: "No change history.",
+          sdAssignStatusAssigned: "Assigned",
+          sdAssignStatusProgress: "In Progress",
+          sdAssignStatusSubmitted: "Submitted",
+          sdAssignStatusGraded: "Graded",
+          sdAssignDue: "Due",
+          sdAssignGrade: "Grade",
+          sdGrowthTrialEvalHead: "Trial Evaluation (Academic)",
+          sdGrowthTrialFbHead: "Trial Feedback (Marketing)",
+          sdGrowthRecordsHead: "Monthly Skill Score",
+          sdGrowthEvalBy: "By:",
+          sdAuditBy: "By:",
           sdQuickLevel: "Level",
           sdQuickPlan: "Plan",
           sdQuickParent: "Parent",
@@ -17002,6 +17079,42 @@
           var attSummary = (f.getStudentAttendanceSummary && f.getStudentAttendanceSummary(sid, 30)) || null;
           var attAll = (f.getStudentAttendanceSummary && f.getStudentAttendanceSummary(sid)) || null;
           var level = (f.getStudentLevel && f.getStudentLevel(sid)) || "";
+          // Assignments — filter minddo_assignments by studentId (loose
+          // email-match fallback for legacy rows).
+          var assignments = (f.readJson(f.keys.assignments || "minddo_assignments") || [])
+            .filter(function (r) { return r && (r.studentId === sid || (stu && r.email && stu.email && r.email.toLowerCase() === stu.email.toLowerCase())); })
+            .sort(function (a, b) { return new Date(b.dueDate || b.createdAt || 0) - new Date(a.dueDate || a.createdAt || 0); });
+          // Growth records — monthly skill scores
+          var growth = (f.readJson(f.keys.growthRecords || "minddo_growth_records") || [])
+            .filter(function (r) { return r && r.studentId === sid; })
+            .sort(function (a, b) { return String(b.month || "").localeCompare(String(a.month || "")); });
+          // Trial evaluations (academic side) — find by email or studentId
+          var trialEvals = (f.readJson(f.keys.evaluations || "minddo_trial_evaluations") || [])
+            .filter(function (r) {
+              if (!r) return false;
+              if (r.studentId === sid) return true;
+              return stu && r.email && stu.email && r.email.toLowerCase() === stu.email.toLowerCase();
+            })
+            .sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
+          // Trial marketing feedback — keyed by lead.createdAt; cross-ref via leads
+          var trialFb = (function () {
+            try {
+              var map = JSON.parse(localStorage.getItem("minddo_trial_feedback") || "{}");
+              var leadsArr = f.readJson(f.keys.leads) || [];
+              return leadsArr.filter(function (l) {
+                if (!l || !map[l.createdAt]) return false;
+                return l.studentId === sid || (stu && l.email && stu.email && l.email.toLowerCase() === stu.email.toLowerCase());
+              }).map(function (l) {
+                return Object.assign({}, map[l.createdAt], {
+                  lead: l, trialDate: l.trialDate, trialTime: l.trialTime
+                });
+              });
+            } catch (_) { return []; }
+          })();
+          // Audit entries targeting this student
+          var auditRows = (f.readJson(f.keys.auditLog) || [])
+            .filter(function (r) { return r && r.target === sid; })
+            .sort(function (a, b) { return new Date(b.at || 0) - new Date(a.at || 0); });
           return {
             sid: sid,
             student: stu,
@@ -17013,7 +17126,12 @@
             requests: requests,
             portfolio: portfolio,
             attendance30: attSummary,
-            attendanceAll: attAll
+            attendanceAll: attAll,
+            assignments: assignments,
+            growth: growth,
+            trialEvals: trialEvals,
+            trialFb: trialFb,
+            audit: auditRows
           };
         }
 
@@ -17235,13 +17353,128 @@
           }).join("") + "</div>";
         }
 
+        // Assignments tab — homework lifecycle by status pill.
+        function tabAssignments(bundle) {
+          var t = dictNow();
+          var rows = bundle.assignments || [];
+          if (!rows.length) return "<div class='sd-empty'>" + escHTML(t.sdEmptyAssignments) + "</div>";
+          var statusLabel = {
+            assigned: t.sdAssignStatusAssigned,
+            in_progress: t.sdAssignStatusProgress,
+            submitted: t.sdAssignStatusSubmitted,
+            graded: t.sdAssignStatusGraded
+          };
+          var statusCls = {
+            assigned: "assigned", in_progress: "progress",
+            submitted: "submitted", graded: "graded"
+          };
+          return "<div class='sd-list'>" + rows.map(function (r) {
+            var st = r.status || "assigned";
+            return "<div class='sd-list-item'>"
+              + "<div class='head'><strong>" + escHTML(r.title || r.id || "—") + "</strong>"
+              +   "<span class='sd-assign-pill " + (statusCls[st] || "") + "'>" + escHTML(statusLabel[st] || st) + "</span>"
+              + "</div>"
+              + "<div class='body'>"
+              +   (r.description ? escHTML(r.description) + "<br>" : "")
+              +   (r.dueDate ? "<span class='muted'>" + escHTML(t.sdAssignDue) + "：" + escHTML(r.dueDate) + "</span>" : "")
+              +   (r.grade ? "<br><span class='muted'>" + escHTML(t.sdAssignGrade) + "：" + escHTML(String(r.grade)) + "</span>" : "")
+              +   (r.feedback ? "<br><em>" + escHTML(r.feedback) + "</em>" : "")
+              + "</div>"
+              + "</div>";
+          }).join("") + "</div>";
+        }
+
+        // Growth + Eval tab — combines growth_records (monthly skill
+        // scores), trial_evaluations (academic placement), and trial
+        // feedback (marketer-side intent).
+        function tabGrowth(bundle) {
+          var t = dictNow();
+          var g = bundle.growth || [];
+          var ev = bundle.trialEvals || [];
+          var fb = bundle.trialFb || [];
+          if (!g.length && !ev.length && !fb.length) {
+            return "<div class='sd-empty'>" + escHTML(t.sdEmptyGrowth) + "</div>";
+          }
+          var html = "";
+          // Trial evaluations section
+          if (ev.length) {
+            html += "<div class='sd-section'><h4>" + escHTML(t.sdGrowthTrialEvalHead) + "</h4>"
+              + ev.map(function (r) {
+                  return "<div class='sd-list-item'>"
+                    + "<div class='head'><strong>" + escHTML(r.level || "—") + "</strong>"
+                    +   "<span class='when'>" + escHTML(fmtDate(r.createdAt)) + "</span></div>"
+                    + "<div class='body'>"
+                    +   (r.evaluator ? "<span class='muted'>" + escHTML(t.sdGrowthEvalBy) + " " + escHTML(r.evaluator) + "</span><br>" : "")
+                    +   escHTML(r.notes || "")
+                    + "</div></div>";
+                }).join("")
+              + "</div>";
+          }
+          // Marketing trial feedback
+          if (fb.length) {
+            html += "<div class='sd-section'><h4>" + escHTML(t.sdGrowthTrialFbHead) + "</h4>"
+              + fb.map(function (r) {
+                  var stars = "★".repeat(Number(r.intent) || 0) + "☆".repeat(5 - (Number(r.intent) || 0));
+                  var readyLabel = r.ready === "yes" ? t.trialFbReadyYes
+                    : r.ready === "maybe" ? t.trialFbReadyMaybe
+                    : r.ready === "no" ? t.trialFbReadyNo : "—";
+                  return "<div class='sd-list-item'>"
+                    + "<div class='head'><strong>" + stars + "</strong>"
+                    +   "<span class='when'>" + escHTML(r.trialDate || fmtDate(r.updatedAt)) + "</span></div>"
+                    + "<div class='body'>"
+                    +   "<span class='muted'>" + escHTML(readyLabel) + "</span>"
+                    +   (r.note ? "<br>" + escHTML(r.note) : "")
+                    + "</div></div>";
+                }).join("")
+              + "</div>";
+          }
+          // Growth records (chart-style bar list)
+          if (g.length) {
+            html += "<div class='sd-section'><h4>" + escHTML(t.sdGrowthRecordsHead) + "</h4>"
+              + g.slice(0, 12).map(function (r) {
+                  var score = Number(r.score) || 0;
+                  var pct = Math.min(100, Math.max(0, score));
+                  return "<div class='sd-growth-row'>"
+                    + "<span class='gr-month'>" + escHTML(r.month || "—") + "</span>"
+                    + "<div class='gr-bar'><div class='gr-fill' style='width:" + pct + "%;'></div></div>"
+                    + "<span class='gr-score'>" + score + "</span>"
+                    + "</div>";
+                }).join("")
+              + "</div>";
+          }
+          return html;
+        }
+
+        // Audit tab — entries from minddo_audit_log where target = sid.
+        function tabAudit(bundle) {
+          var t = dictNow();
+          var rows = bundle.audit || [];
+          if (!rows.length) return "<div class='sd-empty'>" + escHTML(t.sdEmptyAudit) + "</div>";
+          var flow = window.MindDoFlow;
+          var staff = (flow && flow.readJson(flow.keys.staff)) || [];
+          var staffById = {};
+          staff.forEach(function (s) { if (s && s.id) staffById[s.id] = s; });
+          return "<div class='sd-list'>" + rows.slice(0, 60).map(function (r) {
+            var who = (staffById[r.actor] && staffById[r.actor].name) || r.actor || "—";
+            return "<div class='sd-list-item'>"
+              + "<div class='head'><strong style='font-family:ui-monospace,monospace;font-size:11.5px;'>" + escHTML(r.kind || "—") + "</strong>"
+              +   "<span class='when'>" + escHTML(fmtDate(r.at)) + "</span></div>"
+              + "<div class='body'>" + escHTML(r.summary || "—")
+              +   "<br><span class='muted'>" + escHTML(t.sdAuditBy) + " " + escHTML(who) + "</span>"
+              + "</div></div>";
+          }).join("") + "</div>";
+        }
+
         var TAB_RENDERERS = {
           overview: tabOverview,
           attendance: tabAttendance,
+          assignments: tabAssignments,
+          growth: tabGrowth,
           payments: tabPayments,
           feedback: tabFeedback,
           requests: tabRequests,
-          portfolio: tabPortfolio
+          portfolio: tabPortfolio,
+          audit: tabAudit
         };
 
         function renderTab() {
