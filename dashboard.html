@@ -3747,8 +3747,9 @@
           <article class="panel">
             <div class="panel-head-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
               <h2 data-i18n="opsShiftHead" style="margin:0;"></h2>
-              <span class="muted" style="font-size:12px;color:var(--muted);" data-i18n="opsShiftHint"></span>
+              <button type="button" id="opsShiftAiBtn" class="ai-btn"><span class="ai-spark">✨</span> 本周摘要</button>
             </div>
+            <div class="ai-output" id="opsShiftAiOutput" hidden style="margin-bottom:12px;"></div>
             <div id="opsShiftList"></div>
             <div class="ops-shift-add" id="opsShiftAdd" hidden>
               <textarea id="opsShiftInput" rows="2" placeholder=""></textarea>
@@ -4079,9 +4080,11 @@
                 <p data-i18n="zoneAcadClassesSub"></p>
               </div>
               <div class="dash-zone-actions">
+                <button type="button" class="ai-btn" id="acadClassAiBtn"><span class="ai-spark">✨</span> AI 调班建议</button>
                 <a class="bm-edit-btn" href="course-offerings.html" data-i18n="acadClassEditLink"></a>
               </div>
             </div>
+            <div class="ai-output" id="acadClassAiOutput" hidden style="margin:0 0 14px;"></div>
             <section class="grid" id="acadClassKpiMetrics"></section>
           </section>
 
@@ -5476,7 +5479,11 @@
       </div>
       <div class="field">
         <span data-i18n="mktEvalFieldNotes"></span>
-        <textarea id="mktEvalNotes"></textarea>
+        <textarea id="mktEvalNotes" placeholder="老师课堂观察，例如：孩子专注度好，逻辑清晰，需要引导后能完成项目"></textarea>
+      </div>
+      <div class="field">
+        <button type="button" id="mktEvalAiBtn" class="ai-btn"><span class="ai-spark">✨</span> AI 根据观察自动起草评估</button>
+        <div class="ai-output" id="mktEvalAiOutput" hidden></div>
       </div>
       <p class="msg" id="mktEvalMsg" role="status" aria-live="polite"></p>
       <div class="actions">
@@ -9617,6 +9624,29 @@
       // teacher is double-booked (two offerings overlap in time on the
       // same day). Best-effort overlap detection uses the timeSlot
       // strings (e.g. "16:00 – 17:00") parsed into [start, end] HH:MM.
+      // Class capacity rebalance suggestions (AI on academic > classes)
+      (function () {
+        var btn = document.getElementById("acadClassAiBtn");
+        var out = document.getElementById("acadClassAiOutput");
+        if (!btn || !out) return;
+        btn.addEventListener("click", function () {
+          var flow = window.MindDoFlow;
+          if (!flow) return;
+          var offerings = (flow.getClassOfferings && flow.getClassOfferings()) || [];
+          var campus = (typeof moActiveCampus === "function") ? moActiveCampus() : null;
+          if (campus) offerings = offerings.filter(function (o) { return !o.campus || o.campus === campus; });
+          btn.classList.add("loading");
+          btn.disabled = true;
+          flow.aiSuggest({ kind: "class-rebalance", context: { offerings: offerings } }).then(function (r) {
+            btn.classList.remove("loading");
+            btn.disabled = false;
+            out.hidden = false;
+            out.innerHTML = "<div class='ai-head'>✨ AI 调度分析 <span class='ai-conf'>" + offerings.length + " 个班次</span></div>"
+              + "<div class='ai-body'>" + escHTML(r.text) + "</div>";
+          });
+        });
+      })();
+
       // Channel AI insight button — gathers current channel data and
       // asks aiSuggest to generate a narrative analysis.
       (function () {
@@ -11606,21 +11636,39 @@
           if (!a || a.classDate !== yesterdayStr) return false;
           return a.status === "absent" || a.status === "noshow";
         });
+        // Consecutive-absence count per student (last 7 days)
+        var absCount = {};
+        var sevenAgo = new Date(today0); sevenAgo.setDate(today0.getDate() - 7);
+        attendance.forEach(function (a) {
+          if (!a || (a.status !== "absent" && a.status !== "noshow")) return;
+          var d = new Date(a.classDate + "T00:00:00");
+          if (!isFinite(d.getTime()) || d < sevenAgo) return;
+          absCount[a.studentId] = (absCount[a.studentId] || 0) + 1;
+        });
         yAbs.forEach(function (a) {
           var dkey = "absent_" + a.studentId + "_" + todayStr;
           if (actions[dkey]) return;
           var stu = (flow.findStudentById && flow.findStudentById(a.studentId)) || {};
           var name = stu.name || a.studentId || "—";
-          var body = (t.opsDraftAbsentBodyFmt || "")
-            .replace("{studentName}", name)
-            .replace("{date}", yesterdayStr);
+          // Tone-aware body: severity escalates with consecutive count
+          var consecutive = absCount[a.studentId] || 1;
+          var body;
+          if (consecutive >= 3) {
+            body = name + " 家长好，注意到孩子最近连续 " + consecutive + " 次缺课了。想了解一下是健康原因还是时间安排上的变动？如果需要，我们可以协助调班或安排补课。";
+          } else if (consecutive >= 2) {
+            body = name + " 家长好，孩子最近 " + consecutive + " 次缺勤，希望一切顺利。如果近期方便，能否安排一次补课？让孩子不掉队。";
+          } else {
+            body = (t.opsDraftAbsentBodyFmt || "")
+              .replace("{studentName}", name)
+              .replace("{date}", yesterdayStr);
+          }
           drafts.push({
             key: dkey, kind: "absent",
             studentName: name,
             email: stu.email || "",
             parentName: stu.parentName || "",
             phone: stu.phone || "",
-            meta: (stu.email || stu.phone || "—") + " · " + yesterdayStr,
+            meta: (stu.email || stu.phone || "—") + " · " + yesterdayStr + (consecutive > 1 ? " · 连续 " + consecutive + " 次" : ""),
             body: body
           });
         });
@@ -11743,6 +11791,31 @@
           if (inputEl) inputEl.placeholder = t.opsShiftPlaceholder || "";
         }
       }
+
+      // AI shift summary button — once per session wiring.
+      (function () {
+        var aiBtn = document.getElementById("opsShiftAiBtn");
+        var aiOut = document.getElementById("opsShiftAiOutput");
+        if (!aiBtn || !aiOut) return;
+        aiBtn.addEventListener("click", function () {
+          var flow = window.MindDoFlow;
+          if (!flow || !flow.aiSuggest) return;
+          var campus = (typeof moActiveCampus === "function") ? moActiveCampus() : null;
+          var notes = (function () {
+            try { return JSON.parse(localStorage.getItem("minddo_shift_notes") || "[]"); }
+            catch (_) { return []; }
+          })().filter(function (n) { return !campus || !n.campus || n.campus === campus; });
+          aiBtn.classList.add("loading");
+          aiBtn.disabled = true;
+          flow.aiSuggest({ kind: "shift-summary", context: { notes: notes } }).then(function (r) {
+            aiBtn.classList.remove("loading");
+            aiBtn.disabled = false;
+            aiOut.hidden = false;
+            aiOut.innerHTML = "<div class='ai-head'>✨ AI 摘要 <span class='ai-conf'>" + notes.length + " 条记录</span></div>"
+              + "<div class='ai-body'>" + escHTML(r.text) + "</div>";
+          });
+        });
+      })();
 
       // Append-a-note handler.
       document.addEventListener("click", function (e) {
@@ -16051,6 +16124,45 @@
             }
             closeEvalModal();
             if (typeof render === "function") render();
+          });
+        }
+
+        // ============ AI: trial eval draft ============
+        var aiBtn = document.getElementById("mktEvalAiBtn");
+        var aiOut = document.getElementById("mktEvalAiOutput");
+        var aiText = "";
+        if (aiBtn && aiOut) {
+          aiBtn.addEventListener("click", function () {
+            var notesEl = document.getElementById("mktEvalNotes");
+            var observations = notesEl ? notesEl.value.trim() : "";
+            aiBtn.classList.add("loading");
+            aiBtn.disabled = true;
+            window.MindDoFlow.aiSuggest({ kind: "trial-eval-draft", context: { observations: observations } }).then(function (r) {
+              aiBtn.classList.remove("loading");
+              aiBtn.disabled = false;
+              aiOut.hidden = false;
+              aiText = r.text || "";
+              var lvl = r.suggestions && r.suggestions.level;
+              aiOut.innerHTML = "<div class='ai-head'>✨ AI 评估草稿 <span class='ai-conf'>建议等级: " + escHTML(lvl || "—") + "</span></div>"
+                + "<div class='ai-body'>" + escHTML(aiText) + "</div>"
+                + "<div class='ai-actions'>"
+                +   "<button type='button' class='primary' data-ai-apply>应用到评估表</button>"
+                +   "<button type='button' data-ai-regen>重新生成</button>"
+                + "</div>";
+            });
+          });
+          aiOut.addEventListener("click", function (e) {
+            if (e.target.closest("[data-ai-apply]")) {
+              var notesEl = document.getElementById("mktEvalNotes");
+              var levelEl = document.getElementById("mktEvalLevel");
+              if (notesEl) notesEl.value = aiText;
+              if (levelEl && /推荐 Level：(\w[\w\s]*)/i.test(aiText)) {
+                var m = aiText.match(/推荐 Level：(\w[\w\s]*)/i);
+                if (m) levelEl.value = m[1].trim();
+              }
+            } else if (e.target.closest("[data-ai-regen]")) {
+              aiBtn.click();
+            }
           });
         }
       })();
