@@ -3407,10 +3407,6 @@
             <span class="ms-icon" aria-hidden="true">✅</span><span class="ms-label" data-i18n="acadSubtabAttendance"></span>
           </button>
         </div>
-        <button type="button" class="sidebar-item" data-tab="teaching" data-perm-required="academic.view" role="tab">
-          <span class="si-icon" aria-hidden="true">📊</span><span class="si-label" data-i18n="navTeaching"></span>
-          <span class="si-arrow" aria-hidden="true">▸</span>
-        </button>
         <button type="button" class="sidebar-item" data-tab="finance" data-perm-required="finance.view" role="tab">
           <span class="si-icon" aria-hidden="true">💰</span><span class="si-label" data-i18n="navFinance"></span>
           <span class="si-arrow" aria-hidden="true">▸</span>
@@ -4210,30 +4206,6 @@
       </section>
 
       <!-- ========== Teaching ========== -->
-      <section class="dash-panel" data-tab-panel="teaching" role="tabpanel" hidden>
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneTeachKpiTitle"></h3>
-              <p data-i18n="zoneTeachKpiSub"></p>
-            </div>
-          </div>
-          <section class="grid" id="teachingMetrics"></section>
-        </section>
-
-        <section class="dash-zone">
-          <div class="dash-zone-head">
-            <div class="dash-zone-text">
-              <h3 data-i18n="zoneTeachLevelTitle"></h3>
-              <p data-i18n="zoneTeachLevelSub"></p>
-            </div>
-          </div>
-          <article class="panel">
-            <h2 data-i18n="levelDist"></h2>
-            <ul class="kv-list" id="levelList"></ul>
-          </article>
-        </section>
-      </section>
 
       <!-- ========== Finance — sub-tabs (orders / approvals / billing / payroll / contracts) ========== -->
       <section class="dash-panel" data-tab-panel="finance" role="tabpanel" hidden>
@@ -6725,7 +6697,6 @@
           // ---- Sidebar nav labels (school-CRM style) ----
           navMarketing: "市场中心",
           navAcademic: "教务中心",
-          navTeaching: "教学中心",
           navHomeSchool: "家校服务",
           navFinance: "财务中心",
           navData: "数据中心",
@@ -6760,10 +6731,6 @@
           zoneEnrollKpiSub: "试课线索、注册量、转化率与近期趋势。",
           zoneEnrollChannelTitle: "获客渠道",
           zoneEnrollChannelSub: "试课报名来源构成。",
-          zoneTeachKpiTitle: "教学指标",
-          zoneTeachKpiSub: "评估完成率与学员等级分布。",
-          zoneTeachLevelTitle: "等级分布",
-          zoneTeachLevelSub: "按评估等级分组的学员数量。",
           zoneFinanceKpiTitle: "财务指标",
           zoneFinanceKpiSub: "收入、付费转化与人均付费。",
           zoneFinancePaymentsTitle: "付款明细",
@@ -7927,7 +7894,6 @@
           dataMetricFunnelDrop: "Overall conversion",
           navMarketing: "Marketing",
           navAcademic: "Academic",
-          navTeaching: "Teaching",
           navHomeSchool: "Home-School",
           navFinance: "Finance",
           navData: "Data Center",
@@ -7962,10 +7928,6 @@
           zoneEnrollKpiSub: "Trial leads, registrations, and conversion trends.",
           zoneEnrollChannelTitle: "Lead Channels",
           zoneEnrollChannelSub: "Where trial registrations come from.",
-          zoneTeachKpiTitle: "Teaching Metrics",
-          zoneTeachKpiSub: "Assessment completion and student level mix.",
-          zoneTeachLevelTitle: "Level Distribution",
-          zoneTeachLevelSub: "Students grouped by assessed level.",
           zoneFinanceKpiTitle: "Finance Metrics",
           zoneFinanceKpiSub: "Revenue, paid conversion, and ARPU.",
           zoneFinancePaymentsTitle: "Payment Records",
@@ -8295,6 +8257,7 @@
       }
 
       function renderKvList(el, items, noDataText) {
+        if (!el) return;
         if (!items.length) {
           el.innerHTML = "<li><span>" + noDataText + "</span><span class='badge'>0</span></li>";
           return;
