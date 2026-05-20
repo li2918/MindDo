@@ -7364,5 +7364,236 @@
   <script src="assets/minddo-nav.js" defer></script>
   <script src="assets/consent.js" defer></script>
   <script src="assets/customer-service.js" defer></script>
+
+  <!-- =================================================================
+       Parent-side AI chatbot widget — floating purple ✨ button bottom-
+       right opens a small chat window. Hits flow.aiSuggest("parent-
+       chatbot") for canned-but-fuzzy answers to common parent questions
+       (hours / trial / renewal / leave / pricing / refund / teachers).
+       ================================================================= -->
+  <style>
+    .ai-chat-fab {
+      position: fixed; right: 22px; bottom: 22px; z-index: 1450;
+      width: 56px; height: 56px; border-radius: 999px;
+      border: none; cursor: pointer;
+      background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+      color: #fff; font-size: 24px;
+      box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: 0.18s;
+    }
+    .ai-chat-fab:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(124, 58, 237, 0.45); }
+    .ai-chat-panel {
+      position: fixed; right: 22px; bottom: 92px; z-index: 1449;
+      width: 340px; max-height: 520px; max-width: calc(100vw - 32px);
+      background: #fff; border: 1px solid #e4ddd4;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(13, 40, 65, 0.25);
+      display: none; flex-direction: column;
+      overflow: hidden;
+    }
+    .ai-chat-panel.open { display: flex; }
+    .ai-chat-head {
+      padding: 14px 16px;
+      background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+      color: #fff;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .ai-chat-head .title { font-weight: 800; font-size: 14px; }
+    .ai-chat-head .sub { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+    .ai-chat-head button {
+      all: unset; cursor: pointer; padding: 4px 8px;
+      color: #fff; font-size: 18px; line-height: 1;
+    }
+    .ai-chat-body {
+      flex: 1 1 auto; min-height: 0; overflow-y: auto;
+      padding: 12px 14px;
+      background: #fef8ee;
+      font-size: 13px; color: #1f2937;
+      line-height: 1.55;
+    }
+    .ai-chat-msg {
+      padding: 8px 12px; border-radius: 12px;
+      max-width: 85%; margin-bottom: 8px;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .ai-chat-msg.user {
+      margin-left: auto;
+      background: #7c3aed; color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .ai-chat-msg.bot {
+      background: #fff; border: 1px solid #e4ddd4;
+      border-bottom-left-radius: 4px;
+    }
+    .ai-chat-msg.bot.welcome { background: rgba(124, 58, 237, 0.06); border-color: rgba(124, 58, 237, 0.2); }
+    .ai-chat-typing {
+      padding: 8px 12px; border-radius: 12px;
+      max-width: 85%; margin-bottom: 8px;
+      background: #fff; border: 1px solid #e4ddd4;
+      color: #6b7280; font-style: italic; font-size: 12px;
+    }
+    .ai-chat-input-row {
+      display: flex; gap: 6px;
+      padding: 10px 12px;
+      border-top: 1px solid #e4ddd4;
+      background: #fff;
+    }
+    .ai-chat-input-row input {
+      flex: 1; padding: 8px 12px;
+      border: 1px solid #e4ddd4; border-radius: 999px;
+      font: inherit; font-size: 13px;
+      outline: none;
+    }
+    .ai-chat-input-row input:focus { border-color: #7c3aed; box-shadow: 0 0 0 2px rgba(124,58,237,0.18); }
+    .ai-chat-input-row button {
+      all: unset; cursor: pointer;
+      padding: 8px 14px; border-radius: 999px;
+      background: #7c3aed; color: #fff;
+      font-size: 13px; font-weight: 700;
+    }
+    .ai-chat-quick {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      padding: 8px 12px 0;
+      border-top: 1px dashed #e4ddd4;
+      background: #fff;
+    }
+    .ai-chat-quick button {
+      all: unset; cursor: pointer;
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 11px; color: #7c3aed;
+      background: rgba(124, 58, 237, 0.08);
+      border: 1px solid rgba(124, 58, 237, 0.24);
+    }
+    .ai-chat-quick button:hover { background: rgba(124, 58, 237, 0.16); }
+  </style>
+  <button type="button" class="ai-chat-fab" id="aiChatFab" aria-label="AI 助手" title="AI 助手">✨</button>
+  <div class="ai-chat-panel" id="aiChatPanel" role="dialog">
+    <div class="ai-chat-head">
+      <div>
+        <div class="title">✨ MindDo AI 助手</div>
+        <div class="sub">常见问题秒回，复杂咨询请直接联系校区</div>
+      </div>
+      <button type="button" id="aiChatCloseBtn" aria-label="关闭">×</button>
+    </div>
+    <div class="ai-chat-body" id="aiChatBody">
+      <div class="ai-chat-msg bot welcome">您好！我是 MindDo AI 助手，可以回答课程、试课、续费等常见问题。试试问我：<br/>「试课怎么预约？」「营业时间？」「怎么续费？」</div>
+    </div>
+    <div class="ai-chat-quick">
+      <button type="button" data-ai-q="试课怎么预约？">试课预约</button>
+      <button type="button" data-ai-q="营业时间是什么时候？">营业时间</button>
+      <button type="button" data-ai-q="续费流程？">续费</button>
+      <button type="button" data-ai-q="老师怎么样？">师资</button>
+      <button type="button" data-ai-q="价格怎么算？">价格</button>
+    </div>
+    <div class="ai-chat-input-row">
+      <input type="text" id="aiChatInput" placeholder="请输入问题..." autocomplete="off" />
+      <button type="button" id="aiChatSendBtn">发送</button>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var fab = document.getElementById("aiChatFab");
+      var panel = document.getElementById("aiChatPanel");
+      var closeBtn = document.getElementById("aiChatCloseBtn");
+      var body = document.getElementById("aiChatBody");
+      var input = document.getElementById("aiChatInput");
+      var sendBtn = document.getElementById("aiChatSendBtn");
+      if (!fab || !panel) return;
+
+      function open() {
+        panel.classList.add("open");
+        setTimeout(function () { if (input) input.focus(); }, 60);
+      }
+      function close() { panel.classList.remove("open"); }
+      fab.addEventListener("click", function () {
+        panel.classList.contains("open") ? close() : open();
+      });
+      if (closeBtn) closeBtn.addEventListener("click", close);
+
+      function appendMsg(text, who) {
+        var div = document.createElement("div");
+        div.className = "ai-chat-msg " + who;
+        div.textContent = text;
+        body.appendChild(div);
+        body.scrollTop = body.scrollHeight;
+      }
+      function appendTyping() {
+        var div = document.createElement("div");
+        div.className = "ai-chat-typing";
+        div.id = "aiChatTyping";
+        div.textContent = "正在思考...";
+        body.appendChild(div);
+        body.scrollTop = body.scrollHeight;
+        return div;
+      }
+      function send(q) {
+        q = (q || "").trim();
+        if (!q) return;
+        appendMsg(q, "user");
+        if (input) input.value = "";
+        var typing = appendTyping();
+        var flow = window.MindDoFlow;
+        if (!flow || !flow.aiSuggest) {
+          typing.remove();
+          appendMsg("AI 服务暂不可用，请直接联系校区。", "bot");
+          return;
+        }
+        flow.aiSuggest({ kind: "parent-chatbot", context: { query: q } }).then(function (r) {
+          typing.remove();
+          appendMsg(r.text || "—", "bot");
+        });
+      }
+      if (sendBtn) sendBtn.addEventListener("click", function () { send(input ? input.value : ""); });
+      if (input) input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); send(input.value); }
+      });
+      // Quick replies
+      document.querySelectorAll(".ai-chat-quick button[data-ai-q]").forEach(function (btn) {
+        btn.addEventListener("click", function () { send(btn.getAttribute("data-ai-q")); });
+      });
+    })();
+  </script>
+
+  <!-- =================================================================
+       AI learning path recommendation — small section that auto-renders
+       under the schedule panel if the student has a level set.
+       ================================================================= -->
+  <script>
+    (function () {
+      var flow = window.MindDoFlow;
+      if (!flow || !flow.aiSuggest) return;
+      // Pick a host element — append after the schedule section if it exists
+      var host = document.querySelector("[data-section='schedule'], #schedulePanel, .schedule-panel");
+      if (!host) {
+        // Fallback: append to main content area
+        host = document.querySelector("main") || document.body;
+      }
+      if (document.getElementById("aiLearningPath")) return;
+      var card = document.createElement("section");
+      card.id = "aiLearningPath";
+      card.style.cssText = "background:#fff;border:1px solid #e4ddd4;border-radius:18px;padding:20px 22px;margin:18px 24px;box-shadow:0 18px 44px rgba(122,48,16,0.06);max-width:840px;";
+      card.innerHTML =
+        "<div style='display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;'>"
+        + "<h3 style='margin:0;color:#7a3010;font-size:15px;font-weight:800;'>✨ AI 学习路径建议</h3>"
+        + "<button id='aiPathBtn' style='all:unset;cursor:pointer;padding:6px 14px;border-radius:999px;background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff;font-size:12px;font-weight:700;'>生成建议</button>"
+        + "</div>"
+        + "<div id='aiPathOut' style='font-size:13px;color:#1f2937;line-height:1.6;white-space:pre-wrap;'></div>";
+      host.appendChild(card);
+      document.getElementById("aiPathBtn").addEventListener("click", function () {
+        var cur = flow.readJson(flow.keys.currentStudent || "minddo_current_student");
+        var levels = flow.readJson(flow.keys.studentLevels || "minddo_student_levels") || {};
+        var stuId = cur && cur.studentId;
+        var level = (stuId && levels[stuId]) || "Beginner";
+        var portfolio = flow.readJson(flow.keys.portfolio || "minddo_portfolio") || [];
+        if (stuId) portfolio = portfolio.filter(function (p) { return p.studentId === stuId; });
+        var out = document.getElementById("aiPathOut");
+        out.textContent = "正在分析...";
+        flow.aiSuggest({ kind: "learning-path", context: { level: level, portfolio: portfolio } }).then(function (r) {
+          out.textContent = r.text || "—";
+        });
+      });
+    })();
+  </script>
 </body>
 </html>

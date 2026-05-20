@@ -5438,6 +5438,7 @@
           <h3 id="sdTitle">—</h3>
           <div class="sd-meta" id="sdMeta">—</div>
         </div>
+        <button type="button" class="ai-btn ai-btn-ghost" id="sdAiSummaryBtn" style="margin-right:6px;"><span class="ai-spark">✨</span> 月度总结</button>
         <button type="button" class="sd-edit-btn" id="sdEditBtn" data-i18n="sdEditCta"></button>
         <button type="button" class="sd-close" id="sdCloseBtn" aria-label="Close">×</button>
       </header>
@@ -16918,7 +16919,62 @@
         var tabsEl = document.getElementById("sdTabs");
         var bodyEl = document.getElementById("sdBody");
         var closeBtn = document.getElementById("sdCloseBtn");
+        var aiSummaryBtn = document.getElementById("sdAiSummaryBtn");
         if (!overlay) return;
+
+        // AI: monthly learning summary email — generates a parent-facing
+        // recap for the currently-open student. Pushes to email outbox
+        // as a draft so the marketer / ops can review and send.
+        if (aiSummaryBtn) {
+          aiSummaryBtn.addEventListener("click", function () {
+            var flow = window.MindDoFlow;
+            if (!flow || !__sdState.studentId) return;
+            var stu = (flow.findStudentById && flow.findStudentById(__sdState.studentId)) || {};
+            var attSum = (flow.getStudentAttendanceSummary
+              && flow.getStudentAttendanceSummary(__sdState.studentId, 30)) || {};
+            aiSummaryBtn.classList.add("loading");
+            aiSummaryBtn.disabled = true;
+            flow.aiSuggest({
+              kind: "monthly-summary",
+              context: {
+                student: stu,
+                stats: {
+                  classes: attSum.total || 0,
+                  attendanceRate: attSum.presenceRate != null ? attSum.presenceRate : "—",
+                  projects: 2, // placeholder until portfolio link
+                  engagement: "良好",
+                  progress: "持续进步"
+                }
+              }
+            }).then(function (r) {
+              aiSummaryBtn.classList.remove("loading");
+              aiSummaryBtn.disabled = false;
+              if (!r.text) return;
+              // Push as draft to outbox
+              var outbox = flow.readJson(flow.keys.outbox) || [];
+              outbox.push({
+                id: "MAIL-AI-SUM-" + Date.now(),
+                to: stu.email || "",
+                subject: (stu.name || "学员") + " · 本月学习总结",
+                body: r.text,
+                createdAt: new Date().toISOString(),
+                status: "draft",
+                sourceKind: "ai-monthly-summary"
+              });
+              flow.writeJson(flow.keys.outbox, outbox);
+              if (flow.appendAudit) {
+                flow.appendAudit({
+                  actor: ((flow.getActiveOpsUser && flow.getActiveOpsUser() && flow.getActiveOpsUser().staff && flow.getActiveOpsUser().staff.id) || "ops"),
+                  kind: "ai.monthly-summary",
+                  target: __sdState.studentId,
+                  summary: "AI 月度总结 · " + (stu.name || __sdState.studentId),
+                  before: null, after: { studentId: __sdState.studentId }
+                });
+              }
+              if (typeof showOpsToast === "function") showOpsToast("已加入发件箱草稿");
+            });
+          });
+        }
 
         var __sdState = { studentId: "", tab: "overview", editing: false, draft: null, lastSavedAt: null };
 
