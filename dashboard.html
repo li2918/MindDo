@@ -5721,7 +5721,6 @@
           paymentOps: "付费登记",
           markPaid: "登记付费",
           recentPayments: "最近付费记录",
-          recentRequests: "最近请假 / 改期申请",
           zoneTodayTitle: "今日重点",
           zoneTodaySub: "需要立即处理的提醒。",
           // ---- Overview redesign ----
@@ -6954,7 +6953,6 @@
           paymentOps: "Payment Entry",
           markPaid: "Mark Paid",
           recentPayments: "Recent Payment Records",
-          recentRequests: "Recent Leave / Reschedule Requests",
           zoneTodayTitle: "Today's Focus",
           zoneTodaySub: "Items that need attention right now.",
           // ---- Overview redesign ----
@@ -16760,9 +16758,17 @@
         html.setAttribute("lang", state.lang);
         localStorage.setItem("minddo_lang", state.lang);
 
+        // Localhost-only warning when a data-i18n key has no entry in
+        // the active dictionary. Helps catch typos / removed keys early
+        // without bothering production users.
+        var isDev = (location.hostname === "localhost" || location.hostname === "127.0.0.1");
         document.querySelectorAll("[data-i18n]").forEach(function (el) {
           var key = el.getAttribute("data-i18n");
-          if (t[key]) el.textContent = t[key];
+          if (t[key]) {
+            el.textContent = t[key];
+          } else if (isDev && key) {
+            console.warn("[i18n] missing key '" + key + "' for lang '" + state.lang + "'");
+          }
         });
 
         buttons.forEach(function (btn) {
