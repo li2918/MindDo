@@ -1304,6 +1304,52 @@
     .sd-list-item .head .when { color: var(--muted); font-size: 11px; }
     .sd-list-item .body { color: var(--muted); line-height: 1.55; }
 
+    /* Contact-parent popover — shared by every "联系家长" trigger.
+       Positioned absolutely near the clicked button via JS. */
+    .contact-pop {
+      position: fixed; z-index: 2700;
+      min-width: 230px; max-width: 280px;
+      background: #fff; border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 22px 50px rgba(13, 40, 65, 0.18);
+      padding: 10px 4px 8px;
+      font-size: 13px;
+    }
+    .contact-pop[hidden] { display: none; }
+    .contact-pop .cp-head {
+      padding: 4px 14px 8px;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.1);
+      margin-bottom: 6px;
+    }
+    .contact-pop .cp-head .cp-name { font-weight: 800; color: var(--clay); font-size: 13.5px; }
+    .contact-pop .cp-head .cp-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .contact-pop .cp-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 14px;
+      font-size: 12.5px; color: var(--text);
+      text-decoration: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .contact-pop .cp-row:hover { background: rgba(254, 243, 199, 0.45); }
+    .contact-pop .cp-row .cp-ic { font-size: 14px; width: 18px; text-align: center; flex: none; }
+    .contact-pop .cp-row .cp-v { flex: 1; font-weight: 700; color: var(--clay); word-break: break-all; }
+    .contact-pop .cp-row .cp-copy {
+      font-size: 10.5px; font-weight: 700; color: var(--muted);
+      padding: 2px 7px; border-radius: 999px;
+      background: rgba(122, 48, 16, 0.05); border: 1px solid var(--line);
+    }
+    .contact-pop .cp-row:hover .cp-copy { color: var(--clay); }
+    .contact-pop .cp-empty {
+      padding: 12px 14px; font-size: 12px; color: var(--muted);
+      font-style: italic; text-align: center;
+    }
+    .contact-pop .cp-arrow {
+      position: absolute; top: -6px;
+      width: 12px; height: 12px; transform: rotate(45deg);
+      background: #fff; border-left: 1px solid var(--line); border-top: 1px solid var(--line);
+    }
+
     /* Drawer · Assignments tab — status pill colors */
     .sd-assign-pill {
       font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em;
@@ -5495,6 +5541,15 @@
     </div>
   </div>
 
+  <!-- Contact-parent popover — shared by every 联系家长 button across
+       the dashboard. Click any [data-contact-parent] trigger to position
+       it next to the button and reveal parent name + phone + email +
+       wechat as clickable rows. -->
+  <div class="contact-pop" id="contactParentPop" role="dialog" aria-hidden="true" hidden>
+    <span class="cp-arrow" aria-hidden="true"></span>
+    <div class="cp-body"></div>
+  </div>
+
   <!-- Eval modal — captures trial level + notes after a trial is marked done -->
   <div class="eval-overlay" id="mktEvalOverlay" role="dialog" aria-modal="true" aria-labelledby="mktEvalTitle" aria-hidden="true">
     <div class="eval-modal">
@@ -9288,7 +9343,7 @@
             + "<td>" + escHTML(contact) + "</td>"
             + "<td><div class='acad-row-actions'>"
             +   "<a href='#' data-student-drawer='" + escHTML(r.sid) + "'>" + escHTML(t.acadActionDetail) + "</a>"
-            +   (r.email ? "<a href='mailto:" + escHTML(r.email) + "'>" + escHTML(t.acadActionContact) + "</a>" : "")
+            +   "<a href='#' data-contact-parent='" + escHTML(r.sid) + "'>" + escHTML(t.acadActionContact) + "</a>"
             +   (window.MindDoFlow && window.MindDoFlow.hasPerm && window.MindDoFlow.hasPerm("students.status")
                 ? "<a href='#' data-student-status='" + escHTML(r.sid) + "'>" + escHTML(t.acadActionStatus) + "</a>"
                 : "")
@@ -11573,6 +11628,132 @@
         }
       }
 
+      // 联系家长 popover — every [data-contact-parent="<studentId>"]
+      // anchor opens a small floating card with the parent's contact
+      // methods. Wired once via delegation; positioned next to the
+      // clicked trigger; closes on outside-click / Escape.
+      (function () {
+        var pop = document.getElementById("contactParentPop");
+        if (!pop) return;
+        var body = pop.querySelector(".cp-body");
+
+        function buildContactRows(sid) {
+          var f = window.MindDoFlow;
+          if (!f) return null;
+          var stu = (f.findStudentById && f.findStudentById(sid)) || null;
+          // Fallback — pull parent contact off the most recent membership
+          // (older student rows may not carry parentName / phone directly).
+          var memberships = (f.readJson(f.keys.memberships) || [])
+            .filter(function (m) { return m && m.studentId === sid; })
+            .sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
+          var m = memberships[0] || {};
+          var name = (m.parentName) || (stu && (stu.parentName || stu.name)) || sid;
+          var phone = (stu && stu.phone) || m.phone || "";
+          var email = (stu && stu.email) || m.email || "";
+          var wechat = (stu && stu.wechat) || m.wechat || "";
+          return { name: name, phone: phone, email: email, wechat: wechat, studentName: stu && stu.name };
+        }
+        function renderPop(c) {
+          if (!c) {
+            body.innerHTML = "<div class='cp-empty'>未找到学员档案</div>";
+            return;
+          }
+          var rows = "";
+          if (c.phone) {
+            rows += "<a class='cp-row' href='tel:" + escHTML(c.phone) + "'>"
+              + "<span class='cp-ic'>📞</span>"
+              + "<span class='cp-v'>" + escHTML(c.phone) + "</span>"
+              + "<span class='cp-copy' data-cp-copy='" + escHTML(c.phone) + "'>拨打</span>"
+              + "</a>";
+          }
+          if (c.email) {
+            rows += "<a class='cp-row' href='mailto:" + escHTML(c.email) + "'>"
+              + "<span class='cp-ic'>✉️</span>"
+              + "<span class='cp-v'>" + escHTML(c.email) + "</span>"
+              + "<span class='cp-copy' data-cp-copy='" + escHTML(c.email) + "'>邮件</span>"
+              + "</a>";
+          }
+          if (c.wechat) {
+            rows += "<div class='cp-row' data-cp-copy='" + escHTML(c.wechat) + "' style='cursor:copy;'>"
+              + "<span class='cp-ic'>💬</span>"
+              + "<span class='cp-v'>" + escHTML(c.wechat) + "</span>"
+              + "<span class='cp-copy'>复制</span>"
+              + "</div>";
+          }
+          if (!rows) rows = "<div class='cp-empty'>暂无联系方式</div>";
+          body.innerHTML = "<div class='cp-head'>"
+            + "<div class='cp-name'>" + escHTML(c.name || "—") + "</div>"
+            + (c.studentName && c.studentName !== c.name
+                ? "<div class='cp-sub'>学员：" + escHTML(c.studentName) + "</div>" : "")
+            + "</div>" + rows;
+        }
+        function position(trigger) {
+          var rect = trigger.getBoundingClientRect();
+          pop.hidden = false;
+          var pw = pop.offsetWidth;
+          var top = rect.bottom + 8;
+          var left = rect.left + (rect.width / 2) - (pw / 2);
+          // Clamp to viewport with 8px padding
+          left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+          // Flip above if not enough space below
+          if (top + pop.offsetHeight > window.innerHeight - 12) {
+            top = Math.max(8, rect.top - pop.offsetHeight - 8);
+            pop.querySelector(".cp-arrow").style.top = "auto";
+            pop.querySelector(".cp-arrow").style.bottom = "-6px";
+            pop.querySelector(".cp-arrow").style.transform = "rotate(225deg)";
+          } else {
+            pop.querySelector(".cp-arrow").style.top = "-6px";
+            pop.querySelector(".cp-arrow").style.bottom = "auto";
+            pop.querySelector(".cp-arrow").style.transform = "rotate(45deg)";
+          }
+          pop.style.top = top + "px";
+          pop.style.left = left + "px";
+        }
+        function close() {
+          pop.hidden = true;
+          pop.setAttribute("aria-hidden", "true");
+        }
+
+        document.addEventListener("click", function (e) {
+          // Outside click closes the popover (unless click was inside)
+          if (!pop.hidden && !pop.contains(e.target) && !e.target.closest("[data-contact-parent]")) {
+            close();
+            return;
+          }
+          var trigger = e.target.closest("[data-contact-parent]");
+          if (trigger) {
+            e.preventDefault();
+            var sid = trigger.getAttribute("data-contact-parent");
+            var c = buildContactRows(sid);
+            renderPop(c);
+            position(trigger);
+            pop.setAttribute("aria-hidden", "false");
+            return;
+          }
+          // Copy buttons inside the popover
+          var copyBtn = e.target.closest("[data-cp-copy]");
+          if (copyBtn && pop.contains(copyBtn)) {
+            var val = copyBtn.getAttribute("data-cp-copy");
+            if (val && navigator.clipboard) {
+              navigator.clipboard.writeText(val).then(function () {
+                copyBtn.textContent = "已复制";
+                setTimeout(function () {
+                  // Restore based on icon context
+                  var ic = copyBtn.parentNode.querySelector(".cp-ic");
+                  var icText = ic ? ic.textContent : "";
+                  copyBtn.textContent = icText === "📞" ? "拨打" : icText === "✉️" ? "邮件" : "复制";
+                }, 1200);
+              });
+            }
+          }
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && !pop.hidden) close();
+        });
+        window.addEventListener("scroll", function () { if (!pop.hidden) close(); }, true);
+        window.addEventListener("resize", function () { if (!pop.hidden) close(); });
+      })();
+
       // Wire pending-approval quick-decide actions on the principal overview.
       document.addEventListener("click", function (e) {
         var b = e.target.closest("[data-prin-approval]");
@@ -11806,9 +11987,7 @@
                 + "<div><strong>" + escHTML(name) + "</strong>"
                 +   "<div class='oar-meta'>" + escHTML(a.note || a.status) + "</div></div>"
                 + "<div class='oar-meta'>" + escHTML(phone) + "</div>"
-                +   (phone
-                    ? "<a class='oar-action' href='tel:" + escHTML(phone) + "'>" + escHTML(t.opsAbsentContact) + "</a>"
-                    : "<span class='oar-meta'>—</span>")
+                +   "<a class='oar-action' href='#' data-contact-parent='" + escHTML(a.studentId) + "'>" + escHTML(t.opsAbsentContact) + "</a>"
                 + "</div>";
             }).join("");
           }
