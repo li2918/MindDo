@@ -1986,7 +1986,14 @@
         channel: "wechat", channelLabel: "微信/社群",
         goal: student.goal, timeNote: "Prefer weekday evening slots.",
         consent: true, createdAt: daysAgo(5),
-        crmStatus: "won", trialStatus: "done"
+        crmStatus: "won", trialStatus: "done",
+        tags: ["高意向", "已成单"],
+        lastContactAt: daysAgo(2),
+        contactLog: [
+          { at: daysAgo(5), by: "system", channel: "wechat", note: "首次咨询：周末班次询问" },
+          { at: daysAgo(3), by: "system", channel: "call", note: "确认试课时间，家长积极" },
+          { at: daysAgo(2), by: "system", channel: "wechat", note: "试课完成，意向购买学期包" }
+        ]
       },
       // ---- Marketing-CRM seed: a spread across pipeline stages so the
       // 市场中心 tab shows visible variety in the lead list + trial table.
@@ -1999,7 +2006,14 @@
         channel: "google", channelLabel: "Google 搜索",
         goal: "AI 编程入门", consent: true,
         createdAt: daysAgo(2),
-        crmStatus: "follow", trialStatus: "confirmed"
+        crmStatus: "follow", trialStatus: "confirmed",
+        tags: ["待跟进"],
+        lastContactAt: daysAgo(1),
+        nextContactAt: dayString(1),
+        contactLog: [
+          { at: daysAgo(2), by: "system", channel: "wechat", note: "Google 渠道到访，确认下周二试课" },
+          { at: daysAgo(1), by: "system", channel: "wechat", note: "发送家长须知 + 课前问卷" }
+        ]
       },
       {
         studentName: "陈乐",
@@ -2010,7 +2024,12 @@
         channel: "referral", channelLabel: "老学员推荐",
         goal: "项目营冲刺", consent: true,
         createdAt: daysAgo(1),
-        crmStatus: "new", trialStatus: "booked"
+        crmStatus: "new", trialStatus: "booked",
+        tags: ["推荐转介"],
+        nextContactAt: dayString(0),
+        contactLog: [
+          { at: daysAgo(1), by: "system", channel: "call", note: "老学员转介，等待首次电话" }
+        ]
       },
       {
         studentName: "林皓",
@@ -2021,7 +2040,9 @@
         channel: "instagram", channelLabel: "Instagram",
         goal: "AI 创意工坊", consent: true,
         createdAt: daysAgo(0),
-        crmStatus: "new", trialStatus: "booked"
+        crmStatus: "new", trialStatus: "booked",
+        tags: [],
+        contactLog: []
       },
       {
         studentName: "周雨",
@@ -2032,7 +2053,13 @@
         channel: "tiktok", channelLabel: "抖音 / TikTok",
         goal: "兴趣探索", consent: true,
         createdAt: daysAgo(35),
-        crmStatus: "lost", trialStatus: "noshow"
+        crmStatus: "lost", trialStatus: "noshow",
+        tags: ["流失", "未到课"],
+        lastContactAt: daysAgo(30),
+        contactLog: [
+          { at: daysAgo(35), by: "system", channel: "tiktok", note: "TikTok 评论留资" },
+          { at: daysAgo(30), by: "system", channel: "call", note: "试课当日未到，电话未接，标记流失" }
+        ]
       }
     ]);
 

@@ -455,6 +455,23 @@ user menu.
 
 ### `minddo_dashboard_tab` / `minddo_dash_<area>_subtab` / `minddo_acct_*` 🟢
 Sticky tab/sub-tab selections. Safe to clear without losing data.
+The `minddo_acct_*` family persists parent-side account page UI choices
+(e.g. selected child, expanded sections).
+
+### `minddo_dashboard_campus` 🟢
+Active campus id for the ops dashboard (`"all"` = cross-campus view).
+Restored on dashboard load; written when the campus filter changes.
+
+### `minddo_dashboard_range` / `minddo_dashboard_range_from` / `minddo_dashboard_range_to` 🟢
+Selected time-range filter for the ops dashboard. `range` is one of
+`"7" | "30" | "90" | "custom"`; the `from` / `to` pair is only used when
+`range === "custom"` (ISO `YYYY-MM-DD`).
+
+### `minddo_draft_actions` 🟡 (object)
+"I already handled this draft" memo for the auto-draft message panel.
+Keys are draft fingerprints (e.g. `student-id__intent`), values are ISO
+timestamps recording when the draft was sent or skipped — used to
+suppress re-suggestion of the same combo on the same day.
 
 ### `minddo_franchise_inquiries` / `minddo_franchise_draft` 🟢
 Partnership-program form submissions + auto-saved draft state.
