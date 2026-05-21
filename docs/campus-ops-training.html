@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>校区运营 · 培训手册 | MindDo</title>
+  <style>
+    :root {
+      --bg: #fef8ee;
+      --card: #ffffff;
+      --line: #e4ddd4;
+      --clay: #7a3010;
+      --brand: #d8551c;
+      --gold: #d97706;
+      --gold-deep: #b45309;
+      --muted: #6b7280;
+      --text: #1f2937;
+      --success: #6e8b58;
+      --danger: #c46a4d;
+      --info: #2f6d8f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(254, 248, 238, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .topbar .brand {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 900; color: var(--clay); font-size: 15px;
+      text-decoration: none;
+    }
+    .topbar .brand .dot {
+      display: inline-block; width: 22px; height: 22px; border-radius: 6px;
+      background: linear-gradient(135deg, #fde68a, var(--gold));
+      color: var(--clay); font-size: 13px; font-weight: 900;
+      text-align: center; line-height: 22px;
+    }
+    .topbar nav { display: flex; gap: 14px; font-size: 13px; }
+    .topbar nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
+    .topbar nav a:hover { color: var(--clay); }
+
+    main { max-width: 980px; margin: 0 auto; padding: 32px 24px 100px; }
+
+    .hero {
+      background: linear-gradient(135deg, #b45309 0%, #d8551c 100%);
+      color: #fff7ed;
+      border-radius: 20px;
+      padding: 30px 36px;
+      box-shadow: 0 18px 44px rgba(180, 83, 9, 0.22);
+      margin-bottom: 28px;
+    }
+    .hero .eyebrow {
+      font-size: 11.5px; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #fef3c7; margin-bottom: 8px;
+    }
+    .hero h1 { margin: 0 0 8px; font-size: 30px; letter-spacing: -0.02em; font-weight: 900; }
+    .hero .sub { font-size: 14.5px; color: rgba(255, 247, 237, 0.88); max-width: 70ch; line-height: 1.65; }
+    .hero .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .hero .meta-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 999px;
+      background: rgba(255, 247, 237, 0.18);
+      border: 1px solid rgba(255, 247, 237, 0.36);
+      font-size: 12px; font-weight: 700;
+    }
+
+    .toc {
+      background: rgba(248, 250, 252, 0.55);
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 28px;
+      font-size: 13px;
+    }
+    .toc strong {
+      display: block; color: var(--clay); font-size: 11.5px;
+      letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .toc ol { margin: 0; padding-left: 18px; }
+    .toc li { margin: 4px 0; }
+    .toc a { color: var(--brand); text-decoration: none; font-weight: 700; }
+    .toc a:hover { text-decoration: underline; }
+
+    .section-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin: 36px 0 14px;
+    }
+    .section-head h2 {
+      margin: 0; font-size: 19px; font-weight: 900; color: var(--clay);
+      letter-spacing: -0.01em;
+    }
+    .section-head .num {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px 26px;
+      box-shadow: 0 18px 44px rgba(122, 48, 16, 0.05);
+      margin-bottom: 16px;
+    }
+    .panel h3 {
+      margin: 0 0 10px; font-size: 15px; font-weight: 900;
+      color: var(--clay); letter-spacing: -0.01em;
+    }
+    .panel p { margin: 6px 0 10px; font-size: 13.5px; }
+    .panel p:last-child { margin-bottom: 0; }
+
+    ol.steps {
+      counter-reset: step;
+      list-style: none; padding: 0; margin: 8px 0 4px;
+    }
+    ol.steps li {
+      counter-increment: step;
+      position: relative;
+      padding: 10px 12px 10px 44px;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.08);
+      font-size: 13.5px;
+    }
+    ol.steps li:last-child { border-bottom: none; }
+    ol.steps li::before {
+      content: counter(step);
+      position: absolute; left: 12px; top: 14px;
+      width: 22px; height: 22px; border-radius: 999px;
+      background: var(--brand); color: #fff;
+      font-size: 11px; font-weight: 900;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    ol.steps li strong { color: var(--clay); }
+
+    .deep-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px;
+      background: rgba(216, 85, 28, 0.08);
+      border: 1px solid rgba(216, 85, 28, 0.22);
+      border-radius: 999px;
+      font-size: 12px; font-weight: 800;
+      color: var(--brand);
+      text-decoration: none;
+      transition: 0.15s;
+    }
+    .deep-link::after { content: "↗"; font-size: 11px; }
+    .deep-link:hover {
+      background: var(--brand); color: #fff;
+      border-color: var(--brand);
+      box-shadow: 0 4px 10px rgba(216, 85, 28, 0.3);
+    }
+
+    code.kbd {
+      font-family: ui-monospace, "Courier New", monospace;
+      font-size: 11.5px;
+      background: rgba(31, 41, 55, 0.06);
+      border: 1px solid rgba(31, 41, 55, 0.12);
+      padding: 1px 6px; border-radius: 4px;
+      color: var(--text);
+    }
+
+    .callout {
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin: 10px 0;
+      font-size: 13px;
+      border: 1px solid transparent;
+    }
+    .callout.tip {
+      background: rgba(110, 143, 87, 0.08);
+      border-color: rgba(110, 143, 87, 0.28);
+      color: #3f5b32;
+    }
+    .callout.warn {
+      background: rgba(196, 106, 77, 0.08);
+      border-color: rgba(196, 106, 77, 0.3);
+      color: #7a3a26;
+    }
+    .callout.info {
+      background: rgba(47, 109, 143, 0.08);
+      border-color: rgba(47, 109, 143, 0.28);
+      color: #1f4a63;
+    }
+    .callout strong { display: block; margin-bottom: 3px; }
+
+    table.kv {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+      margin: 8px 0 0;
+    }
+    table.kv thead th {
+      text-align: left; padding: 9px 12px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+      border-bottom: 1px solid var(--line);
+      background: rgba(122, 48, 16, 0.04);
+    }
+    table.kv tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.08);
+      vertical-align: top;
+    }
+    table.kv tbody tr:last-child td { border-bottom: none; }
+    table.kv .yes { color: var(--success); font-weight: 900; }
+    table.kv .no  { color: var(--danger); font-weight: 900; }
+
+    details.faq {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+    details.faq[open] { border-color: rgba(216, 85, 28, 0.32); }
+    details.faq summary {
+      padding: 12px 16px;
+      font-weight: 800; font-size: 14px;
+      color: var(--clay);
+      cursor: pointer;
+      list-style: none;
+    }
+    details.faq summary::-webkit-details-marker { display: none; }
+    details.faq summary::before {
+      content: "▸"; color: var(--brand); margin-right: 8px;
+      display: inline-block; transition: 0.15s;
+    }
+    details.faq[open] summary::before { transform: rotate(90deg); }
+    details.faq .body {
+      padding: 0 16px 14px;
+      font-size: 13.5px;
+      color: var(--text);
+    }
+    details.faq .body p { margin: 0 0 6px; }
+
+    .checklist {
+      list-style: none; padding: 0; margin: 0;
+    }
+    .checklist li {
+      position: relative;
+      padding: 8px 8px 8px 30px;
+      font-size: 13px;
+      border-bottom: 1px dashed rgba(122, 48, 16, 0.06);
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist li::before {
+      content: "☐"; position: absolute; left: 8px; top: 8px;
+      color: var(--brand); font-weight: 900;
+    }
+
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    @media (max-width: 760px) {
+      .two-col { grid-template-columns: 1fr; }
+      .hero { padding: 22px 22px; }
+      .hero h1 { font-size: 24px; }
+    }
+
+    footer {
+      margin-top: 50px;
+      padding-top: 20px;
+      border-top: 1px dashed var(--line);
+      font-size: 11.5px; color: var(--muted);
+      text-align: center;
+    }
+    footer code {
+      font-family: ui-monospace, monospace;
+      color: var(--brand);
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="../index.html" class="brand">
+    <span class="dot">M</span>
+    <span>MindDo · 培训中心</span>
+  </a>
+  <nav>
+    <a href="user-flows.html">← 全部角色</a>
+    <a href="campus-ops-flow.html">User Flow</a>
+    <a href="../dashboard.html">打开 Dashboard</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="eyebrow">Training Manual · 培训手册</div>
+    <h1>校区运营 · 使用指南</h1>
+    <p class="sub">本手册帮你 30 分钟内上手 MindDo 后台。按章节阅读 + 点击右侧链接直接打开对应页面，边读边练。涵盖登录、每日例行、试课接待、考勤录入、请假审批、续费跟进、交班记录、常见问题。</p>
+    <div class="meta-row">
+      <span class="meta-chip">角色 · <strong>campus-ops</strong></span>
+      <span class="meta-chip">耗时 · <strong>30 分钟</strong></span>
+      <span class="meta-chip">深链 · <strong>点击 ↗ 直达页面</strong></span>
+      <span class="meta-chip">更新 · <strong>2026-05</strong></span>
+    </div>
+  </section>
+
+  <!-- ====== Table of contents ====== -->
+  <div class="toc">
+    <strong>目录</strong>
+    <ol>
+      <li><a href="#login">登录与切换身份</a></li>
+      <li><a href="#layout">认识界面 · 侧边栏导航</a></li>
+      <li><a href="#daily">每日例行清单</a></li>
+      <li><a href="#trial">试课接待</a></li>
+      <li><a href="#attendance">考勤录入</a></li>
+      <li><a href="#inbox">请假 / 改期审批</a></li>
+      <li><a href="#renewals">续费提醒与跟进</a></li>
+      <li><a href="#students">学员信息查询</a></li>
+      <li><a href="#shift">交班记录</a></li>
+      <li><a href="#settings">校区设置</a></li>
+      <li><a href="#perms">能做 / 不能做（权限边界）</a></li>
+      <li><a href="#faq">常见问题</a></li>
+    </ol>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 1. Login -->
+  <!-- ============================================================ -->
+  <div id="login" class="section-head">
+    <h2>1. 登录与切换身份</h2>
+    <span class="num">01 / Login</span>
+  </div>
+  <div class="panel">
+    <p>当前 demo 阶段没有真正的密码登录，使用 dashboard 顶栏右上角的「切换身份」菜单选择自己的员工档案即可。系统会把所选员工 id 写入 <code class="kbd">minddo_active_ops_user</code>。</p>
+    <ol class="steps">
+      <li>打开 <a class="deep-link" href="../dashboard.html">运营 Dashboard</a></li>
+      <li>右上角点击你的头像 / 当前用户名 → 选择「切换身份」</li>
+      <li>在弹出的列表里找到自己的姓名和岗位（一般标注为 <strong>校区运营</strong> · campus-ops），点击。</li>
+      <li>页面会自动刷新到你权限范围内的视图。再切换其他人也是同样操作。</li>
+    </ol>
+    <div class="callout tip">
+      <strong>提示 · 校区怎么选</strong>
+      顶栏「当前校区看板」会默认显示你所属的校区，看板和数据都按这个校区过滤。如需暂时切到「全部校区（汇总）」查看横向对比，下拉切换即可，不影响其他人。
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 2. Layout -->
+  <!-- ============================================================ -->
+  <div id="layout" class="section-head">
+    <h2>2. 认识界面 · 侧边栏导航</h2>
+    <span class="num">02 / Layout</span>
+  </div>
+  <div class="panel">
+    <p>左侧侧边栏是主导航。每个一级 tab 下有自己的子菜单。下表列出你作为校区运营能看到的所有 tab，以及一键直达入口：</p>
+    <table class="kv">
+      <thead>
+        <tr>
+          <th style="width:140px;">一级 Tab</th>
+          <th>用途</th>
+          <th style="width:140px;">直达</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🏠 首页</td>
+          <td>校区运营专属首页：今日重点、待办、课程时间轴、容量预警。</td>
+          <td><a class="deep-link" href="../dashboard.html?tab=overview">打开</a></td>
+        </tr>
+        <tr>
+          <td>📥 待办</td>
+          <td>请假、改期、合同到期、试课待评估 — 统一处理面板。</td>
+          <td><a class="deep-link" href="../dashboard.html?tab=inbox">打开</a></td>
+        </tr>
+        <tr>
+          <td>📣 市场中心</td>
+          <td>只读 CRM：看本校区试课线索、各渠道效果。不写入。</td>
+          <td><a class="deep-link" href="../dashboard.html?tab=enrollment&sub=trial">打开</a></td>
+        </tr>
+        <tr>
+          <td>📘 教务中心</td>
+          <td>核心工作区：学员、班级、排课、考勤。</td>
+          <td><a class="deep-link" href="../dashboard.html?tab=academic&sub=schedule">打开</a></td>
+        </tr>
+        <tr>
+          <td>💰 财务（脱敏）</td>
+          <td>能看付费记录和续费提醒，金额显示为 <code class="kbd">$***</code>。不能看详单 / 退款 / 工资。</td>
+          <td><a class="deep-link" href="../dashboard.html?tab=finance&sub=renewals">打开</a></td>
+        </tr>
+        <tr>
+          <td>📈 数据中心</td>
+          <td>各维度的运营分析。财务图表对你脱敏。</td>
+          <td><a class="deep-link" href="../dashboard.html?tab=data&sub=academic">打开</a></td>
+        </tr>
+        <tr>
+          <td>🛠 内部管理</td>
+          <td>本校区员工、教师列表（只读）+ 操作日志。</td>
+          <td><a class="deep-link" href="../dashboard.html?tab=internal&sub=teachers">打开</a></td>
+        </tr>
+        <tr>
+          <td>⚙️ 业务设置</td>
+          <td>校区营业时间、教室、公告 — 只能改本校区。</td>
+          <td><a class="deep-link" href="../dashboard.html?tab=settings&sub=hours">打开</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout info">
+      <strong>小技巧 · 全局搜索</strong>
+      在 dashboard 任意页面按 <code class="kbd">Ctrl/⌘ + K</code> 唤起全局搜索，可以直接搜学员姓名 / 电话 / 邮箱跳到对应详情，比在列表里翻快得多。
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 3. Daily routine -->
+  <!-- ============================================================ -->
+  <div id="daily" class="section-head">
+    <h2>3. 每日例行清单</h2>
+    <span class="num">03 / Daily</span>
+  </div>
+  <div class="panel">
+    <h3>到岗后（约 8:30 - 9:00）</h3>
+    <ul class="checklist">
+      <li>打开 <a class="deep-link" href="../dashboard.html?tab=overview">首页</a>，浏览「今日重点」「待办总数」「课程时间轴」。</li>
+      <li>查看 <a class="deep-link" href="../dashboard.html?tab=inbox">待办</a>，处理隔夜累积的请假、改期、合同。</li>
+      <li>核对今天的试课家庭名单，提前准备登记表 / 教室。</li>
+      <li>跟教师确认到位情况，必要时调整排课。</li>
+    </ul>
+
+    <h3 style="margin-top:18px;">课程期间（滚动）</h3>
+    <ul class="checklist">
+      <li>接待试课家庭：签到、引导、记录到达状态。</li>
+      <li>盯首页「课程时间轴」，识别「进行中」与容量预警（满班 / 近满 / 空班）。</li>
+      <li>临时事件（家长来电请假、孩子迟到）即时录入。</li>
+    </ul>
+
+    <h3 style="margin-top:18px;">每节课结束</h3>
+    <ul class="checklist">
+      <li>到 <a class="deep-link" href="../dashboard.html?tab=academic&sub=attendance">教务中心 · 考勤</a> 逐人录入出勤（出勤 / 缺勤 / 请假）。</li>
+      <li>试课家庭：勾选「完成 / 未到」并补充评估备注。</li>
+    </ul>
+
+    <h3 style="margin-top:18px;">下班前（约 18:00 - 19:00）</h3>
+    <ul class="checklist">
+      <li>到 <a class="deep-link" href="../dashboard.html?tab=overview">首页</a> 底部「交班记录」写当日交接（已完成、遗留、明日重点）。</li>
+      <li>检查 <a class="deep-link" href="../dashboard.html?tab=finance&sub=renewals">续费提醒</a>，把临期的家长加入今日跟进列表。</li>
+      <li>清空待办收件箱（理想状态）。</li>
+    </ul>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 4. Trial flow -->
+  <!-- ============================================================ -->
+  <div id="trial" class="section-head">
+    <h2>4. 试课接待</h2>
+    <span class="num">04 / Trial</span>
+  </div>
+  <div class="panel">
+    <p>试课线索由市场团队录入，运营负责现场接待和评估反馈。状态机：<strong>预约 → 到达 → 试课中 → 完成 / 未到</strong>。</p>
+    <ol class="steps">
+      <li>到 <a class="deep-link" href="../dashboard.html?tab=enrollment&sub=trial">市场中心 · 试课管理</a> 查看今日预约清单。</li>
+      <li>家长到店：在该家庭一行点「签到」按钮，状态从 <strong>booked</strong> 切到 <strong>confirmed</strong>。</li>
+      <li>开始试课：进入「试课中」（状态写入 <code class="kbd">trialStatus = "in_progress"</code>）。</li>
+      <li>试课结束：点「完成」按钮，弹出反馈表单 — 填写表现（兴趣度、专注度、推荐等级）+ 文字评价。</li>
+      <li>提交后系统自动产生一条评估记录，状态切到 <strong>completed</strong>，市场团队会据此跟进转化。</li>
+      <li>若家庭未到：标记 <strong>noshow</strong>，原因填在备注里（如「家长当天来电请假」）。</li>
+    </ol>
+    <div class="callout tip">
+      <strong>试课评估表小窍门</strong>
+      表单里有「✨ AI 评估草稿」按钮。先写几句观察（孩子表现、家长反应、关注点），点击后 AI 会生成一段结构化反馈草稿。你可以一键应用到正式表单，再做手动微调，省一半时间。
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 5. Attendance -->
+  <!-- ============================================================ -->
+  <div id="attendance" class="section-head">
+    <h2>5. 考勤录入</h2>
+    <span class="num">05 / Attendance</span>
+  </div>
+  <div class="panel">
+    <p>所有正式课的考勤都在教务中心录入。出勤状态包括：<strong>出勤 / 缺勤 / 请假</strong>。</p>
+    <ol class="steps">
+      <li>打开 <a class="deep-link" href="../dashboard.html?tab=academic&sub=attendance">教务中心 · 考勤</a>。</li>
+      <li>选择课程日期 + 班级，系统列出该班全部学员。</li>
+      <li>逐人勾选状态。<strong>请假</strong> 必须有理由（家长事先报备的可以选「家长请假」）。</li>
+      <li>保存。系统会按 ISO 时间戳写入 <code class="kbd">minddo_attendance</code> 数组，每条记录一次性写入并审计。</li>
+      <li>如果发现某学员临时调班，先到 <a class="deep-link" href="../dashboard.html?tab=academic&sub=schedule">教务 · 排课</a> 调整，再录今日考勤。</li>
+    </ol>
+    <div class="callout warn">
+      <strong>注意 · 不要漏录</strong>
+      考勤是续费转化的重要参考。一周内未录入的课次，财务侧会自动标红。建议每节课结束 15 分钟内完成录入。
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 6. Inbox / approvals -->
+  <!-- ============================================================ -->
+  <div id="inbox" class="section-head">
+    <h2>6. 请假 / 改期审批</h2>
+    <span class="num">06 / Approvals</span>
+  </div>
+  <div class="panel">
+    <p>家长在自己的账号端发起请假或改期申请后，会出现在你的「待办」面板。你只能审批 <strong>请假</strong> 和 <strong>调课</strong> 这两类 — 退款 / 报销由校长处理。</p>
+    <ol class="steps">
+      <li>打开 <a class="deep-link" href="../dashboard.html?tab=inbox">待办</a>，顶部过滤选「请假改期」。</li>
+      <li>每一条卡片显示家长姓名、原课次、申请类型、备注理由。</li>
+      <li>点 <strong>✓ 通过</strong> 或 <strong>✗ 驳回</strong>。驳回必须填理由，会同步回传给家长。</li>
+      <li>每一次审批都自动写入 <code class="kbd">minddo_audit_log</code>，包含操作人、对象、时间、前后状态。</li>
+      <li>处理完后这条申请从待办移除；状态变化也同步反映到对应学员的「申请历史」tab。</li>
+    </ol>
+    <div class="callout info">
+      <strong>看到金钱相关的卡片（退款/报销）怎么办</strong>
+      你能看到但不能审批 — 点开是只读视图。请联系校长（principal 角色）处理。
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 7. Renewals -->
+  <!-- ============================================================ -->
+  <div id="renewals" class="section-head">
+    <h2>7. 续费提醒与跟进</h2>
+    <span class="num">07 / Renewals</span>
+  </div>
+  <div class="panel">
+    <p>财务 tab 的「续费提醒」是脱敏面板：你看不到具体金额，但可以看到 <strong>哪些学员的课时 / 套餐快用完了</strong>，以及上次联系时间。这是你日常跟进的核心列表。</p>
+    <ol class="steps">
+      <li>打开 <a class="deep-link" href="../dashboard.html?tab=finance&sub=renewals">财务 · 续费提醒</a>。</li>
+      <li>列表按「剩余课时」升序排列，红色行 = 极临期（≤3 节）。</li>
+      <li>点学员姓名打开学员详情抽屉，看课时使用率、近期出勤、家长偏好。</li>
+      <li>沟通后，到「联系家长」按钮调出家长联系卡片（电话 / 微信 / 邮箱），不要直接打开邮箱 / 拨号 — 先看完整信息再选合适渠道。</li>
+      <li>沟通完成后，记得回 <strong>学员详情 → 变更历史</strong> tab 留一条跟进备注（自动写审计日志）。</li>
+    </ol>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 8. Students -->
+  <!-- ============================================================ -->
+  <div id="students" class="section-head">
+    <h2>8. 学员信息查询</h2>
+    <span class="num">08 / Students</span>
+  </div>
+  <div class="panel">
+    <p>你可以查任意本校区学员的完整档案。从任何列表点击学员姓名即可打开详情抽屉。</p>
+    <p>抽屉里有这些 tab，都是只读 + 全审计：</p>
+    <table class="kv">
+      <thead><tr><th>Tab</th><th>看什么</th></tr></thead>
+      <tbody>
+        <tr><td>📋 概览</td><td>基本资料、当前级别、报名套餐、剩余课时。</td></tr>
+        <tr><td>✅ 出勤</td><td>历次出勤记录，按月分组，可以筛选异常（缺勤 / 请假）。</td></tr>
+        <tr><td>📝 作业</td><td>课后作业完成情况 — 提交率、教师评分。</td></tr>
+        <tr><td>📈 成长</td><td>每月成长档案曲线（兴趣度 / 编程能力 / 表达 / 独立性）。</td></tr>
+        <tr><td>💰 付费</td><td>历次付费记录（金额脱敏为 <code class="kbd">$***</code>）。</td></tr>
+        <tr><td>💬 反馈</td><td>家长 / 教师反馈历史。</td></tr>
+        <tr><td>📨 申请</td><td>该学员所有请假 / 改期申请的处理记录。</td></tr>
+        <tr><td>🎨 作品集</td><td>项目作品 + 学期报告。</td></tr>
+        <tr><td>📜 变更历史</td><td>该学员相关的所有操作日志（谁、什么时间、改了什么）。</td></tr>
+      </tbody>
+    </table>
+    <div class="callout tip">
+      <strong>快速查询</strong>
+      <code class="kbd">Ctrl/⌘ + K</code> 全局搜索学员名字 → 直接打开详情抽屉，不用先进列表。
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 9. Shift handover -->
+  <!-- ============================================================ -->
+  <div id="shift" class="section-head">
+    <h2>9. 交班记录</h2>
+    <span class="num">09 / Shift</span>
+  </div>
+  <div class="panel">
+    <p>每日下班前 / 接班时填写交班，确保信息无缝衔接。这是 campus-ops 独有的责任 — 校长不一定看，但下一班的同事一定要看。</p>
+    <ol class="steps">
+      <li>到 <a class="deep-link" href="../dashboard.html?tab=overview">首页</a> 找到「交班记录」面板。</li>
+      <li>三栏结构：<strong>今日完成</strong>（X 节课、Y 个试课、Z 项审批）/ <strong>遗留问题</strong>（待跟进的家长、设备故障等）/ <strong>明日重点</strong>。</li>
+      <li>填完点保存 — 写入 <code class="kbd">minddo_shift_notes</code>，所有同校区运营都看得到。</li>
+      <li>接班时第一件事就是看上一班的交班记录。</li>
+    </ol>
+    <div class="callout tip">
+      <strong>AI 帮你写</strong>
+      点「✨ AI 生成交班摘要」会基于今日审计日志自动总结一份草稿，你只需补充上下文细节，省 80% 时间。
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 10. Settings -->
+  <!-- ============================================================ -->
+  <div id="settings" class="section-head">
+    <h2>10. 校区设置</h2>
+    <span class="num">10 / Settings</span>
+  </div>
+  <div class="panel">
+    <p>「业务设置」tab 是本校区配置的统一入口。你能改的仅限自己校区的：</p>
+    <table class="kv">
+      <thead><tr><th>子设置</th><th>能改什么</th><th>直达</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>🎤 试课</td>
+          <td>本校区试课时段开放规则、单时段容量。</td>
+          <td><a class="deep-link" href="../dashboard.html?tab=settings&sub=trial">打开</a></td>
+        </tr>
+        <tr>
+          <td>🕒 营业时间</td>
+          <td>本校区每周营业时段（周一至周日各自的开关）。</td>
+          <td><a class="deep-link" href="../dashboard.html?tab=settings&sub=hours">打开</a></td>
+        </tr>
+        <tr>
+          <td>🚪 教室</td>
+          <td>本校区教室列表、容量、设备状态。</td>
+          <td><a class="deep-link" href="../dashboard.html?tab=settings&sub=classrooms">打开</a></td>
+        </tr>
+        <tr>
+          <td>📢 公告</td>
+          <td>家长端可见的本校区公告 — 节假日、活动、临时通知。</td>
+          <td><a class="deep-link" href="../dashboard.html?tab=settings&sub=notice">打开</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 11. Permissions -->
+  <!-- ============================================================ -->
+  <div id="perms" class="section-head">
+    <h2>11. 能做 / 不能做（权限边界）</h2>
+    <span class="num">11 / Limits</span>
+  </div>
+  <div class="panel">
+    <table class="kv">
+      <thead>
+        <tr><th style="width:60%;">操作</th><th style="width:80px;">校区运营</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>录入考勤、修改本校区学员资料</td><td><span class="yes">✓</span></td><td>带审计</td></tr>
+        <tr><td>审批请假 / 调课</td><td><span class="yes">✓</span></td><td>校区范围内</td></tr>
+        <tr><td>记录试课评估、完成 / 未到状态</td><td><span class="yes">✓</span></td><td>本校区</td></tr>
+        <tr><td>查看续费列表（脱敏金额）</td><td><span class="yes">✓</span></td><td><code class="kbd">$***</code></td></tr>
+        <tr><td>修改本校区营业时间 / 教室 / 公告</td><td><span class="yes">✓</span></td><td>本校区</td></tr>
+        <tr><td>写交班记录</td><td><span class="yes">✓</span></td><td>独有职责</td></tr>
+        <tr><td>看真实金额（订单 / 收入 / 工资）</td><td><span class="no">✗</span></td><td>校长权限</td></tr>
+        <tr><td>审批退款 / 报销</td><td><span class="no">✗</span></td><td>校长权限</td></tr>
+        <tr><td>修改其他校区的数据</td><td><span class="no">✗</span></td><td>超级管理员</td></tr>
+        <tr><td>新增 / 编辑员工档案</td><td><span class="no">✗</span></td><td>校长 / 超管</td></tr>
+        <tr><td>修改角色权限</td><td><span class="no">✗</span></td><td>超管独有</td></tr>
+        <tr><td>市场 CRM 写入 / 修改</td><td><span class="no">✗</span></td><td>市场角色</td></tr>
+      </tbody>
+    </table>
+    <div class="callout info">
+      <strong>实现细节（给开发同事看）</strong>
+      所有判断都通过 <code class="kbd">window.MindDoFlow.hasPerm("...")</code>。完整权限列表见
+      <a href="campus-ops-flow.html" style="color:var(--brand);font-weight:700;">campus-ops user-flow 文档</a>
+      的「权限矩阵」章节，或直接读
+      <a href="../assets/minddo-flow.js" style="color:var(--brand);font-weight:700;"><code class="kbd">assets/minddo-flow.js</code></a>
+      顶部的 <code class="kbd">PERMISSION_TEMPLATES["campus-ops"]</code>。
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 12. FAQ -->
+  <!-- ============================================================ -->
+  <div id="faq" class="section-head">
+    <h2>12. 常见问题</h2>
+    <span class="num">12 / FAQ</span>
+  </div>
+
+  <details class="faq">
+    <summary>看不到某个 tab 怎么办？</summary>
+    <div class="body">
+      <p>侧边栏会自动隐藏你权限范围外的入口。如果突然某个原来能用的 tab 不见了，检查 ① 你是不是被切换到了其他角色（顶栏右上角看当前身份）；② 是不是切到了别的校区。</p>
+    </div>
+  </details>
+
+  <details class="faq">
+    <summary>金额怎么全是 $***？</summary>
+    <div class="body">
+      <p>这是设计如此 — campus-ops 角色的财务面板对真实金额脱敏。需要查具体数字请联系校长，或者通过「续费列表」+「学员详情」交叉核对（这些视图给你看了课时数 / 套餐名 / 续费状态等关键信息，仅金额数字脱敏）。</p>
+    </div>
+  </details>
+
+  <details class="faq">
+    <summary>家长说他点了请假但我看不到？</summary>
+    <div class="body">
+      <p>① 到 <a class="deep-link" href="../dashboard.html?tab=inbox">待办</a> 顶部过滤选「请假改期」；② 如果列表里没有，问家长是从家长端 App 提交的还是只是微信告诉你的（后者需要你手动代录）；③ 已审批过的申请会从待办移除，去对应学员详情的「申请」tab 找历史记录。</p>
+    </div>
+  </details>
+
+  <details class="faq">
+    <summary>录错考勤怎么改？</summary>
+    <div class="body">
+      <p>直接在 <a class="deep-link" href="../dashboard.html?tab=academic&sub=attendance">考勤面板</a> 重新选状态保存即可。系统会写入 <strong>变更</strong> 而不是覆盖 — 旧值 + 新值都保留在审计日志，谁改的、什么时间一清二楚。学员详情「变更历史」tab 也能看到。</p>
+    </div>
+  </details>
+
+  <details class="faq">
+    <summary>AI 按钮（✨）安全吗？</summary>
+    <div class="body">
+      <p>AI 按钮只产生<strong>草稿</strong>，不会自动写入。生成结果会出现在按钮下方，需要你确认后点「应用」才生效。可以放心使用，省时间。当前 demo 环境 AI 是本地模拟（不联网），上线后会走真实 LLM 但同样是「先生成、再确认」的流程。</p>
+    </div>
+  </details>
+
+  <details class="faq">
+    <summary>切换语言？</summary>
+    <div class="body">
+      <p>顶栏右上角的「中 / EN」按钮切换。你的偏好会被记住（写入 <code class="kbd">minddo_lang</code>），下次打开自动恢复。</p>
+    </div>
+  </details>
+
+  <details class="faq">
+    <summary>误操作了能撤销吗？</summary>
+    <div class="body">
+      <p>多数操作不能一键撤销，但 <strong>所有操作都有审计</strong>，可以根据 <a href="../dashboard.html?tab=internal&sub=audit" style="color:var(--brand);font-weight:700;">操作日志</a> 的 diff 手动改回去。重要操作（如批量改状态）前会有确认弹窗，仔细看一眼再点。</p>
+    </div>
+  </details>
+
+  <details class="faq">
+    <summary>更多问题 / 反馈渠道？</summary>
+    <div class="body">
+      <p>页面右下角 <strong>✨ 客服</strong> 按钮 → 「AI 聊天」tab 直接问，常见问题秒回；复杂问题切到「联系我们」tab 看微信 / 电话 / 邮箱。或者直接 @ 校长。</p>
+    </div>
+  </details>
+
+  <!-- ====== Final card ====== -->
+  <div class="section-head" style="margin-top:32px;">
+    <h2>下一步</h2>
+    <span class="num">Next</span>
+  </div>
+  <div class="panel">
+    <div class="two-col">
+      <a href="campus-ops-flow.html" class="deep-link" style="padding:14px 18px;font-size:13.5px;">查看完整 User Flow（图表 + 状态机）</a>
+      <a href="../dashboard.html?tab=overview" class="deep-link" style="padding:14px 18px;font-size:13.5px;">现在打开 Dashboard 实操</a>
+      <a href="schema-explorer.html" class="deep-link" style="padding:14px 18px;font-size:13.5px;">浏览数据结构（Schema Explorer）</a>
+      <a href="user-flows.html" class="deep-link" style="padding:14px 18px;font-size:13.5px;">看其他角色的职责</a>
+    </div>
+  </div>
+
+  <footer>
+    生成于 <code>docs/campus-ops-training.html</code> ·
+    深链通过 <code>?tab=X&amp;sub=Y</code> 查询参数解析（见 dashboard.html 顶部 setActiveTab 入口）·
+    <a href="user-flows.html" style="color:var(--brand);">返回角色全景</a>
+  </footer>
+
+</main>
+
+</body>
+</html>

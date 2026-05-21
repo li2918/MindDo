@@ -17100,6 +17100,27 @@
       var dashTabs = document.getElementById("dashTabs");
       var savedTab = "overview";
       try { savedTab = localStorage.getItem("minddo_dashboard_tab") || "overview"; } catch (_) {}
+      // Training docs use ?tab=academic / ?sub=schedule to land users on a
+      // specific surface. The param wins over the sticky savedTab so a
+      // shared link always opens what the writer intended.
+      try {
+        var __qp = new URLSearchParams(location.search);
+        var __qTab = __qp.get("tab");
+        if (__qTab) savedTab = __qTab;
+        var __qSub = __qp.get("sub");
+        if (__qSub) {
+          // Sub-tab keys live under abbreviated prefixes; map the full tab
+          // name to the prefix used by the per-area sub-tab persistence.
+          var __subPrefixMap = {
+            academic: "acad", marketing: "mkt", enrollment: "mkt",
+            finance: "fin", internal: "int", data: "data", settings: "settings"
+          };
+          var __pref = __subPrefixMap[savedTab];
+          if (__pref) {
+            try { localStorage.setItem("minddo_dash_" + __pref + "_subtab", __qSub); } catch (_) {}
+          }
+        }
+      } catch (_) {}
       function setActiveTab(key) {
         if (!dashTabs) return;
         var tabs = dashTabs.querySelectorAll("[data-tab]");
