@@ -181,7 +181,7 @@ input.invalid, select.invalid, textarea.invalid,
 
   nav.navbar .nav-brand-name,
   nav.navbar .brand-name { font-size: 16px; }
-  nav.navbar .nav-brand img { width: 32px; height: 32px; }
+  nav.navbar .nav-brand img { height: 36px; width: auto; max-width: 140px; }
 }
 
 /* ============ max-width: 420px ============ */
@@ -240,7 +240,7 @@ img { max-width: 100%; height: auto; }
 /* ============ Small phones (≤480px): compact further ============ */
 @media (max-width: 480px) {
   .topbar-brand { padding: 0 12px !important; }
-  .topbar-brand img { width: 28px; height: 28px; }
+  .topbar-brand img { height: 30px; width: auto; max-width: 120px; }
   .topbar-brand .b-name { font-size: 15px; }
   .user-trigger .um-greeting,
   .user-trigger .user-name { display: none; }
