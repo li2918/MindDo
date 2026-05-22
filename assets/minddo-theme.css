@@ -4,34 +4,40 @@
 
 :root {
   /* ---------- Colour ---------- */
-  /* Logo-aligned palette — warm amber/clay to match the 馒头AI mark. */
-  --bg: #fff8ee;                                 /* page background — warm cream */
-  --sand: #fde9c5;                               /* warm surface panel */
+  /* 馒头AI palette — warm yellow/Tiger-Flame brand, blue family used as accents. */
+  --bg: #FFF5D6;                                 /* page background — Cornsilk */
+  --sand: #FFE8AC;                               /* warm yellow-tinted surface */
   --card: rgba(255, 255, 255, 0.96);             /* card background */
-  --line: rgba(122, 48, 16, 0.12);               /* warm border */
-  --line-strong: rgba(122, 48, 16, 0.22);        /* emphasised border */
-  --text: #1c1208;                               /* near-black, warm-tinted */
-  --muted: #8a6240;                              /* warm muted */
-  --muted-soft: #a98060;                         /* even softer body text */
-  --gold: #f59e0b;                               /* amber-500 primary accent */
-  --gold-deep: #d97706;                          /* amber-600 deeper accent */
-  --gold-soft: #fde68a;                          /* amber-200 tint */
-  --clay: #7c2d12;                               /* warm-brown primary brand */
-  --clay-deep: #5a200a;                          /* clay hover / active */
-  --brown: #3a1808;                              /* deep brown surface (footer / dark hero) */
+  --line: rgba(255, 91, 36, 0.12);               /* subtle Tiger-Flame border */
+  --line-strong: rgba(255, 91, 36, 0.22);        /* emphasised border */
+  --text: #1a1a1a;                               /* neutral near-black */
+  --muted: #6b7280;                              /* neutral muted gray */
+  --muted-soft: #9ca3af;                         /* softer body text */
+  --gold: #FFC824;                               /* School Bus Yellow — primary accent */
+  --gold-deep: #E5B11D;                          /* deeper yellow for hover */
+  --gold-soft: #FFEFA8;                          /* light yellow tint */
+  --clay: #1a1a1a;                               /* neutral dark — heading / brand text */
+  --clay-deep: #000000;                          /* deepest text */
+  --brand: #FF5B24;                              /* Tiger Flame — interactive primary */
+  --brand-deep: #E04A18;                         /* Tiger Flame hover */
+  --brown: #1a1a1a;                              /* dark surface for footer / dark hero */
+
+  /* Cool accents — used for info, links, secondary actions */
+  --info: #245BFF;                               /* Full Spectrum Blue */
+  --info-soft: #D6F5FF;                          /* Light Cyan tint surface */
+  --info-deep: #1A47CC;                          /* deep blue hover */
+  --aqua: #24C8FF;                               /* Sky Aqua secondary accent */
 
   /* Semantic */
   --success: #2f855a;                            /* AA-compliant green */
   --success-soft: #e7f3ec;
-  --error: #b2502d;                              /* warmer accessible red */
-  --error-soft: #fbeee7;
-  --warn: #b7791f;                               /* AA-compliant amber */
-  --warn-soft: #fbf3e0;
-  --info: var(--gold-deep);
-  --info-soft: #fef3c7;
+  --error: #DC2626;                              /* neutral accessible red */
+  --error-soft: #FEE2E2;
+  --warn: var(--gold);                           /* School Bus Yellow */
+  --warn-soft: #FFF4C5;
 
-  /* Focus ring — visible on both light & dark surfaces */
-  --focus-ring: 0 0 0 3px rgba(245, 158, 11, 0.35);
+  /* Focus ring — Tiger Flame tint */
+  --focus-ring: 0 0 0 3px rgba(255, 91, 36, 0.35);
   --focus-ring-offset: 2px;
 
   /* ---------- Radii ---------- */
@@ -88,12 +94,12 @@
   --fw-black: 800;
 
   /* ---------- Shadows ---------- */
-  --shadow: 0 24px 60px rgba(42, 20, 8, 0.10);          /* legacy alias */
-  --shadow-xs: 0 1px 2px rgba(42, 20, 8, 0.06);
-  --shadow-sm: 0 4px 12px rgba(42, 20, 8, 0.06);
-  --shadow-md: 0 12px 28px rgba(42, 20, 8, 0.08);
-  --shadow-lg: 0 24px 60px rgba(42, 20, 8, 0.10);
-  --shadow-xl: 0 40px 90px rgba(42, 20, 8, 0.14);
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.10);            /* legacy alias */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.10);
+  --shadow-xl: 0 40px 90px rgba(0, 0, 0, 0.14);
   --shadow-ring: 0 0 0 1px var(--line);
 
   /* ---------- Motion ---------- */
