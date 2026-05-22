@@ -10,14 +10,14 @@
       --clay: #1a1a1a; --brand: #FF5B24; --gold: #FFC824; --gold-deep: #E5B11D;
       --info: #245BFF; --info-soft: #D6F5FF; --aqua: #24C8FF;
       --muted: #6b7280; --text: #1f2937;
-      --stable: #6e8b58; --evolving: #d97706; --demo: #c46a4d;
-      --cat-student: #d8551c; --cat-academic: #4d9c6e; --cat-family: #b45309;
-      --cat-marketing: #e8702a; --cat-finance: #c44d4d; --cat-internal: #6b5b95;
+      --stable: #2f855a; --evolving: #E5B11D; --demo: #DC2626;
+      --cat-student: #FF5B24; --cat-academic: #4d9c6e; --cat-family: #B8901A;
+      --cat-marketing: #e8702a; --cat-finance: #DC2626; --cat-internal: #6b5b95;
       --cat-system: #6b7280;
     }
     * { box-sizing: border-box; }
     body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-    .topbar { position: sticky; top: 0; z-index: 50; background: rgba(254, 248, 238, 0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar { position: sticky; top: 0; z-index: 50; background: rgba(255, 245, 214, 0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
     .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; color: var(--clay); font-size: 15px; letter-spacing: -0.01em; text-decoration: none; }
     .topbar .brand .brand-img { display: block; height: 28px; width: auto; max-width: 110px; object-fit: contain; }
     .topbar nav { display: flex; gap: 14px; font-size: 13px; }
@@ -28,9 +28,9 @@
 
     .hero {
       background: linear-gradient(135deg, #0d2841 0%, #1f3f5e 100%);
-      color: #fef3c7; border-radius: 20px;
+      color: #FFEFA8; border-radius: 20px;
       padding: 32px 36px;
-      box-shadow: 0 18px 44px rgba(13, 40, 65, 0.18);
+      box-shadow: 0 18px 44px rgba(36, 91, 255, 0.18);
       margin-bottom: 22px;
     }
     .hero .eyebrow { font-size: 11.5px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #60a5fa; margin-bottom: 8px; }
@@ -45,13 +45,13 @@
       border: 1px solid rgba(254, 243, 199, 0.22);
       border-radius: 12px; padding: 12px 14px;
     }
-    .stat .v { font-size: 20px; font-weight: 900; color: #fef3c7; }
+    .stat .v { font-size: 20px; font-weight: 900; color: #FFEFA8; }
     .stat .l { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(254, 243, 199, 0.66); margin-top: 2px; }
 
     /* Toolbar */
     .toolbar {
       position: sticky; top: 56px; z-index: 40;
-      background: rgba(254, 248, 238, 0.96);
+      background: rgba(255, 245, 214, 0.96);
       backdrop-filter: blur(8px);
       padding: 12px 0;
       border-bottom: 1px solid var(--line);
@@ -141,7 +141,7 @@
     .schema-card {
       background: #fff; border: 1px solid var(--line);
       border-radius: 14px; padding: 16px 18px;
-      box-shadow: 0 4px 12px rgba(122, 48, 16, 0.04);
+      box-shadow: 0 4px 12px rgba(255, 91, 36, 0.04);
       position: relative; overflow: hidden;
       transition: 0.15s;
     }
@@ -152,7 +152,7 @@
     .schema-card:hover {
       transform: translateY(-2px);
       border-color: var(--cat-color, var(--gold));
-      box-shadow: 0 14px 32px rgba(122, 48, 16, 0.1);
+      box-shadow: 0 14px 32px rgba(255, 91, 36, 0.1);
     }
     .schema-card[hidden] { display: none; }
     .schema-card .card-head {
@@ -172,7 +172,7 @@
       font-size: 10px; font-weight: 800; letter-spacing: 0.06em;
       text-transform: uppercase; color: var(--muted);
       padding: 2px 8px; border-radius: 999px;
-      background: rgba(122, 48, 16, 0.05);
+      background: rgba(255, 91, 36, 0.05);
       border: 1px solid var(--line);
     }
     .schema-card .type-chip.array { color: #2c5f8d; background: rgba(44, 95, 141, 0.08); border-color: rgba(44, 95, 141, 0.24); }
@@ -191,7 +191,7 @@
     .schema-card .toggle-schema:hover { background: var(--brand); color: #fff; }
     .schema-card pre {
       margin: 10px 0 0; padding: 10px 12px;
-      background: #1f2937; color: #fef3c7;
+      background: #1f2937; color: #FFEFA8;
       border-radius: 8px; font-size: 11.5px; line-height: 1.55;
       font-family: ui-monospace, "Courier New", monospace;
       overflow-x: auto;
@@ -203,13 +203,13 @@
     .schema-card pre[hidden] { display: none; }
     .schema-card .refs {
       margin-top: 10px; padding-top: 10px;
-      border-top: 1px dashed rgba(122, 48, 16, 0.1);
+      border-top: 1px dashed rgba(255, 91, 36, 0.1);
       font-size: 11px; color: var(--muted);
     }
     .schema-card .refs strong { color: var(--clay); }
     .schema-card .refs code {
       font-family: ui-monospace, monospace;
-      color: var(--brand); background: rgba(216, 85, 28, 0.06);
+      color: var(--brand); background: rgba(255, 91, 36, 0.06);
       padding: 1px 5px; border-radius: 3px; font-size: 11px;
     }
 
@@ -238,7 +238,7 @@
     .footnote ol li { padding: 2px 0; }
     .footnote code {
       font-family: ui-monospace, monospace;
-      color: var(--brand); background: rgba(216, 85, 28, 0.06);
+      color: var(--brand); background: rgba(255, 91, 36, 0.06);
       padding: 1px 5px; border-radius: 3px; font-size: 11.5px;
     }
 
@@ -270,7 +270,7 @@
   <section class="hero">
     <div class="eyebrow">Schema Explorer</div>
     <h1>localStorage 数据字典</h1>
-    <p class="sub">MindDo 是 frontend-only prototype，所有数据存在浏览器的 localStorage 里。本页把 <code style="font-family:ui-monospace,monospace;background:rgba(254,243,199,0.18);padding:1px 6px;border-radius:4px;color:#fef3c7;">docs/SCHEMA.md</code> 里的 38 个 <code style="font-family:ui-monospace,monospace;background:rgba(254,243,199,0.18);padding:1px 6px;border-radius:4px;color:#fef3c7;">minddo_*</code> key 变成可搜索 / 过滤的卡片。每张卡显示字段 schema，点击可展开完整代码块。改 schema 时也别忘了同步更新源文件 + MIGRATIONS。</p>
+    <p class="sub">MindDo 是 frontend-only prototype，所有数据存在浏览器的 localStorage 里。本页把 <code style="font-family:ui-monospace,monospace;background:rgba(254,243,199,0.18);padding:1px 6px;border-radius:4px;color:#FFEFA8;">docs/SCHEMA.md</code> 里的 38 个 <code style="font-family:ui-monospace,monospace;background:rgba(254,243,199,0.18);padding:1px 6px;border-radius:4px;color:#FFEFA8;">minddo_*</code> key 变成可搜索 / 过滤的卡片。每张卡显示字段 schema，点击可展开完整代码块。改 schema 时也别忘了同步更新源文件 + MIGRATIONS。</p>
     <div class="stats-row">
       <div class="stat"><div class="v" id="statTotal">—</div><div class="l">Total Keys</div></div>
       <div class="stat"><div class="v" id="statStable">—</div><div class="l">🟢 Stable</div></div>

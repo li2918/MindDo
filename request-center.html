@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="MindDo 申请处理中心 (内部)。 · MindDo request center (internal)." />
   <meta name="author" content="MindDo AI Learning Center" />
-  <meta name="theme-color" content="#7c2d12" />
+  <meta name="theme-color" content="#1a1a1a" />
   <meta name="robots" content="noindex, nofollow" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="MindDo" />
@@ -22,8 +22,8 @@
   <title>申请处理中心 | Request Center</title>
   <style>
     /* Accessibility: skip link */
-    .skip-link { position:absolute; left:-9999px; top:0; background:#7c2d12; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
-    .skip-link:focus { left:0; outline:3px solid #f59e0b; outline-offset:2px; }
+    .skip-link { position:absolute; left:-9999px; top:0; background:#1a1a1a; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #FFC824; outline-offset:2px; }
 
     :root {
       --bg: #FFF5D6; --sand: #FFE8AC; --card: rgba(255,255,255,0.96);
@@ -31,7 +31,7 @@
       --gold: #FFC824; --gold-deep: #E5B11D; --clay: #1a1a1a; --brown: #1a1a1a;
       --brand: #FF5B24; --info: #245BFF; --info-soft: #D6F5FF; --aqua: #24C8FF;
       --shadow: 0 24px 60px rgba(0,0,0,0.12);
-      --ok: #6f8f57; --warn: #d89c36; --danger: #c46a4d;
+      --ok: #6f8f57; --warn: #d89c36; --danger: #DC2626;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -47,19 +47,19 @@
     .nav-brand-name { font-size: 22px; font-weight: 800; color: var(--clay); }
     .nav-menu { display: flex; align-items: center; gap: 4px; list-style: none; }
     .nav-menu a { padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--muted); transition: 0.15s; }
-    .nav-menu a:hover { color: var(--clay); background: rgba(122,48,16,0.06); }
+    .nav-menu a:hover { color: var(--clay); background: rgba(255,91,36,0.06); }
     .nav-right { display: flex; align-items: center; gap: 10px; }
     .lang-btn { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--clay); font-family: inherit; transition: 0.15s; }
     .lang-btn:hover, .lang-btn.active { background: var(--sand); border-color: var(--gold); }
     .nav-login { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 700; color: var(--clay); font-family: inherit; text-decoration: none; transition: 0.15s; }
     .nav-login:hover, .nav-login.active { background: var(--sand); border-color: var(--gold); }
-    .btn-primary { background: linear-gradient(135deg,#fde68a,var(--gold)); color: #3a1808; border: none; border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.2s; box-shadow: 0 4px 14px rgba(245,158,11,0.28); display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+    .btn-primary { background: linear-gradient(135deg,#FFEFA8,var(--gold)); color: #1a1a1a; border: none; border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.2s; box-shadow: 0 4px 14px rgba(255,200,36,0.28); display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
     .btn-primary:hover { transform: translateY(-2px); }
 
     /* PAGE HERO */
-    .page-hero { background: linear-gradient(145deg,#2a1408 0%,#3a1808 50%,#7c2d12 100%); padding: 52px 0; }
+    .page-hero { background: linear-gradient(145deg,#2a1408 0%,#1a1a1a 50%,#1a1a1a 100%); padding: 52px 0; }
     .page-hero-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
-    .page-tag { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: rgba(245,158,11,0.18); border: 1px solid rgba(245,158,11,0.3); color: #fde68a; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
+    .page-tag { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: rgba(255,200,36,0.18); border: 1px solid rgba(255,200,36,0.3); color: #FFEFA8; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
     .page-hero h1 { font-size: clamp(28px,3.5vw,44px); font-weight: 900; color: #fffbeb; letter-spacing: -0.02em; margin-bottom: 10px; }
     .page-hero p { font-size: 15px; color: rgba(254,243,199,0.75); line-height: 1.7; }
 
@@ -86,7 +86,7 @@
     .section-wrap.bg-sand { background: var(--sand); }
     .section-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
     .section-head { margin-bottom: 32px; }
-    .section-tag { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: rgba(253,230,138,0.2); border: 1px solid rgba(122,48,16,0.22); color: #7c2d12; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
+    .section-tag { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: rgba(253,230,138,0.2); border: 1px solid rgba(255,91,36,0.22); color: #1a1a1a; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
     .section-title { font-size: clamp(22px,2.5vw,32px); font-weight: 900; color: var(--clay); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 10px; }
     .section-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 600px; }
     /* HERO ENHANCEMENTS */
@@ -102,7 +102,7 @@
     .ops-stat span { font-size: 11px; color: rgba(254,243,199,0.62); }
     /* EXTRA BUTTONS */
     .btn-secondary { background: rgba(240,249,255,0.98); color: var(--clay); border: 1px solid var(--line); border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
-    .btn-secondary:hover { transform: translateY(-2px); border-color: rgba(245,158,11,0.38); }
+    .btn-secondary:hover { transform: translateY(-2px); border-color: rgba(255,200,36,0.38); }
     @media (max-width: 900px) { .hero-split { grid-template-columns: 1fr; } .hero-ops-card { display: none; } }
     @media (max-width: 760px) { .section-inner { padding: 0 24px; } .section-wrap { padding: 40px 0; } }
 
@@ -115,7 +115,7 @@
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 24px;
-      box-shadow: 0 18px 44px rgba(122, 48, 16, 0.08);
+      box-shadow: 0 18px 44px rgba(255, 91, 36, 0.08);
     }
 
     .panel {
@@ -140,7 +140,7 @@
       padding: 14px;
       border-radius: 18px;
       background: rgba(240, 249, 255, 0.84);
-      border: 1px solid rgba(122, 48, 16, 0.12);
+      border: 1px solid rgba(255, 91, 36, 0.12);
     }
 
     .metric span {
@@ -182,8 +182,8 @@
 
     .btn:hover,
     .btn.active {
-      background: linear-gradient(135deg, #fef3c7, #fcd34d);
-      border-color: rgba(217, 119, 6, 0.5);
+      background: linear-gradient(135deg, #FFEFA8, #fcd34d);
+      border-color: rgba(229, 177, 29, 0.5);
       box-shadow: 0 10px 24px rgba(192, 123, 39, 0.18);
     }
 
@@ -236,7 +236,7 @@
       border-radius: 999px;
       font-size: 12px;
       font-weight: 700;
-      border: 1px solid rgba(122, 48, 16, 0.14);
+      border: 1px solid rgba(255, 91, 36, 0.14);
       background: rgba(255, 255, 255, 0.86);
     }
 
@@ -254,7 +254,7 @@
       padding: 10px 12px;
       border-radius: 16px;
       background: rgba(240, 249, 255, 0.76);
-      border: 1px solid rgba(122, 48, 16, 0.1);
+      border: 1px solid rgba(255, 91, 36, 0.1);
       font-size: 13px;
     }
 
@@ -262,7 +262,7 @@
       padding: 18px;
       border-radius: 18px;
       background: rgba(240, 249, 255, 0.84);
-      border: 1px dashed rgba(122, 48, 16, 0.2);
+      border: 1px dashed rgba(255, 91, 36, 0.2);
       color: var(--muted);
       text-align: center;
     }

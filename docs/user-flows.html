@@ -13,7 +13,7 @@
     }
     * { box-sizing: border-box; }
     body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-    .topbar { position: sticky; top: 0; z-index: 50; background: rgba(254, 248, 238, 0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar { position: sticky; top: 0; z-index: 50; background: rgba(255, 245, 214, 0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
     .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; color: var(--clay); font-size: 15px; letter-spacing: -0.01em; text-decoration: none; }
     .topbar .brand .brand-img { display: block; height: 28px; width: auto; max-width: 110px; object-fit: contain; }
     .topbar nav { display: flex; gap: 14px; font-size: 13px; }
@@ -21,7 +21,7 @@
     .topbar nav a:hover { color: var(--clay); }
 
     main { max-width: 980px; margin: 0 auto; padding: 40px 24px 80px; }
-    .hero { background: linear-gradient(135deg, #0d2841 0%, #1f3f5e 100%); color: #fef3c7; border-radius: 20px; padding: 40px 40px; box-shadow: 0 18px 44px rgba(13, 40, 65, 0.18); margin-bottom: 32px; }
+    .hero { background: linear-gradient(135deg, #0d2841 0%, #1f3f5e 100%); color: #FFEFA8; border-radius: 20px; padding: 40px 40px; box-shadow: 0 18px 44px rgba(36, 91, 255, 0.18); margin-bottom: 32px; }
     .hero .eyebrow { font-size: 11.5px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #fbbf24; margin-bottom: 8px; }
     .hero h1 { margin: 0 0 12px; font-size: 36px; letter-spacing: -0.02em; font-weight: 900; }
     .hero .sub { font-size: 15px; color: rgba(254, 243, 199, 0.78); max-width: 70ch; line-height: 1.65; }
@@ -36,7 +36,7 @@
       border: 1px solid var(--line);
       border-radius: 18px;
       padding: 24px 26px;
-      box-shadow: 0 12px 28px rgba(122, 48, 16, 0.06);
+      box-shadow: 0 12px 28px rgba(255, 91, 36, 0.06);
       text-decoration: none;
       color: inherit;
       transition: 0.18s;
@@ -50,7 +50,7 @@
     .role-card:hover {
       transform: translateY(-3px);
       border-color: var(--accent, var(--brand));
-      box-shadow: 0 24px 56px rgba(122, 48, 16, 0.14);
+      box-shadow: 0 24px 56px rgba(255, 91, 36, 0.14);
     }
     .role-card .role-head {
       display: flex; align-items: flex-start; justify-content: space-between;
@@ -58,7 +58,7 @@
     }
     .role-card .role-icon {
       width: 50px; height: 50px; border-radius: 14px;
-      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      background: linear-gradient(135deg, #FFEFA8, #FFEFA8);
       display: inline-flex; align-items: center; justify-content: center;
       font-size: 28px; flex-shrink: 0;
     }
@@ -66,8 +66,8 @@
       font-size: 10px; font-weight: 800; letter-spacing: 0.08em;
       text-transform: uppercase; color: var(--accent, var(--brand));
       padding: 3px 9px; border-radius: 999px;
-      background: rgba(216, 85, 28, 0.08);
-      border: 1px solid rgba(216, 85, 28, 0.2);
+      background: rgba(255, 91, 36, 0.08);
+      border: 1px solid rgba(255, 91, 36, 0.2);
       white-space: nowrap;
     }
     .role-card h2 {
@@ -105,9 +105,9 @@
     .role-card:hover .role-cta::after { transform: translateX(4px); }
 
     /* Role accent colors — applied per card */
-    .role-card.super-admin   { --accent: #c44d4d; }
+    .role-card.super-admin   { --accent: #DC2626; }
     .role-card.principal     { --accent: #4d9c6e; }
-    .role-card.campus-ops    { --accent: #d97706; }
+    .role-card.campus-ops    { --accent: #E5B11D; }
     .role-card.campus-marketing { --accent: #e8702a; }
 
     .footnote {
@@ -152,10 +152,10 @@
     <p class="sub">MindDo 运营 dashboard 当前的 RBAC 由 4 个角色模板驱动。每个角色都有专属的核心职责、首页、可操作的模块和数据权限。点击下方任一卡片查看该角色的完整 user flow。</p>
   </section>
 
-  <a href="campus-ops-training.html" style="display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#fff7ed 0%,#fef3c7 100%);border:1.5px solid rgba(216,85,28,0.32);border-radius:16px;padding:16px 22px;margin-bottom:22px;text-decoration:none;color:inherit;box-shadow:0 8px 22px rgba(216,85,28,0.08);transition:0.18s;">
+  <a href="campus-ops-training.html" style="display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#fff7ed 0%,#FFEFA8 100%);border:1.5px solid rgba(255,91,36,0.32);border-radius:16px;padding:16px 22px;margin-bottom:22px;text-decoration:none;color:inherit;box-shadow:0 8px 22px rgba(255,91,36,0.08);transition:0.18s;">
     <div style="font-size:30px;flex-shrink:0;">📖</div>
     <div style="flex:1;">
-      <div style="font-size:10.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#b45309;margin-bottom:2px;">新员工培训手册 · NEW</div>
+      <div style="font-size:10.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#B8901A;margin-bottom:2px;">新员工培训手册 · NEW</div>
       <div style="font-size:16px;font-weight:900;color:var(--clay);">校区运营 · 30 分钟上手使用指南</div>
       <div style="font-size:12.5px;color:var(--muted);margin-top:2px;">每日例行清单、试课接待、考勤录入、审批、续费跟进、AI 用法、FAQ — 全部带可点击的页面深链。</div>
     </div>
@@ -235,8 +235,8 @@
   </div>
 
   <div class="footnote">
-    <strong>权限模板配置</strong> 在 <a href="../assets/minddo-flow.js"><code style="font-family:ui-monospace,monospace;color:var(--brand);background:rgba(216,85,28,0.08);padding:1px 5px;border-radius:3px;">assets/minddo-flow.js</code></a> 顶部的 <code style="font-family:ui-monospace,monospace;color:var(--brand);background:rgba(216,85,28,0.08);padding:1px 5px;border-radius:3px;">PERMISSION_TEMPLATES</code> 对象。每个角色的 perms 数组决定其可访问的模块。<br/>
-    <strong>登录</strong> 由 <code style="font-family:ui-monospace,monospace;color:var(--brand);background:rgba(216,85,28,0.08);padding:1px 5px;border-radius:3px;">minddo_active_ops_user</code> 控制 — 即 dashboard 顶栏右上角的"切换身份"菜单（demo 用）。<br/>
+    <strong>权限模板配置</strong> 在 <a href="../assets/minddo-flow.js"><code style="font-family:ui-monospace,monospace;color:var(--brand);background:rgba(255,91,36,0.08);padding:1px 5px;border-radius:3px;">assets/minddo-flow.js</code></a> 顶部的 <code style="font-family:ui-monospace,monospace;color:var(--brand);background:rgba(255,91,36,0.08);padding:1px 5px;border-radius:3px;">PERMISSION_TEMPLATES</code> 对象。每个角色的 perms 数组决定其可访问的模块。<br/>
+    <strong>登录</strong> 由 <code style="font-family:ui-monospace,monospace;color:var(--brand);background:rgba(255,91,36,0.08);padding:1px 5px;border-radius:3px;">minddo_active_ops_user</code> 控制 — 即 dashboard 顶栏右上角的"切换身份"菜单（demo 用）。<br/>
     <strong>所有 user flow</strong> 都按统一模板（核心职责 · KPI · 主流程图 · 子流程 · 权限矩阵 · 存储 · 审计）生成，方便横向对比。
   </div>
 

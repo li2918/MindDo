@@ -9,10 +9,10 @@
   <title>付费发票 | MindDo Invoice</title>
   <style>
     :root {
-      --bg:#fbeed1; --paper:#ffffff; --line:rgba(122,48,16,0.18);
-      --line-soft:rgba(122,48,16,0.08);
-      --text:#1c1208; --muted:#8a6240; --clay:#7c2d12; --brown:#3a1808;
-      --gold:#d89c36; --gold-soft:#f3d99a; --sky:#f59e0b; --sky-deep:#d97706;
+      --bg:#fbeed1; --paper:#ffffff; --line:rgba(255,91,36,0.18);
+      --line-soft:rgba(255,91,36,0.08);
+      --text:#1a1a1a; --muted:#6b7280; --clay:#1a1a1a; --brown:#1a1a1a;
+      --gold:#d89c36; --gold-soft:#f3d99a; --sky:#FFC824; --sky-deep:#E5B11D;
       --sand:#f8f3e6;
     }
     *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
@@ -27,9 +27,9 @@
       padding:9px 18px; font:inherit; font-size:13px; font-weight:700; cursor:pointer; text-decoration:none;
       display:inline-flex; align-items:center; gap:6px; transition:0.15s; }
     .btn:hover { transform:translateY(-1px); border-color:var(--sky); }
-    .btn.primary { background:linear-gradient(135deg,#fde68a,var(--sky)); color:#3a1808;
-      border-color:rgba(245,158,11,0.4); box-shadow:0 4px 12px rgba(245,158,11,0.22); }
-    .btn.primary:hover { box-shadow:0 8px 20px rgba(245,158,11,0.3); }
+    .btn.primary { background:linear-gradient(135deg,#FFEFA8,var(--sky)); color:#1a1a1a;
+      border-color:rgba(255,200,36,0.4); box-shadow:0 4px 12px rgba(255,200,36,0.22); }
+    .btn.primary:hover { box-shadow:0 8px 20px rgba(255,200,36,0.3); }
     .lang-toggle { background:#fff; border:1px solid var(--line); border-radius:999px; padding:3px;
       display:inline-flex; gap:2px; }
     .lang-toggle button { all:unset; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:700;
@@ -41,7 +41,7 @@
       max-width:820px; margin:0 auto; background:var(--paper);
       border:1px solid var(--line);
       border-radius:6px;
-      box-shadow:0 22px 48px rgba(42,20,8,0.10);
+      box-shadow:0 22px 48px rgba(0,0,0,0.10);
       padding:0;
       position:relative;
       overflow:hidden;
@@ -130,8 +130,8 @@
     /* Status stamp — diagonal, parchment-like */
     .stamp { position:absolute; top:160px; right:60px; transform:rotate(-14deg);
       font-size:38px; font-weight:900; letter-spacing:0.06em;
-      color:rgba(110,143,87,0.32);
-      border:5px solid rgba(110,143,87,0.32);
+      color:rgba(47,133,90,0.32);
+      border:5px solid rgba(47,133,90,0.32);
       padding:10px 22px; border-radius:10px;
       pointer-events:none; user-select:none;
       font-family:"Helvetica Neue","PingFang SC",sans-serif;

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="MindDo 课程时段管理 (内部)。 · MindDo class time slot admin (internal)." />
   <meta name="author" content="MindDo AI Learning Center" />
-  <meta name="theme-color" content="#7c2d12" />
+  <meta name="theme-color" content="#1a1a1a" />
   <meta name="robots" content="noindex, nofollow" />
   <link rel="canonical" href="course-offerings.html" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
@@ -13,15 +13,15 @@
   <link rel="manifest" href="manifest.json" />
   <title>课程时段管理 | Class Time Slots</title>
   <style>
-    .skip-link { position:absolute; left:-9999px; top:0; background:#7c2d12; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
-    .skip-link:focus { left:0; outline:3px solid #f59e0b; outline-offset:2px; }
+    .skip-link { position:absolute; left:-9999px; top:0; background:#1a1a1a; color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; text-decoration:none; }
+    .skip-link:focus { left:0; outline:3px solid #FFC824; outline-offset:2px; }
 
     :root {
-      --bg:#fff8ee; --sand:#fde9c5; --card:rgba(240,249,255,0.94);
-      --line:rgba(122,48,16,0.14); --text:#1c1208; --muted:#8a6240;
-      --gold:#f59e0b; --gold-deep:#d97706; --clay:#7c2d12; --brown:#3a1808;
-      --shadow:0 24px 60px rgba(42,20,8,0.12);
-      --ok:#6f8f57; --warn:#d89c36; --danger:#c46a4d;
+      --bg:#FFF5D6; --sand:#FFE8AC; --card:rgba(240,249,255,0.94);
+      --line:rgba(255,91,36,0.14); --text:#1a1a1a; --muted:#6b7280;
+      --gold:#FFC824; --gold-deep:#E5B11D; --clay:#1a1a1a; --brown:#1a1a1a;
+      --shadow:0 24px 60px rgba(0,0,0,0.12);
+      --ok:#6f8f57; --warn:#d89c36; --danger:#DC2626;
     }
     *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
     html { scroll-behavior:smooth; }
@@ -36,18 +36,18 @@
     .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
     .nav-menu { display:flex; align-items:center; gap:4px; list-style:none; }
     .nav-menu a { padding:8px 14px; border-radius:8px; font-size:14px; font-weight:600; color:var(--muted); transition:0.15s; }
-    .nav-menu a:hover { color:var(--clay); background:rgba(122,48,16,0.06); }
+    .nav-menu a:hover { color:var(--clay); background:rgba(255,91,36,0.06); }
     .nav-right { display:flex; align-items:center; gap:10px; }
     .nav-login { background:none; border:1px solid var(--line); border-radius:999px; padding:8px 16px; cursor:pointer; font-size:13px; font-weight:700; color:var(--clay); font-family:inherit; text-decoration:none; transition:0.15s; }
     .nav-login:hover { background:var(--sand); border-color:var(--gold); }
-    .btn-primary { background:linear-gradient(135deg,#fde68a,var(--gold)); color:#3a1808; border:none; border-radius:999px; padding:10px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(245,158,11,0.28); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+    .btn-primary { background:linear-gradient(135deg,#FFEFA8,var(--gold)); color:#1a1a1a; border:none; border-radius:999px; padding:10px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; box-shadow:0 4px 14px rgba(255,200,36,0.28); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
     .btn-primary:hover { transform:translateY(-2px); }
     .btn-secondary { background:rgba(240,249,255,0.98); color:var(--clay); border:1px solid var(--line); border-radius:999px; padding:10px 22px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:0.2s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
-    .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(245,158,11,0.38); }
+    .btn-secondary:hover { transform:translateY(-2px); border-color:rgba(255,200,36,0.38); }
 
-    .page-hero { background:linear-gradient(145deg,#2a1408 0%,#3a1808 50%,#7c2d12 100%); padding:52px 0; }
+    .page-hero { background:linear-gradient(145deg,#2a1408 0%,#1a1a1a 50%,#1a1a1a 100%); padding:52px 0; }
     .page-hero-inner { max-width:1280px; margin:0 auto; padding:0 48px; color:#fffbeb; }
-    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(245,158,11,0.18); border:1px solid rgba(245,158,11,0.3); color:#fde68a; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
+    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(255,200,36,0.18); border:1px solid rgba(255,200,36,0.3); color:#FFEFA8; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
     .page-hero h1 { font-size:clamp(28px,3.5vw,42px); font-weight:900; color:#fffbeb; letter-spacing:-0.02em; margin-bottom:10px; }
     .page-hero p { font-size:15px; color:rgba(254,243,199,0.78); line-height:1.7; max-width:720px; }
     .hero-quick-links { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
@@ -56,7 +56,7 @@
 
     .page-content { padding:40px 0 80px; }
     .content-inner { max-width:1280px; margin:0 auto; padding:0 48px; }
-    .panel { background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(122,48,16,0.08); padding:24px; margin-bottom:20px; }
+    .panel { background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 44px rgba(255,91,36,0.08); padding:24px; margin-bottom:20px; }
     .panel h2 { font-size:19px; color:var(--clay); font-weight:800; margin-bottom:6px; }
     .panel .desc { font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:16px; }
 
@@ -65,10 +65,10 @@
     .table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:#fff; }
     table { width:100%; border-collapse:collapse; min-width:1100px; }
     th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:12.5px; vertical-align:middle; }
-    th { background:rgba(245,158,11,0.1); color:var(--clay); font-weight:700; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; }
-    tr:hover td { background:rgba(245,158,11,0.04); }
+    th { background:rgba(255,200,36,0.1); color:var(--clay); font-weight:700; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; }
+    tr:hover td { background:rgba(255,200,36,0.04); }
     td input, td select { width:100%; border:1px solid var(--line); background:#fef9ec; color:var(--text); padding:7px 9px; border-radius:10px; font:inherit; font-size:12.5px; outline:none; }
-    td input:focus, td select:focus { border-color:var(--gold); box-shadow:0 0 0 2px rgba(245,158,11,0.15); }
+    td input:focus, td select:focus { border-color:var(--gold); box-shadow:0 0 0 2px rgba(255,200,36,0.15); }
     td input[type="number"] { max-width:72px; }
     .col-id { width:170px; }
     .col-num { width:80px; }
@@ -76,37 +76,37 @@
     .col-time { width:140px; }
     .col-mode { width:100px; }
     .col-action { width:80px; text-align:right; }
-    .btn-remove { background:rgba(196,106,77,0.1); color:var(--danger); border:1px solid rgba(196,106,77,0.28); border-radius:999px; padding:5px 10px; font:inherit; font-size:11px; font-weight:700; cursor:pointer; transition:0.15s; }
-    .btn-remove:hover { background:rgba(196,106,77,0.2); }
-    .btn-dup { background:rgba(245,158,11,0.12); color:var(--gold-deep); border:1px solid rgba(217,119,6,0.28); border-radius:999px;
+    .btn-remove { background:rgba(220,38,38,0.1); color:var(--danger); border:1px solid rgba(220,38,38,0.28); border-radius:999px; padding:5px 10px; font:inherit; font-size:11px; font-weight:700; cursor:pointer; transition:0.15s; }
+    .btn-remove:hover { background:rgba(220,38,38,0.2); }
+    .btn-dup { background:rgba(255,200,36,0.12); color:var(--gold-deep); border:1px solid rgba(229,177,29,0.28); border-radius:999px;
       padding:5px 10px; font:inherit; font-size:11px; font-weight:700; cursor:pointer; transition:0.15s; margin-right:4px; }
-    .btn-dup:hover { background:rgba(245,158,11,0.22); border-color:rgba(217,119,6,0.5); }
+    .btn-dup:hover { background:rgba(255,200,36,0.22); border-color:rgba(229,177,29,0.5); }
 
     /* Conflict banner — shows above the offerings table when the working
        list has any teacher double-bookings or out-of-hours sessions. */
     .conflict-banner { padding:14px 18px; border-radius:14px; margin-bottom:14px;
-      background:linear-gradient(135deg,rgba(196,106,77,0.14),rgba(196,106,77,0.06));
-      border:1px solid rgba(196,106,77,0.42); color:#7a2f1c; font-size:13px; line-height:1.6; display:none; }
+      background:linear-gradient(135deg,rgba(220,38,38,0.14),rgba(220,38,38,0.06));
+      border:1px solid rgba(220,38,38,0.42); color:#7a2f1c; font-size:13px; line-height:1.6; display:none; }
     .conflict-banner.has-issues { display:block; animation:cflFade 0.18s ease-out; }
-    .conflict-banner.ok-state { display:block; background:linear-gradient(135deg,rgba(110,143,87,0.14),rgba(110,143,87,0.04));
-      border-color:rgba(110,143,87,0.42); color:#3f5d26; }
+    .conflict-banner.ok-state { display:block; background:linear-gradient(135deg,rgba(47,133,90,0.14),rgba(47,133,90,0.04));
+      border-color:rgba(47,133,90,0.42); color:#3f5d26; }
     @keyframes cflFade { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
     .conflict-banner h3 { font-size:13.5px; font-weight:800; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
     .conflict-banner ul { padding-left:18px; margin-top:6px; }
     .conflict-banner li { font-size:12.5px; line-height:1.7; }
     .conflict-banner li code { font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
-      background:rgba(196,106,77,0.12); padding:1px 6px; border-radius:6px; font-size:11.5px; }
+      background:rgba(220,38,38,0.12); padding:1px 6px; border-radius:6px; font-size:11.5px; }
 
     /* Per-row conflict markers. Two types: overlap (red) and outside
        teacher availability (amber). The whole row gets a left border. */
-    tr.cfl-overlap td { background:rgba(196,106,77,0.08) !important; }
-    tr.cfl-overlap td:first-child { box-shadow:inset 3px 0 0 #c46a4d; }
-    tr.cfl-out td { background:rgba(245,158,11,0.08) !important; }
+    tr.cfl-overlap td { background:rgba(220,38,38,0.08) !important; }
+    tr.cfl-overlap td:first-child { box-shadow:inset 3px 0 0 #DC2626; }
+    tr.cfl-out td { background:rgba(255,200,36,0.08) !important; }
     tr.cfl-out td:first-child { box-shadow:inset 3px 0 0 var(--gold-deep); }
     .cfl-tag { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
       font-size:10.5px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; margin-left:6px; vertical-align:middle; }
-    .cfl-tag.overlap { background:rgba(196,106,77,0.18); color:#7a2f1c; border:1px solid rgba(196,106,77,0.36); }
-    .cfl-tag.out     { background:rgba(245,158,11,0.18); color:var(--gold-deep); border:1px solid rgba(217,119,6,0.36); }
+    .cfl-tag.overlap { background:rgba(220,38,38,0.18); color:#7a2f1c; border:1px solid rgba(220,38,38,0.36); }
+    .cfl-tag.out     { background:rgba(255,200,36,0.18); color:var(--gold-deep); border:1px solid rgba(229,177,29,0.36); }
 
     /* Teacher availability panel — collapsible, table-style. One row per
        teacher (auto-detected from offerings); per-weekday checkbox plus
@@ -124,7 +124,7 @@
     .avail-table { width:100%; border-collapse:collapse; min-width:980px; font-size:12.5px; }
     .avail-table th, .avail-table td { padding:8px 10px; border-bottom:1px solid var(--line);
       text-align:left; vertical-align:middle; }
-    .avail-table th { background:rgba(245,158,11,0.08); color:var(--clay); font-weight:700;
+    .avail-table th { background:rgba(255,200,36,0.08); color:var(--clay); font-weight:700;
       font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap; }
     .avail-table tbody td:first-child { font-weight:700; color:var(--clay); white-space:nowrap; }
     .avail-day-cell { display:flex; align-items:center; gap:6px; }
@@ -134,7 +134,7 @@
       background:#fef9ec; padding:4px 6px; border-radius:8px; font:inherit; font-size:11.5px; }
     .avail-day-cell .avail-times input:disabled { opacity:0.4; pointer-events:none; }
     .avail-actions { padding:10px 14px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;
-      border-top:1px solid var(--line); background:rgba(245,158,11,0.04); }
+      border-top:1px solid var(--line); background:rgba(255,200,36,0.04); }
     .avail-actions .hint { font-size:11.5px; color:var(--muted); margin-left:6px; }
     .btn-mini { background:#fff; color:var(--clay); border:1px solid var(--line); border-radius:999px;
       padding:5px 12px; font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; transition:0.15s; font-family:inherit; }
@@ -145,11 +145,11 @@
        at the bottom. Generates the day × slot cartesian product as new
        rows in the working list. */
     .batch-overlay { position:fixed; inset:0; z-index:2000; padding:24px;
-      background:rgba(42,20,8,0.5); backdrop-filter:blur(4px);
+      background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);
       display:none; align-items:center; justify-content:center; }
     .batch-overlay.open { display:flex; animation:batchFade 0.18s ease-out; }
     @keyframes batchFade { from { opacity:0; } to { opacity:1; } }
-    .batch-card { background:#fff; border-radius:18px; box-shadow:0 30px 60px rgba(42,20,8,0.42);
+    .batch-card { background:#fff; border-radius:18px; box-shadow:0 30px 60px rgba(0,0,0,0.42);
       width:min(720px, 100%); max-height:min(90vh, 820px); display:flex; flex-direction:column;
       overflow:hidden; font-family:inherit; }
     .batch-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
@@ -175,17 +175,17 @@
     .batch-field textarea { min-height:90px; resize:vertical; line-height:1.5;
       font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace; }
     .batch-field input:focus, .batch-field select:focus, .batch-field textarea:focus {
-      border-color:var(--gold); box-shadow:0 0 0 2px rgba(245,158,11,0.16); }
+      border-color:var(--gold); box-shadow:0 0 0 2px rgba(255,200,36,0.16); }
     .batch-field .hint { font-size:11px; color:var(--muted); margin-top:4px; line-height:1.5; }
     .batch-day-row { display:flex; flex-wrap:wrap; gap:6px; }
     .batch-day-row label { display:inline-flex; align-items:center; gap:4px; padding:6px 12px;
       border:1px solid var(--line); border-radius:999px; cursor:pointer; font-size:12.5px; font-weight:700;
       color:var(--muted); background:#fff; transition:0.12s; user-select:none; }
-    .batch-day-row label:hover { border-color:rgba(245,158,11,0.4); color:var(--clay); }
-    .batch-day-row label.selected { background:linear-gradient(135deg,#fde68a,var(--gold));
-      border-color:var(--gold-deep); color:#3a1808; box-shadow:0 4px 12px rgba(245,158,11,0.18); }
+    .batch-day-row label:hover { border-color:rgba(255,200,36,0.4); color:var(--clay); }
+    .batch-day-row label.selected { background:linear-gradient(135deg,#FFEFA8,var(--gold));
+      border-color:var(--gold-deep); color:#1a1a1a; box-shadow:0 4px 12px rgba(255,200,36,0.18); }
     .batch-day-row input { display:none; }
-    .batch-preview { background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2);
+    .batch-preview { background:rgba(255,200,36,0.06); border:1px solid rgba(255,200,36,0.2);
       border-radius:12px; padding:12px 14px; }
     .batch-preview-head { font-size:12.5px; font-weight:800; color:var(--clay); margin-bottom:8px; }
     .batch-preview-list { display:grid; gap:4px; max-height:160px; overflow:auto;
@@ -204,7 +204,7 @@
       .batch-card { height:100vh; max-height:100vh; width:100%; border-radius:0; }
     }
 
-    .toast { position:fixed; bottom:24px; right:24px; background:var(--clay); color:#fffbeb; padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:0 12px 28px rgba(122,48,16,0.3); opacity:0; transform:translateY(10px); transition:0.25s; pointer-events:none; z-index:2000; }
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--clay); color:#fffbeb; padding:12px 18px; border-radius:12px; font-size:13px; font-weight:700; box-shadow:0 12px 28px rgba(255,91,36,0.3); opacity:0; transform:translateY(10px); transition:0.25s; pointer-events:none; z-index:2000; }
     .toast.show { opacity:1; transform:translateY(0); }
 
     .footer { background:var(--brown); color:rgba(240,249,255,0.78); padding:48px 48px 28px; }
@@ -301,7 +301,7 @@
 
         <div class="action-bar">
           <button type="button" class="btn-primary" id="saveBtn"><span data-lang="zh">保存变更</span><span data-lang="en">Save Changes</span></button>
-          <button type="button" class="btn-primary" id="batchBtn" style="background:linear-gradient(135deg,#a3c374,#6e8b58);">
+          <button type="button" class="btn-primary" id="batchBtn" style="background:linear-gradient(135deg,#a3c374,#2f855a);">
             <span data-lang="zh">⚡ 批量新增班次</span><span data-lang="en">⚡ Batch Add</span>
           </button>
           <button type="button" class="btn-secondary" id="addBtn"><span data-lang="zh">+ 新增单条</span><span data-lang="en">+ Add Class</span></button>
@@ -851,7 +851,7 @@
         var newTr = rowsContainer.lastElementChild;
         if (newTr) {
           try { newTr.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
-          newTr.style.background = "rgba(245,158,11,0.16)";
+          newTr.style.background = "rgba(255,200,36,0.16)";
           setTimeout(function () { newTr.style.background = ""; }, 900);
           var firstInput = newTr.querySelector("input,select");
           if (firstInput) try { firstInput.focus(); } catch (_) {}
