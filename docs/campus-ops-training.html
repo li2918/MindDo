@@ -40,11 +40,9 @@
       font-weight: 900; color: var(--clay); font-size: 15px;
       text-decoration: none;
     }
-    .topbar .brand .dot {
-      display: inline-block; width: 22px; height: 22px; border-radius: 6px;
-      background: linear-gradient(135deg, #fde68a, var(--gold));
-      color: var(--clay); font-size: 13px; font-weight: 900;
-      text-align: center; line-height: 22px;
+    .topbar .brand .brand-img {
+      display: block; height: 28px; width: auto;
+      max-width: 110px; object-fit: contain;
     }
     .topbar nav { display: flex; gap: 14px; font-size: 13px; }
     .topbar nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
@@ -282,7 +280,7 @@
 
 <header class="topbar">
   <a href="../index.html" class="brand">
-    <span class="dot">M</span>
+    <img class="brand-img" src="../assets/logo.png" alt="MindDo" />
     <span>MindDo · 培训中心</span>
   </a>
   <nav>

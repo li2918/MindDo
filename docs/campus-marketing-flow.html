@@ -15,7 +15,7 @@
     body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
     .topbar { position: sticky; top: 0; z-index: 50; background: rgba(254, 248, 238, 0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
     .topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; color: var(--clay); font-size: 15px; letter-spacing: -0.01em; text-decoration: none; }
-    .topbar .brand .dot { display: inline-block; width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, #fde68a, var(--gold)); color: var(--clay); font-size: 13px; font-weight: 900; text-align: center; line-height: 22px; }
+    .topbar .brand .brand-img { display: block; height: 28px; width: auto; max-width: 110px; object-fit: contain; }
     .topbar nav { display: flex; gap: 14px; font-size: 13px; }
     .topbar nav a { color: var(--muted); text-decoration: none; font-weight: 700; }
     .topbar nav a:hover { color: var(--clay); }
@@ -83,7 +83,7 @@
 
 <header class="topbar">
   <a href="../index.html" class="brand">
-    <span class="dot">M</span>
+    <img class="brand-img" src="../assets/logo.png" alt="MindDo" />
     <span>MindDo · Docs</span>
   </a>
   <nav>
