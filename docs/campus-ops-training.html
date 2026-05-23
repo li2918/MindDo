@@ -296,10 +296,10 @@
   <section class="hero">
     <div class="eyebrow">Training Manual · 培训手册</div>
     <h1>校区运营 · 使用指南</h1>
-    <p class="sub">本手册帮你 30 分钟内上手 MindDo 后台。按章节阅读 + 点击右侧链接直接打开对应页面，边读边练。涵盖登录、每日例行、试课接待、考勤录入、请假审批、续费跟进、交班记录、常见问题。</p>
+    <p class="sub">手把手教你用 MindDo 后台 — 每个常用操作都拆到点击级别。先通读一遍约 60 分钟，平时遇到具体问题再回来查对应章节即可。每个功能都附了直达链接，建议边读边在另一个 tab 里实操。</p>
     <div class="meta-row">
       <span class="meta-chip">角色 · <strong>campus-ops</strong></span>
-      <span class="meta-chip">耗时 · <strong>30 分钟</strong></span>
+      <span class="meta-chip">通读 · <strong>约 60 分钟</strong></span>
       <span class="meta-chip">深链 · <strong>点击 ↗ 直达页面</strong></span>
       <span class="meta-chip">更新 · <strong>2026-05</strong></span>
     </div>
@@ -331,17 +331,46 @@
     <h2>1. 登录与切换身份</h2>
     <span class="num">01 / Login</span>
   </div>
+
   <div class="panel">
-    <p>当前 demo 阶段没有真正的密码登录，使用 dashboard 顶栏右上角的「切换身份」菜单选择自己的员工档案即可。系统会把所选员工 id 写入 <code class="kbd">minddo_active_ops_user</code>。</p>
+    <h3>1.1 首次登录：从 0 到能看到 dashboard</h3>
+    <p>当前 demo 阶段没有真正的密码登录，使用「切换身份」选择你的员工档案即可。系统会把所选员工 id 写入浏览器的 localStorage（key 名 <code class="kbd">minddo_active_ops_user</code>），后续每次打开 dashboard 都自动恢复成你这个身份。</p>
     <ol class="steps">
-      <li>打开 <a class="deep-link" href="../dashboard.html">运营 Dashboard</a></li>
-      <li>右上角点击你的头像 / 当前用户名 → 选择「切换身份」</li>
-      <li>在弹出的列表里找到自己的姓名和岗位（一般标注为 <strong>校区运营</strong> · campus-ops），点击。</li>
-      <li>页面会自动刷新到你权限范围内的视图。再切换其他人也是同样操作。</li>
+      <li><strong>打开 dashboard。</strong>浏览器输入网址（或直接点 <a class="deep-link" href="../dashboard.html">运营 Dashboard</a>）。如果是第一次打开，系统会自动给你 seed 一份 demo 数据（学员、班级、课次、付费记录等几十条），花 1-2 秒。</li>
+      <li><strong>找到右上角的用户菜单。</strong>顶栏最右侧有一个圆形头像 + 名字 + 角色 chip 的组合（比如「Lily Hsu · campus-ops」）。这是你<em>当前</em>的身份。如果是第一次，系统默认登录的是最高权限员工，不一定是你。</li>
+      <li><strong>点头像/名字，弹出菜单。</strong>菜单里有三项：「切换身份」「切换语言」「退出」。点 <strong>切换身份</strong>。</li>
+      <li><strong>在身份列表里找自己。</strong>列表按校区分组，每行显示员工姓名、角色（如「校区运营 campus-ops」）、所属校区。找你自己那一行点击 — 注意，市场/校长/超管会有不同的列表颜色 chip，校区运营是橘色。</li>
+      <li><strong>页面自动 reload。</strong>侧边栏会重新计算你能看到的 tab（campus-ops 看不到工资、退款审批等），看板数据也按你的校区过滤。</li>
+      <li><strong>验证成功的标志：</strong>右上角 chip 显示「<你的姓名> · campus-ops · <校区名>」；侧边栏里没有「财务详情」「角色管理」「招商加盟」这些超管/校长才能看到的入口。</li>
     </ol>
-    <div class="callout tip">
-      <strong>提示 · 校区怎么选</strong>
-      顶栏「当前校区看板」会默认显示你所属的校区，看板和数据都按这个校区过滤。如需暂时切到「全部校区（汇总）」查看横向对比，下拉切换即可，不影响其他人。
+
+    <h3 style="margin-top:22px;">1.2 每天上班怎么打开</h3>
+    <p>第一次切换身份后，下次打开 dashboard 不需要重新选 — 只要还是同一个浏览器 + 没清缓存，系统会自动恢复成你上次选的身份。</p>
+    <ul class="checklist">
+      <li>书签 / 桌面快捷方式直接打开 <code class="kbd">dashboard.html?tab=overview</code>，落地直接是你的首页。</li>
+      <li>如果发现头像不是你了 — 重复上面 1.1 的步骤 3-5 切回来。</li>
+      <li>如果 dashboard 完全打不开（空白页 / 报错），可能是 demo 数据损坏。按 <code class="kbd">F12</code> 打开浏览器控制台 → Application → Local Storage → 找到 <code class="kbd">localhost</code> 那一项 → 右键 Clear，然后刷新 — 系统会重新 seed。注意这会清空你的本地修改。</li>
+    </ul>
+
+    <h3 style="margin-top:22px;">1.3 校区怎么选</h3>
+    <p>顶栏会显示「当前校区看板：<校区名>」下拉框。campus-ops 角色只能看到自己所属校区，但下拉框里仍有「全部校区（汇总）」可以临时切换：</p>
+    <ol class="steps">
+      <li><strong>默认显示你的校区。</strong>系统从你的员工档案里读 <code class="kbd">campus</code> 字段，自动锁定到那个校区。</li>
+      <li><strong>临时切到「全部校区（汇总）」。</strong>用于横向对比（比如「我们校区的留存率比尔湾校区高多少」）。注意：你只是<em>看</em>聚合数据，不能改其他校区的任何东西，写操作都会被权限层拦下来。</li>
+      <li><strong>切回自己的校区。</strong>从下拉框再选一次自己的校区。系统会记住你最后选的校区写入 <code class="kbd">minddo_dashboard_campus</code>，下次开 dashboard 还是这个。</li>
+    </ol>
+
+    <h3 style="margin-top:22px;">1.4 切换语言（中 / EN）</h3>
+    <p>右上角的「中 / EN」chip 一键切换。整个界面文案、表头、按钮都会变。</p>
+    <ul class="checklist">
+      <li>切换后会写入 <code class="kbd">minddo_lang</code>，下次自动恢复。</li>
+      <li>数据本身（学员姓名、备注等）不会被翻译，只 UI 标签会变。</li>
+      <li>家长端 / 销售端页面用同一个 key，统一切换。</li>
+    </ul>
+
+    <div class="callout warn">
+      <strong>注意 · 别在公共电脑上忘了切回去</strong>
+      用完别人的电脑 demo，记得切回原账号或者关浏览器隐身窗口 — 否则下一个人开 dashboard 会以为是你的身份在操作。
     </div>
   </div>
 
@@ -419,33 +448,54 @@
     <span class="num">03 / Daily</span>
   </div>
   <div class="panel">
-    <h3>到岗后（约 8:30 - 9:00）</h3>
-    <ul class="checklist">
-      <li>打开 <a class="deep-link" href="../dashboard.html?tab=overview">首页</a>，浏览「今日重点」「待办总数」「课程时间轴」。</li>
-      <li>查看 <a class="deep-link" href="../dashboard.html?tab=inbox">待办</a>，处理隔夜累积的请假、改期、合同。</li>
-      <li>核对今天的试课家庭名单，提前准备登记表 / 教室。</li>
-      <li>跟教师确认到位情况，必要时调整排课。</li>
-    </ul>
+    <p>每天的工作可以分成 4 个时段。下面列出每段时间具体要做什么、在哪里做、做完该看到什么状态。建议把这一节当 checklist 用，<strong>每条都打钩再下班</strong>。</p>
 
-    <h3 style="margin-top:18px;">课程期间（滚动）</h3>
-    <ul class="checklist">
-      <li>接待试课家庭：签到、引导、记录到达状态。</li>
-      <li>盯首页「课程时间轴」，识别「进行中」与容量预警（满班 / 近满 / 空班）。</li>
-      <li>临时事件（家长来电请假、孩子迟到）即时录入。</li>
-    </ul>
+    <h3 style="margin-top:14px;">3.1 到岗后（约 8:30 - 9:00）</h3>
+    <p class="muted" style="font-size:12.5px;margin:0 0 6px;">目标：心里有当天的全局图，没有意外要爆。</p>
+    <ol class="steps">
+      <li><strong>打开 <a class="deep-link" href="../dashboard.html?tab=overview">首页</a>。</strong>顶部三块卡片立刻告诉你三件事：① 今天有几节课、几个试课家庭；② 待办总数；③ 关键预警（设备故障 / 满班警告 / 临期合同）。如果待办总数 = 0 且预警条没出现 = 安全开工。</li>
+      <li><strong>扫一遍「课程时间轴」面板。</strong>横向时间条按 30 分钟为格，鼠标悬停在每节课上能看到「班级名 / 教师 / 教室 / 学员数」气泡。注意 <strong>红色边框</strong> = 容量超员，<strong>黄色边框</strong> = 教师未确认，要立刻找教师确认。</li>
+      <li><strong>处理隔夜累积的待办。</strong>到 <a class="deep-link" href="../dashboard.html?tab=inbox">待办</a>，逐条通过 / 驳回。家长一般 6-9 点提交请假最多。详细审批方法见第 6 节。</li>
+      <li><strong>核对今天的试课家庭。</strong>到 <a class="deep-link" href="../dashboard.html?tab=enrollment&sub=trial">市场 · 试课管理</a>，把当天的家庭都展开看一遍：教练知道几点接谁吗？有特殊需求（孩子怕生 / 家长要求观摩）没？把这些信息当面同步给试课教师。</li>
+      <li><strong>设备 + 教室。</strong>到 <a class="deep-link" href="../dashboard.html?tab=settings&sub=classrooms">业务设置 · 教室</a> 看本校区教室状态。任何教室是「待维修」就把今天用到它的班级提前调走。</li>
+    </ol>
 
-    <h3 style="margin-top:18px;">每节课结束</h3>
-    <ul class="checklist">
-      <li>到 <a class="deep-link" href="../dashboard.html?tab=academic&sub=attendance">教务中心 · 考勤</a> 逐人录入出勤（出勤 / 缺勤 / 请假）。</li>
-      <li>试课家庭：勾选「完成 / 未到」并补充评估备注。</li>
-    </ul>
+    <h3 style="margin-top:22px;">3.2 课程期间（滚动）</h3>
+    <p class="muted" style="font-size:12.5px;margin:0 0 6px;">目标：实时反应每个突发状况，让家长无感切换。</p>
+    <ol class="steps">
+      <li><strong>家长进门 = 签到。</strong>试课家庭：到 <a class="deep-link" href="../dashboard.html?tab=enrollment&sub=trial">试课管理</a> 在那一行点「签到」。正式课学员：通常由教师在课堂里自助签到，你不用管。</li>
+      <li><strong>盯「课程时间轴」的颜色变化。</strong>从开课到结束颜色会从灰→蓝（进行中）→绿（完成）。如果某节课到点了还没变蓝，可能是教师忘记开签到 — 打电话或微信问一下。</li>
+      <li><strong>家长来电请假。</strong>立刻代录 — 详见第 6 节「代录请假」。<em>不要</em>说「您去 App 自己提交吧」让家长再操作，体验很差。</li>
+      <li><strong>孩子迟到 / 中途离开。</strong>等课结束时录考勤的时候反映出来，状态选「迟到」。</li>
+      <li><strong>临时调课。</strong>家长说今天来不了想换到周六同时段：先到 <a class="deep-link" href="../dashboard.html?tab=academic&sub=schedule">教务 · 排课</a> 看目标时段有没有空位，再回审批表帮家长改期。</li>
+    </ol>
 
-    <h3 style="margin-top:18px;">下班前（约 18:00 - 19:00）</h3>
-    <ul class="checklist">
-      <li>到 <a class="deep-link" href="../dashboard.html?tab=overview">首页</a> 底部「交班记录」写当日交接（已完成、遗留、明日重点）。</li>
-      <li>检查 <a class="deep-link" href="../dashboard.html?tab=finance&sub=renewals">续费提醒</a>，把临期的家长加入今日跟进列表。</li>
-      <li>清空待办收件箱（理想状态）。</li>
-    </ul>
+    <h3 style="margin-top:22px;">3.3 每节课结束后 15 分钟内</h3>
+    <p class="muted" style="font-size:12.5px;margin:0 0 6px;">目标：考勤当节闭环，不带未结记录过夜。</p>
+    <ol class="steps">
+      <li><strong>录正式课考勤。</strong>到 <a class="deep-link" href="../dashboard.html?tab=academic&sub=attendance">教务 · 考勤</a> → 选日期 + 班级，逐人打勾。详见第 5 节。</li>
+      <li><strong>试课家庭收尾。</strong>到 <a class="deep-link" href="../dashboard.html?tab=enrollment&sub=trial">试课管理</a> 点「完成」或「未到」。完成的需要立刻填评估表 — 趁记忆新鲜质量最高。详见第 4 节。</li>
+      <li><strong>更新作业 / 成长记录（可选）。</strong>如果教师把作业反馈给你了，到学员详情→作业 tab 录入。一般教师自己录，你只在教师没空时代录。</li>
+    </ol>
+
+    <h3 style="margin-top:22px;">3.4 下班前（约 18:00 - 19:00）</h3>
+    <p class="muted" style="font-size:12.5px;margin:0 0 6px;">目标：把今天的状态清清白白交给下一班同事。</p>
+    <ol class="steps">
+      <li><strong>清空待办收件箱。</strong>再扫一遍 <a class="deep-link" href="../dashboard.html?tab=inbox">待办</a>。理想状态：总数 = 0。如果有处理不完的（比如等家长回复），别强行通过，留在那让明天的人继续。</li>
+      <li><strong>跟进续费。</strong>到 <a class="deep-link" href="../dashboard.html?tab=finance&sub=renewals">财务 · 续费提醒</a>，看「剩余课时 ≤ 3」的红色行 — 给这些家长发一条续费提醒微信。详见第 7 节。</li>
+      <li><strong>写交班记录。</strong>到 <a class="deep-link" href="../dashboard.html?tab=overview">首页</a> 底部「交班记录」面板。三栏：今日完成 / 遗留 / 明日重点。详见第 9 节 — 这是<strong>必填</strong>项。</li>
+      <li><strong>检查明日提醒。</strong>「明日重点」栏里写明天 8 点要先做什么（比如「张老师 9 点的课要提前 30 分钟到，他生病」）。</li>
+      <li><strong>下班 ≠ 关电脑就走。</strong>把 dashboard 锁屏（Ctrl+L 或 Win+L），下次同事接班时直接接上。</li>
+    </ol>
+
+    <div class="callout tip">
+      <strong>🚦 红绿信号灯心法</strong>
+      <ul style="margin:6px 0 0 16px;padding:0;">
+        <li><strong>🟢 绿灯：</strong>首页待办 = 0，时间轴全绿，预警条空。可以喝口水。</li>
+        <li><strong>🟡 黄灯：</strong>有 1-2 个待办或预警。10 分钟内处理完。</li>
+        <li><strong>🔴 红灯：</strong>>3 个待办 / 预警，或时间轴有红色超员格。停下手头的事先扫红色。</li>
+      </ul>
+    </div>
   </div>
 
   <!-- ============================================================ -->
@@ -456,18 +506,66 @@
     <span class="num">04 / Trial</span>
   </div>
   <div class="panel">
-    <p>试课线索由市场团队录入，运营负责现场接待和评估反馈。状态机：<strong>预约 → 到达 → 试课中 → 完成 / 未到</strong>。</p>
+    <p>试课线索由市场团队录入（你不能改），但你负责<strong>现场接待 + 状态推进 + 评估反馈</strong>。试课家庭的体验决定了 70% 的转化率，这一节是 campus-ops 最关键的日常。</p>
+    <p>状态机：<code class="kbd">booked</code>（预约）→ <code class="kbd">confirmed</code>（已签到）→ <code class="kbd">in_progress</code>（试课中）→ <code class="kbd">completed</code>（完成）或 <code class="kbd">noshow</code>（未到）。所有状态写入 <code class="kbd">minddo_trial_leads</code>。</p>
+
+    <h3 style="margin-top:18px;">4.1 试课前 24 小时：确认</h3>
     <ol class="steps">
-      <li>到 <a class="deep-link" href="../dashboard.html?tab=enrollment&sub=trial">市场中心 · 试课管理</a> 查看今日预约清单。</li>
-      <li>家长到店：在该家庭一行点「签到」按钮，状态从 <strong>booked</strong> 切到 <strong>confirmed</strong>。</li>
-      <li>开始试课：进入「试课中」（状态写入 <code class="kbd">trialStatus = "in_progress"</code>）。</li>
-      <li>试课结束：点「完成」按钮，弹出反馈表单 — 填写表现（兴趣度、专注度、推荐等级）+ 文字评价。</li>
-      <li>提交后系统自动产生一条评估记录，状态切到 <strong>completed</strong>，市场团队会据此跟进转化。</li>
-      <li>若家庭未到：标记 <strong>noshow</strong>，原因填在备注里（如「家长当天来电请假」）。</li>
+      <li><strong>到 <a class="deep-link" href="../dashboard.html?tab=enrollment&sub=trial">试课管理</a>。</strong>顶部切「日期」筛选选明天，看明天的所有预约。</li>
+      <li><strong>逐家庭看预约信息。</strong>每行展开后能看到：家长姓名 / 电话 / 微信、孩子姓名 / 年龄 / 年级、报名科目、特殊需求、来源渠道。</li>
+      <li><strong>给家长发提醒。</strong>点行尾的「联系家长」按钮，弹出联系卡片（电话 / 微信 / 邮箱）。<strong>不要</strong>直接打电话 — 先用微信发一句话提醒（系统有模板：「您好，明天 X 点 X 的试课课程已为您预留，请按时到 [校区地址]。如有变动请提前回复，谢谢！」）。</li>
+      <li><strong>登记到课前清单。</strong>明天值班的人会看到这条「已联系确认」标签，避免重复打扰。</li>
     </ol>
+
+    <h3 style="margin-top:18px;">4.2 试课当天到店：签到</h3>
+    <ol class="steps">
+      <li><strong>家长进门，先问候。</strong>对小朋友：「你是 X 同学吧？今天我们要上 [科目]，你听过这个吗？」对家长：「您是 X 妈妈/爸爸？请坐，我先给孩子简单介绍一下今天的安排。」</li>
+      <li><strong>到 <a class="deep-link" href="../dashboard.html?tab=enrollment&sub=trial">试课管理</a>，找到那一行，点「签到」按钮。</strong>状态从 <code class="kbd">booked</code> 切到 <code class="kbd">confirmed</code>。系统记录 <code class="kbd">arrivedAt</code> 时间戳。</li>
+      <li><strong>给家长一份课前问卷。</strong>纸质或扫码二维码都行 — 问「孩子对什么内容最感兴趣」「目标」「过往经历」。这些后面填评估表会用到。</li>
+      <li><strong>引导到教室。</strong>告诉家长「您可以在外面等候区/观摩区休息，60 分钟后我们一起跟您反馈孩子的表现」。<em>不要</em>放任家长在教室门外走动，影响孩子专注。</li>
+      <li><strong>点「开始试课」按钮。</strong>状态切到 <code class="kbd">in_progress</code>。</li>
+    </ol>
+
+    <h3 style="margin-top:18px;">4.3 试课中：观察 + 记笔记</h3>
+    <p>试课中你的主要工作是<strong>静默观察</strong>。建议在记事本上记三件事：</p>
+    <ul class="checklist">
+      <li><strong>兴趣度</strong>：孩子主动提问 / 笑 / 兴奋的瞬间次数。1-5 分。</li>
+      <li><strong>专注度</strong>：能持续多久不被周围干扰。&lt; 5 分钟 = 1，&gt; 30 分钟连续 = 5。</li>
+      <li><strong>反应速度</strong>：教师问问题后多久能回答 / 动手。</li>
+    </ul>
+    <p class="muted" style="font-size:12.5px;">这些不是给孩子打分 — 是给后续推荐课程做参考。</p>
+
+    <h3 style="margin-top:18px;">4.4 试课结束：填评估表 + 反馈</h3>
+    <ol class="steps">
+      <li><strong>课程结束时到 <a class="deep-link" href="../dashboard.html?tab=enrollment&sub=trial">试课管理</a>，点该行的「完成」按钮。</strong>弹出评估表单。</li>
+      <li><strong>填评估表（字段清单）：</strong>
+        <ul style="margin:6px 0 6px 16px;padding:0;font-size:13px;">
+          <li><strong>兴趣度</strong>：1-5 滑杆。结合 4.3 你的笔记。</li>
+          <li><strong>专注度</strong>：1-5 滑杆。</li>
+          <li><strong>推荐等级</strong>：Beginner / Intermediate / Advanced — 这是给市场和教学排班用的。</li>
+          <li><strong>建议课程</strong>：从下拉选一门或多门最匹配的（系统会按推荐等级过滤候选）。</li>
+          <li><strong>文字评价（中英双语）</strong>：写一段 100-200 字的描述。家长会看，所以语气要积极 + 具体。差的方面用「需要更多时间适应」「未来可以加强 X」等委婉表达。</li>
+        </ul>
+      </li>
+      <li><strong>用 AI 草稿省时间。</strong>表单顶部「<strong>✨ AI 评估草稿</strong>」按钮 — 先在「观察」框里写 3-5 句你的笔记（孩子表现、教师反馈、家长态度），点 AI 按钮，几秒后生成一段格式完整的草稿。点「应用到评估表」直接填进各字段，再手动微调。</li>
+      <li><strong>提交。</strong>状态切到 <code class="kbd">completed</code>，市场团队会在他们的 CRM 看到这条评估，3 天内联系家长推荐套餐。</li>
+      <li><strong>当面跟家长反馈。</strong>把评估表「文字评价」的中文版打印或念出来给家长听。<em>不要</em>当面提价格 — 价格是市场的事。</li>
+    </ol>
+
+    <h3 style="margin-top:18px;">4.5 未到（noshow）的处理</h3>
+    <ol class="steps">
+      <li><strong>预约时间过了 15 分钟还没到</strong>，先打电话或微信问一下情况。系统会自动在 30 分钟后标黄提醒你。</li>
+      <li><strong>家长说今天来不了想改期。</strong>到行尾「改期」按钮，选新时段。状态保留 <code class="kbd">booked</code>，不算 noshow。</li>
+      <li><strong>家长完全联系不上。</strong>等到当天晚上 18:00 还没消息 → 标 <code class="kbd">noshow</code>，备注栏写「未联系上」。市场会判定是否再约。</li>
+    </ol>
+
     <div class="callout tip">
-      <strong>试课评估表小窍门</strong>
-      表单里有「✨ AI 评估草稿」按钮。先写几句观察（孩子表现、家长反应、关注点），点击后 AI 会生成一段结构化反馈草稿。你可以一键应用到正式表单，再做手动微调，省一半时间。
+      <strong>评估表小窍门</strong>
+      <ul style="margin:6px 0 0 16px;padding:0;">
+        <li>「文字评价」是<em>家长能看到的</em>，写之前先在脑子里过一遍「我会怎么读这段给孩子听」。</li>
+        <li>「建议课程」最多选 2 门 — 选太多市场会觉得你没主见。</li>
+        <li>评估提交后不能改，所以仔细审一遍再提交。</li>
+      </ul>
     </div>
   </div>
 
@@ -479,17 +577,60 @@
     <span class="num">05 / Attendance</span>
   </div>
   <div class="panel">
-    <p>所有正式课的考勤都在教务中心录入。出勤状态包括：<strong>出勤 / 缺勤 / 请假</strong>。</p>
+    <p>正式课的考勤是 campus-ops 最高频的录入操作 — 每节课结束都要做一次。考勤数据进 <code class="kbd">minddo_attendance</code>，三个地方会引用：① 学员详情 → 出勤 tab；② 续费提醒（出勤率太低会标黄）；③ 财务结算（教师课时酬金按完成的课次算）。所以<strong>录得准、录得快</strong>很重要。</p>
+
+    <h3 style="margin-top:14px;">5.1 状态定义</h3>
+    <table class="kv">
+      <thead><tr><th style="width:90px;">状态</th><th>含义</th><th>影响</th></tr></thead>
+      <tbody>
+        <tr><td><strong>出勤</strong></td><td>正常到课。</td><td>消耗 1 节课时，教师可结算。</td></tr>
+        <tr><td><strong>迟到</strong></td><td>到课但迟到 ≥ 15 分钟。</td><td>消耗 1 节课时；备注栏要写「迟到 X 分钟」。</td></tr>
+        <tr><td><strong>缺勤</strong></td><td>未到且未请假。</td><td>消耗 1 节课时；自动生成「缺勤提醒」push 给家长。</td></tr>
+        <tr><td><strong>请假</strong></td><td>家长提前申请且已审批通过。</td><td>不消耗课时；如需补课需走「调课」流程。</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:18px;">5.2 标准录入流程</h3>
     <ol class="steps">
-      <li>打开 <a class="deep-link" href="../dashboard.html?tab=academic&sub=attendance">教务中心 · 考勤</a>。</li>
-      <li>选择课程日期 + 班级，系统列出该班全部学员。</li>
-      <li>逐人勾选状态。<strong>请假</strong> 必须有理由（家长事先报备的可以选「家长请假」）。</li>
-      <li>保存。系统会按 ISO 时间戳写入 <code class="kbd">minddo_attendance</code> 数组，每条记录一次性写入并审计。</li>
-      <li>如果发现某学员临时调班，先到 <a class="deep-link" href="../dashboard.html?tab=academic&sub=schedule">教务 · 排课</a> 调整，再录今日考勤。</li>
+      <li><strong>打开 <a class="deep-link" href="../dashboard.html?tab=academic&sub=attendance">教务 · 考勤</a>。</strong>默认显示「今日」+「全部班级」。</li>
+      <li><strong>选课次。</strong>顶部三联下拉：日期 → 班级 → 上课时段。选刚结束那一节。如果是连续上的两节同班，每节单独录。</li>
+      <li><strong>看花名册。</strong>系统列出该班全部学员（按姓氏拼音排序）。每行：头像 / 姓名 / 当前级别 / 状态选择器 / 备注框。</li>
+      <li><strong>逐人勾选状态。</strong>从下拉选 出勤 / 迟到 / 缺勤 / 请假。批量操作：顶部「全部出勤」一键设置全班出勤，然后只改异常的几个。</li>
+      <li><strong>异常状态必填备注。</strong>
+        <ul style="margin:6px 0 6px 16px;padding:0;font-size:13px;">
+          <li><strong>迟到</strong>：备注「迟到 X 分钟，[原因]」（如「迟到 20 分钟，校车延误」）。</li>
+          <li><strong>缺勤</strong>：备注「未请假未到，已联系家长 [结果]」。</li>
+          <li><strong>请假</strong>：选「请假来源」 — 家长 App 提交（自动关联审批记录）/ 家长当天电话（你手动代录）/ 教师确认（孩子生病当天通知）。</li>
+        </ul>
+      </li>
+      <li><strong>点「保存全部」。</strong>系统逐行写入 <code class="kbd">minddo_attendance</code>，每行一条审计记录。完成后顶部弹出「✅ 已保存 X 条记录」提示。</li>
+      <li><strong>验证保存成功的方法：</strong>到任意一个学员的详情抽屉 → 出勤 tab，最新一行应该就是你刚录的。</li>
     </ol>
+
+    <h3 style="margin-top:18px;">5.3 录错怎么改</h3>
+    <p>考勤是「事实记录」，错了一定要改 — 否则财务对账会出问题。改法：</p>
+    <ol class="steps">
+      <li>到同一个 <a class="deep-link" href="../dashboard.html?tab=academic&sub=attendance">考勤面板</a>，重新选当天 + 那个班。</li>
+      <li>找到那个学员，重新选状态 + 改备注。</li>
+      <li>保存。<strong>系统不会覆盖原记录</strong>，而是写一条「变更」记录到审计日志，旧值 + 新值 + 谁改的 + 什么时间都保留。</li>
+      <li>当事人（教师 / 家长 / 校长）如果对修改有异议，去学员详情 → 变更历史 tab 看 diff。</li>
+    </ol>
+
+    <h3 style="margin-top:18px;">5.4 常见场景</h3>
+    <ul class="checklist">
+      <li><strong>整个班级全部出勤</strong>：顶部「全部出勤」一键勾选 → 保存。30 秒内搞定。</li>
+      <li><strong>某学员调到别的班了</strong>：到 <a class="deep-link" href="../dashboard.html?tab=academic&sub=schedule">教务 · 排课</a> 先调整学员所属班级，再录今天的考勤 — 否则那个学员还在原班的花名册里。</li>
+      <li><strong>新插班学员第一节课</strong>：花名册里没有他 — 到 <a class="deep-link" href="../dashboard.html?tab=academic&sub=roster">教务 · 学员</a> 把他加入这个班，再回考勤面板录入。</li>
+      <li><strong>试课家庭混到正式课</strong>：不要在考勤里录他 — 试课考勤在试课管理里走。</li>
+    </ul>
+
     <div class="callout warn">
-      <strong>注意 · 不要漏录</strong>
-      考勤是续费转化的重要参考。一周内未录入的课次，财务侧会自动标红。建议每节课结束 15 分钟内完成录入。
+      <strong>注意 · 不要漏录、不要批量乱录</strong>
+      <ul style="margin:6px 0 0 16px;padding:0;">
+        <li>1 周内未录入的课次，财务面板会自动标红 — 越拖越难补（要回忆当时的细节）。</li>
+        <li>不要为了快「全部出勤」之后不仔细看，<strong>有一个缺勤被错记成出勤</strong>，家长发现会很不爽。</li>
+        <li>每节课结束 <strong>15 分钟内</strong>录完是金标准。</li>
+      </ul>
     </div>
   </div>
 
@@ -497,21 +638,84 @@
   <!-- 6. Inbox / approvals -->
   <!-- ============================================================ -->
   <div id="inbox" class="section-head">
-    <h2>6. 请假 / 改期审批</h2>
-    <span class="num">06 / Approvals</span>
+    <h2>6. 待办处理：请假 / 改期 / 合同 / 试课评估</h2>
+    <span class="num">06 / Inbox</span>
   </div>
   <div class="panel">
-    <p>家长在自己的账号端发起请假或改期申请后，会出现在你的「待办」面板。你只能审批 <strong>请假</strong> 和 <strong>调课</strong> 这两类 — 退款 / 报销由校长处理。</p>
+    <p>「待办」是 campus-ops 的<strong>主战场</strong>。所有需要你今天做决定的事都集中在这里。家长在 App 提交的请假 / 改期、合同到期提醒、试课评估缺失 — 全在一个面板里统一处理。</p>
+
+    <h3 style="margin-top:14px;">6.1 待办面板的结构</h3>
+    <p>打开 <a class="deep-link" href="../dashboard.html?tab=inbox">待办</a> 后看到的：</p>
+    <ul class="checklist">
+      <li><strong>顶部 KPI 卡</strong>：待办总数 / 请假改期 / 财务审批 / 合同到期 — 一眼看到各类积压。</li>
+      <li><strong>过滤 pill</strong>：「全部 / 请假改期 / 退费报销 / 合同到期 / 试听评估」。先点你最熟的那一类，集中处理。</li>
+      <li><strong>卡片列表</strong>：每条一行，展示 [类型] + [学员姓名 + 课次摘要] + [家长备注] + [时间] + [操作按钮]。</li>
+    </ul>
+
+    <h3 style="margin-top:18px;">6.2 类型 1 · 请假 / 改期（你能审批的）</h3>
+    <p>家长在 App 提交「我家小孩明天的课请假」后，会到你这里来。处理流程：</p>
     <ol class="steps">
-      <li>打开 <a class="deep-link" href="../dashboard.html?tab=inbox">待办</a>，顶部过滤选「请假改期」。</li>
-      <li>每一条卡片显示家长姓名、原课次、申请类型、备注理由。</li>
-      <li>点 <strong>✓ 通过</strong> 或 <strong>✗ 驳回</strong>。驳回必须填理由，会同步回传给家长。</li>
-      <li>每一次审批都自动写入 <code class="kbd">minddo_audit_log</code>，包含操作人、对象、时间、前后状态。</li>
-      <li>处理完后这条申请从待办移除；状态变化也同步反映到对应学员的「申请历史」tab。</li>
+      <li><strong>顶部过滤选「请假改期」。</strong>列表只剩这一类。</li>
+      <li><strong>点卡片展开。</strong>能看到：申请类型（请假 / 改期 / 退课）、原课次（日期 + 班级 + 时段）、目标课次（如果是改期，家长选的新时段）、理由（家长填的备注）、提交时间。</li>
+      <li><strong>判断要不要通过 — 三个原则：</strong>
+        <ul style="margin:6px 0 6px 16px;padding:0;font-size:13px;">
+          <li><strong>提前 24 小时以上</strong> → 一般通过。</li>
+          <li><strong>当天临时请假</strong> → 看理由，生病 / 急事一般通过；「想去玩」可以委婉沟通后通过。</li>
+          <li><strong>已经请过 3 次以上</strong> → 通过前给家长打电话沟通学习节奏，避免影响进度。</li>
+        </ul>
+      </li>
+      <li><strong>点「✓ 通过」。</strong>状态机：请假 → 该学员当节考勤自动标「请假」；改期 → 原课次自动出 + 目标课次自动入。系统给家长 App push 一条「您的申请已通过」。</li>
+      <li><strong>点「✗ 驳回」。</strong>弹出理由输入框 — <strong>必填</strong>。建议模板：「您好，本次申请未能通过：[具体原因]。如有疑问请回复或联系校区老师。」理由会原文 push 给家长。</li>
+      <li><strong>审批后这条从待办移除。</strong>但会保留在学员详情 → 申请 tab 的历史里。</li>
     </ol>
+
+    <h3 style="margin-top:18px;">6.3 类型 2 · 财务审批（只读 — 转给校长）</h3>
+    <p>退费、报销这类需要校长（principal）权限。campus-ops 能看到但不能批准。</p>
+    <ol class="steps">
+      <li>过滤选「退费报销」，卡片右上角会显示 <strong>🔒 只读</strong> 标签。</li>
+      <li>点开看：金额（脱敏为 <code class="kbd">$***</code>）、申请人、理由。</li>
+      <li>判断紧急程度，紧急的：直接微信 @ 校长，把卡片右下角「分享给校长」按钮的链接发过去。校长一登 dashboard 就能直接定位到这条。</li>
+      <li>非紧急：什么都不用做，校长每天会自己扫一遍。</li>
+    </ol>
+
+    <h3 style="margin-top:18px;">6.4 类型 3 · 合同到期提醒</h3>
+    <p>合同还有 30 天到期 / 已过期未续签 会自动出现在待办。</p>
+    <ol class="steps">
+      <li>过滤选「合同到期」。</li>
+      <li>点「前往原页面」按钮跳到 <a class="deep-link" href="../dashboard.html?tab=finance&sub=renewals">续费提醒</a> 该学员那行，看完整的续费状态（剩余课时 / 上次联系时间 / 历史付费金额）。</li>
+      <li>给家长发续费提醒微信（详见第 7 节「续费跟进」）。</li>
+      <li>沟通完成后到 <strong>学员详情 → 变更历史</strong> 加一条备注，这条会自动从待办消失。</li>
+    </ol>
+
+    <h3 style="margin-top:18px;">6.5 类型 4 · 试课待评估</h3>
+    <p>试课家庭课已经上完但<strong>评估表还没填</strong>，超过 24 小时会自动进待办。</p>
+    <ol class="steps">
+      <li>过滤选「试听评估」。</li>
+      <li>点「前往原页面」直接打开 <a class="deep-link" href="../dashboard.html?tab=enrollment&sub=trial">试课管理</a> 该家庭的评估表单。</li>
+      <li>按第 4 节的流程填评估，提交后从待办消失。</li>
+    </ol>
+
+    <h3 style="margin-top:18px;">6.6 代家长录入请假（家长不会用 App 时）</h3>
+    <p>家长来电话临时请假，但 App 不会用 — 你需要代他录：</p>
+    <ol class="steps">
+      <li>打开 <a class="deep-link" href="../dashboard.html?tab=academic&sub=roster">教务 · 学员</a>，找到那个学员。</li>
+      <li>点学员姓名打开详情抽屉 → 切到「申请」tab。</li>
+      <li>右上角「+ 新增申请」按钮，选「请假」类型。</li>
+      <li>填表：申请课次 / 理由（写「家长电话申请 [yyyy-mm-dd] [hh:mm]」）/ 联系记录方式。</li>
+      <li>提交。这条会立刻出现在你自己的待办里。</li>
+      <li>立刻通过（既然你刚帮家长录的，肯定 OK）。完成后告诉家长「已为您操作完成」。</li>
+    </ol>
+
+    <h3 style="margin-top:18px;">6.7 批量审批小技巧</h3>
+    <ul class="checklist">
+      <li><strong>同一家长一天多条申请</strong>：列表会自动聚合，点「按家长聚合」开关，方便统一处理。</li>
+      <li><strong>典型的「正常」申请</strong>（24 小时前提交 + 理由是生病 / 出差等常见原因）：1-2 秒一条点完，10 条 30 秒搞定。</li>
+      <li><strong>有疑问的</strong>：先放着不点，处理完简单的再回来。</li>
+    </ul>
+
     <div class="callout info">
-      <strong>看到金钱相关的卡片（退款/报销）怎么办</strong>
-      你能看到但不能审批 — 点开是只读视图。请联系校长（principal 角色）处理。
+      <strong>审批记录的查询</strong>
+      所有审批都写入 <code class="kbd">minddo_audit_log</code>。校长 / 超管要查「上周校区有多少请假被驳回」可以到内部管理 → 操作日志，按 <code class="kbd">kind = "request.decide"</code> 过滤。
     </div>
   </div>
 
@@ -523,14 +727,70 @@
     <span class="num">07 / Renewals</span>
   </div>
   <div class="panel">
-    <p>财务 tab 的「续费提醒」是脱敏面板：你看不到具体金额，但可以看到 <strong>哪些学员的课时 / 套餐快用完了</strong>，以及上次联系时间。这是你日常跟进的核心列表。</p>
+    <p>「续费提醒」是<strong>家长留存率</strong>的核心抓手。campus-ops 看不到具体金额（脱敏为 <code class="kbd">$***</code>），但能看到所有「快用完课时 / 套餐快到期」的学员名单。每个家长被提醒一次的成本远低于一次重新获客，所以这一节<strong>每天都要花 15-20 分钟</strong>。</p>
+
+    <h3 style="margin-top:14px;">7.1 列表怎么读</h3>
     <ol class="steps">
       <li>打开 <a class="deep-link" href="../dashboard.html?tab=finance&sub=renewals">财务 · 续费提醒</a>。</li>
-      <li>列表按「剩余课时」升序排列，红色行 = 极临期（≤3 节）。</li>
-      <li>点学员姓名打开学员详情抽屉，看课时使用率、近期出勤、家长偏好。</li>
-      <li>沟通后，到「联系家长」按钮调出家长联系卡片（电话 / 微信 / 邮箱），不要直接打开邮箱 / 拨号 — 先看完整信息再选合适渠道。</li>
-      <li>沟通完成后，记得回 <strong>学员详情 → 变更历史</strong> tab 留一条跟进备注（自动写审计日志）。</li>
+      <li><strong>默认排序</strong>：按「剩余课时」升序，最少的排最上。同时按「上次联系日期」二次排序，让长时间没联系的先冒头。</li>
+      <li><strong>颜色编码</strong>：
+        <ul style="margin:6px 0 6px 16px;padding:0;font-size:13px;">
+          <li><span style="color:#DC2626;font-weight:900;">🔴 红色</span> = 剩余 ≤ 3 节，<strong>极临期</strong> — 今天必须联系。</li>
+          <li><span style="color:#FFC824;font-weight:900;">🟡 黄色</span> = 剩余 4-8 节，<strong>临期</strong> — 本周内联系。</li>
+          <li><span style="color:#2f855a;font-weight:900;">🟢 绿色</span> = 剩余 ≥ 9 节，正常 — 不用主动催。</li>
+        </ul>
+      </li>
+      <li><strong>每行展示</strong>：学员姓名 + 头像 / 当前级别 / 剩余课时 / 上次付费日期（金额脱敏）/ 上次联系日期 / 出勤率 / 联系按钮。</li>
     </ol>
+
+    <h3 style="margin-top:18px;">7.2 跟进单个家长 — 完整流程</h3>
+    <ol class="steps">
+      <li><strong>选目标。</strong>从红色行开始，点学员姓名打开详情抽屉。</li>
+      <li><strong>做功课，先看四项数据</strong>（在抽屉的各 tab 里）：
+        <ul style="margin:6px 0 6px 16px;padding:0;font-size:13px;">
+          <li><strong>课时使用率</strong>（概览 tab）：用了多少 / 总数。低于 60% 说明家长可能犹豫。</li>
+          <li><strong>近 4 周出勤率</strong>（出勤 tab）：&lt; 75% 是预警 — 跟进时先关心「最近怎么常缺课」。</li>
+          <li><strong>近 2 个月成长曲线</strong>（成长 tab）：上升的可以推「保持势头」；持平的可以推「换更进阶的课程」。</li>
+          <li><strong>历次反馈</strong>（反馈 tab）：家长之前抱怨过什么 — 跟进时先回应这些。</li>
+        </ul>
+      </li>
+      <li><strong>点「联系家长」按钮。</strong>位于抽屉右上角或行尾。弹出联系卡片（不是直接拨号）：显示电话 / 微信 ID / 邮箱 / 家长偏好沟通方式 / 最佳联系时间。</li>
+      <li><strong>选合适渠道。</strong>
+        <ul style="margin:6px 0 6px 16px;padding:0;font-size:13px;">
+          <li><strong>微信</strong>（推荐）：点「复制微信 ID」→ 切到微信 → 粘贴搜索 → 发消息。</li>
+          <li><strong>电话</strong>：紧急或微信半天没回时用。点「拨号」会调出 tel: 链接（手机端 / 桌面有拨号软件时直接拨）。</li>
+          <li><strong>邮箱</strong>：备用，国内家长一般不查。</li>
+        </ul>
+      </li>
+      <li><strong>沟通话术参考</strong>（系统里有模板，「联系家长」面板下方「话术模板」可以调出）：
+        <ul style="margin:6px 0 6px 16px;padding:0;font-size:13px;">
+          <li><strong>剩 3 节</strong>：「X 妈妈您好，X 同学的 [课程] 还剩 3 节，下周可能就上完了。给您看一下他这两个月的成长曲线 [发图]，[具体进步点]。下学期想继续跟着学吗？我把可选套餐发您看下？」</li>
+          <li><strong>剩 1 节 + 出勤率低</strong>：「X 妈妈，X 上周缺了 2 节课，最近孩子是不是太忙了？我们可以一起看看怎么调整时间表。」</li>
+        </ul>
+      </li>
+      <li><strong>沟通后必须留记录。</strong>回到学员详情 → 变更历史 tab → 点右上「+ 添加备注」。填：联系渠道 / 关键沟通点 / 家长反应 / 下次跟进时间。这条会自动写审计日志，<strong>系统会按「下次跟进时间」给你 push 提醒</strong>。</li>
+      <li><strong>关闭抽屉。</strong>列表里该学员的「上次联系日期」自动更新为今天，颜色不变（剩余课时没变），但下次默认排序会往后挪。</li>
+    </ol>
+
+    <h3 style="margin-top:18px;">7.3 批量续费节奏（每周一次）</h3>
+    <ol class="steps">
+      <li>每周一上午先扫一遍所有红色行 — 优先级最高的 5-10 个家长，2 小时内联系完。</li>
+      <li>周三再扫黄色 — 量大但不急，可以发批量微信群发或者模板邮件。</li>
+      <li>周五前所有「下次跟进时间已到」的提醒清零。</li>
+    </ol>
+
+    <h3 style="margin-top:18px;">7.4 续费成功之后</h3>
+    <p>家长口头同意续费后，<strong>不是你做收款</strong> — 这部分由市场或校长操作。你的工作：</p>
+    <ol class="steps">
+      <li>到学员详情 → 变更历史 加一条「家长同意续 X 套餐，建议套餐 [选项]」备注。</li>
+      <li>@ 市场或校长（在备注 @ 他们的姓名），他们会跟进收款。</li>
+      <li>收款成功后系统自动把这位学员从「续费提醒」列表移除。</li>
+    </ol>
+
+    <div class="callout tip">
+      <strong>不要骚扰家长</strong>
+      系统会自动屏蔽「7 天内已联系过」的家长不让你重复联系。如果你强行跳过，备注里会被标红「过度联系」— 校长每周会扫一遍。续费靠的是<strong>恰到好处的提醒</strong>，不是连环 call。
+    </div>
   </div>
 
   <!-- ============================================================ -->
@@ -541,25 +801,104 @@
     <span class="num">08 / Students</span>
   </div>
   <div class="panel">
-    <p>你可以查任意本校区学员的完整档案。从任何列表点击学员姓名即可打开详情抽屉。</p>
-    <p>抽屉里有这些 tab，都是只读 + 全审计：</p>
+    <p>学员详情抽屉是 dashboard 里<strong>用得最多的视图</strong>。你接电话、写交班、做续费 — 几乎每个场景都会先打开学员详情看一眼。</p>
+
+    <h3 style="margin-top:14px;">8.1 三种打开方式</h3>
+    <ol class="steps">
+      <li><strong>从任意列表点姓名。</strong>考勤面板、续费提醒、试课管理、待办里所有出现学员姓名的地方都是可点击的链接。</li>
+      <li><strong>全局搜索（最快）。</strong>任意页面按 <code class="kbd">Ctrl/⌘ + K</code> 唤起搜索框，输入姓名 / 学号 / 电话 / 邮箱任意一个，列表里点回车直接打开。</li>
+      <li><strong>从 <a class="deep-link" href="../dashboard.html?tab=academic&sub=roster">教务 · 学员</a>。</strong>完整花名册，可以按级别 / 班级 / 校区过滤。</li>
+    </ol>
+
+    <h3 style="margin-top:18px;">8.2 抽屉的 9 个 tab — 各自看什么</h3>
     <table class="kv">
-      <thead><tr><th>Tab</th><th>看什么</th></tr></thead>
+      <thead><tr><th style="width:120px;">Tab</th><th>看什么</th><th>什么时候用</th></tr></thead>
       <tbody>
-        <tr><td>📋 概览</td><td>基本资料、当前级别、报名套餐、剩余课时。</td></tr>
-        <tr><td>✅ 出勤</td><td>历次出勤记录，按月分组，可以筛选异常（缺勤 / 请假）。</td></tr>
-        <tr><td>📝 作业</td><td>课后作业完成情况 — 提交率、教师评分。</td></tr>
-        <tr><td>📈 成长</td><td>每月成长档案曲线（兴趣度 / 编程能力 / 表达 / 独立性）。</td></tr>
-        <tr><td>💰 付费</td><td>历次付费记录（金额脱敏为 <code class="kbd">$***</code>）。</td></tr>
-        <tr><td>💬 反馈</td><td>家长 / 教师反馈历史。</td></tr>
-        <tr><td>📨 申请</td><td>该学员所有请假 / 改期申请的处理记录。</td></tr>
-        <tr><td>🎨 作品集</td><td>项目作品 + 学期报告。</td></tr>
-        <tr><td>📜 变更历史</td><td>该学员相关的所有操作日志（谁、什么时间、改了什么）。</td></tr>
+        <tr>
+          <td>📋 概览</td>
+          <td>基本资料（姓名 / 年龄 / 年级 / 家长信息）、当前级别、报名套餐、剩余课时。</td>
+          <td>接电话第一眼看 — 30 秒了解整体情况。</td>
+        </tr>
+        <tr>
+          <td>✅ 出勤</td>
+          <td>历次出勤记录，按月分组，可筛选「缺勤 / 请假 / 迟到」异常。底部有出勤率统计。</td>
+          <td>家长问「孩子上了多少节课」「最近为什么经常缺」时用。</td>
+        </tr>
+        <tr>
+          <td>📝 作业</td>
+          <td>课后作业列表 — 题目、提交时间、教师评分、未提交标记。</td>
+          <td>家长问学习情况；教师反馈孩子作业问题。</td>
+        </tr>
+        <tr>
+          <td>📈 成长</td>
+          <td>每月「兴趣度 / 编程能力 / 表达 / 独立性」四维曲线。点曲线某点能看到当月评语。</td>
+          <td>续费跟进、学期报告、家长会前的功课。</td>
+        </tr>
+        <tr>
+          <td>💰 付费</td>
+          <td>历次付费记录（金额脱敏为 <code class="kbd">$***</code>）、套餐、生效 / 失效日期。</td>
+          <td>家长问「我买的什么套餐？还剩多少？」</td>
+        </tr>
+        <tr>
+          <td>💬 反馈</td>
+          <td>家长 / 教师双向反馈历史。每条 + 时间 + 提交人 + 内容。</td>
+          <td>跟进前看家长之前抱怨过什么，避免重复踩坑。</td>
+        </tr>
+        <tr>
+          <td>📨 申请</td>
+          <td>该学员的所有请假 / 改期 / 退课申请，含状态（通过 / 驳回）+ 理由。</td>
+          <td>核对家长说的「我之前请过假」是否属实。</td>
+        </tr>
+        <tr>
+          <td>🎨 作品集</td>
+          <td>项目作品（代码 / 截图 / 视频 / 演示链接）+ 学期报告 PDF。</td>
+          <td>家长问「孩子做出什么了」；招生时展示给意向家长。</td>
+        </tr>
+        <tr>
+          <td>📜 变更历史</td>
+          <td>该学员相关的所有操作日志：谁、什么时间、改了什么字段、前后值。</td>
+          <td>核对争议（「我没说过这话」「这条改过」）；写交班记录前回顾今日改动。</td>
+        </tr>
       </tbody>
     </table>
+
+    <h3 style="margin-top:18px;">8.3 常见场景操作</h3>
+    <ol class="steps">
+      <li><strong>家长来电问「我家孩子上学期表现」。</strong>
+        <ol style="margin:4px 0 4px 16px;padding:0;font-size:13px;">
+          <li>Ctrl+K 搜姓名 → 打开抽屉。</li>
+          <li>概览 → 看当前级别 + 剩余课时。</li>
+          <li>成长 → 看四维曲线，挑 1-2 个上升明显的维度作为亮点。</li>
+          <li>反馈 → 拿出 1-2 条教师近期正向反馈念给家长听。</li>
+          <li>挂电话后到变更历史加备注「[日期] [家长姓名] 来电询问表现，已用 X / Y / Z 答复」。</li>
+        </ol>
+      </li>
+      <li><strong>排查考勤异常。</strong>家长投诉「我孩子明明来了你们记成缺勤」：
+        <ol style="margin:4px 0 4px 16px;padding:0;font-size:13px;">
+          <li>打开抽屉 → 出勤 tab → 找到争议日期。</li>
+          <li>点该行查看「录入人 / 录入时间」+ 备注。</li>
+          <li>跟教师核对 → 如果确实错了，到 <a class="deep-link" href="../dashboard.html?tab=academic&sub=attendance">考勤面板</a> 改正（会留 diff 在变更历史）。</li>
+          <li>到变更历史加备注解释。</li>
+        </ol>
+      </li>
+      <li><strong>试课家庭转正式学员。</strong>
+        <ol style="margin:4px 0 4px 16px;padding:0;font-size:13px;">
+          <li>该家庭在 <a class="deep-link" href="../dashboard.html?tab=enrollment&sub=trial">试课管理</a> 列表。</li>
+          <li>右上「转正式学员」按钮 → 弹出表单：选班级、套餐（金额脱敏看不到具体数字但选项还在）、入学日期。</li>
+          <li>提交后该家庭从试课列表迁出，新学员档案出现在 <a class="deep-link" href="../dashboard.html?tab=academic&sub=roster">教务 · 学员</a>。</li>
+        </ol>
+      </li>
+      <li><strong>更新学员资料</strong>（家长换了电话 / 改地址）。
+        <ol style="margin:4px 0 4px 16px;padding:0;font-size:13px;">
+          <li>打开抽屉 → 概览 tab → 顶部「编辑」按钮（如果没有说明你没这个权限，找校长）。</li>
+          <li>改完保存，旧值会被记录到变更历史里。</li>
+        </ol>
+      </li>
+    </ol>
+
     <div class="callout tip">
-      <strong>快速查询</strong>
-      <code class="kbd">Ctrl/⌘ + K</code> 全局搜索学员名字 → 直接打开详情抽屉，不用先进列表。
+      <strong>不要靠记忆，靠抽屉</strong>
+      家长打电话进来前，<strong>先开学员抽屉</strong>再接电话 — 30 秒看一眼，胜过靠脑子翻记忆。
     </div>
   </div>
 
@@ -571,16 +910,64 @@
     <span class="num">09 / Shift</span>
   </div>
   <div class="panel">
-    <p>每日下班前 / 接班时填写交班，确保信息无缝衔接。这是 campus-ops 独有的责任 — 校长不一定看，但下一班的同事一定要看。</p>
+    <p>交班是 campus-ops <strong>独有的责任</strong>。校长每周扫一次，但下一班的同事每天接班都看 — 信息断了，家长第二天来了就会被「你们怎么不知道我上周说过」打脸。这一节<strong>每天必填，不写不下班</strong>。</p>
+
+    <h3 style="margin-top:14px;">9.1 三栏的填法</h3>
+    <p>面板在 <a class="deep-link" href="../dashboard.html?tab=overview">首页</a> 滚动到底部，标题「交班记录」。三栏分别要填：</p>
+
+    <table class="kv">
+      <thead><tr><th style="width:120px;">栏目</th><th>填什么</th><th>填法示例</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>✅ 今日完成</td>
+          <td>客观数字 + 1-2 个亮点事件。AI 会从审计日志自动汇总数字，你只补亮点。</td>
+          <td>「上课 8 节、试课 3 个、审批 5 条。亮点：林同学第一次写出完整的 if-else 逻辑，家长很激动。」</td>
+        </tr>
+        <tr>
+          <td>⚠️ 遗留问题</td>
+          <td>没处理完的事 + 已经联系但等家长回复的事 + 设备故障等。每条要可执行。</td>
+          <td>「① 周妈妈昨天微信问续费套餐，等她回复（已发详情）。② 教室 B 投影偶发花屏，明早维修师傅 10 点到。」</td>
+        </tr>
+        <tr>
+          <td>🎯 明日重点</td>
+          <td>明天<strong>第一件</strong>要做的事 + 接班人特别要注意的。</td>
+          <td>「明早 8:30 优先：① 张老师 9 点的课要早 30 分钟到，他生病；② 9:30 试课家庭 王同学第二次来，他妈妈关心进度，准备一份成长曲线打印件。」</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:18px;">9.2 标准填写流程</h3>
     <ol class="steps">
-      <li>到 <a class="deep-link" href="../dashboard.html?tab=overview">首页</a> 找到「交班记录」面板。</li>
-      <li>三栏结构：<strong>今日完成</strong>（X 节课、Y 个试课、Z 项审批）/ <strong>遗留问题</strong>（待跟进的家长、设备故障等）/ <strong>明日重点</strong>。</li>
-      <li>填完点保存 — 写入 <code class="kbd">minddo_shift_notes</code>，所有同校区运营都看得到。</li>
-      <li>接班时第一件事就是看上一班的交班记录。</li>
+      <li><strong>17:30 左右开始写。</strong>太早会漏掉下班前的事；太晚同事接班看不到。</li>
+      <li><strong>点「✨ AI 生成草稿」按钮。</strong>AI 会读今天的审计日志（你处理的考勤、审批、续费跟进），自动汇总「今日完成」栏。10 秒出草稿。</li>
+      <li><strong>检查 AI 草稿。</strong>AI 只能看到系统里的事，「林同学第一次写出 if-else」这类教室里发生的事它不知道 — 你手动补 1-2 句。</li>
+      <li><strong>「遗留问题」自己想。</strong>过一下今天的微信 / 电话记录，把没闭环的事列出来。每条要写清楚：① 谁的事 ② 现在到哪步了 ③ 下一步谁做什么。</li>
+      <li><strong>「明日重点」按重要度排。</strong>最重要的写最上面，最多 3-5 条 — 多了同事看不进去。</li>
+      <li><strong>点「保存」。</strong>立刻写入 <code class="kbd">minddo_shift_notes</code>。所有同校区 campus-ops 在自己的 dashboard 首页都能看到。</li>
+      <li><strong>验证：</strong>关掉 dashboard 再打开，首页「交班记录」面板顶部应该出现「今日 X 时 X 分由 [你的姓名] 提交」标签。</li>
     </ol>
+
+    <h3 style="margin-top:18px;">9.3 接班怎么读</h3>
+    <ol class="steps">
+      <li><strong>第一件事打开 <a class="deep-link" href="../dashboard.html?tab=overview">首页</a> 。</strong>「交班记录」面板默认展开最近 3 条。</li>
+      <li><strong>从「明日重点」看起</strong>，再回看「遗留问题」。「今日完成」浏览即可，不用细看。</li>
+      <li><strong>对每条遗留</strong>：如果是「等家长回复」，看一下家长是否已经回复了；如果是「设备维修」，确认师傅时间。</li>
+      <li><strong>看完后</strong>点「✓ 已接班」按钮（在面板右下）。这条会记录到审计日志「<谁> 在 <时间> 接班」。</li>
+    </ol>
+
+    <h3 style="margin-top:18px;">9.4 反例 — 不要这么写</h3>
+    <table class="kv">
+      <thead><tr><th>错误示范</th><th>问题</th></tr></thead>
+      <tbody>
+        <tr><td>「一切正常，无特殊事项」</td><td>没信息量。"正常" 是判断不是事实 — 改成具体数字或挑一条事件。</td></tr>
+        <tr><td>「家长 X 投诉了一下，处理完了」</td><td>下次同家长又投诉时不知道这次怎么处理的。改成「家长 X 投诉 [具体内容]，已 [具体动作]，结果 [结果]」。</td></tr>
+        <tr><td>「明天没事」</td><td>真没事也写「明早 8:30 例行检查教室 / 时间轴 / 待办」— 至少给同事一个起点。</td></tr>
+      </tbody>
+    </table>
+
     <div class="callout tip">
       <strong>AI 帮你写</strong>
-      点「✨ AI 生成交班摘要」会基于今日审计日志自动总结一份草稿，你只需补充上下文细节，省 80% 时间。
+      点「✨ AI 生成草稿」会基于今日审计日志自动总结今日完成栏 — 节省 80% 时间。但「遗留问题」和「明日重点」AI 不会，要你自己想。
     </div>
   </div>
 
@@ -592,32 +979,76 @@
     <span class="num">10 / Settings</span>
   </div>
   <div class="panel">
-    <p>「业务设置」tab 是本校区配置的统一入口。你能改的仅限自己校区的：</p>
-    <table class="kv">
-      <thead><tr><th>子设置</th><th>能改什么</th><th>直达</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>🎤 试课</td>
-          <td>本校区试课时段开放规则、单时段容量。</td>
-          <td><a class="deep-link" href="../dashboard.html?tab=settings&sub=trial">打开</a></td>
-        </tr>
-        <tr>
-          <td>🕒 营业时间</td>
-          <td>本校区每周营业时段（周一至周日各自的开关）。</td>
-          <td><a class="deep-link" href="../dashboard.html?tab=settings&sub=hours">打开</a></td>
-        </tr>
-        <tr>
-          <td>🚪 教室</td>
-          <td>本校区教室列表、容量、设备状态。</td>
-          <td><a class="deep-link" href="../dashboard.html?tab=settings&sub=classrooms">打开</a></td>
-        </tr>
-        <tr>
-          <td>📢 公告</td>
-          <td>家长端可见的本校区公告 — 节假日、活动、临时通知。</td>
-          <td><a class="deep-link" href="../dashboard.html?tab=settings&sub=notice">打开</a></td>
-        </tr>
-      </tbody>
-    </table>
+    <p>「业务设置」tab 是本校区配置的统一入口。这些不是每天改的 — 一周改 1-2 次，但每次改都<strong>立刻影响家长端 + 教师端</strong>，所以要谨慎。每个修改都会被审计。</p>
+
+    <h3 style="margin-top:14px;">10.1 🎤 试课设置</h3>
+    <p>控制家长在 App 端能看到哪些试课时段、每个时段最多预约几家。</p>
+    <ol class="steps">
+      <li>打开 <a class="deep-link" href="../dashboard.html?tab=settings&sub=trial">业务设置 · 试课</a>。</li>
+      <li><strong>时段开放规则。</strong>表格展示每周一到周日各自的开放时段（如「周六 10:00-11:00 / 14:00-15:00」）。点 + 添加新时段。</li>
+      <li><strong>单时段容量。</strong>每个时段独立设容量（默认 3 家庭/时段）。如果你只有 2 间试课教室，把容量设为 2。</li>
+      <li><strong>保存后立刻生效。</strong>家长 App 在 5 分钟内会刷新到新规则。本周已经预约满的时段不受影响。</li>
+    </ol>
+    <p class="muted" style="font-size:12.5px;">什么时候改：① 新增 / 减少试课教师 ② 节假日临时关闭 ③ 招生旺季临时扩容。</p>
+
+    <h3 style="margin-top:18px;">10.2 🕒 营业时间</h3>
+    <p>本校区每周开门 / 关门时段。家长端「营业时间」展示直接读这里。</p>
+    <ol class="steps">
+      <li>打开 <a class="deep-link" href="../dashboard.html?tab=settings&sub=hours">业务设置 · 营业时间</a>。</li>
+      <li>每天一行 — 周一到周日。每行：开关（开 / 闭）+ 开始时间 + 结束时间。</li>
+      <li>修改后点「保存」。家长 App 立刻显示新时段；超出时段的预约请求被拒。</li>
+      <li><strong>临时关闭（如节假日）：</strong>用「假期模式」按钮，选日期范围 — 比改每天的开关方便。</li>
+    </ol>
+    <p class="muted" style="font-size:12.5px;">什么时候改：① 节假日 ② 旺季延长营业 ③ 装修 / 设备维护临时停业。</p>
+
+    <h3 style="margin-top:18px;">10.3 🚪 教室管理</h3>
+    <p>本校区所有教室的状态。影响：试课时段容量、正式课排课。</p>
+    <ol class="steps">
+      <li>打开 <a class="deep-link" href="../dashboard.html?tab=settings&sub=classrooms">业务设置 · 教室</a>。</li>
+      <li><strong>教室列表。</strong>每个教室：名字（如「教室 A」）/ 容量（最多几个学员）/ 设备配置（电脑数量 / 投影 / 白板）/ 状态。</li>
+      <li><strong>状态三种：</strong>
+        <ul style="margin:6px 0 6px 16px;padding:0;font-size:13px;">
+          <li><strong>🟢 启用</strong>：正常使用。</li>
+          <li><strong>🟡 待维修</strong>：暂时不能排新课，但今天已经排好的课可以继续上。</li>
+          <li><strong>🔴 停用</strong>：完全不能用，所有已排课次需要手动迁到其他教室。</li>
+        </ul>
+      </li>
+      <li><strong>标「待维修」要做什么：</strong>
+        <ol style="margin:6px 0 6px 16px;padding:0;font-size:13px;">
+          <li>到 <a class="deep-link" href="../dashboard.html?tab=academic&sub=schedule">教务 · 排课</a> 看本周该教室还有哪些课。</li>
+          <li>把这些课手动迁到其他教室（拖拽即可）。</li>
+          <li>回设置页把状态切到「待维修」并填备注（如「投影坏了，X 月 X 日维修」）。</li>
+        </ol>
+      </li>
+      <li><strong>新增教室。</strong>「+ 新增教室」按钮，填名字 / 容量 / 设备。提交后立刻可用。</li>
+    </ol>
+
+    <h3 style="margin-top:18px;">10.4 📢 公告</h3>
+    <p>家长端首页 + App 启动页会显示<strong>本校区</strong>的公告。可以发节假日通知、活动招募、紧急通知（如停课）。</p>
+    <ol class="steps">
+      <li>打开 <a class="deep-link" href="../dashboard.html?tab=settings&sub=notice">业务设置 · 公告</a>。</li>
+      <li><strong>「+ 新建公告」。</strong>填表：
+        <ul style="margin:6px 0 6px 16px;padding:0;font-size:13px;">
+          <li><strong>标题</strong>：≤ 20 字，家长端会作为列表项的主显示。</li>
+          <li><strong>正文</strong>：100-300 字，支持简单 markdown（**加粗** / 换行）。</li>
+          <li><strong>类型</strong>：通知 / 活动 / 紧急。紧急会显示红色感叹号图标。</li>
+          <li><strong>生效日期</strong>：起 / 止。过期自动隐藏。</li>
+          <li><strong>推送</strong>：勾选「同时推送 App push 通知」会立刻给家长端 push。</li>
+        </ul>
+      </li>
+      <li><strong>预览 + 发布。</strong>预览按钮看家长端实际效果，确认后点「发布」。</li>
+      <li><strong>已发布公告</strong>：列表顶部「已激活」标签，点行可以编辑（但已经 push 出去的通知不能撤回）。</li>
+    </ol>
+    <p class="muted" style="font-size:12.5px;">常见公告：节假日放假通知、暑假 / 寒假班招募、临时停课、特殊活动（开放日）。</p>
+
+    <div class="callout warn">
+      <strong>注意 · 不要乱改影响范围</strong>
+      <ul style="margin:6px 0 0 16px;padding:0;">
+        <li>所有设置改动都写审计 — 校长每周看一次，频繁乱改会被问到。</li>
+        <li>不确定的改动先在「假期模式」/ 草稿状态测试，再正式发布。</li>
+        <li>不能改其他校区的设置 — 跨校区配置只能由超管做。</li>
+      </ul>
+    </div>
   </div>
 
   <!-- ============================================================ -->
@@ -711,6 +1142,32 @@
     <summary>误操作了能撤销吗？</summary>
     <div class="body">
       <p>多数操作不能一键撤销，但 <strong>所有操作都有审计</strong>，可以根据 <a href="../dashboard.html?tab=internal&sub=audit" style="color:var(--brand);font-weight:700;">操作日志</a> 的 diff 手动改回去。重要操作（如批量改状态）前会有确认弹窗，仔细看一眼再点。</p>
+    </div>
+  </details>
+
+  <details class="faq">
+    <summary>家长打电话要查孩子付了多少钱，但我看到的金额是 $***？</summary>
+    <div class="body">
+      <p>这是设计如此 — campus-ops 不应该直接告诉家长金额。<strong>合规做法</strong>：</p>
+      <ol style="margin:4px 0 4px 18px;padding:0;font-size:13px;">
+        <li>查 <a class="deep-link" href="../dashboard.html?tab=finance&sub=renewals">续费提醒</a> 该家长行，看「上次付费日期」和「套餐名称」（这两项你能看）。</li>
+        <li>告诉家长「您 X 月 X 日购买的 [套餐名称]，详细金额我帮您让校长 / 财务确认后回复您」。</li>
+        <li>立刻 @ 校长（在该家长的学员详情变更历史里加备注 @ 校长），校长会回复家长。</li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="faq">
+    <summary>系统反应很慢 / 卡住了怎么办？</summary>
+    <div class="body">
+      <p>① 先看右上角是不是有「⏳ 同步中」标签，等同步完再点；② 没标签但还是卡：刷新（F5）；③ 还卡：F12 打开控制台看 Console 有没有红色错误，如果有截图发给技术支持；④ 极端情况：清缓存重新登（注意会丢失本地未保存的输入）。</p>
+    </div>
+  </details>
+
+  <details class="faq">
+    <summary>有人离职了 / 新人入职，员工档案要怎么调？</summary>
+    <div class="body">
+      <p>campus-ops <strong>不能</strong>新增 / 编辑 / 停用员工档案 — 这是校长 / 超管的权限。新员工入职流程：① 校长在内部管理 → 员工里新增 → 分配角色（一般 campus-ops）→ 邮箱通知新员工；② 新员工首次打开 dashboard 用「切换身份」选自己。</p>
     </div>
   </details>
 
