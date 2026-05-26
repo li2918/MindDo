@@ -884,6 +884,59 @@
     .pf-meta { font-size: 11.5px; color: var(--muted); margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap; }
     .pf-meta strong { color: var(--clay); font-weight: 700; }
 
+    /* Messages tab — unified inbox cards.
+       Each .msg-card is one notification (feedback / homework / payment /
+       request decision). The colored left edge encodes message type. */
+    .msg-filter-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+    .msg-filter { all: unset; padding: 6px 12px; font-size: 12px; font-weight: 700;
+      color: var(--muted); border-radius: 999px; cursor: pointer;
+      border: 1px solid var(--line); background: #fff; transition: 0.15s; }
+    .msg-filter:hover { border-color: rgba(255,200,36,0.45); color: var(--clay); }
+    .msg-filter[aria-pressed="true"] { background: var(--clay); color: #fff; border-color: var(--clay); }
+    .msg-list { display: grid; gap: 10px; }
+    .msg-empty { padding: 28px 18px; text-align: center; color: var(--muted); font-size: 13px;
+      line-height: 1.7; background: rgba(240,249,255,0.6);
+      border: 1px dashed rgba(255,91,36,0.18); border-radius: 14px; }
+    .msg-card { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px;
+      padding: 14px 16px; border-radius: 14px; background: #fff;
+      border: 1px solid var(--line); border-left: 4px solid var(--gold);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04); transition: 0.15s; }
+    .msg-card:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(0,0,0,0.07); }
+    .msg-card.is-unread { background: linear-gradient(180deg, rgba(255,239,168,0.28), #fff); }
+    .msg-card.t-feedback { border-left-color: #245BFF; }
+    .msg-card.t-homework { border-left-color: #FF5B24; }
+    .msg-card.t-payment  { border-left-color: #2f855a; }
+    .msg-card.t-request  { border-left-color: #E5B11D; }
+    .msg-icon { width: 44px; height: 44px; border-radius: 12px;
+      background: rgba(255,232,172,0.55); color: var(--clay);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0; }
+    .msg-card.t-feedback .msg-icon { background: rgba(36,91,255,0.12); }
+    .msg-card.t-homework .msg-icon { background: rgba(255,91,36,0.12); }
+    .msg-card.t-payment  .msg-icon { background: rgba(47,133,90,0.12); color: #2f855a; }
+    .msg-card.t-request  .msg-icon { background: rgba(229,177,29,0.18); }
+    .msg-body { min-width: 0; }
+    .msg-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .msg-title { font-size: 14px; font-weight: 800; color: var(--clay); }
+    .msg-type-tag { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 999px; background: rgba(240,249,255,0.9);
+      color: var(--muted); border: 1px solid var(--line); }
+    .msg-summary { font-size: 12.5px; color: #334155; line-height: 1.55; margin-top: 4px;
+      word-break: break-word; }
+    .msg-meta { display: flex; gap: 10px; align-items: flex-start; flex-direction: column;
+      font-size: 11.5px; color: var(--muted); text-align: right; white-space: nowrap; }
+    .msg-time { font-weight: 700; }
+    .msg-action { padding: 6px 12px; font-size: 12px; font-weight: 700;
+      border: 1px solid var(--line); border-radius: 999px; background: #fff;
+      color: var(--clay); cursor: pointer; text-decoration: none; transition: 0.15s; }
+    .msg-action:hover { border-color: var(--gold); background: rgba(255,239,168,0.4); }
+    @media (max-width: 640px) {
+      .msg-card { grid-template-columns: 36px 1fr; gap: 10px; padding: 12px 14px; }
+      .msg-icon { width: 36px; height: 36px; font-size: 17px; border-radius: 10px; }
+      .msg-meta { grid-column: 1 / -1; flex-direction: row; justify-content: space-between;
+        align-items: center; text-align: left; padding-top: 2px; }
+    }
+
     /* Competitions tab — deadline reminder hero + per-competition cards. */
     .comp-hero { padding: 14px 18px; border-radius: 14px;
       background: linear-gradient(135deg, rgba(216,156,54,0.18), rgba(253,230,138,0.32));
@@ -1783,6 +1836,10 @@
         <button type="button" class="sidebar-item active" data-tab="overview" role="tab">
           <span class="si-icon" aria-hidden="true">🏠</span><span data-i18n="tabOverview"></span>
         </button>
+        <button type="button" class="sidebar-item" data-tab="messages" role="tab">
+          <span class="si-icon" aria-hidden="true">🔔</span><span data-i18n="tabMessages"></span>
+          <span class="tab-pill" data-tab-pill="messages" hidden>0</span>
+        </button>
         <button type="button" class="sidebar-item" data-tab="enroll" role="tab">
           <span class="si-icon" aria-hidden="true">⭐</span><span data-i18n="tabEnroll"></span>
         </button>
@@ -1909,6 +1966,24 @@
             <div id="nextLessonMeta"></div>
             <ul id="statusList"></ul>
           </div>
+        </section>
+
+        <!-- 1.25. MESSAGES — unified inbox aggregating feedback, schedule-request
+             decisions, payments/invoices, and homework notifications from
+             existing storage keys. No new schema; renderMessages() composes
+             entries from minddo_feedback / minddo_schedule_requests /
+             minddo_payments / minddo_assignments. -->
+        <section class="dash-section" data-tab-panel="messages" role="tabpanel" aria-label="Messages">
+          <article class="panel" id="messagesPanel">
+            <div class="panel-head-row">
+              <div>
+                <h2 data-i18n="messagesTitle"></h2>
+                <p class="sub" data-i18n="messagesSub"></p>
+              </div>
+              <div class="msg-filter-bar" id="msgFilterBar" role="tablist"></div>
+            </div>
+            <div id="messagesBody" class="msg-list"></div>
+          </article>
         </section>
 
         <!-- 1.5. MEMBERSHIP — current tier + tier picker + add-ons -->
@@ -2704,7 +2779,7 @@
         window.location.replace("login.html");
         return;
       }
-      var BADGE_TABS = ["feedback", "competitions", "homework"];
+      var BADGE_TABS = ["feedback", "competitions", "homework", "messages"];
       var LASTSEEN_PREFIX = "minddo_acct_lastseen_";
 
       var I18N = {
@@ -2746,6 +2821,38 @@
           statusTitle: "流程进度",
           quickActionsTitle: "快捷入口",
           tabOverview: "概览",
+          tabMessages: "消息",
+          messagesTitle: "消息中心",
+          messagesSub: "汇总最近的反馈、作业、付费记录和申请状态，无需在每个面板里翻找。",
+          messagesEmpty: "暂时没有新消息，所有动态都已查看完毕。",
+          msgFilterAll: "全部",
+          msgFilterFeedback: "课堂反馈",
+          msgFilterHomework: "作业",
+          msgFilterPayment: "付费",
+          msgFilterRequest: "申请",
+          msgTypeFeedback: "反馈",
+          msgTypeHomework: "作业",
+          msgTypePayment: "付费",
+          msgTypeRequest: "申请",
+          msgFeedbackTitle: "{teacher} 留下了一条课堂反馈",
+          msgFeedbackTitleAnon: "老师留下了一条课堂反馈",
+          msgHomeworkTitle: "新作业：{title}",
+          msgHomeworkTitleGeneric: "你有新作业待完成",
+          msgHomeworkDue: "截止：{date}",
+          msgPaymentTitle: "已收到 ${amount} 付款",
+          msgPaymentSub: "{cycle} · {method}",
+          msgRequestApproved: "{kind} 申请已通过",
+          msgRequestRejected: "{kind} 申请未通过",
+          msgRequestCompleted: "{kind} 申请已处理完成",
+          msgRequestPending: "{kind} 申请正在审核中",
+          msgRequestLeave: "请假",
+          msgRequestReschedule: "调课",
+          msgActionView: "查看",
+          msgTimeJustNow: "刚刚",
+          msgTimeMinutesAgo: "{n} 分钟前",
+          msgTimeHoursAgo: "{n} 小时前",
+          msgTimeYesterday: "昨天",
+          msgTimeDaysAgo: "{n} 天前",
           dashTitle: "学习仪表盘",
           dashSub: "孩子的学习进度、技能成长曲线与最近表现一览。",
           dashStudentChipFmt: "{name} · {grade}",
@@ -3270,6 +3377,38 @@
           statusTitle: "Flow Progress",
           quickActionsTitle: "Quick Actions",
           tabOverview: "Overview",
+          tabMessages: "Inbox",
+          messagesTitle: "Notifications",
+          messagesSub: "All recent feedback, assignments, payments, and request decisions in one place — no tab-hopping required.",
+          messagesEmpty: "You're all caught up — no new notifications.",
+          msgFilterAll: "All",
+          msgFilterFeedback: "Feedback",
+          msgFilterHomework: "Homework",
+          msgFilterPayment: "Payment",
+          msgFilterRequest: "Request",
+          msgTypeFeedback: "Feedback",
+          msgTypeHomework: "Homework",
+          msgTypePayment: "Payment",
+          msgTypeRequest: "Request",
+          msgFeedbackTitle: "{teacher} left class feedback",
+          msgFeedbackTitleAnon: "New class feedback",
+          msgHomeworkTitle: "New homework · {title}",
+          msgHomeworkTitleGeneric: "You have new homework",
+          msgHomeworkDue: "Due {date}",
+          msgPaymentTitle: "Payment of ${amount} received",
+          msgPaymentSub: "{cycle} · {method}",
+          msgRequestApproved: "{kind} request approved",
+          msgRequestRejected: "{kind} request declined",
+          msgRequestCompleted: "{kind} request completed",
+          msgRequestPending: "{kind} request under review",
+          msgRequestLeave: "Leave",
+          msgRequestReschedule: "Reschedule",
+          msgActionView: "View",
+          msgTimeJustNow: "just now",
+          msgTimeMinutesAgo: "{n} min ago",
+          msgTimeHoursAgo: "{n} h ago",
+          msgTimeYesterday: "yesterday",
+          msgTimeDaysAgo: "{n} d ago",
           dashTitle: "Learning Dashboard",
           dashSub: "Your child's progress, skill growth curve, and recent performance at a glance.",
           dashStudentChipFmt: "{name} · {grade}",
@@ -4405,6 +4544,10 @@
         // feedback / request data via seedDemoData or another tab is
         // reflected immediately.
         computeBadgeCounts();
+
+        // Unified messages tab — aggregates feedback, request decisions,
+        // payments, and homework into a single chronological inbox.
+        renderMessages(lang);
 
         // Homework tab — assignment cards with status pill + due-chip,
         // filterable by todo/submitted/graded. Modal handles read +
@@ -6131,6 +6274,195 @@
         window.location.href = "login.html";
       }
 
+      // ---- Messages center ----------------------------------------------
+      // Aggregates entries from minddo_feedback, minddo_schedule_requests,
+      // minddo_payments, and minddo_assignments into a single chronological
+      // inbox. No new storage key — composes on read. Filter persists in
+      // sessionStorage so it doesn't leak across browser sessions.
+      function collectMessages(current, lang) {
+        var t = I18N[lang] || I18N["zh-CN"];
+        var sid = current && current.studentId || "";
+        var items = [];
+
+        (readJson("minddo_feedback") || []).forEach(function (f) {
+          if (!matchCurrentStudent(f, current)) return;
+          var title = f.teacher
+            ? (t.msgFeedbackTitle || "{teacher}").replace("{teacher}", f.teacher)
+            : t.msgFeedbackTitleAnon;
+          items.push({
+            type: "feedback",
+            icon: "💬",
+            title: title,
+            summary: f.notes || f.highlights || f.suggestion || "",
+            timestamp: f.createdAt || "",
+            action: { tab: "feedback" }
+          });
+        });
+
+        (readJson("minddo_schedule_requests") || []).forEach(function (r) {
+          if (!matchCurrentStudent(r, current)) return;
+          var kind = r.type === "reschedule" ? t.msgRequestReschedule : t.msgRequestLeave;
+          var key = r.status === "approved" ? t.msgRequestApproved
+                  : r.status === "rejected" ? t.msgRequestRejected
+                  : r.status === "completed" ? t.msgRequestCompleted
+                  : t.msgRequestPending;
+          items.push({
+            type: "request",
+            icon: r.status === "approved" ? "✅"
+               : r.status === "rejected" ? "✕"
+               : r.status === "completed" ? "🎯" : "⏳",
+            title: (key || "{kind}").replace("{kind}", kind || ""),
+            summary: r.targetLabel || r.reason || "",
+            timestamp: r.updatedAt || r.createdAt || "",
+            action: { tab: "schedule" }
+          });
+        });
+
+        (readJson("minddo_payments") || []).forEach(function (p) {
+          if (!matchCurrentStudent(p, current)) return;
+          var amt = Number(p.amount);
+          if (!isFinite(amt) || amt <= 0) return;
+          items.push({
+            type: "payment",
+            icon: "💰",
+            title: (t.msgPaymentTitle || "${amount}").replace("{amount}", amt.toFixed(2)),
+            summary: p.orderId ? ("#" + p.orderId) : "",
+            timestamp: p.paidAt || p.createdAt || "",
+            action: p.orderId ? { href: "invoice.html?orderId=" + encodeURIComponent(p.orderId) } : null
+          });
+        });
+
+        if (window.MindDoFlow && window.MindDoFlow.getStudentAssignments && sid) {
+          (window.MindDoFlow.getStudentAssignments(sid) || []).forEach(function (a) {
+            if (!a || a.status === "graded" || a.status === "submitted") return;
+            var title = a.title
+              ? (t.msgHomeworkTitle || "{title}").replace("{title}", a.title)
+              : t.msgHomeworkTitleGeneric;
+            var summary = "";
+            if (a.dueAt) {
+              try {
+                summary = (t.msgHomeworkDue || "{date}").replace("{date}",
+                  new Date(a.dueAt).toLocaleDateString(lang === "en" ? "en-US" : "zh-CN",
+                    { month: "short", day: "numeric" }));
+              } catch (_) { summary = a.dueAt; }
+            } else if (a.description) {
+              summary = a.description;
+            }
+            items.push({
+              type: "homework",
+              icon: "📝",
+              title: title,
+              summary: summary,
+              timestamp: a.assignedAt || "",
+              action: { tab: "homework" }
+            });
+          });
+        }
+
+        items.sort(function (a, b) {
+          return (b.timestamp || "").localeCompare(a.timestamp || "");
+        });
+        return items;
+      }
+
+      function formatMsgRelative(iso, lang) {
+        if (!iso) return "—";
+        var t = I18N[lang] || I18N["zh-CN"];
+        var ms;
+        try { ms = new Date(iso).getTime(); } catch (_) { return "—"; }
+        if (!isFinite(ms)) return "—";
+        var diff = Date.now() - ms;
+        if (diff < 0) diff = 0;
+        if (diff < 60000) return t.msgTimeJustNow;
+        if (diff < 3600000) return (t.msgTimeMinutesAgo || "{n}").replace("{n}", Math.floor(diff / 60000));
+        if (diff < 86400000) return (t.msgTimeHoursAgo || "{n}").replace("{n}", Math.floor(diff / 3600000));
+        if (diff < 172800000) return t.msgTimeYesterday;
+        if (diff < 7 * 86400000) return (t.msgTimeDaysAgo || "{n}").replace("{n}", Math.floor(diff / 86400000));
+        try {
+          return new Date(iso).toLocaleDateString(lang === "en" ? "en-US" : "zh-CN",
+            { month: "short", day: "numeric" });
+        } catch (_) { return iso; }
+      }
+
+      function renderMessages(lang) {
+        var body = document.getElementById("messagesBody");
+        var filterBar = document.getElementById("msgFilterBar");
+        if (!body || !filterBar) return;
+        var t = I18N[lang] || I18N["zh-CN"];
+        var current = (window.MindDoFlow && window.MindDoFlow.getCurrentStudent && window.MindDoFlow.getCurrentStudent()) || {};
+        var items = collectMessages(current, lang);
+
+        var activeFilter;
+        try { activeFilter = sessionStorage.getItem("minddo_msg_filter") || "all"; }
+        catch (_) { activeFilter = "all"; }
+        var filters = [
+          { k: "all",      label: t.msgFilterAll },
+          { k: "feedback", label: t.msgFilterFeedback },
+          { k: "homework", label: t.msgFilterHomework },
+          { k: "payment",  label: t.msgFilterPayment },
+          { k: "request",  label: t.msgFilterRequest }
+        ];
+        filterBar.innerHTML = filters.map(function (f) {
+          var pressed = f.k === activeFilter ? "true" : "false";
+          return '<button type="button" class="msg-filter" data-msg-filter="' + f.k +
+            '" aria-pressed="' + pressed + '">' + escHTML(f.label || f.k) + '</button>';
+        }).join("");
+
+        var filtered = activeFilter === "all"
+          ? items
+          : items.filter(function (m) { return m.type === activeFilter; });
+
+        if (!filtered.length) {
+          body.innerHTML = '<div class="msg-empty">' + escHTML(t.messagesEmpty || "No messages.") + '</div>';
+          return;
+        }
+
+        var lastSeen;
+        try { lastSeen = localStorage.getItem(LASTSEEN_PREFIX + "messages") || ""; }
+        catch (_) { lastSeen = ""; }
+
+        body.innerHTML = filtered.map(function (m) {
+          var unread = m.timestamp && m.timestamp > lastSeen;
+          var typeKey = "msgType" + m.type.charAt(0).toUpperCase() + m.type.slice(1);
+          var typeLabel = t[typeKey] || m.type;
+          var actionHTML = "";
+          if (m.action) {
+            if (m.action.tab) {
+              actionHTML = '<a class="msg-action" href="#" data-jump-tab="' + escHTML(m.action.tab) + '">' +
+                escHTML(t.msgActionView || "View") + '</a>';
+            } else if (m.action.href) {
+              actionHTML = '<a class="msg-action" href="' + escHTML(m.action.href) + '">' +
+                escHTML(t.msgActionView || "View") + '</a>';
+            }
+          }
+          return [
+            '<article class="msg-card t-', m.type, (unread ? " is-unread" : ""), '">',
+              '<span class="msg-icon" aria-hidden="true">', m.icon, '</span>',
+              '<div class="msg-body">',
+                '<div class="msg-head">',
+                  '<span class="msg-title">', escHTML(m.title), '</span>',
+                  '<span class="msg-type-tag">', escHTML(typeLabel), '</span>',
+                '</div>',
+                m.summary ? '<p class="msg-summary">' + escHTML(m.summary) + '</p>' : '',
+              '</div>',
+              '<div class="msg-meta">',
+                '<span class="msg-time">', escHTML(formatMsgRelative(m.timestamp, lang)), '</span>',
+                actionHTML,
+              '</div>',
+            '</article>'
+          ].join("");
+        }).join("");
+      }
+
+      // Filter chip clicks — persist choice and re-render.
+      document.addEventListener("click", function (e) {
+        var chip = e.target.closest("[data-msg-filter]");
+        if (!chip) return;
+        try { sessionStorage.setItem("minddo_msg_filter", chip.getAttribute("data-msg-filter")); } catch (_) {}
+        var lang = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+        renderMessages(lang);
+      });
+
       var saved = localStorage.getItem("minddo_lang");
       render(saved === "en" ? "en" : "zh-CN");
 
@@ -6239,6 +6571,16 @@
           }).length;
         }
         setBadge("homework", active === "homework" ? 0 : hwCount);
+
+        // Messages: anything from collectMessages() with a timestamp newer
+        // than this tab's lastseen. Uses the same aggregation that renders
+        // the panel itself, so the badge and the list never disagree.
+        var msgLast = getLastseen("messages");
+        var lang = document.documentElement.getAttribute("lang") === "en" ? "en" : "zh-CN";
+        var msgCount = collectMessages(current, lang).filter(function (m) {
+          return m.timestamp && m.timestamp > msgLast;
+        }).length;
+        setBadge("messages", active === "messages" ? 0 : msgCount);
       }
 
       // Tab switching: clicking a sidebar item (or a [data-jump-tab] link
@@ -6247,7 +6589,7 @@
       // active state. Active tab persists per session.
       (function () {
         var TAB_KEY = "minddo_acct_active_tab";
-        var KNOWN_TABS = ["overview", "enroll", "billing", "schedule", "homework", "learning", "competitions", "feedback", "profile", "referrals", "settings"];
+        var KNOWN_TABS = ["overview", "messages", "enroll", "billing", "schedule", "homework", "learning", "competitions", "feedback", "profile", "referrals", "settings"];
         function setActiveTab(key) {
           if (KNOWN_TABS.indexOf(key) === -1) key = "overview";
           document.querySelectorAll("[data-tab]").forEach(function (btn) {

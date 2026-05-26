@@ -2,556 +2,193 @@
 
 ## Purpose
 
-This document records the current frontend system scope for the MindDo prototype.
+This document is the source-of-truth list of pages and capabilities in the MindDo / 馒头AI frontend prototype. It is meant for three practical uses:
 
-It is designed for three practical uses:
+1. Review what is already implemented before designing a new feature.
+2. Locate the file and storage key for each surface quickly.
+3. Remove a feature safely without grepping the whole project blindly.
 
-1. Review what has already been implemented.
-2. Locate the file and storage entry for each feature quickly.
-3. Remove a feature safely later without searching the whole project blindly.
+Update this file when a visible page, dashboard section, or shared helper is added or removed.
 
-This document should be updated whenever a visible user-facing module, dashboard capability, or local demo data flow is added or removed.
+---
 
-## Current System Scope
+## System Scope
 
-The current frontend prototype now covers a usable end-to-end education operations flow:
+The prototype now covers the full operations + family lifecycle:
 
-1. Public business overview
-2. Trial registration
-3. Assessment and sample quiz
-4. Student sign-up and existing-account login
-5. Course selection and membership
-6. Student home after login
-7. Feedback and semester reporting
-8. Operations dashboard
-9. Special lists for newly registered trials and students
-10. Student leave/reschedule request and dashboard-side visibility
-11. Student management workspace
-12. Operator request processing center with status updates
+1. Marketing / public surface (landing, about, franchise, campuses, contact)
+2. Curriculum docs (course-system, course-offerings, college-prep)
+3. Trial booking + assessment + auto-recommendation
+4. Signup / login / claim invitation / profile setup
+5. Course selection → payment → confirmation → invoice
+6. Student/family hub (single 7400-line page with sub-tabs for dashboard, membership, billing, schedule, homework, portfolio, competitions, feedback, referrals, settings)
+7. Family-graph management (add child, add co-parent, account settings)
+8. Ops dashboard with KPIs, alerts, audit log viewer, ⌘K search, principal/super-admin overviews
+9. Student management workspace with multi-tab drawer (作业 / 成长 / 变更历史 / 反馈)
+10. Request center for leave/reschedule approvals
+11. Today's-new-leads + today's-new-students alerts
+12. Email outbox simulator
+13. AI-suggest surfaces across marketing/campus-ops/principal/super-admin/parent panes
+14. Role-based user-flow + training docs at `docs/`
+
+---
 
 ## Page Map
 
-### `index.html`
-
-Purpose:
-Main system landing page / unified entry hub.
-
-Primary users:
-Parents, students, operators, internal stakeholders.
-
-Key role in system:
-Acts as the main front door for the full frontend system and links into the high-frequency pages by role and usage.
-
-Current implemented capabilities:
-
-1. Center-style marketing hero section
-2. Strong top-level CTA for trial, registration, and assessment
-3. Role-based portals for visitor, student, and operations
-4. Full page library for all available prototype pages
-5. Parent/student review section for trust-building
-6. Closing CTA band for high-conversion entry
-7. Bilingual switching consistent with the rest of the site
-8. No project explanation blocks; this page now focuses only on entry and navigation
-
-Safe removal note:
-If only the front-door landing is not needed, this file can be simplified or replaced without breaking the shared local data flow logic.
-
-### `trial.html`
-
-Purpose:
-Self-service trial booking.
-
-Primary users:
-Parents / students before formal enrollment.
-
-Key implemented capabilities:
-
-1. Trial registration form
-2. Writes lead data into local storage
-3. Links into student account and assessment flow
-4. Supports current student prefill via shared local flow state
-
-Related local storage:
-
-- `minddo_trial_leads`
-- `minddo_current_student`
-
-Remove if not needed:
-
-- Trial booking UX
-- Trial lead source analytics on dashboard
-- Trial list page usefulness decreases
-
-### `assessment.html`
-
-Purpose:
-Assessment intake and lightweight sample quiz.
-
-Primary users:
-Students, consultants, academic staff.
-
-Key implemented capabilities:
-
-1. Profile-level assessment form
-2. Extra fields such as confidence and learning style
-3. Sample quiz with auto score preview
-4. Auto recommendation text
-5. One-click sample fill
-6. Saved assessment payload includes quiz score and recommendation
-
-Related local storage:
-
-- `minddo_assessments`
-- `minddo_current_student`
-
-Remove if not needed:
-
-- Quiz UI
-- Recommendation block
-- Dashboard assessment stats become less meaningful
-
-### `signup.html`
-
-Purpose:
-Student registration and login entry page.
-
-Primary users:
-New and existing students / parents.
-
-Key implemented capabilities:
-
-1. New user registration
-2. Existing account login section
-3. Third-party login buttons
-4. Google / Microsoft / Apple visual login buttons with logo-style markers
-5. Social login mock flow
-6. Registration success always routes to student page, even if email API is unavailable
-7. Existing-account login uses locally stored signup users
-
-Related local storage:
-
-- `minddo_signup_users`
-- `minddo_current_student`
-
-Potential future upgrade:
-
-- Real password verification
-- Forgot password flow
-- Real OAuth callback flow
-
-Remove if not needed:
-
-- Existing login section can be removed without affecting registration itself
-- Social login buttons can be removed independently
-
-### `course-selection.html`
-
-Purpose:
-Membership selection, schedule preference capture, add-ons, and pricing summary.
-
-Primary users:
-Students / parents after sign-up or assessment.
-
-Key implemented capabilities:
-
-1. Membership plan selection
-2. Class mode selection
-3. Billing cycle selection
-4. Preferred weekday and time slot
-5. Add-on selection
-6. Price summary calculation
-7. Membership order save to local storage
-8. Student meta prefill from shared flow state
-
-Related local storage:
-
-- `minddo_membership_orders`
-- `minddo_current_student`
-
-Remove if not needed:
-
-- Membership pricing UI
-- Student home course/schedule view will lose source data
-
-### `student-account.html`
-
-Purpose:
-Logged-in student home page.
-
-Primary users:
-Students / parents after sign-up or login.
-
-Current implemented modules:
-
-1. Student profile section
-2. Learning summary
-3. Current flow status
-4. Quick actions
-5. Course selection entry
-6. Assessment entry
-7. Feedback entry
-8. Trial re-entry
-9. Logout
-10. Course summary
-11. Schedule summary
-12. Weekly schedule board
-13. Multi-course / multi-slot weekly schedule aggregation
-14. Next lesson reminder
-15. Leave / reschedule request form
-16. Leave / reschedule request history
-
-Related local storage:
-
-- `minddo_current_student`
-- `minddo_membership_orders`
-- `minddo_trial_leads`
-- `minddo_assessments`
-- `minddo_feedback`
-- `minddo_schedule_requests`
-
-Remove if not needed:
-
-- `Logout`: remove both logout buttons and `logout()` logic
-- `Weekly schedule board`: remove `week-board` markup, CSS, and render block
-- `Next lesson reminder`: remove reminder card and related render logic
-- `Leave / reschedule`: remove request form, request history, and storage key usage
-
-### `feedback.html`
-
-Purpose:
-Learning feedback collection / parent-facing progress record.
-
-Primary users:
-Teachers, operators, students, parents.
-
-Key role:
-Stores learning feedback tied to the current student.
-
-Related local storage:
-
-- `minddo_feedback`
-
-### `semester-report.html`
-
-Purpose:
-Milestone report / stage summary.
-
-Primary users:
-Parents, operators, teachers.
-
-Key role:
-Displays stage reporting and next-term suggestions.
-
-### `dashboard.html`
-
-Purpose:
-Operations dashboard.
-
-Primary users:
-Operations, consultants, internal management.
-
-Current implemented modules:
-
-1. Registration metrics
-2. Payment metrics
-3. Assessment metrics
-4. Conversion metrics
-5. New trial alert card
-6. New student alert card
-7. Pending leave/reschedule request count
-8. Level distribution
-9. Lead source distribution
-10. Payment entry tool
-11. Recent payments table
-12. Recent leave/reschedule requests table
-13. Direct entries to student management and request processing pages
-
-Related local storage:
-
-- `minddo_signup_users`
-- `minddo_assessments`
-- `minddo_trial_leads`
-- `minddo_payments`
-- `minddo_schedule_requests`
-
-Remove if not needed:
-
-- Alert strip can be removed independently
-- Request table can be removed without affecting student-side request submission
-
-### `student-management.html`
-
-Purpose:
-Dedicated operator page for student lifecycle management.
-
-Primary users:
-Operations, consultants, academic coordinators.
-
-Current implemented modules:
-
-1. Student list card view
-2. Search by name, email, or student ID
-3. Status filtering
-4. `NEW` badge for students registered today
-5. Joined view of sign-up, assessment, feedback, and membership status
-6. Quick entry to student profile page
-7. Quick entry to request processing center
-
-Related local storage:
-
-- `minddo_signup_users`
-- `minddo_assessments`
-- `minddo_feedback`
-- `minddo_membership_orders`
-
-Remove if not needed:
-
-- The full page can be deleted independently if operators do not need a dedicated student workspace
-- Dashboard and student page remain usable without this page
-
-### `request-center.html`
-
-Purpose:
-Dedicated operator page for leave/reschedule request handling.
-
-Primary users:
-Operations, consultants, scheduling staff.
-
-Current implemented modules:
-
-1. Unified request list
-2. Search by student, email, course, or reason
-3. Request status filtering
-4. Action buttons for `approved`, `rejected`, and `completed`
-5. Processing metrics for all requests
-6. Shared request status update flow
-
-Related local storage:
-
-- `minddo_schedule_requests`
-
-Remove if not needed:
-
-- This page can be removed without breaking student submission itself
-- If removed, also remove dashboard/request links and shared request status update usage
-
-### `new-trials.html`
-
-Purpose:
-Dedicated list page for today’s newly registered trial leads.
-
-Primary users:
-Operations.
-
-Key role:
-Quick review page linked from dashboard alert card.
-
-Related local storage:
-
-- `minddo_trial_leads`
-
-### `new-students.html`
-
-Purpose:
-Dedicated list page for today’s newly registered students.
-
-Primary users:
-Operations.
-
-Key role:
-Quick review page linked from dashboard alert card.
-
-Current implemented detail:
-
-1. Includes explicit `NEW` badge for each listed student
-
-Related local storage:
-
-- `minddo_signup_users`
+### Marketing / public
+
+- `index.html` — Landing hub, role-based portals.
+- `about.html` — Company / mission page.
+- `franchise.html` — Franchise/partnership pitch.
+- `campuses.html` — Campus locations.
+- `contact.html` — Contact form.
+- `course-system.html`, `course-offerings.html`, `college-prep.html` — Curriculum docs.
+- `privacy.html`, `terms.html` — Legal.
+- `404.html` — Branded not-found page.
+
+### Lead → signup funnel
+
+- `trial.html` — Public trial booking. Writes to `minddo_trial_leads`.
+- `trial-register.html` — Alt entry to the same flow.
+- `trial-invite.html` — Invite-link variant.
+- `assessment.html` — Intake form + auto-scored quiz + recommendation. Writes `minddo_assessments`.
+- `signup.html` — Registration + login + mock OAuth (Google/Microsoft/Apple). Writes `minddo_signup_users`, `minddo_accounts`.
+- `login.html` — Dedicated login surface.
+- `claim-account.html` — Accept invite, link to existing family.
+- `profile-setup.html` — Post-signup profile completion.
+
+### Course selection & payment
+
+- `course-selection.html` — Plan / class mode / billing cycle / preferred slot / add-ons. Writes `minddo_membership_orders`.
+- `course-payment.html` — Payment step.
+- `course-confirm.html` — Post-payment confirmation.
+- `course-schedule.html` — Scheduled-classes confirmation.
+- `invoice.html` — Printable A4 invoice (intentionally standalone — inline palette mirrors `assets/minddo-theme.css` so saved-offline copies still render in 馒头AI brand colors).
+
+### Family hub (post-login)
+
+- `student-account.html` — Main parent/student hub. Sub-modules:
+  - Family panel + greeting / hero
+  - Dashboard panel (`#dashPanel`)
+  - Membership current / upgrade / add-ons / elite (`#memberCurrentPanel`, `#memberUpgradePanel`, `#memberAddOnsPanel`, `#memberElitePanel`)
+  - Billing — payment method (`#bmPanel`) + history (`#billingPanel`)
+  - Schedule — upcoming list + month calendar + history (`#upcomingPanel`, `#schedHistoryPanel`) + reschedule modal
+  - Homework — assignments by status (`#hwPanel`) + submission modal
+  - Learning snapshot / portfolio (`#portfolioPanel`)
+  - Competitions (`#compListPanel`)
+  - Feedback — latest + history (`#feedbackLatestPanel`, `#feedbackHistoryPanel`)
+  - Referrals — rewards + share + tracked invites (`#refRewardsPanel`, `#refSharePanel`, `#refListPanel`)
+  - Settings sub-tabs — account / family / security / preferences / help
+- `account-settings.html` — Standalone settings page (alt entry).
+- `add-child.html` — Add another student under the family.
+- `add-coparent.html` — Invite a co-parent.
+- `feedback.html` — Standalone feedback submission.
+- `semester-report.html` — Term milestone report.
+
+### Ops / internal
+
+- `dashboard.html` — Main ops surface. Sub-tabs include:
+  - Registration / payment / assessment / conversion metrics
+  - New-trial + new-student alert cards
+  - Pending leave/reschedule count
+  - Level distribution + lead-source distribution
+  - Payment entry tool + recent-payments table
+  - Recent leave/reschedule requests table
+  - Audit log viewer (`#auditLog`)
+  - Principal first-screen overview (`#principalOverview`)
+  - Super-admin first-screen overview (`#superAdminOverview`)
+  - Approval detail modal with reason capture + permission gate
+  - ⌘K global search palette
+  - 教师管理 sub-tab
+  - 数据完整性检查 sub-tab
+  - Auto-draft messages for renewals + absentees
+- `student-management.html` — Student list + 4-tab detail drawer (作业 / 成长 / 变更历史 / 反馈) with 联系家长 popover.
+- `request-center.html` — Leave/reschedule approval queue.
+- `new-trials.html` — Today's new trial leads.
+- `new-students.html` — Today's new registered students.
+- `email-outbox.html` — Simulated email-send log.
+
+### Docs (`docs/`)
+
+- `user-flows.html` — Index of role flows.
+- `campus-marketing-flow.html` — Marketing flow diagram.
+- `campus-ops-flow.html` — Campus operations flow.
+- `campus-ops-training.html` — Click-by-click training manual.
+- `principal-flow.html`, `super-admin-flow.html` — Principal + super-admin flows.
+- `schema-explorer.html` — Searchable visual schema viewer.
+- `BACKEND_MIGRATION.md`, `SCHEMA.md` — Backend planning.
+
+---
 
 ## Shared Frontend Data Layer
 
-### Main helper file
+### Main helper
 
-File:
-`assets/minddo-flow.js`
+`assets/minddo-flow.js` — central state library, exposed as `window.MindDoFlow`. Responsibilities:
 
-Primary role:
-Acts as the shared local demo state layer across pages.
+1. `KEYS` dictionary — single source of truth for every localStorage key
+2. Current student / current account / current guardian helpers
+3. CRUD save helpers for every entity (lead, assessment, signup, payment, membership, feedback, schedule request, …)
+4. Family-graph lookups: `findStudentById`, `findAccountByEmail`, `findGuardianById`, `findMembershipPlan`
+5. Trial slot management + evaluation + completion
+6. `aiSuggest()` helper used by AI surfaces across the app
+7. Email outbox read/write
+8. Audit log append + read
+9. Migrations runner (`KEY_MIGRATIONS_APPLIED`)
+10. Seed-data installer (`KEY_SEED_VERSION`)
+11. Permission gating helpers tied to `KEY_ACTIVE_OPS_USER`
+12. `injectPanel()` — floating debug/seed/persona switcher loaded on every page
 
-Current exported/shared responsibilities:
+### Shared CSS / JS modules
 
-1. Current student state
-2. Lead save
-3. Assessment save
-4. Signup save
-5. Payment save
-6. Membership save
-7. Feedback save
-8. Prefill helpers
-9. Demo data seed
-10. Floating flow test panel
-11. Centralized schedule request read/write helpers
-12. Request status update helper for operations
+- `assets/minddo-theme.css` — Design tokens (colors, radii, spacing, shadows, motion, z-scale). Single source of truth for the 馒头AI palette.
+- `assets/minddo-responsive.css` — Shared responsive breakpoints + utility classes.
+- `assets/minddo-nav.js` — Unified top-nav widget.
+- `assets/lang-switcher.js` — CN/EN toggle, writes `minddo_lang`.
+- `assets/customer-service.js` — Floating chat + contact card.
+- `assets/consent.js` — Cookie/consent banner.
 
-### Storage Keys In Use
+### Storage keys
 
-These keys are currently part of the demo frontend state model:
+See full grouped list in the auto-memory `data_models.md`. Summary:
 
-- `minddo_current_student`
-- `minddo_signup_users`
-- `minddo_assessments`
-- `minddo_trial_leads`
-- `minddo_payments`
-- `minddo_feedback`
-- `minddo_membership_orders`
-- `minddo_schedule_requests`
+- Identity / access: `minddo_accounts`, `minddo_account_invites`, `minddo_invite_tokens`, `minddo_active_ops_user`, `minddo_current_student`
+- Family graph: `minddo_families`, `minddo_students`, `minddo_guardians`, `minddo_signup_users`
+- Lead → trial: `minddo_trial_leads`, `minddo_trial_slots`, `minddo_trial_evaluations`, `minddo_trial_completions`, `minddo_assessments`
+- Membership / billing: `minddo_membership_orders`, `minddo_payments`, `minddo_billing_profile`
+- Class delivery: `minddo_class_offerings`, `minddo_student_levels`, `minddo_assignments`, `minddo_attendance`, `minddo_growth_records`, `minddo_portfolio`, `minddo_feedback`, `minddo_schedule_requests`, `minddo_referrals`
+- Ops / internal: `minddo_staff`, `minddo_roles`, `minddo_payroll`, `minddo_contracts`, `minddo_approvals`, `minddo_audit_log`, `minddo_email_outbox`
+- System: `minddo_seed_version`, `minddo_migrations_applied`, `minddo_lang`
 
-Important note:
-`minddo_schedule_requests` is now shared through `assets/minddo-flow.js`, and both student-side submission and operator-side processing rely on it.
+---
 
-## Feature Removal Guide
+## Tooling
 
-This section is intentionally practical. If you later decide a feature is unnecessary, delete or simplify using the matching section below.
+- `npm run smoke` — runs `tools/smoke.js`. Parses every `*.html` inline `<script>` block + every `assets/*.js` for syntax errors. Also checks balance of `<style>/<script>/<body>/<html>/<head>` tags (catches the unclosed-`<style>` class of bugs that silently empties the page).
+- `npm run serve` — `python -m http.server 8765` for local preview.
 
-### Remove Third-Party Login
+---
 
-Files:
+## Removal Guide
 
-- `signup.html`
+When ripping out a feature, the storage key + page name combination tells you everything that has to go. Common removals:
 
-Remove:
+- **Leave / reschedule flow** → remove the request form in `student-account.html`, the recent-requests block in `dashboard.html`, the entire `request-center.html`, and references to `minddo_schedule_requests`.
+- **Membership add-ons** → remove `#memberAddOnsPanel` in `student-account.html` and the `addons` field from `minddo_membership_orders` writes in `course-selection.html`.
+- **Audit log** → remove `#auditLog` block in `dashboard.html` + the `auditLog` key + all `auditLogAppend()` calls in `assets/minddo-flow.js`.
+- **OAuth login** → remove the provider buttons + `handleOAuth()` block in `signup.html` and `login.html`.
+- **Email outbox simulator** → remove `email-outbox.html` + the email-outbox read/write helpers in `assets/minddo-flow.js`.
 
-1. OAuth button block
-2. Provider text entries in i18n
-3. `handleOAuth()` logic
-4. Button event listeners
+When deleting a page, also remove its links from `index.html`, `dashboard.html`, `student-account.html`, and the bilingual nav in `assets/minddo-nav.js`.
 
-Storage/data impact:
-
-- Existing saved users with `provider` fields remain harmless
-
-### Remove Existing Account Login
-
-Files:
-
-- `signup.html`
-
-Remove:
-
-1. Login form section
-2. Login i18n copy
-3. `findUserByEmail()`
-4. Login submit handler
-
-### Remove Assessment Quiz
-
-Files:
-
-- `assessment.html`
-
-Remove:
-
-1. Quiz question block
-2. Score badge
-3. Auto recommendation logic
-4. Quiz answer fields from payload
-
-### Remove Student Schedule Board
-
-Files:
-
-- `student-account.html`
-
-Remove:
-
-1. `week-board` section
-2. Day-card CSS
-3. Membership aggregation render block
-
-### Remove Leave / Reschedule Flow
-
-Files:
-
-- `student-account.html`
-- `dashboard.html`
-- `request-center.html`
-
-Remove:
-
-1. Request form
-2. Request history list
-3. Dashboard pending request metric
-4. Dashboard recent requests table
-5. Request center page
-6. References to `minddo_schedule_requests`
-
-Optional cleanup:
-
-- Remove old request data from local storage manually
-
-### Remove New Trial / New Student Operational Lists
-
-Files:
-
-- `dashboard.html`
-- `new-trials.html`
-- `new-students.html`
-
-Remove:
-
-1. Dashboard alert cards
-2. Dedicated list pages
-3. Links to those pages
-
-## Recommended Next Features
-
-These are not all implemented yet, but they are the most natural next steps if the goal is a more production-like frontend.
-
-### High Priority
-
-1. Stronger student course calendar with actual dates, not only weekday/time
-2. Student “next assignment” and “remaining sessions” card
-3. Parent-facing message center / notification history
-4. Payment status badges and overdue reminder logic
-5. Student risk warning for inactive or feedback-missing accounts
-
-### Medium Priority
-
-1. Search and filtering across trial and payment records
-2. Better risk indicators for missing feedback or inactive students
-3. Parent contact timeline
-4. Multi-role navigation shell
-5. Operator note-taking per student
-
-### Lower Priority
-
-1. Profile editing
-2. Avatar support
-3. Theme refinement per user role
-4. Exportable reports
-
-## Definition Of “Usable Frontend” For This Prototype
-
-For this project, a usable frontend means:
-
-1. A user can enter from landing, trial, assessment, or sign-up.
-2. A student can register or log in.
-3. A student can reach a complete student home page after login.
-4. A student can view profile, course selection, schedule, assessment, and feedback entry points.
-5. A student can submit leave/reschedule requests.
-6. Operations can see new trials, new students, payments, and request activity on the dashboard.
-7. Demo data moves across pages consistently through local storage.
-
-The system already satisfies that prototype-level definition.
+---
 
 ## Maintenance Rule
 
-Whenever a new visible frontend capability is added, update this document with:
+When you add a visible page, ops sub-tab, or shared helper, append it here with:
 
-1. Feature name
-2. File location
-3. Related local storage key or shared helper
-4. Safe removal instructions
+1. File location
+2. Storage key or shared helper touched
+3. Where it's linked from (so the next removal is greppable)
 
-That keeps the prototype extensible without becoming hard to trim later.
+That keeps the prototype extensible without becoming hard to trim.
