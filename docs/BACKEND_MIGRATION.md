@@ -7,6 +7,11 @@ is the source of truth for the data model — this doc maps each key to a
 suggested DB table / REST endpoint and outlines the migration order.
 
 > **Status**: planning doc. Not a step-by-step migration script.
+>
+> **For backend devs starting now**: the full table-by-table DDL reference
+> lives in [`DATABASE_DESIGN.md`](DATABASE_DESIGN.md) — 49 tables with
+> columns, types, constraints, and indexes. This file stays as the
+> migration *strategy*; that file is the *implementation contract*.
 
 ---
 
