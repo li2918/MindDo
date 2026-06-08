@@ -21,7 +21,7 @@
 
 ## W3 · 6/23–6/29 — 支付（核心，最重）
 - [ ] `membership_plans`/`memberships`/`payments`/`invoices` 端点（模块 F）— ~2d — **截止 6/25**
-- [ ] 🔴 支付网关接入（待决策 §10-#1）+ webhook 对账 — ~2.5d — **截止 6/28**
+- [ ] 🔴 Stripe 接入（Payment Intents + webhook 对账）+ `payments` 落库 — ~2.5d — **截止 6/28**
 - [ ] 前端：course-selection → course-payment → course-confirm + invoice — ~2d — **截止 6/29**
 
 **本周负荷 ≈ 6.5d ⚠️（明显超）。** 缓解：支付是本周唯一硬目标；把下面 W4 的「教务模块 E」**整块推 Phase 2**，腾出时间保支付。
@@ -38,6 +38,6 @@
 
 ### 依赖与提醒
 - **6/18 的 leads 端点要优先交**——Paul 的线索管线等着。
-- 支付网关（§10-#1）必须 W1 内定，否则 W3 卡死。
+- 支付网关 = **Stripe**（已定）；W1 内先注册账户、拿 test API key、跑通最小 Payment Intent demo，别等到 W3。
 - 你是本期最重的人；**模块 E（教务）是首选可砍项**——优先保「漏斗 + 支付 + 家庭门户」。
 - `students/guardians` 前端依赖 David 6/15 的迁移；卡住先用 mock。

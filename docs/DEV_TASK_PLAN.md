@@ -12,7 +12,7 @@
 
 1. **数据模型 → 向 49 表设计对齐**，但用**增量迁移、非大爆炸重构**：新表严格按 `DATABASE_DESIGN.md` 建；旧表（`User` 父子层级 / `ContactRequest` / `TrialCourse` / `Organization` / `Course`）逐模块迁移，全程保持 app 可用。本期只纳入 **MVP 关键的约 18 张表**（见 §3），其余 31 张推 Phase 2。
 2. **角色先用现有 5 个**：`SUPER_ADMIN / ORG_ADMIN / INSTRUCTOR / PARENT / STUDENT`。原型的 principal / campus-ops / campus-marketing 运营分层 + 金额脱敏 → Phase 2。
-3. **支付本期必含**：membership / payment / invoice 从零建，接支付网关（待决策 §10-#1）。
+3. **支付本期必含**：membership / payment / invoice 从零建，**支付网关 = Stripe**（2026-06-08 已定）。
 
 ---
 
@@ -173,7 +173,7 @@
 ---
 
 ## 10. 待决策（影响开工，请尽快定）
-1. **支付网关**：Stripe（美区卡）/ 微信·支付宝（华人家长）/ 都要？→ 卡 Austin W3，**最优先**。
+1. ✅ **支付网关 = Stripe**（2026-06-08 已定）。行动：尽早注册 Stripe 账户、拿 test/live API key、配 webhook 端点；微信/支付宝若需 → Phase 2。
 2. **「机构 Organization」vs「校区 Campus」语义**：现有 Organization 与 spec 的 campuses 怎么对应/合并？→ 卡 David 的 B 模块迁移。
 3. **迁移期数据**：现有 User/ContactRequest/TrialCourse 里已有多少真实数据需要迁？还是仍是演示数据可直接重建？→ 决定迁移脚本投入。
 4. **文件存储**（作品集/合同/invoice PDF）：S3 / R2？（Phase 2 可延后，但 invoice 可能本期要）。
