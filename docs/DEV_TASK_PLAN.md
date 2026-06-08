@@ -96,6 +96,7 @@
 - [ ] 按 `DATABASE_DESIGN.md` 建核心 Prisma schema：模块 A（users/staff/roles/permissions/role_permissions）+ B（campuses/classrooms）+ C（families/students/guardians）
 - [ ] 通用列约定（`id`/`created_at`/`updated_at`/`created_by`/`deleted_at`/`org_id`）+ `updated_at` 自动维护 + 软删除中间件
 - [ ] Auth0 租户配置：`Auth0Strategy`（JWKS 校验）+ `AuthService.syncUser`（upsert 用户行）+ `RolesGuard` + `@Roles()` 装饰器
+- [ ] **统一角色模型**（待决策 #1）：梳理 README 5 角色 vs 原型 4 运营角色，产出统一后的 `roles` + 权限映射，产品确认后据此配 Auth0
 - [ ] 权限码字典 + 把原型 `PERMISSION_TEMPLATES` 迁成 `role_permissions` 种子数据
 - [ ] 全局组件：`ValidationPipe`、异常过滤器、**审计拦截器**（写操作自动写 `audit_log`）、请求日志
 - [ ] CI/CD：后端 `Dockerfile`（启动跑 `prisma migrate deploy`）+ 前端 GitHub Actions → S3；dev/prod 环境 + secrets
@@ -217,7 +218,7 @@
 
 > 这几项不定，下面的开发会返工。请产品负责人逐条确认：
 
-1. **最终角色模型**：README 的 5 角色（SUPER_ADMIN / ORG_ADMIN / INSTRUCTOR / PARENT / STUDENT）vs 原型 + `DATABASE_DESIGN.md` 的 4 运营角色（super-admin / principal / campus-ops / campus-marketing）+ guardian/student。**二者不一致，必须先统一**——它决定 Auth0 角色配置和每个端点的权限。
+1. **最终角色模型** → **Owner: David（先行梳理）**。README 的 5 角色（SUPER_ADMIN / ORG_ADMIN / INSTRUCTOR / PARENT / STUDENT）vs 原型 + `DATABASE_DESIGN.md` 的 4 运营角色（super-admin / principal / campus-ops / campus-marketing）+ guardian/student，**二者不一致**。David 先产出统一后的角色 + 权限映射（建议直接写进 `DATABASE_DESIGN.md` 模块 A 的 `roles`/`role_permissions` 种子），产品过目确认后再据此配 Auth0。**这是 RBAC 与所有端点权限的前置，须在 W1 内定稿。**
 2. **支付网关**：Stripe（美区信用卡）/ 微信·支付宝（中国家长）/ 两者都要？校区在美/加，家长多为华人——影响 Austin W3。
 3. **文件存储**：作品集 / 合同 PDF 用 S3 还是 R2？（Phase 2 可延后，但要定方向）
 4. **多租户**：本期是否预留 `org_id` 多组织（当前默认单租户 = 1）？
