@@ -34,6 +34,35 @@
 
 ---
 
+## 📐 原型参考：在哪看、怎么跑、对应哪页
+
+> 本计划反复说「照原型实现」。原型 = 本 MindDo 仓库（纯 HTML/CSS/vanilla JS，无构建，状态全在 localStorage）。**字段、状态、交互原型里都定好了，先点开走一遍流程再动手。**
+
+**怎么跑 / 看：**
+- **最省事——在线看**：原型已托管在 GitHub Pages，直接点：
+  - 门户入口（中英双语，含本计划）：<https://li2918.github.io/MindDo/docs/dev-plan.html>
+  - 原型首页：<https://li2918.github.io/MindDo/index.html>
+  - 任意页面：`https://li2918.github.io/MindDo/<页面名>.html`
+- **本地跑**：`git clone https://github.com/li2918/MindDo` → `npm run serve`（起 `python -m http.server 8765`）→ 打开 <http://localhost:8765/>；或直接双击任意 `.html`。
+- **看数据 / 造数据**：每页右下角 `MindDoFlow.injectPanel()` 浮动面板可一键灌演示数据、切换运营角色（persona）；所有 localStorage 键见 [`SCHEMA.md`](SCHEMA.md)。
+- **改完自检**：`npm run smoke` 解析所有页面查语法错误。
+
+**每块对应哪页**（前缀 `https://li2918.github.io/MindDo/`，点开即看）：
+
+| 负责人 | 任务块 | 原型页面 |
+|---|---|---|
+| **David** | 数据模型 / schema | [`DATABASE_DESIGN.md`](DATABASE_DESIGN.md) · `docs/schema-explorer.html`（可视化查表）· [`SCHEMA.md`](SCHEMA.md) |
+| **David** | 角色 / 权限 / 运营流 | `docs/super-admin-flow.html` · `docs/principal-flow.html` · `docs/campus-ops-flow.html` |
+| **Austin** | 漏斗 | `trial.html` · `trial-register.html` · `assessment.html` · `signup.html` · `profile-setup.html` |
+| **Austin** | 家庭门户 | `student-account.html`（主中心）· `add-child.html` · `add-coparent.html` · `feedback.html` · `semester-report.html` |
+| **Austin** | 选课 / 支付 / 发票 | `course-selection.html` · `course-payment.html` · `course-confirm.html` · `invoice.html` |
+| **Paul** | 运营看板 | `dashboard.html`（主看板，~18700 行）· `student-management.html` · `request-center.html` |
+| **Paul** | 今日清单 / 邮件 | `new-trials.html` · `new-students.html` · `email-outbox.html` |
+
+> 页面全貌与分组见 [`page_structure`]；导航主干：`index → (漏斗) trial→assessment→signup→course-* `、`(家庭) student-account`、`(运营) dashboard→student-management/request-center/...`。
+
+---
+
 ## 2. 重构对齐：旧表 → 49 表 映射（增量迁移，David 主导）
 
 | 现有（精简） | 目标（DATABASE_DESIGN 模块） | 策略 |

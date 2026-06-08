@@ -34,6 +34,35 @@
 
 ---
 
+## 📐 Prototype reference: where it is, how to run it, which page maps to your work
+
+> This plan keeps saying "implement per the prototype." The prototype = this MindDo repo (pure HTML/CSS/vanilla JS, no build, all state in localStorage). **Fields, states, and interactions are already defined there — click through the flow once before you build.**
+
+**How to run / view:**
+- **Easiest — view online**: the prototype is hosted on GitHub Pages, just click:
+  - Portal (bilingual, includes this plan): <https://li2918.github.io/MindDo/docs/dev-plan.html>
+  - Prototype home: <https://li2918.github.io/MindDo/index.html>
+  - Any page: `https://li2918.github.io/MindDo/<page-name>.html`
+- **Run locally**: `git clone https://github.com/li2918/MindDo` → `npm run serve` (runs `python -m http.server 8765`) → open <http://localhost:8765/>; or just double-click any `.html`.
+- **See/seed data**: the `MindDoFlow.injectPanel()` floating panel (bottom-right of every page) seeds demo data and switches the ops persona; all localStorage keys are in [`SCHEMA.md`](SCHEMA.md).
+- **Self-check after edits**: `npm run smoke` parses every page for syntax errors.
+
+**Which page maps to your work** (prefix `https://li2918.github.io/MindDo/`, click to view):
+
+| Owner | Work area | Prototype pages |
+|---|---|---|
+| **David** | Data model / schema | [`DATABASE_DESIGN.md`](DATABASE_DESIGN.md) · `docs/schema-explorer.html` (visual table browser) · [`SCHEMA.md`](SCHEMA.md) |
+| **David** | Roles / permissions / ops flows | `docs/super-admin-flow.html` · `docs/principal-flow.html` · `docs/campus-ops-flow.html` |
+| **Austin** | Funnel | `trial.html` · `trial-register.html` · `assessment.html` · `signup.html` · `profile-setup.html` |
+| **Austin** | Family portal | `student-account.html` (main hub) · `add-child.html` · `add-coparent.html` · `feedback.html` · `semester-report.html` |
+| **Austin** | Enroll / payment / invoice | `course-selection.html` · `course-payment.html` · `course-confirm.html` · `invoice.html` |
+| **Paul** | Operations dashboard | `dashboard.html` (main, ~18,700 lines) · `student-management.html` · `request-center.html` |
+| **Paul** | Today lists / email | `new-trials.html` · `new-students.html` · `email-outbox.html` |
+
+> Navigation backbone: `index → (funnel) trial→assessment→signup→course-*`, `(family) student-account`, `(ops) dashboard→student-management/request-center/...`.
+
+---
+
 ## 2. Refactor alignment: legacy tables → 49-table design (incremental, David-led)
 
 | Current (lean) | Target (DATABASE_DESIGN module) | Strategy |
