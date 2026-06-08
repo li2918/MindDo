@@ -6,6 +6,14 @@
 
 ---
 
+## 📐 Prototype reference (Austin's area)
+- **Run/view**: click pages online, or locally `npm run serve` → <http://localhost:8765/>
+- **Funnel**: <https://li2918.github.io/MindDo/trial.html> · <https://li2918.github.io/MindDo/trial-register.html> · <https://li2918.github.io/MindDo/assessment.html> · <https://li2918.github.io/MindDo/signup.html> · <https://li2918.github.io/MindDo/profile-setup.html>
+- **Family portal**: <https://li2918.github.io/MindDo/student-account.html> (main hub) · <https://li2918.github.io/MindDo/add-child.html> · <https://li2918.github.io/MindDo/add-coparent.html> · <https://li2918.github.io/MindDo/feedback.html> · <https://li2918.github.io/MindDo/semester-report.html>
+- **Enroll / payment / invoice**: <https://li2918.github.io/MindDo/course-selection.html> · <https://li2918.github.io/MindDo/course-payment.html> · <https://li2918.github.io/MindDo/course-confirm.html> · <https://li2918.github.io/MindDo/invoice.html>
+
+---
+
 ## W1 · 6/9–6/15 — Assessment + schema
 - [ ] `leads`/`lead_contacts`/`assessments` (module D) schema PR (coordinate with David's migration) — ~1d — **due 6/13**
 - [ ] Assessment page `assessment` frontend scaffold + port prototype scoring logic — ~1.5d — **due 6/15**

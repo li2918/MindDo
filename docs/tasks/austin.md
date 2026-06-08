@@ -6,6 +6,14 @@
 
 ---
 
+## 📐 原型参考（Austin 这块）
+- **跑/看**：在线点开页面，或本地 `npm run serve` → <http://localhost:8765/>
+- **漏斗**：<https://li2918.github.io/MindDo/trial.html> · <https://li2918.github.io/MindDo/trial-register.html> · <https://li2918.github.io/MindDo/assessment.html> · <https://li2918.github.io/MindDo/signup.html> · <https://li2918.github.io/MindDo/profile-setup.html>
+- **家庭门户**：<https://li2918.github.io/MindDo/student-account.html>（主中心）· <https://li2918.github.io/MindDo/add-child.html> · <https://li2918.github.io/MindDo/add-coparent.html> · <https://li2918.github.io/MindDo/feedback.html> · <https://li2918.github.io/MindDo/semester-report.html>
+- **选课 / 支付 / 发票**：<https://li2918.github.io/MindDo/course-selection.html> · <https://li2918.github.io/MindDo/course-payment.html> · <https://li2918.github.io/MindDo/course-confirm.html> · <https://li2918.github.io/MindDo/invoice.html>
+
+---
+
 ## W1 · 6/9–6/15 — 评估 + schema
 - [ ] `leads`/`lead_contacts`/`assessments`（模块 D）schema PR（与 David 迁移协调）— ~1d — **截止 6/13**
 - [ ] 评估页 `assessment` 前端脚手架 + 原型计分逻辑移植 — ~1.5d — **截止 6/15**

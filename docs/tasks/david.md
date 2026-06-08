@@ -6,6 +6,14 @@
 
 ---
 
+## 📐 原型参考（David 这块）
+- **跑/看**：在线 <https://li2918.github.io/MindDo/index.html>，或本地 `npm run serve` → <http://localhost:8765/>
+- **数据库契约（49 表）**：<https://github.com/li2918/MindDo/blob/main/docs/DATABASE_DESIGN.md>
+- **可视化查表**：<https://li2918.github.io/MindDo/docs/schema-explorer.html>
+- **角色/运营流程**：<https://li2918.github.io/MindDo/docs/super-admin-flow.html> · <https://li2918.github.io/MindDo/docs/principal-flow.html> · <https://li2918.github.io/MindDo/docs/campus-ops-flow.html>
+
+---
+
 ## W1 · 6/9–6/15 — 模型地基（最高优先）
 - [ ] 通用列约定（created_by/updated_by/deleted_at/org_id）+ `updated_at` 触发器 + 软删除中间件骨架 — ~0.5d — **截止 6/10**
 - [ ] `roles`/`permissions`/`role_permissions`（保留 5 角色枚举值）+ `staff` 档案表 — ~1.5d — **截止 6/11**

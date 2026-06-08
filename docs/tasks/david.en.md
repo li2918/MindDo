@@ -6,6 +6,14 @@
 
 ---
 
+## 📐 Prototype reference (David's area)
+- **Run/view**: online <https://li2918.github.io/MindDo/index.html>, or locally `npm run serve` → <http://localhost:8765/>
+- **DB contract (49 tables)**: <https://github.com/li2918/MindDo/blob/main/docs/DATABASE_DESIGN.md>
+- **Visual table browser**: <https://li2918.github.io/MindDo/docs/schema-explorer.html>
+- **Role/ops flows**: <https://li2918.github.io/MindDo/docs/super-admin-flow.html> · <https://li2918.github.io/MindDo/docs/principal-flow.html> · <https://li2918.github.io/MindDo/docs/campus-ops-flow.html>
+
+---
+
 ## W1 · 6/9–6/15 — Model foundation (top priority)
 - [ ] Common columns (created_by/updated_by/deleted_at/org_id) + `updated_at` trigger + soft-delete middleware skeleton — ~0.5d — **due 6/10**
 - [ ] `roles`/`permissions`/`role_permissions` (keep 5 role enum values) + `staff` profile table — ~1.5d — **due 6/11**

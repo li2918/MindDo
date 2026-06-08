@@ -6,6 +6,16 @@
 
 ---
 
+## 📐 原型参考（Paul 这块）
+- **跑/看**：在线点开页面，或本地 `npm run serve` → <http://localhost:8765/>
+- **主看板**（~18700 行，指标/告警/审批/审计/全局搜索）：<https://li2918.github.io/MindDo/dashboard.html>
+- **学员管理**：<https://li2918.github.io/MindDo/student-management.html>
+- **审批 / 请假改期**：<https://li2918.github.io/MindDo/request-center.html>
+- **今日清单**：<https://li2918.github.io/MindDo/new-trials.html> · <https://li2918.github.io/MindDo/new-students.html>
+- **邮件发件箱**：<https://li2918.github.io/MindDo/email-outbox.html>
+
+---
+
 ## W1 · 6/9–6/15 — 脚手架（用 mock 并行，不等 David）
 - [ ] `schedule_requests`/`approvals`（模块 G）schema PR — ~1d — **截止 6/13**
 - [ ] 用 mock 数据搭「指标总览」页布局 + 路由 + 角色守卫（照 `dashboard.html`）— ~1.5d — **截止 6/15**

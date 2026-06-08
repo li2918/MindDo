@@ -6,6 +6,16 @@
 
 ---
 
+## 📐 Prototype reference (Paul's area)
+- **Run/view**: click pages online, or locally `npm run serve` → <http://localhost:8765/>
+- **Main dashboard** (~18,700 lines; metrics/alerts/approvals/audit/global search): <https://li2918.github.io/MindDo/dashboard.html>
+- **Student management**: <https://li2918.github.io/MindDo/student-management.html>
+- **Approvals / leave-reschedule**: <https://li2918.github.io/MindDo/request-center.html>
+- **Today lists**: <https://li2918.github.io/MindDo/new-trials.html> · <https://li2918.github.io/MindDo/new-students.html>
+- **Email outbox**: <https://li2918.github.io/MindDo/email-outbox.html>
+
+---
+
 ## W1 · 6/9–6/15 — Scaffolding (parallel on mock, don't wait for David)
 - [ ] `schedule_requests`/`approvals` (module G) schema PR — ~1d — **due 6/13**
 - [ ] Build the "metrics overview" page layout + routing + role guard on mock data (follow `dashboard.html`) — ~1.5d — **due 6/15**
