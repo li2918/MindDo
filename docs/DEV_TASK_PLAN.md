@@ -1,192 +1,192 @@
-# MindDo · Dev Task Plan (re-based on the existing minddoai codebase)
+# MindDo · 开发任务计划（基于现有 minddoai 代码重排）
 
-> **Goal**: On the already-started `minddoai` monorepo, **align the data model toward the rigorous `DATABASE_DESIGN.md` design**, **add payments**, and **ship the MVP by late June / early July**.
-> **Audience**: David, Paul, Austin (3 full-stack engineers) + product owner.
-> **Sources of truth**: MindDo HTML prototype (UI/feature reference) + [`DATABASE_DESIGN.md`](DATABASE_DESIGN.md) (DB contract, this phase's target) + [`BACKEND_MIGRATION.md`](BACKEND_MIGRATION.md) (API/permissions/migration).
-> **Location**: temporarily in the prototype repo `docs/`; recommended to live in `minddoai/docs/` and be maintained via PR.
-> **How to use**: each person checks off their own `- [ ]`; sync milestones every Friday.
-
----
-
-## 0. Three locked decisions (premises of this plan)
-
-1. **Data model → align toward the 49-table design**, via **incremental migration, not a big-bang rewrite**: new tables strictly follow `DATABASE_DESIGN.md`; legacy tables (`User` parent-child hierarchy / `ContactRequest` / `TrialCourse` / `Organization` / `Course`) migrate module by module, keeping the app working throughout. This phase includes only the **~18 MVP-critical tables** (see §3); the other 31 go to Phase 2.
-2. **Keep the current 5 roles**: `SUPER_ADMIN / ORG_ADMIN / INSTRUCTOR / PARENT / STUDENT`. The prototype's principal / campus-ops / campus-marketing operational layering + amount masking → Phase 2.
-3. **Payments are in this phase**: membership / payment / invoice built from scratch; **payment gateway = Stripe** (decided 2026-06-08).
+> **目标**：在已开工的 `minddoai` monorepo 上，**向 `DATABASE_DESIGN.md` 的严谨设计对齐**、**补齐支付**，**6 月底 / 7 月初上线 MVP**。
+> **读者**：David、Paul、Austin（3 名全栈）+ 产品负责人
+> **真理来源**：MindDo HTML 原型（UI/功能样板）+ [`DATABASE_DESIGN.md`](DATABASE_DESIGN.md)（数据库契约，本期目标）+ [`BACKEND_MIGRATION.md`](BACKEND_MIGRATION.md)（API/权限/迁移）。
+> **本文位置**：暂在原型仓库 `docs/`；建议尽快复制进 `minddoai/docs/` 并以 PR 维护。
+> **更新方式**：每人勾选自己负责的 `- [ ]`；每周五同步里程碑。
 
 ---
 
-## 1. Current baseline (already built — don't rebuild it)
+## 0. 三条已拍板的决策（本计划的前提）
 
-### Backend `minddoai/backend` (NestJS 11 · Prisma 6 · Auth0 · 15 migrations)
-- ✅ **Full Auth0**: `Auth0Strategy`(JWKS) · `RolesGuard` · `@Roles` · `syncUser` · M2M provisioning (`createAuth0User` etc.)
-- ✅ **5-role RBAC** in place
-- ✅ Completed modules: `auth`(`GET /api/auth/me`) · `users`(CRUD + children + co-parent invites) · `courses` · `trial-courses` · `trial-registrations`(public) · `organizations` · `contact-requests`(public submit + status machine) · `health` · `email`(Mailgun, invite-only)
-- ✅ Global `ValidationPipe` · CORS · `Dockerfile`(runs `prisma migrate deploy` on start)
-- ❌ Missing: global exception filter · **audit log** · soft delete · pagination · seed script · **backend CI workflow** (only a frontend deploy exists)
-
-### Frontend `minddoai/frontend` (React 19 · Vite 8 · Tailwind 4 · RR7 · Auth0)
-- ✅ Landing page (EN/ZH) · trial booking `/trial` · `/callback` · co-parent invite `/accept-invite/:token`
-- ✅ Profile `/profile` (with Family tab: manage children, invite co-parent)
-- ✅ Full admin CRUD: users `/dashboard` · courses `/course` · trials `/trialCourse` · orgs `/organizations` · instructors `/instructors` · contact requests `/contact-requests`
-- ✅ API layer (`lib/api.ts` with Bearer + `public-api.ts`) · Auth0 provider · role-based route guards · `AdminLayout` · pagination/SlidePanel/shared components
-- ❌ Missing: **dashboard metrics page** · lead pipeline · dedicated student management · **membership/billing** · **schedule/calendar** · homework · feedback · approvals · email outbox · **assessment page** · **payment flow**
+1. **数据模型 → 向 49 表设计对齐**，但用**增量迁移、非大爆炸重构**：新表严格按 `DATABASE_DESIGN.md` 建；旧表（`User` 父子层级 / `ContactRequest` / `TrialCourse` / `Organization` / `Course`）逐模块迁移，全程保持 app 可用。本期只纳入 **MVP 关键的约 18 张表**（见 §3），其余 31 张推 Phase 2。
+2. **角色先用现有 5 个**：`SUPER_ADMIN / ORG_ADMIN / INSTRUCTOR / PARENT / STUDENT`。原型的 principal / campus-ops / campus-marketing 运营分层 + 金额脱敏 → Phase 2。
+3. **支付本期必含**：membership / payment / invoice 从零建，**支付网关 = Stripe**（2026-06-08 已定）。
 
 ---
 
-## 2. Refactor alignment: legacy tables → 49-table design (incremental, David-led)
+## 1. 现状基线（已经建好的，别重复造）
 
-| Current (lean) | Target (DATABASE_DESIGN module) | Strategy |
+### 后端 `minddoai/backend`（NestJS 11 · Prisma 6 · Auth0 · 15 迁移）
+- ✅ **Auth0 全套**：`Auth0Strategy`(JWKS) · `RolesGuard` · `@Roles` · `syncUser` · M2M 建号（`createAuth0User` 等）
+- ✅ **5 角色 RBAC** 已落地
+- ✅ 已完成模块：`auth`(`GET /api/auth/me`) · `users`(CRUD + children + co-parent 邀请) · `courses` · `trial-courses` · `trial-registrations`(公开) · `organizations` · `contact-requests`(公开提交+状态机) · `health` · `email`(Mailgun，仅邀请)
+- ✅ 全局 `ValidationPipe` · CORS · `Dockerfile`(启动跑 `prisma migrate deploy`)
+- ❌ 缺：全局异常过滤器 · **审计日志** · 软删除 · 分页 · seed 脚本 · **后端 CI workflow**（目前只有前端 deploy）
+
+### 前端 `minddoai/frontend`（React 19 · Vite 8 · Tailwind 4 · RR7 · Auth0）
+- ✅ 落地页(中英) · 试课预约 `/trial` · `/callback` · co-parent 邀请 `/accept-invite/:token`
+- ✅ Profile `/profile`（含家庭 tab：管理孩子、邀请共同家长）
+- ✅ Admin 全套 CRUD：用户 `/dashboard` · 课程 `/course` · 试课 `/trialCourse` · 机构 `/organizations` · 讲师 `/instructors` · 联系请求 `/contact-requests`
+- ✅ API 层(`lib/api.ts` 带 Bearer + `public-api.ts`) · Auth0 provider · 角色路由守卫 · `AdminLayout` · 分页/SlidePanel/通用组件
+- ❌ 缺：**运营看板指标页** · 线索管线 · 学员管理专页 · **会员/账单** · **课表/排课** · 作业 · 反馈 · 审批 · 邮件发件箱 · **评估页** · **支付流程**
+
+---
+
+## 2. 重构对齐：旧表 → 49 表 映射（增量迁移，David 主导）
+
+| 现有（精简） | 目标（DATABASE_DESIGN 模块） | 策略 |
 |---|---|---|
-| `User`(PARENT/STUDENT + parentId) | `families` + `students` + `guardians` (module C) | **Add new tables + migrate data**; User still carries Auth0 login identity, profile splits into students/guardians |
-| `User`(INSTRUCTOR/ADMIN) | `staff` + `roles`/`permissions` (module A) | Add staff profiles; keep the 5 role enum values, add `role_permissions` |
-| `TrialCourse` + `trial-registrations` | `leads` (module D.1) + trial fields | TrialCourse → leads core; keep bookingRef |
-| `ContactRequest` | `leads`(channel=contact) or `lead_contacts` | Fold into the lead pipeline |
-| `Organization` / `OrganizationMembership` | `campuses` (module B) / org | Clarify "org vs campus" semantics, then map |
-| `Course` / `CourseInstructor` | `class_offerings` + `class_sessions` (module E) | Expand into schedule templates + session instances |
-| (none) | `memberships`/`payments`/`invoices` (module F) | **Build new** |
-| (none) | `audit_log` (module I) | **Build new**, global interceptor |
+| `User`(PARENT/STUDENT + parentId) | `families` + `students` + `guardians`（模块 C） | **加新表 + 迁数据**；User 仍承载 Auth0 登录身份，profile 拆到 students/guardians |
+| `User`(INSTRUCTOR/ADMIN) | `staff` + `roles`/`permissions`（模块 A） | 加 staff 档案；保留 5 角色枚举值，补 `role_permissions` |
+| `TrialCourse` + `trial-registrations` | `leads`（模块 D.1）+ trial 字段 | TrialCourse → leads 主体；保留 bookingRef |
+| `ContactRequest` | `leads`(channel=contact) 或 `lead_contacts` | 并入线索管线 |
+| `Organization` / `OrganizationMembership` | `campuses`(模块 B) / 机构 | 厘清「机构 vs 校区」语义后映射 |
+| `Course` / `CourseInstructor` | `class_offerings` + `class_sessions`（模块 E） | 扩成排期模板 + 课次实例 |
+| （无） | `memberships`/`payments`/`invoices`（模块 F） | **全新建** |
+| （无） | `audit_log`（模块 I） | **全新建**，全局拦截器 |
 
-> **Iron rule**: migrate one module at a time, keeping the app runnable at each step; no all-at-once teardown. Every new/changed-table Prisma PR is **reviewed and merged by David**.
-
----
-
-## 3. MVP table scope this phase (~18 of the 49)
-
-**✅ Build/align now**: `roles` `permissions` `role_permissions` `staff` (A) · `campuses` `classrooms` (B) · `families` `students` `guardians` (C) · `leads` `lead_contacts` `assessments` (D) · `class_offerings` `class_sessions` `class_enrollments` (E) · `membership_plans` `memberships` `payments` `invoices` (F) · `schedule_requests` `approvals` (G) · `audit_log` (I)
-
-**⏭️ Phase 2**: attendance/assignments automation, session_consumptions, teacher_rates/availability, growth_records, portfolio, marketing_templates/targets, payroll, contracts, referrals, shift_notes, campus_holidays/notices, student_level_history, multi-tenant org, operational-layer roles + amount masking.
+> **铁律**：迁移按模块逐个做，每步保持 app 可跑；不允许一次性推倒重来。每张新表/改表的 Prisma PR 由 **David 统一 review 合并**。
 
 ---
 
-## 4. Ownership (re-divided around the gap)
+## 3. 本期 MVP 表范围（49 张里的约 18 张）
 
-| Engineer | This phase's main line | Modules / pages |
+**✅ 本期建/对齐**：`roles` `permissions` `role_permissions` `staff`（A）· `campuses` `classrooms`（B）· `families` `students` `guardians`（C）· `leads` `lead_contacts` `assessments`（D）· `class_offerings` `class_sessions` `class_enrollments`（E）· `membership_plans` `memberships` `payments` `invoices`（F）· `schedule_requests` `approvals`（G）· `audit_log`（I）
+
+**⏭️ Phase 2**：attendance/assignments 自动化、session_consumptions、teacher_rates/availability、growth_records、portfolio、marketing_templates/targets、payroll、contracts、referrals、shift_notes、campus_holidays/notices、student_level_history、多租户 org 化、运营分层角色 + 金额脱敏。
+
+---
+
+## 4. 分工（按现状的「缺口」重排）
+
+| 工程师 | 本期主线 | 对应模块/页面 |
 |---|---|---|
-| **David** | **Data-model alignment (lead) + backend foundation** | A/B/C tables & migration, `audit_log`, soft delete, pagination, exception filter, seed, backend CI, unified schema-PR review |
-| **Paul** | **Operations dashboard (Admin)** | metrics overview page, lead pipeline (leads), student management, approvals / leave-reschedule (G), email outbox |
-| **Austin** | **Public funnel + family portal + academic + finance (incl. payments)** | assessment page/scoring (D), family→students/guardians (C frontend), membership/payments (F), course-selection→payment→confirm, family portal billing/schedule, academic (E) |
+| **David** | **数据模型对齐（主导）+ 后端基建补齐** | A/B/C 建表迁移、`audit_log`、软删除、分页、异常过滤器、seed、后端 CI、schema PR 统一 review |
+| **Paul** | **运营看板（Admin）** | 指标总览页、线索管线（leads）、学员管理、审批/请假改期（G）、邮件发件箱 |
+| **Austin** | **公开漏斗 + 家庭门户 + 教务 + 财务（含支付）** | 评估页/评分(D)、family→students/guardians(C 前端)、会员/支付(F)、选课→支付→确认、家庭门户账单/课表、教务(E) |
 
 ---
 
-## 5. Milestone timeline (4 weeks, high-risk, scope tightly)
+## 5. 里程碑时间线（4 周，高风险，严控范围）
 
-> Today is 2026-06-08. Target launch **~2026-07-04**.
+> 今天 2026-06-08。目标上线 **~2026-07-04**。
 
-| Week | Dates | Theme | Exit criteria |
+| 周 | 日期 | 主题 | 出口标准 |
 |---|---|---|---|
-| **W1** | 6/9–6/15 | **Model foundation** | David lands A/B/C new tables + migration scripts + audit/soft-delete/pagination; Austin/Paul start their endpoints on the new schema (legacy endpoints keep running) |
-| **W2** | 6/16–6/22 | **Leads + students + dashboard** | leads/assessments endpoints + assessment frontend; students/guardians migrated; metrics page + lead pipeline working |
-| **W3** | 6/23–6/29 | **Payments + portal + ops** | membership/payment models + Stripe + course-selection→payment→confirm; family portal billing/schedule; approvals/student management |
-| **W4** | 6/30–7/6 | **Integration · QA · launch** | end-to-end smoke passes; legacy migration finished; real data imported; prod deploy + rollback plan |
+| **W1** | 6/9–6/15 | **模型地基** | David 落地 A/B/C 新表 + 迁移脚本 + audit/软删/分页；Austin/Paul 在新 schema 上起各自端点（旧端点继续跑） |
+| **W2** | 6/16–6/22 | **线索 + 学员 + 看板** | leads/assessments 端点 + 评估前端；students/guardians 迁完；看板指标页 + 线索管线跑通 |
+| **W3** | 6/23–6/29 | **支付 + 门户 + 运营** | membership/payment 模型 + 网关 + 选课→支付→确认；家庭门户账单/课表；审批/学员管理 |
+| **W4** | 6/30–7/6 | **联调 · QA · 上线** | 端到端冒烟全过；旧表迁移收尾；真实数据导入；生产部署 + 回滚预案 |
 
-**Critical path**: David's W1 A/B/C model + migration blocks everyone → must land within W1; every legacy→new table move can ripple into existing admin endpoints, so David + the relevant owner must coordinate.
+**关键路径**：David W1 的 A/B/C 模型与迁移阻塞全员 → 必须 W1 内交付；旧→新迁移每动一张表都可能波及现有 admin 端点，需 David + 对应 owner 联动。
 
 ---
 
-## 6. Detailed task lists
+## 6. 详细任务清单
 
-> **Per-developer boards (checkable + hard deadlines + effort)**: [David](tasks/david.md) · [Paul](tasks/paul.md) · [Austin](tasks/austin.md). The below is a summary; execute and check off in the personal boards.
+> **个人任务表（可勾选 + 硬 deadline + 工作量）**：[David](tasks/david.md) · [Paul](tasks/paul.md) · [Austin](tasks/austin.md)。下面是汇总，按个人表执行与勾选。
 
-### 6.1 David — data-model alignment + backend foundation
-**W1 (top priority, blocks everyone)**
-- [ ] `roles`/`permissions`/`role_permissions` (keep 5 role enum values, add permission mapping) + `staff` profile table
-- [ ] `campuses`/`classrooms` (module B), migrate TrialCourse's campus string fields to FKs
-- [ ] `families`/`students`/`guardians` (module C), write the `User`-hierarchy → 3-table **migration script**; User keeps login identity only
-- [ ] Global **audit interceptor** → `audit_log` (module I); soft-delete middleware; pagination helper; global exception filter
-- [ ] **Seed script** (campuses/roles/demo data, ported from prototype seedDemoData)
-- [ ] **Backend CI workflow** (lint + test + build image)
-- [ ] Common columns (created_by/updated_by/deleted_at/org_id) + `updated_at` trigger
-- [ ] Produce a "migrate + align" sample PR for Austin/Paul to copy
+### 6.1 David — 数据模型对齐 + 后端基建
+**W1（最高优先，阻塞全员）**
+- [ ] 建 `roles`/`permissions`/`role_permissions`（保留 5 角色枚举值，补权限映射）+ `staff` 档案表
+- [ ] 建 `campuses`/`classrooms`（模块 B），把 TrialCourse 的 campus 字符串字段迁成 FK
+- [ ] 建 `families`/`students`/`guardians`（模块 C），写 `User` 父子层级 → 三表的**迁移脚本**；User 仅留登录身份
+- [ ] 全局 **审计拦截器** → 写 `audit_log`（模块 I）；软删除中间件；分页 helper；全局异常过滤器
+- [ ] **seed 脚本**（校区/角色/演示数据，移植原型 seedDemoData）
+- [ ] **后端 CI workflow**（lint + test + 构建镜像）
+- [ ] 通用列约定（created_by/updated_by/deleted_at/org_id）+ `updated_at` 触发器
+- [ ] 出一个「迁移 + 对齐」样板 PR，给 Austin/Paul 照抄
 
 **W2–W4**
-- [ ] Merge Austin/Paul schema PRs, keep migration order conflict-free
-- [ ] `GET /api/audit` query endpoint (for Paul's audit viewer)
-- [ ] Add key indexes per `DATABASE_DESIGN.md`; performance review
-- [ ] Prod deploy, backups, monitoring, launch checklist + rollback plan
+- [ ] 合并 Austin/Paul 的 schema PR，保证迁移顺序无冲突
+- [ ] `GET /api/audit` 查询端点（给 Paul 的审计查看器）
+- [ ] 按 `DATABASE_DESIGN.md` 补关键索引；性能 review
+- [ ] 生产部署、备份、监控、上线 checklist + 回滚预案
 
-### 6.2 Austin — funnel + family portal + academic + finance
+### 6.2 Austin — 漏斗 + 家庭门户 + 教务 + 财务
 **W1**
-- [ ] schema PR: `leads`/`lead_contacts`/`assessments` (D) (coordinate with David's migration)
-- [ ] Frontend assessment page scaffold (prototype fields + scoring)
+- [ ] schema PR：`leads`/`lead_contacts`/`assessments`（D）（与 David 的迁移协调）
+- [ ] 前端评估页 `assessment` 脚手架（照原型字段 + 计分）
 **W2**
-- [ ] `TrialCourse`/`trial-registrations` → `leads` migration + endpoints (keep bookingRef)
-- [ ] `assessments` endpoints + auto scoring/recommendation (port prototype logic)
-- [ ] `students`/`guardians` frontend (family tab upgrade: read from module C)
+- [ ] `TrialCourse`/`trial-registrations` → `leads` 迁移 + 端点（保 bookingRef）
+- [ ] `assessments` 端点 + 自动评分/推荐（移植原型逻辑）
+- [ ] `students`/`guardians` 前端（family tab 升级：从 User-children 改读 C 模块）
 **W3**
-- [ ] Module F: `membership_plans`/`memberships`/`payments`/`invoices` endpoints
-- [ ] **Stripe integration** + webhook reconciliation
-- [ ] Frontend: course-selection → course-payment → course-confirm + invoice
-- [ ] Family portal: membership + billing (payment method/history) + schedule (read-only)
+- [ ] 模块 F：`membership_plans`/`memberships`/`payments`/`invoices` 端点
+- [ ] **支付网关接入**（见 §10-#1）+ webhook 对账
+- [ ] 前端：course-selection → course-payment → course-confirm + invoice
+- [ ] 家庭门户：会员 + 账单（支付方式/历史）+ 课表（只读）
 **W4**
-- [ ] Module E minimal subset: `class_offerings`/`class_sessions`/`class_enrollments` read + schedule display
-- [ ] feedback / semester-report frontend; integration + QA
+- [ ] 模块 E 最小子集：`class_offerings`/`class_sessions`/`class_enrollments` 读取 + 课表展示
+- [ ] feedback / semester-report 前端；联调 + QA
 
-### 6.3 Paul — operations dashboard (Admin)
+### 6.3 Paul — 运营看板（Admin）
 **W1**
-- [ ] schema PR: `schedule_requests`/`approvals` (G)
-- [ ] Dashboard "metrics overview" page scaffold (admin currently lacks this overview; follow `dashboard.html`)
+- [ ] schema PR：`schedule_requests`/`approvals`（G）
+- [ ] 看板「指标总览」页脚手架（现 admin 缺这个总览，照 `dashboard.html`）
 **W2**
-- [ ] Aggregation endpoints: registration/payment/assessment/conversion metrics + alerts
-- [ ] **Lead pipeline** page: combine existing `contact-requests` + new `leads` into one CRM list/filter/detail/contact-log
-- [ ] Frontend: core metric cards + trend charts
+- [ ] 聚合端点：注册/付费/评估/转化 指标 + 告警
+- [ ] **线索管线**页：把现 `contact-requests` + 新 `leads` 合成统一 CRM 列表/筛选/详情/联系记录
+- [ ] 前端：核心指标卡 + 趋势图
 **W3**
-- [ ] **Student management** page: list + drawer (homework/growth/change-history/profile), based on module C
-- [ ] Approval queue + `POST /api/approvals/:id/decide` (writes audit); leave/reschedule `request-center`
-- [ ] new-trials / new-students today lists
+- [ ] **学员管理**专页：列表 + 抽屉（作业/成长/变更历史/档案）——基于 C 模块
+- [ ] 审批队列 + `POST /api/approvals/:id/decide`（写审计）；请假/改期 `request-center`
+- [ ] new-trials / new-students 今日清单
 **W4**
-- [ ] Email outbox (extend the existing `email` module) + renewal/absence auto-drafts
-- [ ] Audit log viewer (consumes `GET /api/audit`); integration + QA
+- [ ] 邮件发件箱（基于现 `email` 模块扩展）+ 续费/缺勤自动草拟
+- [ ] 审计日志查看器（消费 `GET /api/audit`）；联调 + QA
 
 ---
 
-## 7. Definition of Done (DoD)
-A module is "done" when all 6 pass:
-- [ ] Prisma table + migration merged (legacy data migrated, app still runs)
-- [ ] REST endpoints (list/single/create/patch/soft-delete)
-- [ ] Server-side validation (DTO + class-validator)
-- [ ] Frontend on real API (mock removed)
-- [ ] Permissions: `RolesGuard` + frontend hides by role
-- [ ] Write operations go to `audit_log`
+## 7. 模块完成定义（DoD）
+每模块「完成」= 6 条全过：
+- [ ] Prisma 表 + 迁移合并（且旧数据已迁移、app 仍可跑）
+- [ ] REST 端点（list/single/create/patch/soft-delete）
+- [ ] 服务端校验（DTO + class-validator）
+- [ ] 前端接真实 API（去 mock）
+- [ ] 权限：`RolesGuard` + 前端按角色隐藏
+- [ ] 写操作进 `audit_log`
 
 ---
 
-## 8. Cross-team conventions
-- **Naming/types/indexes**: follow `DATABASE_DESIGN.md §3` (snake_case, `idx_*`/`uq_*`/`fk_*`, money `*_cents` BIGINT, UUID PKs, TIMESTAMPTZ).
-- **Schema changes**: whoever owns the module opens the Prisma PR; **David reviews & merges centrally**, controlling migration order.
-- **Migration discipline**: each PR must apply forward cleanly without breaking the app; destructive changes go add-new-column/table → migrate data → drop old, split across PRs.
-- **Branching**: `feature/<module>` → `dev` → `main` (triggers deploy); each PR ≥1 review.
-- **Secrets**: only in GitHub Secrets / `.env` (gateway, Auth0 M2M, DB), never in the repo.
-- **Daily 15-min standup**: progress + blockers, name the owner (especially whether David's migration is blocking anyone).
+## 8. 跨团队约定
+- **命名/类型/索引**：遵循 `DATABASE_DESIGN.md §3`（snake_case、`idx_*`/`uq_*`/`fk_*`、金额 `*_cents` BIGINT、UUID 主键、TIMESTAMPTZ）。
+- **Schema 改动**：谁的模块谁提 Prisma PR，**David 统一 review 合并**，严控迁移顺序。
+- **迁移纪律**：每个 PR 保证迁移可正向执行且 app 不崩；破坏性改动先加新列/新表、迁数据、再删旧列，分多个 PR。
+- **分支**：`feature/<模块>` → `dev` → `main`（触发部署）；每 PR ≥1 review。
+- **密钥**：只进 GitHub Secrets / `.env`（网关、Auth0 M2M、DB），不进仓库。
+- **每日 15 分钟站会**：进度 + 阻塞点名 owner（尤其 David 的迁移是否卡住别人）。
 
 ---
 
-## 9. Risk register
-| Risk | Impact | Mitigation |
+## 9. 风险登记
+| 风险 | 影响 | 缓解 |
 |---|---|---|
-| Refactor + payments + 4 weeks = highest-risk combo | Slip / unstable launch | Only the 18 tables in §3; incremental migration; cut scope every Friday |
-| Legacy→new migration ripples into existing admin endpoints | Regression of existing features | Add new tables side-by-side, migrate gradually; migrate one module, integrate one |
-| David single point (model + infra + review) | Blocks everyone | W1 only A/B/C + infra; sample PR early; Austin/Paul work on stable columns in parallel |
-| Payment compliance (US COPPA / minors / collecting money) | Legal risk | Assess minimal compliance for gateway + consent flow; don't collect until it's met |
-| Demo data ≠ real campus data | Launch data mess | Dedicated real campus/plan/staff import + reconciliation in W4 |
+| 重构对齐 + 支付 + 4 周，组合风险最高 | 延期/上线不稳 | 只纳入 §3 的 18 张表；增量迁移不大爆炸；每周五砍范围 |
+| 旧→新迁移波及现有 admin 端点 | 现有功能回归 | 加新表先并存、灰度迁移；迁一个模块联调一个 |
+| David 单点（模型 + 基建 + review） | 全员阻塞 | W1 只做 A/B/C + 基建；样板 PR 尽早；Austin/Paul 在稳定列上并行 |
+| 支付合规（美区 COPPA / 未成年人 / 收款） | 法律风险 | 网关与同意流先评估最小合规，不达标不收款 |
+| 演示数据≠真实校区数据 | 上线数据乱 | W4 专项导入真实校区/套餐/员工并核对 |
 
 ---
 
-## 10. Open decisions (affect work start, please settle ASAP)
-1. ✅ **Payment gateway = Stripe** (decided 2026-06-08). Action: register a Stripe account early, get test/live API keys, configure webhook endpoint; WeChat/Alipay if needed → Phase 2.
-2. **"Organization" vs "Campus" semantics**: how does the existing Organization map to/merge with the spec's campuses? → blocks David's module B migration.
-3. **Migration-period data**: how much real data already exists in User/ContactRequest/TrialCourse to migrate, or is it still demo data that can be rebuilt? → determines migration-script effort.
-4. **File storage** (portfolio/contract/invoice PDF): S3 / R2? (Phase 2 can defer, but invoice may be needed this phase.)
-5. **Plan-doc ownership**: move this doc into `minddoai/docs/` maintained via PR (recommended), keeping the prototype-repo copy as a snapshot.
+## 10. 待决策（影响开工，请尽快定）
+1. ✅ **支付网关 = Stripe**（2026-06-08 已定）。行动：尽早注册 Stripe 账户、拿 test/live API key、配 webhook 端点；微信/支付宝若需 → Phase 2。
+2. **「机构 Organization」vs「校区 Campus」语义**：现有 Organization 与 spec 的 campuses 怎么对应/合并？→ 卡 David 的 B 模块迁移。
+3. **迁移期数据**：现有 User/ContactRequest/TrialCourse 里已有多少真实数据需要迁？还是仍是演示数据可直接重建？→ 决定迁移脚本投入。
+4. **文件存储**（作品集/合同/invoice PDF）：S3 / R2？（Phase 2 可延后，但 invoice 可能本期要）。
+5. **计划文档归属**：是否把本文迁进 `minddoai/docs/` 用 PR 维护（推荐），原型仓库这份作为快照。
 
 ---
 
-## 11. Progress tracking
-- **Task level**: check off `- [ ]` in §6 / personal boards, commit with module name.
-- **Weekly**: every Friday verify §5 exit criteria; for misses write the reason + recovery.
-- **Decision level**: mark each §10 item ✅ with the conclusion once settled.
-- **Living doc**: scope/ownership changes are edited here directly and noted in the commit.
+## 11. 进度追踪
+- **任务级**：勾选 §6 的 `- [ ]`，commit 带模块名。
+- **周级**：每周五核对 §5 出口标准，未达成写原因 + 补救。
+- **决策级**：§10 每定一条标 ✅ 记结论。
+- **活文档**：范围/分工变化直接改这里并在 commit 说明。
 
 ---
 
-_Baseline: existing minddoai code (45 PRs) + MindDo prototype + `DATABASE_DESIGN.md`. Last updated: 2026-06-08._
+_基线：minddoai 现有代码（45 PR）+ MindDo 原型 + `DATABASE_DESIGN.md`。最后更新：2026-06-08。_

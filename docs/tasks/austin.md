@@ -1,43 +1,43 @@
-# Task Board · Austin — Funnel + family portal + academic + finance (incl. payments)
+# 任务表 · Austin — 漏斗 + 家庭门户 + 教务 + 财务（含支付）
 
-> **Role**: public funnel, family portal, academic, **finance/payments** (heaviest this phase).
-> **How to use**: when done, change `- [ ]` to `- [x]`. `d` = dev-day; **dates are hard deadlines**.
-> **Overview**: [DEV_TASK_PLAN.md](../DEV_TASK_PLAN.md)
-
----
-
-## W1 · 6/9–6/15 — Assessment + schema
-- [ ] `leads`/`lead_contacts`/`assessments` (module D) schema PR (coordinate with David's migration) — ~1d — **due 6/13**
-- [ ] Assessment page `assessment` frontend scaffold + port prototype scoring logic — ~1.5d — **due 6/15**
-
-**Weekly load ≈ 2.5d.**
-
-## W2 · 6/16–6/22 — Leads + assessment + students
-- [ ] 🔵 `TrialCourse`/`trial-registrations` → `leads` migration + endpoints (keep bookingRef) **(Paul's lead pipeline waits on this — ship first)** — ~2d — **due 6/18**
-- [ ] `assessments` endpoints + auto scoring/recommendation — ~1.5d — **due 6/20**
-- [ ] `students`/`guardians` frontend: upgrade family tab to read module C instead of User-children (depends on David's 6/15) — ~1.5d — **due 6/22**
-
-**Weekly load ≈ 5d.**
-
-## W3 · 6/23–6/29 — Payments (core, heaviest)
-- [ ] `membership_plans`/`memberships`/`payments`/`invoices` endpoints (module F) — ~2d — **due 6/25**
-- [ ] 🔴 Stripe integration (Payment Intents + webhook reconciliation) + persist `payments` — ~2.5d — **due 6/28**
-- [ ] Frontend: course-selection → course-payment → course-confirm + invoice — ~2d — **due 6/29**
-
-**Weekly load ≈ 6.5d ⚠️ (clearly over).** Mitigation: payments is the only hard goal this week; push the W4 "academic module E" block **entirely to Phase 2** to free up time for payments.
-
-## W4 · 6/30–7/6 — Family portal + wrap-up
-- [ ] Family portal: membership + billing (payment method/history) + schedule (read-only) — ~2d — **due 7/2**
-- [ ] feedback / semester-report frontend — ~1d — **due 7/3**
-- [ ] Integration + QA + bug fixing — ~1.5d — **due 7/4**
-- [ ] (if capacity) Module E minimal subset: `class_offerings`/`class_sessions`/`class_enrollments` read + schedule display — ~1.5d — **due 7/4 / else → Phase 2**
-
-**Weekly load ≈ 4.5d (excluding optional E).**
+> **角色**：公开漏斗、家庭门户、教务、**财务支付**（本期最重）。
+> **用法**：完成一项把 `- [ ]` 改成 `- [x]`。`d`=人日；**日期是硬 deadline**。
+> **总览**：[DEV_TASK_PLAN.md](../DEV_TASK_PLAN.md)
 
 ---
 
-### Dependencies & reminders
-- **Ship the leads endpoints by 6/18** — Paul's lead pipeline is waiting.
-- Payment gateway = **Stripe** (decided); within W1 register the account, get a test API key, and get a minimal Payment Intent demo working — don't wait until W3.
-- You're the heaviest-loaded this phase; **module E (academic) is the first thing to cut** — prioritize "funnel + payments + family portal".
-- `students/guardians` frontend depends on David's 6/15 migration; if blocked, mock first.
+## W1 · 6/9–6/15 — 评估 + schema
+- [ ] `leads`/`lead_contacts`/`assessments`（模块 D）schema PR（与 David 迁移协调）— ~1d — **截止 6/13**
+- [ ] 评估页 `assessment` 前端脚手架 + 原型计分逻辑移植 — ~1.5d — **截止 6/15**
+
+**本周负荷 ≈ 2.5d。**
+
+## W2 · 6/16–6/22 — 线索 + 评估 + 学员
+- [ ] 🔵 `TrialCourse`/`trial-registrations` → `leads` 迁移 + 端点（保 bookingRef）**（Paul 的线索管线等这个，优先交）**— ~2d — **截止 6/18**
+- [ ] `assessments` 端点 + 自动评分/推荐 — ~1.5d — **截止 6/20**
+- [ ] `students`/`guardians` 前端：family tab 升级，从 User-children 改读 C 模块（依赖 David 6/15）— ~1.5d — **截止 6/22**
+
+**本周负荷 ≈ 5d。**
+
+## W3 · 6/23–6/29 — 支付（核心，最重）
+- [ ] `membership_plans`/`memberships`/`payments`/`invoices` 端点（模块 F）— ~2d — **截止 6/25**
+- [ ] 🔴 Stripe 接入（Payment Intents + webhook 对账）+ `payments` 落库 — ~2.5d — **截止 6/28**
+- [ ] 前端：course-selection → course-payment → course-confirm + invoice — ~2d — **截止 6/29**
+
+**本周负荷 ≈ 6.5d ⚠️（明显超）。** 缓解：支付是本周唯一硬目标；把下面 W4 的「教务模块 E」**整块推 Phase 2**，腾出时间保支付。
+
+## W4 · 6/30–7/6 — 家庭门户 + 收尾
+- [ ] 家庭门户：会员 + 账单（支付方式/历史）+ 课表（只读）— ~2d — **截止 7/2**
+- [ ] feedback / semester-report 前端 — ~1d — **截止 7/3**
+- [ ] 联调 + QA + 修 bug — ~1.5d — **截止 7/4**
+- [ ] （若有余力）模块 E 最小子集：`class_offerings`/`class_sessions`/`class_enrollments` 读取 + 课表展示 — ~1.5d — **截止 7/4 / 否则 → Phase 2**
+
+**本周负荷 ≈ 4.5d（不含可选 E）。**
+
+---
+
+### 依赖与提醒
+- **6/18 的 leads 端点要优先交**——Paul 的线索管线等着。
+- 支付网关 = **Stripe**（已定）；W1 内先注册账户、拿 test API key、跑通最小 Payment Intent demo，别等到 W3。
+- 你是本期最重的人；**模块 E（教务）是首选可砍项**——优先保「漏斗 + 支付 + 家庭门户」。
+- `students/guardians` 前端依赖 David 6/15 的迁移；卡住先用 mock。

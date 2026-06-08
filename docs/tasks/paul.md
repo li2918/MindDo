@@ -1,41 +1,41 @@
-# Task Board · Paul — Operations dashboard (Admin)
+# 任务表 · Paul — 运营看板（Admin）
 
-> **Role**: operations dashboard (metrics overview, lead pipeline, student management, approvals, email outbox).
-> **How to use**: when done, change `- [ ]` to `- [x]`. `d` = dev-day; **dates are hard deadlines**.
-> **Overview**: [DEV_TASK_PLAN.md](../DEV_TASK_PLAN.md)
-
----
-
-## W1 · 6/9–6/15 — Scaffolding (parallel on mock, don't wait for David)
-- [ ] `schedule_requests`/`approvals` (module G) schema PR — ~1d — **due 6/13**
-- [ ] Build the "metrics overview" page layout + routing + role guard on mock data (follow `dashboard.html`) — ~1.5d — **due 6/15**
-
-**Weekly load ≈ 2.5d (light; spend slack learning the existing admin code).**
-
-## W2 · 6/16–6/22 — Metrics + lead pipeline
-- [ ] Aggregation endpoints: registration/payment/assessment/conversion metrics + alerts (filtered by campus) — ~2d — **due 6/19**
-- [ ] Frontend: core metric cards + trend charts (on real aggregation endpoints) — ~1d — **due 6/20**
-- [ ] 🔵 Lead pipeline page: combine existing `contact-requests` + new `leads` into one CRM list/filter/detail/contact-log (depends on Austin's 6/18 leads endpoints) — ~2.5d — **due 6/22**
-
-**Weekly load ≈ 5.5d ⚠️ (slightly over).** Mitigation: build the lead pipeline frontend on mock first, wire real data once Austin's 6/18 leads endpoints land.
-
-## W3 · 6/23–6/29 — Student management + approvals
-- [ ] 🔵 Student management page: list + drawer (homework/growth/change-history/profile, based on module C, depends on David's 6/15) — ~2.5d — **due 6/26**
-- [ ] Approval queue + `POST /api/approvals/:id/decide` (writes audit) + `request-center` leave/reschedule — ~2d — **due 6/29**
-- [ ] `new-trials`/`new-students` today lists — ~0.5d — **due 6/27**
-
-**Weekly load ≈ 5d.**
-
-## W4 · 6/30–7/6 — Wrap-up
-- [ ] Email outbox (extend existing `email` module) + renewal/absence auto-drafts — ~1.5d — **due 7/2**
-- [ ] Audit log viewer (consumes David's `GET /api/audit`) — ~1d — **due 7/3**
-- [ ] Integration + QA + bug fixing — ~1.5d — **due 7/4**
-
-**Weekly load ≈ 4d.**
+> **角色**：运营看板（指标总览、线索管线、学员管理、审批、邮件发件箱）。
+> **用法**：完成一项把 `- [ ]` 改成 `- [x]`。`d`=人日；**日期是硬 deadline**。
+> **总览**：[DEV_TASK_PLAN.md](../DEV_TASK_PLAN.md)
 
 ---
 
-### Dependencies & reminders
-- Lead pipeline depends on Austin's `leads` endpoints (6/18); student management depends on David's `students/guardians` (6/15). If blocked, mock first.
-- All write operations (approval decide, etc.) must go to `audit_log` (David's W2 interceptor provides it).
-- The existing `/contact-requests` page is a base — don't tear it down; upgrade and fold it into the lead pipeline.
+## W1 · 6/9–6/15 — 脚手架（用 mock 并行，不等 David）
+- [ ] `schedule_requests`/`approvals`（模块 G）schema PR — ~1d — **截止 6/13**
+- [ ] 用 mock 数据搭「指标总览」页布局 + 路由 + 角色守卫（照 `dashboard.html`）— ~1.5d — **截止 6/15**
+
+**本周负荷 ≈ 2.5d（轻，留给熟悉现有 admin 代码）。**
+
+## W2 · 6/16–6/22 — 指标 + 线索管线
+- [ ] 聚合端点：注册/付费/评估/转化 指标 + 告警（按 campus 过滤）— ~2d — **截止 6/19**
+- [ ] 前端：核心指标卡 + 趋势图（接真实聚合端点）— ~1d — **截止 6/20**
+- [ ] 🔵 线索管线页：现有 `contact-requests` + 新 `leads` 合成统一 CRM 列表/筛选/详情/联系记录（依赖 Austin 6/18 的 leads 端点）— ~2.5d — **截止 6/22**
+
+**本周负荷 ≈ 5.5d ⚠️（略超）。** 缓解：线索管线前端可先用 mock，等 Austin 6/18 leads 端点到位再接真数据。
+
+## W3 · 6/23–6/29 — 学员管理 + 审批
+- [ ] 🔵 学员管理专页：列表 + 抽屉（作业/成长/变更历史/档案，基于 C 模块，依赖 David 6/15）— ~2.5d — **截止 6/26**
+- [ ] 审批队列 + `POST /api/approvals/:id/decide`（写审计）+ `request-center` 请假/改期 — ~2d — **截止 6/29**
+- [ ] `new-trials`/`new-students` 今日清单 — ~0.5d — **截止 6/27**
+
+**本周负荷 ≈ 5d。**
+
+## W4 · 6/30–7/6 — 收尾
+- [ ] 邮件发件箱（扩展现有 `email` 模块）+ 续费/缺勤 自动草拟 — ~1.5d — **截止 7/2**
+- [ ] 审计日志查看器（消费 David 的 `GET /api/audit`）— ~1d — **截止 7/3**
+- [ ] 联调 + QA + 修 bug — ~1.5d — **截止 7/4**
+
+**本周负荷 ≈ 4d。**
+
+---
+
+### 依赖与提醒
+- 线索管线依赖 Austin 的 `leads` 端点（6/18）；学员管理依赖 David 的 `students/guardians`（6/15）。卡住就先 mock。
+- 所有写操作（审批 decide 等）必须进 `audit_log`（David W2 提供拦截器）。
+- 现有 `/contact-requests` 页是基础，别推倒——升级合并进线索管线。
