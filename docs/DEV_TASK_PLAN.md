@@ -86,6 +86,8 @@
 
 ## 6. 详细任务清单
 
+> **个人任务表（可勾选 + 硬 deadline + 工作量）**：[David](tasks/david.md) · [Paul](tasks/paul.md) · [Austin](tasks/austin.md)。下面是汇总，按个人表执行与勾选。
+
 ### 6.1 David — 数据模型对齐 + 后端基建
 **W1（最高优先，阻塞全员）**
 - [ ] 建 `roles`/`permissions`/`role_permissions`（保留 5 角色枚举值，补权限映射）+ `staff` 档案表
