@@ -93,6 +93,21 @@
   .ms h4 .wk{color:var(--brand);}
   .ms h4 .dt{font-size:12px;color:var(--muted);font-weight:600;margin-left:8px;}
   .ms p{font-size:13px;color:var(--muted);margin-top:4px;}
+  /* status tree */
+  .stcat{font-size:17px;font-weight:900;margin:24px 0 8px;letter-spacing:-0.01em;}
+  .stgrp{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 16px;margin:8px 0;box-shadow:var(--shadow);}
+  .stgrp h4{font-size:12px;font-weight:800;color:var(--gold-deep);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;}
+  .stitem{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14px;}
+  .stitem:last-child{border-bottom:none;}
+  .stitem .lbl{flex:1;}
+  .stitem.done .lbl{text-decoration:line-through;text-decoration-color:var(--ok);color:var(--muted);}
+  .stnote{font-size:12px;color:var(--muted);font-style:italic;}
+  .sbadge{font-size:11px;font-weight:900;border-radius:6px;padding:2px 9px;white-space:nowrap;flex-shrink:0;margin-top:1px;}
+  .sbadge.done{background:rgba(111,143,87,0.15);color:var(--ok);}
+  .sbadge.fix,.sbadge.todo{background:#FEE2E2;color:#B91C1C;}
+  .sbadge.skeleton{background:#DBEAFE;color:#1D4ED8;}
+  .sbadge.partial{background:#FEF3C7;color:#92400E;}
+  .sbadge.temp{background:#E5E7EB;color:#4B5563;}
   .hideMe{display:none !important;}
   .updated{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;}
   @media(max-width:820px){
@@ -124,8 +139,10 @@
 <script>
 /* ============ DATA (bilingual) ============ */
 const T = {
-  tabs: { overview:{zh:"总览",en:"Overview"}, paul:{zh:"Paul · 获客",en:"Paul · Acquire"},
+  tabs: { overview:{zh:"总览",en:"Overview"}, status:{zh:"进度",en:"Status"}, paul:{zh:"Paul · 获客",en:"Paul · Acquire"},
           austin:{zh:"Austin · 家长",en:"Austin · Parent"}, david:{zh:"David · 运营",en:"David · Ops"} },
+  statusLead:{zh:"团队当前真实进度（来自最新反馈）。<b>划掉的 = 已完成</b>，其余按状态标色。",
+              en:"Team's actual progress (from latest feedback). <b>Struck-through = Done</b>; the rest are color-tagged by status."},
   lead: {
     zh:`<b>目标</b>：6 月底 / 7 月初上线 MVP（~2026-07-04）。 &nbsp;<b>方法</b>：按页面分工，一人对一个用户群负责到底。原型就是需求——字段 / 状态 / 交互原型里都定好了，<b>先点开走一遍流程再动手；具体怎么实现、用什么技术、表怎么建，开发自己决定。</b>`,
     en:`<b>Goal</b>: ship the MVP late June / early July (~2026-07-04). &nbsp;<b>Method</b>: split work by page, one owner per audience, end to end. The prototype IS the spec — fields / states / interactions are all defined there, so <b>click through the flow first, then build it. How you implement it — tech, data model, design — is the developer's call.</b>`
@@ -270,6 +287,93 @@ const TRACKS = [
   },
 ];
 
+/* ============ STATUS (team's actual progress, from feedback) ============ */
+const SLABEL = {
+  done:{zh:"完成",en:"Done"}, fix:{zh:"待修权限",en:"Fix"}, skeleton:{zh:"骨架",en:"Skeleton"},
+  partial:{zh:"部分",en:"Partial"}, temp:{zh:"临时",en:"Temp"}, todo:{zh:"待办",en:"To do"},
+};
+const STATUS = [
+  { cat:{zh:"基建 Infra",en:"Infra"}, em:"🛠", groups:[
+    { g:"CI / CD", items:[
+      { t:"Frontend → S3", s:"done" },
+      { t:"Backend → Railway", s:"done" },
+    ]},
+    { g:"Domain", items:[
+      { t:"Namecheap + Route53", s:"done" },
+      { t:"Subdomain setup", s:"todo", note:{zh:"需把 admin.minddo.ai 转为根域",en:"convert admin.minddo.ai to root"} },
+    ]},
+    { g:"DB", items:[
+      { t:"Supabase 主库 / main DB", s:"done" },
+      { t:"MongoDB scheduler (Agenda)", s:"temp", note:{zh:"临时方案",en:"temporary"} },
+      { t:"Mailgun", s:"done" },
+    ]},
+  ]},
+  { cat:{zh:"系统 System",en:"System"}, em:"🔐", groups:[
+    { g:"Auth", items:[
+      { t:"Auth0 — email/password + Google", s:"done" },
+      { t:"Auth table", s:"done" },
+      { t:"Parent add child (optional email)", s:"done" },
+      { t:"Add co-parent", s:"done" },
+      { t:"Permission-based API", s:"done" },
+    ]},
+  ]},
+  { cat:{zh:"界面 UI",en:"UI"}, em:"🖥", groups:[
+    { g:{zh:"落地页（公开）Landing",en:"Landing (public)"}, items:[
+      { t:"Home landing", s:"done" },
+      { t:"Trial page", s:"done" },
+    ]},
+    { g:{zh:"面板 · 学生 Student",en:"Dashboard · Student"}, items:[
+      { t:"Profile page", s:"done" },
+      { t:"Course page", s:"fix", note:{zh:"权限问题待修",en:"permission issue, need fix"} },
+    ]},
+    { g:{zh:"面板 · 家长 Parent",en:"Dashboard · Parent"}, items:[
+      { t:"Profile page", s:"done" },
+      { t:"Family page", s:"partial", note:{zh:"基本完成，待小修",en:"mostly done, quick fix"} },
+      { t:"Course page", s:"skeleton", note:{zh:"骨架",en:"skeleton only"} },
+    ]},
+    { g:{zh:"面板 · 讲师 Instructor",en:"Dashboard · Instructor"}, items:[
+      { t:"Profile page", s:"done" },
+      { t:"Course page", s:"fix", note:{zh:"权限问题待修",en:"permission issue, need fix"} },
+    ]},
+    { g:{zh:"面板 · 机构管理 Org_Admin",en:"Dashboard · Org_Admin"}, items:[
+      { t:"Course / Trial / User / Instructor / Org / Contact Request", s:"fix", note:{zh:"全部需修权限",en:"all need permission fix"} },
+    ]},
+    { g:{zh:"面板 · 管理员 Admin",en:"Dashboard · Admin"}, items:[
+      { t:"Course + CRUD", s:"done" },
+      { t:"Trial + CRUD", s:"done" },
+      { t:"Org + CRUD", s:"done" },
+      { t:"Instructor + CRUD", s:"done" },
+      { t:"Account + CRUD", s:"done" },
+      { t:"Contact Request", s:"done" },
+    ]},
+  ]},
+  { cat:{zh:"流程 Flow",en:"Flow"}, em:"🔀", groups:[
+    { g:"—", items:[
+      { t:"Trial signup", s:"partial", note:{zh:"部分完成，缺后续邀请 + 注册机制",en:"partial; needs later invite + signup mechanism"} },
+    ]},
+  ]},
+];
+
+function statusView(){
+  let done=0,total=0;
+  STATUS.forEach(c=>c.groups.forEach(g=>g.items.forEach(i=>{total++;if(i.s==="done")done++;})));
+  const pct = Math.round(done/total*100);
+  const body = STATUS.map(c=>{
+    const groups = c.groups.map(g=>{
+      const gname = (typeof g.g==="string") ? g.g : tt(g.g);
+      const items = g.items.map(i=>{
+        const note = i.note ? `<span class="stnote"> — ${tt(i.note)}</span>` : "";
+        return `<div class="stitem ${i.s==="done"?"done":""}">
+          <span class="lbl">${i.t}${note}</span>
+          <span class="sbadge ${i.s}">${tt(SLABEL[i.s])}</span></div>`;
+      }).join("");
+      return `<div class="stgrp">${gname!=="—"?`<h4>${gname}</h4>`:""}${items}</div>`;
+    }).join("");
+    return `<div class="stcat">${c.em} ${tt(c.cat)}</div>${groups}`;
+  }).join("");
+  return `<div class="lead">${tt(T.statusLead)} &nbsp;<b>${done}/${total} ${lang==="zh"?"已完成":"done"} · ${pct}%</b></div>${body}`;
+}
+
 /* ============ RENDER ============ */
 let lang = "zh", view = "overview";
 const $ = (s)=>document.querySelector(s);
@@ -277,7 +381,7 @@ const tt = (o)=>o ? (o[lang]||o.zh) : "";
 const protoBase = "https://li2918.github.io/MindDo/";
 
 function renderTabs(){
-  const order=["overview","paul","austin","david"];
+  const order=["overview","status","paul","austin","david"];
   $("#tabs").innerHTML = order.map(k=>
     `<button class="tab ${view===k?'on':''}" data-v="${k}">${tt(T.tabs[k])}</button>`).join("");
   $("#tabs").querySelectorAll(".tab").forEach(b=>b.onclick=()=>{view=b.dataset.v;render();});
@@ -341,6 +445,7 @@ function render(){
   renderTabs();
   $("#pgTitle").childNodes[0].nodeValue = lang==="zh" ? "任务分工 v2 · 按页面" : "Task Plan v2 · by page";
   if(view==="overview"){ $("#content").innerHTML = overview(); }
+  else if(view==="status"){ $("#content").innerHTML = statusView(); }
   else {
     const tr = TRACKS.find(t=>t.id===view);
     $("#content").innerHTML = devTable(tr);
