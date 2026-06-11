@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MindDo · 任务分工 v2（按页面）| Task Plan v2 (by page)</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+<style>
+  :root{
+    --bg:#FFF5D6; --card:#fffdf7; --line:rgba(255,91,36,0.16); --text:#1a1a1a;
+    --muted:#6b7280; --gold:#FFC824; --gold-deep:#E5B11D; --brand:#FF5B24;
+    --ok:#6f8f57; --warn:#DC2626; --shadow:0 18px 44px rgba(0,0,0,0.10);
+    --paul:#2563EB; --austin:#16A34A; --david:#9333EA;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+  html,body{max-width:100%;overflow-x:hidden;}
+  body{font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.6;
+    overflow-wrap:anywhere;word-break:break-word;}
+  a{color:var(--brand);overflow-wrap:anywhere;}
+  /* HEADER */
+  .top{position:sticky;top:0;z-index:50;background:linear-gradient(145deg,#2a1408,#1a1a1a);
+    color:#fffbeb;padding:16px 24px;box-shadow:var(--shadow);}
+  .top-row{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  .top h1{font-size:18px;font-weight:900;letter-spacing:-0.01em;flex:1;min-width:140px;}
+  .top h1 small{display:block;font-size:11px;font-weight:600;color:rgba(254,243,199,0.7);letter-spacing:0.04em;}
+  .lang-toggle{display:flex;border:1px solid rgba(254,243,199,0.3);border-radius:999px;overflow:hidden;}
+  .lang-toggle button{background:transparent;color:rgba(254,243,199,0.8);border:none;padding:7px 16px;
+    font:inherit;font-size:13px;font-weight:800;cursor:pointer;transition:.15s;}
+  .lang-toggle button.on{background:var(--gold);color:#1a1a1a;}
+  .tabs{max-width:1080px;margin:14px auto 0;display:flex;gap:8px;flex-wrap:wrap;}
+  .tab{background:rgba(255,255,255,0.08);color:rgba(254,243,199,0.85);border:1px solid rgba(254,243,199,0.2);
+    border-radius:999px;padding:8px 16px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;}
+  .tab:hover{background:rgba(255,255,255,0.16);}
+  .tab.on{background:var(--gold);border-color:var(--gold-deep);color:#1a1a1a;}
+  /* CONTENT */
+  .wrap{max-width:1080px;margin:0 auto;padding:26px 24px 80px;}
+  .lead{font-size:14px;color:#5a4a16;background:rgba(255,200,36,0.12);border:1px solid var(--line);
+    border-radius:14px;padding:14px 18px;margin-bottom:22px;}
+  .lead b{color:var(--brand);}
+  h2.sec{font-size:20px;font-weight:900;margin:30px 0 14px;letter-spacing:-0.01em;}
+  h2.sec .em{font-size:22px;margin-right:6px;}
+  /* principle / note cards */
+  .grid{display:grid;gap:14px;}
+  .g3{grid-template-columns:repeat(3,1fr);}
+  .g2{grid-template-columns:repeat(2,1fr);}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow);}
+  .pcard h3{font-size:15px;font-weight:900;margin-bottom:6px;}
+  .pcard p{font-size:13.5px;color:var(--muted);}
+  /* track summary cards */
+  .track{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);
+    border-top:5px solid var(--c);cursor:pointer;transition:.15s;}
+  .track:hover{transform:translateY(-2px);box-shadow:0 22px 50px rgba(0,0,0,0.14);}
+  .track .who{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .track .who .em{font-size:26px;}
+  .track .who b{font-size:18px;font-weight:900;color:var(--c);}
+  .track .who .role{font-size:12px;font-weight:700;color:#fff;background:var(--c);border-radius:999px;padding:2px 10px;}
+  .track .serve{font-size:13px;color:var(--muted);margin-bottom:10px;}
+  .track .p0{font-size:13px;}
+  .track .p0 b{color:var(--text);}
+  .track .cnt{margin-top:10px;font-size:12px;color:var(--muted);font-weight:700;}
+  /* existing / dont-rebuild */
+  .built{background:rgba(111,143,87,0.09);border:1px solid rgba(111,143,87,0.3);border-radius:16px;padding:16px 20px;}
+  .built h3{font-size:14px;font-weight:900;color:var(--ok);margin-bottom:8px;}
+  .built ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px;}
+  .built li{font-size:12.5px;background:#fff;border:1px solid rgba(111,143,87,0.3);border-radius:999px;
+    padding:4px 11px;color:#3f5a2e;font-weight:600;}
+  .built li::before{content:"✓ ";color:var(--ok);font-weight:900;}
+  /* dev detail table */
+  .devhead{display:flex;align-items:center;gap:12px;margin:6px 0 14px;}
+  .devhead .em{font-size:30px;}
+  .devhead b{font-size:20px;font-weight:900;color:var(--c);}
+  .devhead .role{font-size:12.5px;font-weight:700;color:#fff;background:var(--c);border-radius:999px;padding:3px 12px;}
+  table{border-collapse:collapse;width:100%;margin:6px 0 8px;font-size:13.5px;background:var(--card);
+    border-radius:12px;overflow:hidden;box-shadow:var(--shadow);}
+  thead th{background:var(--c);color:#fff;padding:9px 12px;text-align:left;font-weight:800;font-size:12.5px;}
+  td{border-bottom:1px solid var(--line);padding:9px 12px;vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  tr:nth-child(even) td{background:rgba(255,200,36,0.05);}
+  td.pg{white-space:nowrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;font-weight:700;}
+  td.pg a{color:var(--c);text-decoration:none;border-bottom:1px dotted var(--c);}
+  .pri{display:inline-block;font-size:11px;font-weight:900;border-radius:6px;padding:2px 8px;white-space:nowrap;}
+  .pri.P0{background:#FEE2E2;color:#B91C1C;}
+  .pri.P1{background:#FEF3C7;color:#92400E;}
+  .pri.later{background:#E5E7EB;color:#4B5563;}
+  .reuse{display:inline-block;font-size:11.5px;color:var(--ok);background:rgba(111,143,87,0.12);
+    border-radius:6px;padding:1px 7px;font-weight:700;margin-top:3px;}
+  /* milestones */
+  .ms{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:10px 0;
+    border-left:5px solid var(--gold-deep);box-shadow:var(--shadow);}
+  .ms h4{font-size:14px;font-weight:900;}
+  .ms h4 .wk{color:var(--brand);}
+  .ms h4 .dt{font-size:12px;color:var(--muted);font-weight:600;margin-left:8px;}
+  .ms p{font-size:13px;color:var(--muted);margin-top:4px;}
+  .hideMe{display:none !important;}
+  .updated{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;}
+  @media(max-width:820px){
+    .g3,.g2{grid-template-columns:1fr;}
+  }
+  @media(max-width:760px){
+    .top{padding:12px 14px;} .top h1{font-size:16px;}
+    .tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;scrollbar-width:none;}
+    .tabs::-webkit-scrollbar{display:none;}
+    .tab{flex:0 0 auto;}
+    .wrap{padding:16px 12px 60px;}
+    table{font-size:12.5px;display:block;overflow-x:auto;white-space:nowrap;}
+  }
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="top-row">
+      <h1 id="pgTitle">任务分工 v2 · 按页面<small id="pgSub">Task Plan v2 — by page &amp; feature · MindDo</small></h1>
+      <div class="lang-toggle" role="group" aria-label="language">
+        <button id="btnZh" class="on" type="button">中文</button>
+        <button id="btnEn" type="button">EN</button>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs"></nav>
+  </header>
+  <main class="wrap" id="content"></main>
+
+<script>
+/* ============ DATA (bilingual) ============ */
+const T = {
+  tabs: { overview:{zh:"总览",en:"Overview"}, paul:{zh:"Paul · 获客",en:"Paul · Acquire"},
+          austin:{zh:"Austin · 家长",en:"Austin · Parent"}, david:{zh:"David · 运营",en:"David · Ops"} },
+  lead: {
+    zh:`<b>目标</b>：6 月底 / 7 月初上线 MVP（~2026-07-04）。 &nbsp;<b>方法</b>：按页面分工，一人对一个用户群负责到底。原型就是需求——字段 / 状态 / 交互原型里都定好了，<b>先点开走一遍流程再动手；具体怎么实现、用什么技术、表怎么建，开发自己决定。</b>`,
+    en:`<b>Goal</b>: ship the MVP late June / early July (~2026-07-04). &nbsp;<b>Method</b>: split work by page, one owner per audience, end to end. The prototype IS the spec — fields / states / interactions are all defined there, so <b>click through the flow first, then build it. How you implement it — tech, data model, design — is the developer's call.</b>`
+  },
+  principlesTitle:{zh:"三条原则",en:"Three principles"},
+  principles:[
+    { h:{zh:"① 按页面分线，不重叠",en:"① Split by page, no overlap"},
+      p:{zh:"三个人 = 三个用户群：Paul 把人领进门，Austin 管家长登录后的一切，David 管员工后台。每页只有一个主人，谁都不卡谁。",
+         en:"3 devs = 3 audiences: Paul brings them in the door, Austin owns everything a parent does after login, David owns the staff back office. Every page has exactly one owner — nobody blocks anyone."} },
+    { h:{zh:"② 原型就是需求",en:"② The prototype is the spec"},
+      p:{zh:"别等文档。打开对应原型页走一遍，字段 / 状态 / 交互都在里面。设计与实现自己定，照着原型的功能做出来即可。",
+         en:"Don't wait for docs. Open the matching prototype page and walk it — fields, states, interactions are all there. Design and implementation are yours; just match what the prototype does."} },
+    { h:{zh:"③ 别重造已有的",en:"③ Don't rebuild what exists"},
+      p:{zh:"minddoai 已经有一套能跑的后端 + Admin。标了「复用」的页面就在现成模块上扩展，不要从零重写。",
+         en:"minddoai already has a working backend + admin. Pages tagged “reuse” extend an existing module — do not rewrite from scratch."} },
+  ],
+  builtTitle:{zh:"✅ 已经建好的 —— 别重复造",en:"✅ Already built — do NOT rebuild"},
+  builtNote:{zh:"以下在 minddoai 已落地、能跑，新功能在其上扩展：",en:"These already work in minddoai; build new features on top of them:"},
+  built:[
+    {zh:"Auth0 登录 + 5 角色权限",en:"Auth0 login + 5-role RBAC"},
+    {zh:"用户 CRUD（含孩子 / 共同家长邀请）",en:"Users CRUD (children / co-parent invite)"},
+    {zh:"课程 / 试课 / 机构 / 讲师 Admin",en:"Courses / trials / orgs / instructors admin"},
+    {zh:"试听预约（公开页）",en:"Trial booking (public page)"},
+    {zh:"联系请求 + 状态机",en:"Contact requests + state machine"},
+    {zh:"Profile 家庭 tab",en:"Profile family tab"},
+    {zh:"邮件模块（Mailgun）",en:"Email module (Mailgun)"},
+    {zh:"落地页（中英）",en:"Landing pages (zh/en)"},
+  ],
+  tracksTitle:{zh:"三条线",en:"The three tracks"},
+  colHead:{ page:{zh:"页面",en:"Page"}, work:{zh:"做什么",en:"What to build"}, pri:{zh:"优先级",en:"Priority"} },
+  msTitle:{zh:"里程碑（4 周）",en:"Milestones (4 weeks)"},
+  milestones:[
+    { wk:"W1", dt:"6/9–6/15", th:{zh:"骨架搭起来",en:"Skeletons up"},
+      ex:{zh:"每人把自己 P0 页面的空壳 + 假数据跑起来；David 看板 / Austin 选课页 / Paul 评估页可点开。",
+          en:"Everyone gets their P0 page shells + mock data running; David's dashboard / Austin's course-selection / Paul's assessment are clickable."} },
+    { wk:"W2", dt:"6/16–6/22", th:{zh:"接真数据",en:"Wire real data"},
+      ex:{zh:"Paul 评估 + 注册 + 线索 CRM 跑通；Austin 选课 → 支付页接通；David 看板指标 + 学员管理出数。",
+          en:"Paul: assessment + signup + leads CRM working; Austin: course-selection → payment connected; David: dashboard metrics + student-management showing data."} },
+    { wk:"W3", dt:"6/23–6/29", th:{zh:"打通付费",en:"Close the loop on payment"},
+      ex:{zh:"Austin 选课 → 支付(Stripe) → 确认 → 发票端到端；家庭门户会员 / 账单 / 课表可用；David 审批 + 邮件。",
+          en:"Austin: course-selection → payment(Stripe) → confirm → invoice end to end; family portal membership / billing / schedule usable; David: approvals + email."} },
+    { wk:"W4", dt:"6/30–7/6", th:{zh:"联调 · 上线",en:"Integrate · launch"},
+      ex:{zh:"三条线串成一条用户旅程；端到端冒烟全过；真实数据导入；生产部署 + 回滚预案。",
+          en:"Three tracks stitched into one user journey; end-to-end smoke passes; real data imported; production deploy + rollback plan."} },
+  ],
+};
+
+const TRACKS = [
+  {
+    id:"paul", name:"Paul", em:"🎯", color:"var(--paul)",
+    title:{zh:"获客线",en:"Acquisition"}, role:{zh:"把人领进门",en:"Bring them in"},
+    serve:{zh:"服务对象：访客 / 新线索。从试听预约，到评估测评，到注册成单，再到运营侧的线索管理。",
+           en:"Serves: visitors / new leads. From trial booking → assessment → signup → the ops-side leads pipeline."},
+    p0:{zh:"P0：评估页打分 · 注册登录 · 线索 CRM 合并",en:"P0: assessment scoring · signup/login · merged leads CRM"},
+    pages:[
+      { pg:"assessment.html", pri:"P0",
+        w:{zh:"评估测评：录入表单 + 自动打分 + 课程推荐（原型逻辑已定）。",en:"Assessment: intake form + auto-scoring + course recommendation (logic defined in prototype)."} },
+      { pg:"signup.html", pri:"P0",
+        w:{zh:"家长注册 / 登录（Google / Microsoft / Apple）。",en:"Parent signup / login (Google / Microsoft / Apple)."} },
+      { pg:"login.html", pri:"P0",
+        w:{zh:"独立登录页。",en:"Dedicated login page."} },
+      { pg:"leads CRM", pri:"P0",
+        w:{zh:"把「联系请求」+「试听报名」合并成一个统一线索管线：列表 / 筛选 / 详情 / 联系记录。",en:"Merge contact-requests + trial-registrations into ONE leads pipeline: list / filter / detail / contact log."},
+        reuse:{zh:"复用 ContactRequestDashboard，扩展合并",en:"Reuse ContactRequestDashboard, merge in"} },
+      { pg:"trial.html", pri:"P1",
+        w:{zh:"试听预约表单。",en:"Trial booking form."},
+        reuse:{zh:"复用 TrialRegistrationPage",en:"Reuse TrialRegistrationPage"} },
+      { pg:"trial-register.html", pri:"P1",
+        w:{zh:"试听流程的另一入口。",en:"Alt entry to the trial flow."} },
+      { pg:"trial-invite.html", pri:"later",
+        w:{zh:"邀请链接版试听。",en:"Invite-link trial variant."} },
+      { pg:"claim-account.html", pri:"P1",
+        w:{zh:"接受邀请 / 共同家长入账。",en:"Accept invite / co-parent linkage."},
+        reuse:{zh:"复用 AcceptInvitePage",en:"Reuse AcceptInvitePage"} },
+      { pg:"profile-setup.html", pri:"P1",
+        w:{zh:"注册后补全资料。",en:"Post-signup profile completion."} },
+      { pg:"new-trials.html", pri:"P1",
+        w:{zh:"今日新试听清单（运营快捷提醒）。",en:"Today's new-trials quick list (ops alert)."} },
+      { pg:"new-students.html", pri:"P1",
+        w:{zh:"今日新生清单。",en:"Today's new-students list."} },
+    ]
+  },
+  {
+    id:"austin", name:"Austin", em:"💰", color:"var(--austin)",
+    title:{zh:"家长线",en:"Parent app"}, role:{zh:"登录后的一切",en:"Everything post-login"},
+    serve:{zh:"服务对象：付费家长。从选课付费、发票，到家庭门户（会员 / 账单 / 课表 / 作业 / 反馈）。",
+           en:"Serves: paying parents. From course purchase + invoice, to the family portal (membership / billing / schedule / homework / feedback)."},
+    p0:{zh:"P0：选课 → 支付(Stripe) → 确认 → 发票 · 家庭门户会员&账单",en:"P0: course-selection → payment(Stripe) → confirm → invoice · portal membership & billing"},
+    pages:[
+      { pg:"course-selection.html", pri:"P0",
+        w:{zh:"选套餐 / 选课 / 选排期。",en:"Choose plan / course / schedule."} },
+      { pg:"course-payment.html", pri:"P0",
+        w:{zh:"支付页，接 Stripe。",en:"Payment page, Stripe integration."} },
+      { pg:"course-confirm.html", pri:"P0",
+        w:{zh:"支付成功确认。",en:"Payment success confirmation."} },
+      { pg:"invoice.html", pri:"P0",
+        w:{zh:"可打印发票。",en:"Printable invoice."} },
+      { pg:"student-account.html", pri:"P0",
+        w:{zh:"家庭门户主中心 —— 先做会员 / 账单（支付方式 + 历史）/ 课表三段。",en:"Family portal hub — start with membership / billing (payment method + history) / schedule."},
+        reuse:{zh:"复用 ProfilePage 家庭 tab",en:"Reuse ProfilePage family tab"} },
+      { pg:"course-schedule.html", pri:"P1",
+        w:{zh:"课表 / 排期展示。",en:"Schedule / calendar view."} },
+      { pg:"add-child.html", pri:"P1",
+        w:{zh:"添加孩子。",en:"Add a child."},
+        reuse:{zh:"复用 users 现成接口",en:"Reuse users API"} },
+      { pg:"add-coparent.html", pri:"P1",
+        w:{zh:"邀请共同家长。",en:"Invite co-parent."},
+        reuse:{zh:"复用 co-parent 邀请",en:"Reuse co-parent invite"} },
+      { pg:"account-settings.html", pri:"P1",
+        w:{zh:"账号 / 安全 / 偏好设置。",en:"Account / security / preferences."} },
+      { pg:"student-account.html · 作业/成长", pri:"later",
+        w:{zh:"门户的作业提交 / 成长档案 / 竞赛段。",en:"Portal homework submit / portfolio / competitions sections."} },
+      { pg:"feedback.html", pri:"later",
+        w:{zh:"反馈收集。",en:"Feedback collection."} },
+      { pg:"semester-report.html", pri:"later",
+        w:{zh:"学期报告。",en:"Semester report."} },
+    ]
+  },
+  {
+    id:"david", name:"David", em:"📊", color:"var(--david)",
+    title:{zh:"运营后台",en:"Ops back office"}, role:{zh:"员工 / 管理端",en:"Staff / admin"},
+    serve:{zh:"服务对象：校区运营 / 管理员。运营看板、学员管理、审批、邮件，以及维护现有 Admin。",
+           en:"Serves: campus ops / admins. Ops dashboard, student management, approvals, email, plus maintaining the existing admin."},
+    p0:{zh:"P0：看板 KPI · 学员管理 · 审批中心",en:"P0: dashboard KPIs · student-management · approval center"},
+    pages:[
+      { pg:"dashboard.html", pri:"P0",
+        w:{zh:"运营主看板：注册 / 付费 / 评估 / 转化指标 + 告警 + 审批 + 审计查看。",en:"Ops dashboard: registration / payment / assessment / conversion metrics + alerts + approvals + audit viewer."},
+        reuse:{zh:"复用 AdminDashboard，扩展",en:"Reuse AdminDashboard, extend"} },
+      { pg:"student-management.html", pri:"P0",
+        w:{zh:"学员管理：列表 + 抽屉（作业 / 成长 / 变更历史 / 档案）。",en:"Student management: list + drawer (homework / growth / change history / profile)."} },
+      { pg:"request-center.html", pri:"P0",
+        w:{zh:"请假 / 改期审批队列。",en:"Leave / reschedule approval queue."} },
+      { pg:"email-outbox.html", pri:"P1",
+        w:{zh:"邮件发件箱 + 续费 / 缺勤自动草拟。",en:"Email outbox + auto-draft renewals / absentees."},
+        reuse:{zh:"复用 email 模块",en:"Reuse email module"} },
+      { pg:"Admin CRUD 维护", pri:"P1",
+        w:{zh:"维护 / 微调现有用户 · 课程 · 试课 · 机构 · 讲师后台（已建好，按需补）。",en:"Maintain existing users · courses · trials · orgs · instructors admin (already built — top up as needed)."},
+        reuse:{zh:"已建好，别重做",en:"Already built — don't redo"} },
+      { pg:"后端基建", pri:"P1",
+        w:{zh:"分页 / 全局异常过滤 / 审计日志 / seed 脚本 / 后端 CI —— 给三条线打地基。",en:"Pagination / global exception filter / audit log / seed script / backend CI — foundation for all three tracks."} },
+    ]
+  },
+];
+
+/* ============ RENDER ============ */
+let lang = "zh", view = "overview";
+const $ = (s)=>document.querySelector(s);
+const tt = (o)=>o ? (o[lang]||o.zh) : "";
+const protoBase = "https://li2918.github.io/MindDo/";
+
+function renderTabs(){
+  const order=["overview","paul","austin","david"];
+  $("#tabs").innerHTML = order.map(k=>
+    `<button class="tab ${view===k?'on':''}" data-v="${k}">${tt(T.tabs[k])}</button>`).join("");
+  $("#tabs").querySelectorAll(".tab").forEach(b=>b.onclick=()=>{view=b.dataset.v;render();});
+}
+
+function priLabel(p){ return p==="later" ? (lang==="zh"?"后续":"Later") : p; }
+
+function trackCard(tr){
+  return `<div class="track" style="--c:${tr.color}" data-go="${tr.id}">
+    <div class="who"><span class="em">${tr.em}</span><b>${tr.name}</b>
+      <span class="role">${tt(tr.role)}</span></div>
+    <div class="serve">${tt(tr.serve)}</div>
+    <div class="p0">${tt(tr.p0)}</div>
+    <div class="cnt">${tr.pages.length} ${lang==="zh"?"个页面 / 功能 →":"pages / features →"}</div>
+  </div>`;
+}
+
+function devTable(tr){
+  const rows = tr.pages.map(p=>{
+    const isFile = /\.html$/.test(p.pg);
+    const pgCell = isFile
+      ? `<a href="${protoBase}${p.pg}" target="_blank" rel="noopener">${p.pg}</a>`
+      : p.pg;
+    const reuse = p.reuse ? `<div class="reuse">↻ ${tt(p.reuse)}</div>` : "";
+    return `<tr>
+      <td class="pg">${pgCell}</td>
+      <td>${tt(p.w)}${reuse}</td>
+      <td><span class="pri ${p.pri}">${priLabel(p.pri)}</span></td>
+    </tr>`;
+  }).join("");
+  return `<div class="devhead" style="--c:${tr.color}">
+      <span class="em">${tr.em}</span><b>${tr.name}</b>
+      <span class="role">${tt(tr.title)} · ${tt(tr.role)}</span></div>
+    <p style="font-size:13.5px;color:var(--muted);margin-bottom:8px">${tt(tr.serve)}</p>
+    <table style="--c:${tr.color}">
+      <thead><tr><th>${tt(T.colHead.page)}</th><th>${tt(T.colHead.work)}</th><th>${tt(T.colHead.pri)}</th></tr></thead>
+      <tbody>${rows}</tbody></table>`;
+}
+
+function overview(){
+  const pr = T.principles.map(p=>
+    `<div class="pcard"><h3>${tt(p.h)}</h3><p>${tt(p.p)}</p></div>`).join("");
+  const built = T.built.map(b=>`<li>${tt(b)}</li>`).join("");
+  const cards = TRACKS.map(trackCard).join("");
+  const ms = T.milestones.map(m=>
+    `<div class="ms"><h4><span class="wk">${m.wk}</span><span class="dt">${m.dt}</span> · ${tt(m.th)}</h4>
+      <p>${tt(m.ex)}</p></div>`).join("");
+  return `<div class="lead">${tt(T.lead)}</div>
+    <h2 class="sec">${tt(T.principlesTitle)}</h2>
+    <div class="grid g3">${pr}</div>
+    <h2 class="sec">${tt(T.builtTitle)}</h2>
+    <div class="built"><h3>${tt(T.builtNote)}</h3><ul>${built}</ul></div>
+    <h2 class="sec">${tt(T.tracksTitle)}</h2>
+    <div class="grid g3">${cards}</div>
+    <h2 class="sec">${tt(T.msTitle)}</h2>
+    ${ms}
+    <p class="updated">${lang==="zh"?"最后更新 2026-06-10 · 按页面分工，设计实现由开发自定":"Updated 2026-06-10 · split by page; design & implementation are the developer's call"}</p>`;
+}
+
+function render(){
+  renderTabs();
+  $("#pgTitle").childNodes[0].nodeValue = lang==="zh" ? "任务分工 v2 · 按页面" : "Task Plan v2 · by page";
+  if(view==="overview"){ $("#content").innerHTML = overview(); }
+  else {
+    const tr = TRACKS.find(t=>t.id===view);
+    $("#content").innerHTML = devTable(tr);
+  }
+  // wire track cards → jump to dev tab
+  $("#content").querySelectorAll("[data-go]").forEach(el=>
+    el.onclick=()=>{ view=el.dataset.go; render(); window.scrollTo({top:0,behavior:"smooth"}); });
+}
+
+$("#btnZh").onclick=()=>{lang="zh";$("#btnZh").classList.add("on");$("#btnEn").classList.remove("on");render();};
+$("#btnEn").onclick=()=>{lang="en";$("#btnEn").classList.add("on");$("#btnZh").classList.remove("on");render();};
+render();
+</script>
+</body>
+</html>
