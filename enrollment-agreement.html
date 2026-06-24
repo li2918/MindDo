@@ -69,6 +69,7 @@
   .doc[open] .chev{transform:rotate(90deg);}
   .doc .body{padding:0 20px 18px;border-top:1px solid var(--line);}
   .doc .body h4{font-size:13.5px;font-weight:800;margin:14px 0 5px;color:var(--clay);}
+  .bigdoc .sec-h{font-size:15px;font-weight:900;margin:24px 0 8px;padding-top:16px;border-top:2px solid var(--line);color:var(--brand);}
   .doc .body p,.doc .body li{font-size:13px;color:#3a3a3a;margin:6px 0;}
   .doc .body ul{padding-left:20px;}
   .doc .body .lawref{font-size:11.5px;color:var(--muted);font-style:italic;}
@@ -138,8 +139,8 @@
     </div>
 
     <p class="intro">
-      <span data-lang="zh">以下是报名所涉的全部文件，默认折叠。<b>想了解详情可点开任意文件查看全文</b>；阅读与否由您决定，最后在页面底部勾选同意即可完成报名。</span>
-      <span data-lang="en">Below are all the documents involved in enrollment, collapsed by default. <b>Click any document to read the full text</b> if you wish; whether to read is up to you. Just check the box at the bottom to complete enrollment.</span>
+      <span data-lang="zh">报名相关条款已合并为<b>一份《MindDo 报名协议》</b>（含八节）。<b>想了解详情可点开查看全文</b>；阅读与否由您决定，最后在页面底部<b>打一个钩</b>同意即可完成报名。</span>
+      <span data-lang="en">All enrollment terms are combined into <b>one MindDo Enrollment Agreement</b> (eight sections). <b>Click to read the full text</b> if you wish; whether to read is up to you. Then just <b>tick one box</b> at the bottom to complete enrollment.</span>
     </p>
 
     <!-- Parties -->
@@ -157,12 +158,13 @@
 
     <!-- ============ DOCUMENTS ============ -->
 
-    <!-- A -->
-    <details class="doc" data-req="1">
-      <summary><span class="chev">▶</span><span data-lang="zh">一、报名与服务主协议</span><span data-lang="en">1. Enrollment & Services Agreement</span>
-        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
-        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
+    <!-- ====== Single combined enrollment agreement ====== -->
+    <details class="doc bigdoc">
+      <summary><span class="chev">▶</span><span data-lang="zh">《MindDo 报名协议》· 全文（共八节）</span><span data-lang="en">MindDo Enrollment Agreement — full text (8 sections)</span>
+        <span class="tag req" data-lang="zh">点开阅读</span><span class="tag req" data-lang="en">Read</span></summary>
       <div class="body">
+        <p class="lawref"><span data-lang="zh">以下八节构成一份完整的报名协议。</span><span data-lang="en">The eight sections below form one complete enrollment agreement.</span></p>
+        <h3 class="sec-h"><span data-lang="zh">第一节 · 报名与服务主协议</span><span data-lang="en">Section 1 · Enrollment & Services</span></h3>
         <p><span data-lang="zh">本协议由签署的监护人（"您"）与 MindDo AI Learning Center 及其关联运营实体（"MindDo")就为上述未成年学员（"学员"）提供 AI 与计算机科学教育服务订立。</span>
            <span data-lang="en">This Agreement is entered into between the signing parent/guardian ("you") and MindDo AI Learning Center and its operating affiliates ("MindDo") for AI and computer-science education services provided to the minor student named above (the "Student").</span></p>
         <h4><span data-lang="zh">1. 服务内容</span><span data-lang="en">1. Services</span></h4>
@@ -183,15 +185,7 @@
         <h4><span data-lang="zh">6. 责任上限</span><span data-lang="en">6. Limitation of Liability</span></h4>
         <p><span data-lang="zh">在法律允许的最大范围内，MindDo 对任何索赔的累计赔偿不超过您在索赔事件前 12 个月内实际支付的费用；不承担间接、附带或后果性损失。本条不限制法律不可免除的责任。</span>
            <span data-lang="en">To the maximum extent permitted by law, MindDo's aggregate liability for any claim will not exceed the fees you actually paid in the 12 months before the event giving rise to the claim, and MindDo is not liable for indirect, incidental, or consequential damages. Nothing here limits liability that cannot be waived by law.</span></p>
-      </div>
-    </details>
-
-    <!-- B -->
-    <details class="doc" data-req="1">
-      <summary><span class="chev">▶</span><span data-lang="zh">二、学费、账单、自动续费与退费政策</span><span data-lang="en">2. Tuition, Billing, Auto-Renewal & Refund Policy</span>
-        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
-        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
-      <div class="body">
+        <h3 class="sec-h"><span data-lang="zh">第二节 · 学费、账单、自动续费与退费</span><span data-lang="en">Section 2 · Tuition, Billing, Auto-Renewal & Refund</span></h3>
         <p class="lawref" data-lang="zh">依加州《自动续费法》(Cal. Bus. & Prof. Code §17600 及以下) 的强制披露。</p>
         <p class="lawref" data-lang="en">Disclosures required by California's Automatic Renewal Law (Cal. Bus. & Prof. Code §17600 et seq.).</p>
         <h4><span data-lang="zh">1. 收费与支付方式</span><span data-lang="en">1. Charges & Payment</span></h4>
@@ -220,15 +214,7 @@
         <h4><span data-lang="zh">4. 失败扣款与逾期</span><span data-lang="en">4. Failed Payments</span></h4>
         <p><span data-lang="zh">扣款失败我们会重试并通知您；逾期未付可暂停服务。</span>
            <span data-lang="en">If a charge fails we will retry and notify you; services may be paused for unpaid balances.</span></p>
-      </div>
-    </details>
-
-    <!-- C -->
-    <details class="doc" data-req="1">
-      <summary><span class="chev">▶</span><span data-lang="zh">三、未成年人监护同意书 + COPPA 父母同意</span><span data-lang="en">3. Parental/Guardian Consent for a Minor + COPPA</span>
-        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
-        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
-      <div class="body">
+        <h3 class="sec-h"><span data-lang="zh">第三节 · 未成年人监护同意 + COPPA</span><span data-lang="en">Section 3 · Guardian Consent + COPPA</span></h3>
         <p class="lawref" data-lang="zh">依《儿童在线隐私保护法》(COPPA, 15 U.S.C. §6501 及以下) 对 13 岁以下儿童的可验证父母同意要求。</p>
         <p class="lawref" data-lang="en">Per the Children's Online Privacy Protection Act (COPPA, 15 U.S.C. §6501 et seq.), verifiable parental consent for children under 13.</p>
         <h4><span data-lang="zh">1. 监护身份声明</span><span data-lang="en">1. Guardianship</span></h4>
@@ -240,45 +226,21 @@
         <h4><span data-lang="zh">3. 我的权利</span><span data-lang="en">3. Your Rights</span></h4>
         <p><span data-lang="zh">我可随时查阅学员信息、撤回本同意并要求删除（撤回后可能无法继续提供服务）。联系 privacy@minddo.ai。</span>
            <span data-lang="en">I may review the Student's information, withdraw this consent, and request deletion at any time (withdrawal may end the ability to provide services). Contact privacy@minddo.ai.</span></p>
-      </div>
-    </details>
-
-    <!-- D -->
-    <details class="doc" data-req="1">
-      <summary><span class="chev">▶</span><span data-lang="zh">四、隐私与数据使用确认</span><span data-lang="en">4. Privacy & Data Use Acknowledgment</span>
-        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
-        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
-      <div class="body">
+        <h3 class="sec-h"><span data-lang="zh">第四节 · 隐私与数据使用</span><span data-lang="en">Section 4 · Privacy & Data Use</span></h3>
         <p class="lawref" data-lang="zh">结合加州《消费者隐私法》(CCPA/CPRA) 与 COPPA。</p>
         <p class="lawref" data-lang="en">Aligned with the California Consumer Privacy Act (CCPA/CPRA) and COPPA.</p>
         <p><span data-lang="zh">我已阅读 <a href="privacy.html" target="_blank">《隐私政策》</a>，理解 MindDo 收集哪些信息、如何使用与共享（仅限教学平台、支付处理、邮件等必要服务商）、保存多久，以及我对家庭与学员数据享有的查阅、更正、删除与限制处理的权利。</span>
            <span data-lang="en">I have read the <a href="privacy.html" target="_blank">Privacy Policy</a> and understand what MindDo collects, how it is used and shared (only with necessary service providers such as the learning platform, payment processor, and email), how long it is kept, and my rights to access, correct, delete, and limit processing of family and Student data.</span></p>
         <p><span data-lang="zh">我理解我的支付信息由 Stripe 按其条款处理，MindDo 不存储完整卡号。</span>
            <span data-lang="en">I understand my payment details are processed by Stripe under its terms and that MindDo does not store full card numbers.</span></p>
-      </div>
-    </details>
-
-    <!-- E -->
-    <details class="doc" data-req="0">
-      <summary><span class="chev">▶</span><span data-lang="zh">五、肖像、录像、声音与学员作品授权</span><span data-lang="en">5. Photo, Video, Voice & Student Work Release</span>
-        <span class="tag opt" data-lang="zh">可选</span><span class="tag opt" data-lang="en">Optional</span>
-        <span class="tag signed" data-lang="zh">已选择</span><span class="tag signed" data-lang="en">Chosen</span></summary>
-      <div class="body">
+        <h3 class="sec-h"><span data-lang="zh">第五节 · 肖像 / 录像 / 作品授权（可选）</span><span data-lang="en">Section 5 · Media &amp; Work Release (optional)</span></h3>
         <p><span data-lang="zh">为教学记录、家长反馈、课程改进及宣传，MindDo 可能拍摄课堂照片/录像、录制线上课，并展示学员的 AI 作品。<b>本项为可选授权，拒绝不影响报名与上课。</b>课堂录制中用于回放与教学质量的部分属于服务必要，不依赖本项市场宣传授权。</span>
            <span data-lang="en">For instruction records, parent feedback, program improvement, and marketing, MindDo may take classroom photos/video, record online classes, and showcase Student AI projects. <b>This release is optional; declining does not affect enrollment or classes.</b> Class recordings used for replay and teaching quality are part of the service and do not depend on this marketing release.</span></p>
         <h4><span data-lang="zh">授权范围（如选择"同意"）</span><span data-lang="en">Scope (if you choose "Allow")</span></h4>
         <p><span data-lang="zh">我授予 MindDo 非独家、免版税、可在全球使用学员肖像、声音及作品于网站、社交媒体及招生材料的许可；不使用学员全名/住址等敏感信息搭配公开发布；我可随时书面撤回（撤回不影响已发布内容）。</span>
            <span data-lang="en">I grant MindDo a non-exclusive, royalty-free, worldwide license to use the Student's likeness, voice, and work in its website, social media, and recruiting materials; MindDo will not publish the Student's full name/address with such media; I may withdraw in writing at any time (withdrawal does not affect already-published materials).</span></p>
         <p class="lawref"><span data-lang="zh">本项为可选。是否授权请在页面底部勾选；不勾选即视为不授权（仅限教学内部使用）。</span><span data-lang="en">This is optional. Choose at the bottom of the page; leaving it unchecked means no marketing use (instructional use only).</span></p>
-      </div>
-    </details>
-
-    <!-- F -->
-    <details class="doc" data-req="1">
-      <summary><span class="chev">▶</span><span data-lang="zh">六、风险知情、责任豁免与赔偿；医疗急救与接送授权</span><span data-lang="en">6. Assumption of Risk, Waiver & Release; Medical & Pickup</span>
-        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
-        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
-      <div class="body">
+        <h3 class="sec-h"><span data-lang="zh">第六节 · 风险免责、医疗急救与接送授权</span><span data-lang="en">Section 6 · Liability, Medical &amp; Pickup</span></h3>
         <h4><span data-lang="zh">1. 风险知情</span><span data-lang="en">1. Assumption of Risk</span></h4>
         <p><span data-lang="zh">我理解参与线下校区活动存在固有风险（如场地内的意外伤害），线上活动涉及屏幕使用与网络互动。我自愿让学员参加。</span>
            <span data-lang="en">I understand on-campus participation carries inherent risks (e.g., accidental injury on premises) and online participation involves screen use and networked interaction. I voluntarily allow the Student to participate.</span></p>
@@ -296,28 +258,12 @@
         <p><span data-lang="zh">下列人员经我授权可接走学员；未列明者，校区将先行核实身份。</span>
            <span data-lang="en">The persons below are authorized to pick up the Student; for anyone not listed, the campus will verify identity first.</span></p>
         <div class="field"><label><span data-lang="zh">授权接送人（姓名/关系）</span><span data-lang="en">Authorized pickup (name/relationship)</span></label><input id="pPickup" type="text" /></div>
-      </div>
-    </details>
-
-    <!-- G -->
-    <details class="doc" data-req="1">
-      <summary><span class="chev">▶</span><span data-lang="zh">七、学员行为准则与在线安全确认</span><span data-lang="en">7. Code of Conduct & Online Safety</span>
-        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
-        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
-      <div class="body">
+        <h3 class="sec-h"><span data-lang="zh">第七节 · 行为准则与在线安全</span><span data-lang="en">Section 7 · Code of Conduct &amp; Online Safety</span></h3>
         <p><span data-lang="zh">我与学员同意：尊重师生、不作弊或骚扰、按规使用学习平台与 AI 工具、不分享账户或上课链接、不录制并传播他人。我理解严重或反复违规可致暂停或终止服务（依退费政策处理）。</span>
            <span data-lang="en">The Student and I agree to: respect instructors and peers; no cheating or harassment; use the learning platform and AI tools as directed; not share accounts or class links; and not record and redistribute others. I understand serious or repeated violations may lead to suspension or termination (handled under the Refund Policy).</span></p>
         <p><span data-lang="zh">在线安全：线上课在受监督环境中进行，我将协助学员在安全的居家环境上课。</span>
            <span data-lang="en">Online safety: online classes run in a supervised environment, and I will help the Student attend from a safe home setting.</span></p>
-      </div>
-    </details>
-
-    <!-- H -->
-    <details class="doc" data-req="1">
-      <summary><span class="chev">▶</span><span data-lang="zh">八、电子记录与电子签名同意</span><span data-lang="en">8. Electronic Records & Signatures Consent</span>
-        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
-        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
-      <div class="body">
+        <h3 class="sec-h"><span data-lang="zh">第八节 · 电子记录与电子签名</span><span data-lang="en">Section 8 · Electronic Records &amp; Signatures</span></h3>
         <p class="lawref" data-lang="zh">依联邦 E-SIGN 法 (15 U.S.C. §7001) 与加州 UETA。</p>
         <p class="lawref" data-lang="en">Under the federal E-SIGN Act (15 U.S.C. §7001) and California's UETA.</p>
         <p><span data-lang="zh">我同意以电子方式接收并签署本文件包，<b>理解在页面底部勾选同意框即构成我具有法律约束力的签名</b>，与手写签名同等效力（勾选时间与设备信息将一并记录）。我可向 support@minddo.ai 索取纸质副本，并可点击"打印/保存 PDF"留存本文件。</span>
@@ -330,8 +276,8 @@
       <h2><span data-lang="zh">确认同意</span><span data-lang="en">Confirm & Agree</span></h2>
       <div class="consent" style="background:rgba(255,200,36,0.14);border:1.5px solid var(--brand);">
         <input type="checkbox" id="ckAgree" />
-        <label for="ckAgree"><span data-lang="zh">我确认我是学员的法定监护人，<b>已知悉并同意上述全部报名文件</b>（服务协议、学费与<b>自动续费</b>、COPPA 与隐私、责任免除、行为准则、电子签名等），且所填信息真实准确。</span>
-          <span data-lang="en">I confirm I am the Student's legal guardian and <b>agree to all the enrollment documents above</b> (services agreement, tuition & <b>auto-renewal</b>, COPPA & privacy, liability waiver, code of conduct, e-signature, etc.), and that my information is true and accurate.</span></label>
+        <label for="ckAgree"><span data-lang="zh">我确认我是学员的法定监护人，<b>已知悉并同意《MindDo 报名协议》全部八节</b>（含服务、学费与<b>自动续费</b>、COPPA 与隐私、责任免除、行为准则、电子签名），且所填信息真实准确。</span>
+          <span data-lang="en">I confirm I am the Student's legal guardian and <b>agree to all eight sections of the MindDo Enrollment Agreement</b> (services, tuition & <b>auto-renewal</b>, COPPA & privacy, liability waiver, code of conduct, e-signature), and that my information is true and accurate.</span></label>
       </div>
       <div class="consent">
         <input type="checkbox" id="ckMedia" />
