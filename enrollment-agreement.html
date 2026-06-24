@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>报名法律文件签署 | Enrollment Agreement — MindDo</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<style>
+  :root{
+    --bg:#FFF5D6; --card:#fffdf7; --line:rgba(255,91,36,0.16); --text:#1a1a1a;
+    --muted:#6b7280; --gold:#FFC824; --gold-deep:#E5B11D; --brand:#FF5B24; --clay:#C2410C;
+    --ok:#16A34A; --warn:#DC2626; --sand:#FDE7C7; --shadow:0 18px 44px rgba(0,0,0,0.10);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+  html,body{max-width:100%;overflow-x:hidden;}
+  body{font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.65;overflow-wrap:anywhere;}
+  a{color:var(--clay);}
+  /* lang */
+  [data-lang]{display:none;}
+  body.zh [data-lang="zh"]{display:revert;}
+  body.en [data-lang="en"]{display:revert;}
+  /* header */
+  .top{position:sticky;top:0;z-index:50;background:linear-gradient(145deg,#2a1408,#1a1a1a);
+    color:#fffbeb;padding:14px 24px;box-shadow:var(--shadow);}
+  .top-row{max-width:920px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .top h1{font-size:17px;font-weight:900;flex:1;min-width:160px;}
+  .top h1 small{display:block;font-size:11px;font-weight:600;color:rgba(254,243,199,0.7);}
+  .lang-toggle{display:flex;border:1px solid rgba(254,243,199,0.3);border-radius:999px;overflow:hidden;}
+  .lang-toggle button{background:transparent;color:rgba(254,243,199,0.8);border:none;padding:6px 15px;
+    font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+  .lang-toggle button.on{background:var(--gold);color:#1a1a1a;}
+  /* stepper */
+  .stepper{max-width:920px;margin:14px auto 0;display:flex;gap:6px;flex-wrap:wrap;font-size:12px;font-weight:700;}
+  .stepper .s{display:flex;align-items:center;gap:7px;color:rgba(254,243,199,0.55);}
+  .stepper .s .n{width:20px;height:20px;border-radius:999px;background:rgba(255,255,255,0.12);
+    display:grid;place-items:center;font-size:11px;}
+  .stepper .s.on{color:#1a1a1a;}
+  .stepper .s.on .n{background:var(--gold);}
+  .stepper .s.done{color:rgba(254,243,199,0.8);}
+  .stepper .arrow{color:rgba(254,243,199,0.35);}
+  /* content */
+  .wrap{max-width:920px;margin:0 auto;padding:24px 22px 90px;}
+  .disclaimer{background:#FEF3C7;border:1.5px solid var(--gold-deep);border-radius:14px;padding:14px 18px;
+    font-size:13px;color:#7c5e09;margin-bottom:20px;}
+  .disclaimer b{color:var(--clay);}
+  .partybox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;
+    box-shadow:var(--shadow);margin-bottom:22px;}
+  .partybox h2{font-size:15px;font-weight:900;margin-bottom:12px;}
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px;}
+  .field input{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font:inherit;font-size:14px;background:#fff;}
+  .field input:focus{outline:none;border-color:var(--brand);}
+  .intro{font-size:14px;color:#4b4b4b;margin-bottom:18px;}
+  /* document accordion */
+  .doc{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:12px 0;
+    box-shadow:var(--shadow);overflow:hidden;}
+  .doc > summary{list-style:none;cursor:pointer;padding:15px 18px;display:flex;align-items:center;gap:12px;
+    font-weight:800;font-size:15px;}
+  .doc > summary::-webkit-details-marker{display:none;}
+  .doc > summary .tag{margin-left:auto;font-size:11px;font-weight:800;border-radius:6px;padding:3px 9px;white-space:nowrap;}
+  .doc > summary .req{background:#FEE2E2;color:#B91C1C;}
+  .doc > summary .opt{background:#DBEAFE;color:#1D4ED8;}
+  .doc > summary .signed{background:rgba(22,163,74,0.15);color:var(--ok);display:none;}
+  .doc[data-ok="1"] > summary .signed{display:inline-block;}
+  .doc[data-ok="1"] > summary{background:rgba(22,163,74,0.06);}
+  .doc .chev{transition:.2s;color:var(--muted);font-size:13px;}
+  .doc[open] .chev{transform:rotate(90deg);}
+  .doc .body{padding:0 20px 18px;border-top:1px solid var(--line);}
+  .doc .body h4{font-size:13.5px;font-weight:800;margin:14px 0 5px;color:var(--clay);}
+  .doc .body p,.doc .body li{font-size:13px;color:#3a3a3a;margin:6px 0;}
+  .doc .body ul{padding-left:20px;}
+  .doc .body .lawref{font-size:11.5px;color:var(--muted);font-style:italic;}
+  .consent{display:flex;align-items:flex-start;gap:10px;background:rgba(255,200,36,0.10);
+    border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:14px;}
+  .consent input{width:18px;height:18px;margin-top:1px;accent-color:var(--ok);cursor:pointer;flex-shrink:0;}
+  .consent label{font-size:13px;font-weight:600;cursor:pointer;}
+  .optchoice{display:flex;gap:18px;margin-top:12px;font-size:13px;}
+  .optchoice label{display:flex;gap:7px;align-items:center;cursor:pointer;}
+  /* signature */
+  .sign{background:var(--card);border:2px solid var(--brand);border-radius:16px;padding:20px 22px;
+    box-shadow:var(--shadow);margin-top:26px;}
+  .sign h2{font-size:16px;font-weight:900;margin-bottom:6px;}
+  .sign .sig-note{font-size:12.5px;color:var(--muted);margin-bottom:16px;}
+  .sig-input{width:100%;padding:14px 16px;border:1px dashed var(--brand);border-radius:10px;
+    font-family:"Brush Script MT","Segoe Script",cursive;font-size:26px;color:#1a1a1a;background:#fffef9;}
+  .sig-input:focus{outline:none;background:#fff;}
+  .sig-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
+  .attest{display:flex;align-items:flex-start;gap:10px;margin-top:16px;background:#FEF3C7;border-radius:10px;padding:12px 14px;}
+  .attest input{width:18px;height:18px;margin-top:1px;accent-color:var(--brand);flex-shrink:0;}
+  .attest label{font-size:13px;font-weight:700;}
+  .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;}
+  .btn{padding:13px 22px;border-radius:12px;font:inherit;font-size:15px;font-weight:800;cursor:pointer;border:none;}
+  .btn-primary{background:linear-gradient(135deg,#FFEFA8,var(--gold));color:#1a1a1a;flex:1;min-width:220px;
+    box-shadow:0 8px 20px rgba(255,200,36,0.3);transition:.2s;}
+  .btn-primary:hover:not(:disabled){transform:translateY(-1px);}
+  .btn-primary:disabled{opacity:.45;cursor:not-allowed;}
+  .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--text);}
+  .gate-msg{font-size:12.5px;color:var(--warn);margin-top:10px;font-weight:700;min-height:16px;}
+  .footer{max-width:920px;margin:0 auto;padding:0 22px 40px;font-size:12px;color:var(--muted);text-align:center;}
+  @media(max-width:680px){ .field-grid,.sig-meta{grid-template-columns:1fr;} }
+  @media print{
+    .top,.stepper,.actions,.lang-toggle,.consent input,.attest input{display:none !important;}
+    .doc{break-inside:avoid;} .doc .body{display:block !important;}
+    body{background:#fff;}
+  }
+</style>
+</head>
+<body class="zh">
+  <header class="top">
+    <div class="top-row">
+      <h1>
+        <span data-lang="zh">报名法律文件签署</span><span data-lang="en">Enrollment Agreement</span>
+        <small>MindDo AI Learning Center</small>
+      </h1>
+      <div class="lang-toggle" role="group" aria-label="language">
+        <button id="btnZh" class="on" type="button">中文</button>
+        <button id="btnEn" type="button">EN</button>
+      </div>
+    </div>
+    <div class="stepper">
+      <span class="s done"><span class="n">1</span><span data-lang="zh">选课</span><span data-lang="en">Choose</span></span>
+      <span class="arrow">→</span>
+      <span class="s on"><span class="n">2</span><span data-lang="zh">签署协议</span><span data-lang="en">Sign</span></span>
+      <span class="arrow">→</span>
+      <span class="s"><span class="n">3</span><span data-lang="zh">支付</span><span data-lang="en">Pay</span></span>
+      <span class="arrow">→</span>
+      <span class="s"><span class="n">4</span><span data-lang="zh">确认</span><span data-lang="en">Confirm</span></span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="disclaimer">
+      <b data-lang="zh">⚠️ 模板提示：</b><b data-lang="en">⚠️ Template notice: </b>
+      <span data-lang="zh">本文件为依据 MindDo 业务（加州、5–18 岁未成年学员、线上+线下校区、订阅自动续费）起草的合规模板，<b>正式启用前须经贵司持牌律师按当时最新的联邦及各运营州法律终审定稿。</b>中英文如有歧义，以英文版本为准。</span>
+      <span data-lang="en">This is a compliance-oriented template drafted for MindDo's business (California-based; minors ages 5–18; online + on-campus; auto-renewing subscriptions). <b>It must be reviewed and finalized by MindDo's licensed counsel under current federal and applicable state law before live use.</b> In any conflict between languages, the English version controls.</span>
+    </div>
+
+    <p class="intro">
+      <span data-lang="zh">为完成报名，请监护人逐份阅读以下文件并勾选确认，最后完成电子签名。带 <b style="color:#B91C1C">必签</b> 标记的文件为报名所必需；<b style="color:#1D4ED8">可选</b> 标记的可自行选择是否授权。</span>
+      <span data-lang="en">To complete enrollment, the parent/guardian must read each document below, check to agree, and sign electronically at the end. Documents marked <b style="color:#B91C1C">Required</b> are mandatory; <b style="color:#1D4ED8">Optional</b> ones are your choice.</span>
+    </p>
+
+    <!-- Parties -->
+    <section class="partybox">
+      <h2><span data-lang="zh">缔约方信息</span><span data-lang="en">Parties</span></h2>
+      <div class="field-grid">
+        <div class="field"><label><span data-lang="zh">监护人全名（法定）</span><span data-lang="en">Parent/Guardian full legal name</span></label><input id="pGuardian" type="text" autocomplete="name" /></div>
+        <div class="field"><label><span data-lang="zh">与学员关系</span><span data-lang="en">Relationship to student</span></label><input id="pRel" type="text" placeholder="父亲/母亲/法定监护人 · Father/Mother/Legal guardian" /></div>
+        <div class="field"><label><span data-lang="zh">学员姓名</span><span data-lang="en">Student name(s)</span></label><input id="pStudent" type="text" /></div>
+        <div class="field"><label><span data-lang="zh">学员出生日期</span><span data-lang="en">Student date of birth</span></label><input id="pDob" type="date" /></div>
+        <div class="field"><label><span data-lang="zh">联系邮箱</span><span data-lang="en">Email</span></label><input id="pEmail" type="email" autocomplete="email" /></div>
+        <div class="field"><label><span data-lang="zh">联系电话</span><span data-lang="en">Phone</span></label><input id="pPhone" type="tel" autocomplete="tel" /></div>
+      </div>
+    </section>
+
+    <!-- ============ DOCUMENTS ============ -->
+
+    <!-- A -->
+    <details class="doc" data-req="1">
+      <summary><span class="chev">▶</span><span data-lang="zh">一、报名与服务主协议</span><span data-lang="en">1. Enrollment & Services Agreement</span>
+        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
+        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
+      <div class="body">
+        <p><span data-lang="zh">本协议由签署的监护人（"您"）与 MindDo AI Learning Center 及其关联运营实体（"MindDo")就为上述未成年学员（"学员"）提供 AI 与计算机科学教育服务订立。</span>
+           <span data-lang="en">This Agreement is entered into between the signing parent/guardian ("you") and MindDo AI Learning Center and its operating affiliates ("MindDo") for AI and computer-science education services provided to the minor student named above (the "Student").</span></p>
+        <h4><span data-lang="zh">1. 服务内容</span><span data-lang="en">1. Services</span></h4>
+        <p><span data-lang="zh">MindDo 按所选套餐提供线上和/或线下校区课程、教学支持、学习平台访问及相关材料。课程安排、师资与大纲可能因教学需要合理调整。</span>
+           <span data-lang="en">MindDo provides online and/or on-campus classes, instructional support, learning-platform access, and related materials per the plan selected. Scheduling, staffing, and curriculum may be reasonably adjusted for pedagogical needs.</span></p>
+        <h4><span data-lang="zh">2. 出勤、调课与补课</span><span data-lang="en">2. Attendance, Reschedule & Make-ups</span></h4>
+        <p><span data-lang="zh">缺课需按当时的调课政策提前通知；补课名额视座位而定，不另退费，除非政策另有规定。</span>
+           <span data-lang="en">Absences require advance notice under the then-current reschedule policy. Make-ups are subject to availability and do not entitle you to a refund unless the policy states otherwise.</span></p>
+        <h4><span data-lang="zh">3. 监护人义务</span><span data-lang="en">3. Your Responsibilities</span></h4>
+        <p><span data-lang="zh">您确保所提供信息真实，保障学员上课所需设备/网络（线上课），并配合校区安全与接送规定（线下课）。</span>
+           <span data-lang="en">You warrant the information you provide is accurate, ensure the equipment/connectivity the Student needs (online), and comply with campus safety and pickup rules (in person).</span></p>
+        <h4><span data-lang="zh">4. 期限与终止</span><span data-lang="en">4. Term & Termination</span></h4>
+        <p><span data-lang="zh">本协议自签署起生效，至套餐结束或依退费政策终止。任一方在对方重大违约且经书面通知后未在合理期限内纠正时可终止。</span>
+           <span data-lang="en">This Agreement is effective upon signature and continues until the plan ends or is terminated under the Refund Policy. Either party may terminate for a material breach not cured within a reasonable time after written notice.</span></p>
+        <h4><span data-lang="zh">5. 争议解决与适用法律</span><span data-lang="en">5. Disputes & Governing Law</span></h4>
+        <p><span data-lang="zh">本协议适用加利福尼亚州法律（不含其法律冲突规则）。双方先善意协商；未决争议提交位于加州橙县的具有约束力的个人仲裁，<b>放弃集体诉讼</b>（消费者依法享有的小额法庭等不可放弃权利除外）。</span>
+           <span data-lang="en">This Agreement is governed by California law (excluding conflict-of-laws rules). The parties will first negotiate in good faith; unresolved disputes are submitted to binding individual arbitration in Orange County, California, with a <b>class-action waiver</b> (except non-waivable consumer rights such as small-claims court).</span></p>
+        <h4><span data-lang="zh">6. 责任上限</span><span data-lang="en">6. Limitation of Liability</span></h4>
+        <p><span data-lang="zh">在法律允许的最大范围内，MindDo 对任何索赔的累计赔偿不超过您在索赔事件前 12 个月内实际支付的费用；不承担间接、附带或后果性损失。本条不限制法律不可免除的责任。</span>
+           <span data-lang="en">To the maximum extent permitted by law, MindDo's aggregate liability for any claim will not exceed the fees you actually paid in the 12 months before the event giving rise to the claim, and MindDo is not liable for indirect, incidental, or consequential damages. Nothing here limits liability that cannot be waived by law.</span></p>
+      </div>
+      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckA" />
+        <label for="ckA"><span data-lang="zh">我已阅读并同意《报名与服务主协议》。</span><span data-lang="en">I have read and agree to the Enrollment & Services Agreement.</span></label></div></div>
+    </details>
+
+    <!-- B -->
+    <details class="doc" data-req="1">
+      <summary><span class="chev">▶</span><span data-lang="zh">二、学费、账单、自动续费与退费政策</span><span data-lang="en">2. Tuition, Billing, Auto-Renewal & Refund Policy</span>
+        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
+        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
+      <div class="body">
+        <p class="lawref" data-lang="zh">依加州《自动续费法》(Cal. Bus. & Prof. Code §17600 及以下) 的强制披露。</p>
+        <p class="lawref" data-lang="en">Disclosures required by California's Automatic Renewal Law (Cal. Bus. & Prof. Code §17600 et seq.).</p>
+        <h4><span data-lang="zh">1. 收费与支付方式</span><span data-lang="en">1. Charges & Payment</span></h4>
+        <p><span data-lang="zh">您授权 MindDo 通过支付处理商（Stripe）向您提供的支付方式收取所选套餐费用、适用税费及您批准的附加项。</span>
+           <span data-lang="en">You authorize MindDo to charge your payment method, via our processor (Stripe), for the selected plan, applicable taxes, and any add-ons you approve.</span></p>
+        <h4><span data-lang="zh">2. ⭐ 自动续费条款（重要）</span><span data-lang="en">2. ⭐ Automatic Renewal (Important)</span></h4>
+        <ul>
+          <li><span data-lang="zh"><b>订阅会自动续费</b>：除非您取消，套餐将在每个计费周期结束时<b>自动按当时价格续期并扣款</b>。</span>
+              <span data-lang="en"><b>Your subscription auto-renews.</b> Unless you cancel, the plan <b>renews automatically and your payment method is charged</b> at the then-current price at the end of each billing cycle.</span></li>
+          <li><span data-lang="zh"><b>计费周期与金额</b>：将在结账页和确认邮件中清楚列明（如：每月 $XXX / 每期 $XXX）。</span>
+              <span data-lang="en"><b>Cycle and amount</b> are clearly shown at checkout and in your confirmation email (e.g., $XXX/month or $XXX/term).</span></li>
+          <li><span data-lang="zh"><b>如何取消</b>：您可<b>随时</b>在家长账户"账单"页一键取消，或邮件 billing@minddo.ai；取消在当前已付周期结束时生效，不影响已发生的服务。</span>
+              <span data-lang="en"><b>How to cancel:</b> you may cancel <b>at any time</b> in your Parent Account → Billing, or email billing@minddo.ai. Cancellation takes effect at the end of the current paid cycle.</span></li>
+          <li><span data-lang="zh"><b>续费提醒</b>：对于一定时长的订阅，我们会在续费前依法以邮件提醒。</span>
+              <span data-lang="en"><b>Renewal reminder:</b> for qualifying subscriptions we will email you a reminder before renewal as required by law.</span></li>
+        </ul>
+        <h4><span data-lang="zh">3. 退费</span><span data-lang="en">3. Refunds</span></h4>
+        <ul>
+          <li><span data-lang="zh"><b>冷静期</b>：首次报名后 X 天内且未消课，可全额退款。</span>
+              <span data-lang="en"><b>Cooling-off:</b> full refund within X days of first enrollment if no class has been taken.</span></li>
+          <li><span data-lang="zh">已开课后按未消课时按比例退还；一次性材料/注册费不退。</span>
+              <span data-lang="en">After classes begin, refunds are pro-rated for unused sessions; one-time material/registration fees are non-refundable.</span></li>
+          <li><span data-lang="zh">促销、奖学金或捆绑套餐的退费以其专项条款为准。</span>
+              <span data-lang="en">Promotional, scholarship, or bundled plans follow their specific terms.</span></li>
+        </ul>
+        <h4><span data-lang="zh">4. 失败扣款与逾期</span><span data-lang="en">4. Failed Payments</span></h4>
+        <p><span data-lang="zh">扣款失败我们会重试并通知您；逾期未付可暂停服务。</span>
+           <span data-lang="en">If a charge fails we will retry and notify you; services may be paused for unpaid balances.</span></p>
+      </div>
+      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckB" />
+        <label for="ckB"><span data-lang="zh">我已阅读并同意学费、<b>自动续费</b>及退费政策，并授权按上述方式扣款。</span><span data-lang="en">I have read and agree to the tuition, <b>auto-renewal</b>, and refund terms, and authorize the charges described.</span></label></div></div>
+    </details>
+
+    <!-- C -->
+    <details class="doc" data-req="1">
+      <summary><span class="chev">▶</span><span data-lang="zh">三、未成年人监护同意书 + COPPA 父母同意</span><span data-lang="en">3. Parental/Guardian Consent for a Minor + COPPA</span>
+        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
+        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
+      <div class="body">
+        <p class="lawref" data-lang="zh">依《儿童在线隐私保护法》(COPPA, 15 U.S.C. §6501 及以下) 对 13 岁以下儿童的可验证父母同意要求。</p>
+        <p class="lawref" data-lang="en">Per the Children's Online Privacy Protection Act (COPPA, 15 U.S.C. §6501 et seq.), verifiable parental consent for children under 13.</p>
+        <h4><span data-lang="zh">1. 监护身份声明</span><span data-lang="en">1. Guardianship</span></h4>
+        <p><span data-lang="zh">我声明：我是上述学员的父/母或法定监护人，有完全法律权利代其报名并签署本文件包全部文件。</span>
+           <span data-lang="en">I represent that I am the parent or legal guardian of the Student and have full legal authority to enroll the Student and to sign every document in this packet on the Student's behalf.</span></p>
+        <h4><span data-lang="zh">2. 对收集儿童信息的同意（COPPA）</span><span data-lang="en">2. Consent to Collect Child Data (COPPA)</span></h4>
+        <p><span data-lang="zh">我同意 MindDo 为提供教育服务而收集、使用学员的个人信息（如姓名、年龄、学习记录、课堂音视频、作品），用途限于教学、进度反馈、安全与服务运营，<b>不向第三方出售儿童个人信息</b>，不用于定向广告。</span>
+           <span data-lang="en">I consent to MindDo collecting and using the Student's personal information (e.g., name, age, learning records, classroom audio/video, project work) solely to deliver education, give progress feedback, ensure safety, and operate the service. MindDo <b>does not sell children's personal information</b> and does not use it for targeted advertising.</span></p>
+        <h4><span data-lang="zh">3. 我的权利</span><span data-lang="en">3. Your Rights</span></h4>
+        <p><span data-lang="zh">我可随时查阅学员信息、撤回本同意并要求删除（撤回后可能无法继续提供服务）。联系 privacy@minddo.ai。</span>
+           <span data-lang="en">I may review the Student's information, withdraw this consent, and request deletion at any time (withdrawal may end the ability to provide services). Contact privacy@minddo.ai.</span></p>
+      </div>
+      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckC" />
+        <label for="ckC"><span data-lang="zh">我确认我是学员的法定监护人，并同意上述未成年人信息收集与使用（COPPA）。</span><span data-lang="en">I confirm I am the Student's legal guardian and consent to the collection and use of the minor's data (COPPA).</span></label></div></div>
+    </details>
+
+    <!-- D -->
+    <details class="doc" data-req="1">
+      <summary><span class="chev">▶</span><span data-lang="zh">四、隐私与数据使用确认</span><span data-lang="en">4. Privacy & Data Use Acknowledgment</span>
+        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
+        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
+      <div class="body">
+        <p class="lawref" data-lang="zh">结合加州《消费者隐私法》(CCPA/CPRA) 与 COPPA。</p>
+        <p class="lawref" data-lang="en">Aligned with the California Consumer Privacy Act (CCPA/CPRA) and COPPA.</p>
+        <p><span data-lang="zh">我已阅读 <a href="privacy.html" target="_blank">《隐私政策》</a>，理解 MindDo 收集哪些信息、如何使用与共享（仅限教学平台、支付处理、邮件等必要服务商）、保存多久，以及我对家庭与学员数据享有的查阅、更正、删除与限制处理的权利。</span>
+           <span data-lang="en">I have read the <a href="privacy.html" target="_blank">Privacy Policy</a> and understand what MindDo collects, how it is used and shared (only with necessary service providers such as the learning platform, payment processor, and email), how long it is kept, and my rights to access, correct, delete, and limit processing of family and Student data.</span></p>
+        <p><span data-lang="zh">我理解我的支付信息由 Stripe 按其条款处理，MindDo 不存储完整卡号。</span>
+           <span data-lang="en">I understand my payment details are processed by Stripe under its terms and that MindDo does not store full card numbers.</span></p>
+      </div>
+      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckD" />
+        <label for="ckD"><span data-lang="zh">我已阅读并理解《隐私政策》与数据使用方式。</span><span data-lang="en">I have read and understand the Privacy Policy and data practices.</span></label></div></div>
+    </details>
+
+    <!-- E -->
+    <details class="doc" data-req="0">
+      <summary><span class="chev">▶</span><span data-lang="zh">五、肖像、录像、声音与学员作品授权</span><span data-lang="en">5. Photo, Video, Voice & Student Work Release</span>
+        <span class="tag opt" data-lang="zh">可选</span><span class="tag opt" data-lang="en">Optional</span>
+        <span class="tag signed" data-lang="zh">已选择</span><span class="tag signed" data-lang="en">Chosen</span></summary>
+      <div class="body">
+        <p><span data-lang="zh">为教学记录、家长反馈、课程改进及宣传，MindDo 可能拍摄课堂照片/录像、录制线上课，并展示学员的 AI 作品。<b>本项为可选授权，拒绝不影响报名与上课。</b>课堂录制中用于回放与教学质量的部分属于服务必要，不依赖本项市场宣传授权。</span>
+           <span data-lang="en">For instruction records, parent feedback, program improvement, and marketing, MindDo may take classroom photos/video, record online classes, and showcase Student AI projects. <b>This release is optional; declining does not affect enrollment or classes.</b> Class recordings used for replay and teaching quality are part of the service and do not depend on this marketing release.</span></p>
+        <h4><span data-lang="zh">授权范围（如选择"同意"）</span><span data-lang="en">Scope (if you choose "Allow")</span></h4>
+        <p><span data-lang="zh">我授予 MindDo 非独家、免版税、可在全球使用学员肖像、声音及作品于网站、社交媒体及招生材料的许可；不使用学员全名/住址等敏感信息搭配公开发布；我可随时书面撤回（撤回不影响已发布内容）。</span>
+           <span data-lang="en">I grant MindDo a non-exclusive, royalty-free, worldwide license to use the Student's likeness, voice, and work in its website, social media, and recruiting materials; MindDo will not publish the Student's full name/address with such media; I may withdraw in writing at any time (withdrawal does not affect already-published materials).</span></p>
+        <div class="optchoice">
+          <label><input type="radio" name="media" value="allow" class="ck-media" /><span data-lang="zh">✅ 我同意上述肖像/作品市场宣传授权</span><span data-lang="en">✅ I allow the media/marketing use above</span></label>
+          <label><input type="radio" name="media" value="deny" class="ck-media" /><span data-lang="zh">🚫 我不同意（仅限教学内部使用）</span><span data-lang="en">🚫 I do not allow (instructional use only)</span></label>
+        </div>
+      </div>
+    </details>
+
+    <!-- F -->
+    <details class="doc" data-req="1">
+      <summary><span class="chev">▶</span><span data-lang="zh">六、风险知情、责任豁免与赔偿；医疗急救与接送授权</span><span data-lang="en">6. Assumption of Risk, Waiver & Release; Medical & Pickup</span>
+        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
+        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
+      <div class="body">
+        <h4><span data-lang="zh">1. 风险知情</span><span data-lang="en">1. Assumption of Risk</span></h4>
+        <p><span data-lang="zh">我理解参与线下校区活动存在固有风险（如场地内的意外伤害），线上活动涉及屏幕使用与网络互动。我自愿让学员参加。</span>
+           <span data-lang="en">I understand on-campus participation carries inherent risks (e.g., accidental injury on premises) and online participation involves screen use and networked interaction. I voluntarily allow the Student to participate.</span></p>
+        <h4><span data-lang="zh">2. 责任豁免与赔偿</span><span data-lang="en">2. Release & Indemnification</span></h4>
+        <p><span data-lang="zh">在法律允许范围内，对于<b>非因 MindDo 故意或重大过失</b>导致的普通风险，我代表本人及学员免除 MindDo 及其员工的相应责任，并就因我方违约或学员不当行为给 MindDo 造成的第三方索赔予以合理赔偿。<b>本条不免除 MindDo 因重大过失、故意或法律不可免除事项（含涉未成年人安全的法定责任）的责任。</b></span>
+           <span data-lang="en">To the extent permitted by law, for ordinary risks <b>not caused by MindDo's willful misconduct or gross negligence</b>, I, on behalf of myself and the Student, release MindDo and its staff from related liability and will reasonably indemnify MindDo against third-party claims arising from my breach or the Student's misconduct. <b>This does not release MindDo from gross negligence, willful misconduct, or any liability that cannot be waived by law (including statutory duties regarding minors' safety).</b></span></p>
+        <h4><span data-lang="zh">3. 医疗急救授权</span><span data-lang="en">3. Medical Emergency Authorization</span></h4>
+        <p><span data-lang="zh">如遇紧急且无法及时联系到我，我授权 MindDo 工作人员为学员安排必要的急救或医疗救助，相关费用由我承担。</span>
+           <span data-lang="en">In an emergency where I cannot be reached in time, I authorize MindDo staff to arrange necessary first aid or medical care for the Student, at my expense.</span></p>
+        <div class="field-grid">
+          <div class="field"><label><span data-lang="zh">紧急联系人 / 电话</span><span data-lang="en">Emergency contact / phone</span></label><input id="pEmerg" type="text" /></div>
+          <div class="field"><label><span data-lang="zh">过敏 / 健康须知（选填）</span><span data-lang="en">Allergies / health notes (optional)</span></label><input id="pHealth" type="text" /></div>
+        </div>
+        <h4><span data-lang="zh">4. 接送授权（线下校区）</span><span data-lang="en">4. Pickup Authorization (on-campus)</span></h4>
+        <p><span data-lang="zh">下列人员经我授权可接走学员；未列明者，校区将先行核实身份。</span>
+           <span data-lang="en">The persons below are authorized to pick up the Student; for anyone not listed, the campus will verify identity first.</span></p>
+        <div class="field"><label><span data-lang="zh">授权接送人（姓名/关系）</span><span data-lang="en">Authorized pickup (name/relationship)</span></label><input id="pPickup" type="text" /></div>
+      </div>
+      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckF" />
+        <label for="ckF"><span data-lang="zh">我已阅读并同意风险知情、责任豁免与赔偿条款，并授权医疗急救与上述接送安排。</span><span data-lang="en">I have read and agree to the assumption-of-risk, release, and indemnification terms, and authorize emergency medical care and the pickup arrangements above.</span></label></div></div>
+    </details>
+
+    <!-- G -->
+    <details class="doc" data-req="1">
+      <summary><span class="chev">▶</span><span data-lang="zh">七、学员行为准则与在线安全确认</span><span data-lang="en">7. Code of Conduct & Online Safety</span>
+        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
+        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
+      <div class="body">
+        <p><span data-lang="zh">我与学员同意：尊重师生、不作弊或骚扰、按规使用学习平台与 AI 工具、不分享账户或上课链接、不录制并传播他人。我理解严重或反复违规可致暂停或终止服务（依退费政策处理）。</span>
+           <span data-lang="en">The Student and I agree to: respect instructors and peers; no cheating or harassment; use the learning platform and AI tools as directed; not share accounts or class links; and not record and redistribute others. I understand serious or repeated violations may lead to suspension or termination (handled under the Refund Policy).</span></p>
+        <p><span data-lang="zh">在线安全：线上课在受监督环境中进行，我将协助学员在安全的居家环境上课。</span>
+           <span data-lang="en">Online safety: online classes run in a supervised environment, and I will help the Student attend from a safe home setting.</span></p>
+      </div>
+      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckG" />
+        <label for="ckG"><span data-lang="zh">我与学员已阅读并同意《行为准则与在线安全》。</span><span data-lang="en">The Student and I have read and agree to the Code of Conduct & Online Safety.</span></label></div></div>
+    </details>
+
+    <!-- H -->
+    <details class="doc" data-req="1" open>
+      <summary><span class="chev">▶</span><span data-lang="zh">八、电子记录与电子签名同意</span><span data-lang="en">8. Electronic Records & Signatures Consent</span>
+        <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
+        <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
+      <div class="body">
+        <p class="lawref" data-lang="zh">依联邦 E-SIGN 法 (15 U.S.C. §7001) 与加州 UETA。</p>
+        <p class="lawref" data-lang="en">Under the federal E-SIGN Act (15 U.S.C. §7001) and California's UETA.</p>
+        <p><span data-lang="zh">我同意以电子方式接收并签署本文件包，<b>理解在下方键入我的全名即构成我具有法律约束力的签名</b>，与手写签名同等效力。我可向 support@minddo.ai 索取纸质副本。我确认有能力以电子方式查看与保存本文件（可点击下方"打印/保存 PDF"）。</span>
+           <span data-lang="en">I agree to receive and sign this packet electronically and <b>understand that typing my full name below constitutes my legally binding signature</b>, equivalent to a handwritten one. I may request a paper copy from support@minddo.ai. I confirm I can access and retain these documents electronically (use "Print / Save PDF" below).</span></p>
+      </div>
+      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckH" />
+        <label for="ckH"><span data-lang="zh">我同意使用电子记录与电子签名。</span><span data-lang="en">I consent to use electronic records and signatures.</span></label></div></div>
+    </details>
+
+    <!-- ============ SIGNATURE ============ -->
+    <section class="sign">
+      <h2><span data-lang="zh">监护人电子签名</span><span data-lang="en">Parent/Guardian Electronic Signature</span></h2>
+      <p class="sig-note"><span data-lang="zh">在下框中键入您的法定全名以完成签署。</span><span data-lang="en">Type your full legal name below to sign.</span></p>
+      <input id="sigName" class="sig-input" type="text" placeholder="Your full legal name" autocomplete="name" />
+      <div class="sig-meta">
+        <div class="field"><label><span data-lang="zh">签署日期</span><span data-lang="en">Date signed</span></label><input id="sigDate" type="text" readonly /></div>
+        <div class="field"><label><span data-lang="zh">关系</span><span data-lang="en">Relationship</span></label><input id="sigRel" type="text" placeholder="父/母/法定监护人 · Parent/Guardian" /></div>
+      </div>
+      <div class="attest"><input type="checkbox" class="ck req" id="ckAttest" />
+        <label for="ckAttest"><span data-lang="zh">我郑重声明：我已通读上述全部必签文件，理解其内容，自愿签署，且我所填写的信息真实准确。</span><span data-lang="en">I declare under penalty of perjury that I have read all required documents above, understand them, sign voluntarily, and that the information I provided is true and accurate.</span></label></div>
+
+      <div class="actions">
+        <button class="btn btn-ghost" type="button" onclick="window.print()"><span data-lang="zh">🖨 打印 / 保存 PDF</span><span data-lang="en">🖨 Print / Save PDF</span></button>
+        <button class="btn btn-primary" id="submitBtn" type="button" disabled>
+          <span data-lang="zh">我已签署，继续支付 →</span><span data-lang="en">Sign & continue to payment →</span></button>
+      </div>
+      <div class="gate-msg" id="gateMsg"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2020–2026 MindDo AI Learning Center ·
+      <a href="terms.html"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a> ·
+      <a href="privacy.html"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy</span></a> ·
+      <a href="course-selection.html"><span data-lang="zh">← 返回选课</span><span data-lang="en">← Back to course selection</span></a></p>
+  </footer>
+
+<script>
+(function(){
+  var lang = "zh";
+  function setLang(l){
+    lang=l; document.body.className=l;
+    document.getElementById("btnZh").classList.toggle("on", l==="zh");
+    document.getElementById("btnEn").classList.toggle("on", l==="en");
+  }
+  document.getElementById("btnZh").onclick=function(){setLang("zh");};
+  document.getElementById("btnEn").onclick=function(){setLang("en");};
+
+  // today's date (display only)
+  var d=new Date();
+  var ds=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  document.getElementById("sigDate").value=ds;
+
+  // prefill from prior signup if present
+  try{
+    var prof=JSON.parse(localStorage.getItem("minddo.parent")||"{}");
+    if(prof.name){document.getElementById("pGuardian").value=prof.name;document.getElementById("sigName").value="";}
+    if(prof.email){document.getElementById("pEmail").value=prof.email;}
+  }catch(e){}
+
+  // mark a document as completed (green) when its checkbox is checked / media chosen
+  function refreshDocStates(){
+    document.querySelectorAll("details.doc").forEach(function(doc){
+      var ck=doc.querySelector(".ck");
+      var media=doc.querySelector(".ck-media");
+      var ok=false;
+      if(media){ ok = !!doc.querySelector(".ck-media:checked"); }
+      else if(ck){ ok = ck.checked; }
+      doc.setAttribute("data-ok", ok?"1":"0");
+    });
+  }
+
+  var submitBtn=document.getElementById("submitBtn");
+  var gateMsg=document.getElementById("gateMsg");
+
+  function allRequiredChecked(){
+    var reqs=document.querySelectorAll(".ck.req");
+    for(var i=0;i<reqs.length;i++){ if(!reqs[i].checked) return false; }
+    return true;
+  }
+  function mediaChosen(){ return !!document.querySelector(".ck-media:checked"); }
+  function signed(){ return document.getElementById("sigName").value.trim().length>=2; }
+
+  function evaluate(){
+    refreshDocStates();
+    var ready = allRequiredChecked() && mediaChosen() && signed();
+    submitBtn.disabled = !ready;
+    if(ready){ gateMsg.textContent=""; return; }
+    var msgs={zh:[],en:[]};
+    if(!allRequiredChecked()){ msgs.zh.push("勾选全部必签文件"); msgs.en.push("check all required documents"); }
+    if(!mediaChosen()){ msgs.zh.push("在第五项选择是否授权肖像"); msgs.en.push("choose a media option in #5"); }
+    if(!signed()){ msgs.zh.push("键入电子签名"); msgs.en.push("type your signature"); }
+    gateMsg.textContent = (lang==="zh"?"还需：":"Still needed: ")+ (lang==="zh"?msgs.zh:msgs.en).join(" · ");
+  }
+
+  document.addEventListener("change", evaluate);
+  document.getElementById("sigName").addEventListener("input", evaluate);
+
+  submitBtn.addEventListener("click", function(){
+    if(submitBtn.disabled) return;
+    var record={
+      guardian: document.getElementById("pGuardian").value,
+      relationship: document.getElementById("sigRel").value || document.getElementById("pRel").value,
+      student: document.getElementById("pStudent").value,
+      signature: document.getElementById("sigName").value.trim(),
+      mediaConsent: (document.querySelector(".ck-media:checked")||{}).value || "deny",
+      signedAt: new Date().toISOString(),
+      documents: ["enrollment","billing","coppa","privacy","media","liability","conduct","esign"]
+    };
+    try{ localStorage.setItem("minddo.enrollmentSignature", JSON.stringify(record)); }catch(e){}
+    // proceed in the enrollment flow
+    window.location.href="course-payment.html";
+  });
+
+  setLang("zh");
+  evaluate();
+})();
+</script>
+</body>
+</html>

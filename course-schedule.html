@@ -610,7 +610,8 @@
         err.className = "error-msg";
         err.textContent = "";
         saveState(state);
-        window.location.href = "course-payment.html";
+        // Enrollment requires signing the legal packet before payment.
+        window.location.href = "enrollment-agreement.html";
       });
     })();
   </script>
