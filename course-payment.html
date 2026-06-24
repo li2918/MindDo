@@ -240,6 +240,14 @@
 
           <div class="processing" id="processing"><span class="spinner"></span><span data-lang="zh">正在处理支付…</span><span data-lang="en">Processing payment…</span></div>
 
+          <label class="consent-row" style="display:flex;align-items:flex-start;gap:10px;padding:13px 14px;border-radius:12px;background:rgba(255,200,36,0.12);border:1px solid var(--line);margin:4px 0 14px;cursor:pointer;">
+            <input id="agreeChk" type="checkbox" style="width:18px;height:18px;margin-top:1px;accent-color:var(--gold-deep);flex-shrink:0;cursor:pointer;" />
+            <span style="font-size:13px;line-height:1.55;">
+              <span data-lang="zh">我确认我是学员的法定监护人，已阅读并同意 <a href="enrollment-agreement.html" target="_blank" rel="noopener" style="color:var(--clay);font-weight:700;">《MindDo 报名协议》</a>（含服务条款、学费与<b>自动续费</b>、COPPA 与隐私、责任免除等）。</span>
+              <span data-lang="en">I confirm I am the Student's legal guardian and have read and agree to the <a href="enrollment-agreement.html" target="_blank" rel="noopener" style="color:var(--clay);font-weight:700;">MindDo Enrollment Agreement</a> (services, tuition &amp; <b>auto-renewal</b>, COPPA &amp; privacy, liability waiver, etc.).</span>
+            </span>
+          </label>
+
           <div class="action-row">
             <a class="btn-secondary" href="course-schedule.html"><span data-lang="zh">← 返回选时段</span><span data-lang="en">← Back to Schedule</span></a>
             <button class="btn-primary" id="payBtn"><span data-lang="zh">确认并支付</span><span data-lang="en">Pay</span> <span id="payAmount">$0</span> <span data-lang="zh">→</span><span data-lang="en">→</span></button>
@@ -473,6 +481,13 @@
         err.className = "error-msg";
         err.textContent = "";
 
+        if (!document.getElementById("agreeChk").checked) {
+          err.className = "error-msg on";
+          err.textContent = k() === "en" ? "Please agree to the Enrollment Agreement to continue." : "请先勾选同意《MindDo 报名协议》。";
+          return;
+        }
+        try { localStorage.setItem("minddo.enrollmentConsent", JSON.stringify({ agreed: true, agreedAt: new Date().toISOString() })); } catch (e) {}
+
         if (state.payMethod === "card") {
           var v = validateCard();
           if (!v.ok) { err.className = "error-msg on"; err.textContent = v.msg[k()] || v.msg.zh; return; }
@@ -572,6 +587,13 @@
       });
 
       document.getElementById("payBtn").addEventListener("click", processPayment);
+
+      // Enrollment-agreement consent: pay stays disabled until the box is ticked.
+      var agreeChk = document.getElementById("agreeChk");
+      var payBtnEl = document.getElementById("payBtn");
+      function syncAgree() { payBtnEl.disabled = !agreeChk.checked; }
+      agreeChk.addEventListener("change", syncAgree);
+      syncAgree();
 
       document.getElementById("cardNumber").addEventListener("input", function (e) {
         var v = e.target.value.replace(/\D/g, "").slice(0, 19);
