@@ -138,8 +138,8 @@
     </div>
 
     <p class="intro">
-      <span data-lang="zh">为完成报名，请监护人逐份阅读以下文件并勾选确认，最后完成电子签名。带 <b style="color:#B91C1C">必签</b> 标记的文件为报名所必需；<b style="color:#1D4ED8">可选</b> 标记的可自行选择是否授权。</span>
-      <span data-lang="en">To complete enrollment, the parent/guardian must read each document below, check to agree, and sign electronically at the end. Documents marked <b style="color:#B91C1C">Required</b> are mandatory; <b style="color:#1D4ED8">Optional</b> ones are your choice.</span>
+      <span data-lang="zh">以下是报名所涉的全部文件，默认折叠。<b>想了解详情可点开任意文件查看全文</b>；阅读与否由您决定，最后在页面底部勾选同意即可完成报名。</span>
+      <span data-lang="en">Below are all the documents involved in enrollment, collapsed by default. <b>Click any document to read the full text</b> if you wish; whether to read is up to you. Just check the box at the bottom to complete enrollment.</span>
     </p>
 
     <!-- Parties -->
@@ -184,8 +184,6 @@
         <p><span data-lang="zh">在法律允许的最大范围内，MindDo 对任何索赔的累计赔偿不超过您在索赔事件前 12 个月内实际支付的费用；不承担间接、附带或后果性损失。本条不限制法律不可免除的责任。</span>
            <span data-lang="en">To the maximum extent permitted by law, MindDo's aggregate liability for any claim will not exceed the fees you actually paid in the 12 months before the event giving rise to the claim, and MindDo is not liable for indirect, incidental, or consequential damages. Nothing here limits liability that cannot be waived by law.</span></p>
       </div>
-      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckA" />
-        <label for="ckA"><span data-lang="zh">我已阅读并同意《报名与服务主协议》。</span><span data-lang="en">I have read and agree to the Enrollment & Services Agreement.</span></label></div></div>
     </details>
 
     <!-- B -->
@@ -223,8 +221,6 @@
         <p><span data-lang="zh">扣款失败我们会重试并通知您；逾期未付可暂停服务。</span>
            <span data-lang="en">If a charge fails we will retry and notify you; services may be paused for unpaid balances.</span></p>
       </div>
-      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckB" />
-        <label for="ckB"><span data-lang="zh">我已阅读并同意学费、<b>自动续费</b>及退费政策，并授权按上述方式扣款。</span><span data-lang="en">I have read and agree to the tuition, <b>auto-renewal</b>, and refund terms, and authorize the charges described.</span></label></div></div>
     </details>
 
     <!-- C -->
@@ -245,8 +241,6 @@
         <p><span data-lang="zh">我可随时查阅学员信息、撤回本同意并要求删除（撤回后可能无法继续提供服务）。联系 privacy@minddo.ai。</span>
            <span data-lang="en">I may review the Student's information, withdraw this consent, and request deletion at any time (withdrawal may end the ability to provide services). Contact privacy@minddo.ai.</span></p>
       </div>
-      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckC" />
-        <label for="ckC"><span data-lang="zh">我确认我是学员的法定监护人，并同意上述未成年人信息收集与使用（COPPA）。</span><span data-lang="en">I confirm I am the Student's legal guardian and consent to the collection and use of the minor's data (COPPA).</span></label></div></div>
     </details>
 
     <!-- D -->
@@ -262,8 +256,6 @@
         <p><span data-lang="zh">我理解我的支付信息由 Stripe 按其条款处理，MindDo 不存储完整卡号。</span>
            <span data-lang="en">I understand my payment details are processed by Stripe under its terms and that MindDo does not store full card numbers.</span></p>
       </div>
-      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckD" />
-        <label for="ckD"><span data-lang="zh">我已阅读并理解《隐私政策》与数据使用方式。</span><span data-lang="en">I have read and understand the Privacy Policy and data practices.</span></label></div></div>
     </details>
 
     <!-- E -->
@@ -277,10 +269,7 @@
         <h4><span data-lang="zh">授权范围（如选择"同意"）</span><span data-lang="en">Scope (if you choose "Allow")</span></h4>
         <p><span data-lang="zh">我授予 MindDo 非独家、免版税、可在全球使用学员肖像、声音及作品于网站、社交媒体及招生材料的许可；不使用学员全名/住址等敏感信息搭配公开发布；我可随时书面撤回（撤回不影响已发布内容）。</span>
            <span data-lang="en">I grant MindDo a non-exclusive, royalty-free, worldwide license to use the Student's likeness, voice, and work in its website, social media, and recruiting materials; MindDo will not publish the Student's full name/address with such media; I may withdraw in writing at any time (withdrawal does not affect already-published materials).</span></p>
-        <div class="optchoice">
-          <label><input type="radio" name="media" value="allow" class="ck-media" /><span data-lang="zh">✅ 我同意上述肖像/作品市场宣传授权</span><span data-lang="en">✅ I allow the media/marketing use above</span></label>
-          <label><input type="radio" name="media" value="deny" class="ck-media" /><span data-lang="zh">🚫 我不同意（仅限教学内部使用）</span><span data-lang="en">🚫 I do not allow (instructional use only)</span></label>
-        </div>
+        <p class="lawref"><span data-lang="zh">本项为可选。是否授权请在页面底部勾选；不勾选即视为不授权（仅限教学内部使用）。</span><span data-lang="en">This is optional. Choose at the bottom of the page; leaving it unchecked means no marketing use (instructional use only).</span></p>
       </div>
     </details>
 
@@ -308,8 +297,6 @@
            <span data-lang="en">The persons below are authorized to pick up the Student; for anyone not listed, the campus will verify identity first.</span></p>
         <div class="field"><label><span data-lang="zh">授权接送人（姓名/关系）</span><span data-lang="en">Authorized pickup (name/relationship)</span></label><input id="pPickup" type="text" /></div>
       </div>
-      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckF" />
-        <label for="ckF"><span data-lang="zh">我已阅读并同意风险知情、责任豁免与赔偿条款，并授权医疗急救与上述接送安排。</span><span data-lang="en">I have read and agree to the assumption-of-risk, release, and indemnification terms, and authorize emergency medical care and the pickup arrangements above.</span></label></div></div>
     </details>
 
     <!-- G -->
@@ -323,41 +310,39 @@
         <p><span data-lang="zh">在线安全：线上课在受监督环境中进行，我将协助学员在安全的居家环境上课。</span>
            <span data-lang="en">Online safety: online classes run in a supervised environment, and I will help the Student attend from a safe home setting.</span></p>
       </div>
-      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckG" />
-        <label for="ckG"><span data-lang="zh">我与学员已阅读并同意《行为准则与在线安全》。</span><span data-lang="en">The Student and I have read and agree to the Code of Conduct & Online Safety.</span></label></div></div>
     </details>
 
     <!-- H -->
-    <details class="doc" data-req="1" open>
+    <details class="doc" data-req="1">
       <summary><span class="chev">▶</span><span data-lang="zh">八、电子记录与电子签名同意</span><span data-lang="en">8. Electronic Records & Signatures Consent</span>
         <span class="tag req" data-lang="zh">必签</span><span class="tag req" data-lang="en">Required</span>
         <span class="tag signed" data-lang="zh">已同意</span><span class="tag signed" data-lang="en">Agreed</span></summary>
       <div class="body">
         <p class="lawref" data-lang="zh">依联邦 E-SIGN 法 (15 U.S.C. §7001) 与加州 UETA。</p>
         <p class="lawref" data-lang="en">Under the federal E-SIGN Act (15 U.S.C. §7001) and California's UETA.</p>
-        <p><span data-lang="zh">我同意以电子方式接收并签署本文件包，<b>理解在下方键入我的全名即构成我具有法律约束力的签名</b>，与手写签名同等效力。我可向 support@minddo.ai 索取纸质副本。我确认有能力以电子方式查看与保存本文件（可点击下方"打印/保存 PDF"）。</span>
-           <span data-lang="en">I agree to receive and sign this packet electronically and <b>understand that typing my full name below constitutes my legally binding signature</b>, equivalent to a handwritten one. I may request a paper copy from support@minddo.ai. I confirm I can access and retain these documents electronically (use "Print / Save PDF" below).</span></p>
+        <p><span data-lang="zh">我同意以电子方式接收并签署本文件包，<b>理解在页面底部勾选同意框即构成我具有法律约束力的签名</b>，与手写签名同等效力（勾选时间与设备信息将一并记录）。我可向 support@minddo.ai 索取纸质副本，并可点击"打印/保存 PDF"留存本文件。</span>
+           <span data-lang="en">I agree to receive and sign this packet electronically and <b>understand that checking the agreement box at the bottom of this page constitutes my legally binding signature</b>, equivalent to a handwritten one (the time and device of the action are recorded). I may request a paper copy from support@minddo.ai and can use "Print / Save PDF" to retain these documents.</span></p>
       </div>
-      <div style="padding:0 20px 18px"><div class="consent"><input type="checkbox" class="ck req" id="ckH" />
-        <label for="ckH"><span data-lang="zh">我同意使用电子记录与电子签名。</span><span data-lang="en">I consent to use electronic records and signatures.</span></label></div></div>
     </details>
 
-    <!-- ============ SIGNATURE ============ -->
+    <!-- ============ ONE-CHECK CONSENT ============ -->
     <section class="sign">
-      <h2><span data-lang="zh">监护人电子签名</span><span data-lang="en">Parent/Guardian Electronic Signature</span></h2>
-      <p class="sig-note"><span data-lang="zh">在下框中键入您的法定全名以完成签署。</span><span data-lang="en">Type your full legal name below to sign.</span></p>
-      <input id="sigName" class="sig-input" type="text" placeholder="Your full legal name" autocomplete="name" />
-      <div class="sig-meta">
-        <div class="field"><label><span data-lang="zh">签署日期</span><span data-lang="en">Date signed</span></label><input id="sigDate" type="text" readonly /></div>
-        <div class="field"><label><span data-lang="zh">关系</span><span data-lang="en">Relationship</span></label><input id="sigRel" type="text" placeholder="父/母/法定监护人 · Parent/Guardian" /></div>
+      <h2><span data-lang="zh">确认同意</span><span data-lang="en">Confirm & Agree</span></h2>
+      <div class="consent" style="background:rgba(255,200,36,0.14);border:1.5px solid var(--brand);">
+        <input type="checkbox" id="ckAgree" />
+        <label for="ckAgree"><span data-lang="zh">我确认我是学员的法定监护人，<b>已知悉并同意上述全部报名文件</b>（服务协议、学费与<b>自动续费</b>、COPPA 与隐私、责任免除、行为准则、电子签名等），且所填信息真实准确。</span>
+          <span data-lang="en">I confirm I am the Student's legal guardian and <b>agree to all the enrollment documents above</b> (services agreement, tuition & <b>auto-renewal</b>, COPPA & privacy, liability waiver, code of conduct, e-signature, etc.), and that my information is true and accurate.</span></label>
       </div>
-      <div class="attest"><input type="checkbox" class="ck req" id="ckAttest" />
-        <label for="ckAttest"><span data-lang="zh">我郑重声明：我已通读上述全部必签文件，理解其内容，自愿签署，且我所填写的信息真实准确。</span><span data-lang="en">I declare under penalty of perjury that I have read all required documents above, understand them, sign voluntarily, and that the information I provided is true and accurate.</span></label></div>
+      <div class="consent">
+        <input type="checkbox" id="ckMedia" />
+        <label for="ckMedia"><span data-lang="zh"><b>（可选）</b>我同意 MindDo 使用学员肖像、录像及作品用于宣传（见第五项）。不勾选不影响报名。</span>
+          <span data-lang="en"><b>(Optional)</b> I allow MindDo to use the Student's likeness, recordings, and work for marketing (see #5). Leaving this unchecked does not affect enrollment.</span></label>
+      </div>
 
       <div class="actions">
         <button class="btn btn-ghost" type="button" onclick="window.print()"><span data-lang="zh">🖨 打印 / 保存 PDF</span><span data-lang="en">🖨 Print / Save PDF</span></button>
         <button class="btn btn-primary" id="submitBtn" type="button" disabled>
-          <span data-lang="zh">我已签署，继续支付 →</span><span data-lang="en">Sign & continue to payment →</span></button>
+          <span data-lang="zh">同意并继续支付 →</span><span data-lang="en">Agree & continue to payment →</span></button>
       </div>
       <div class="gate-msg" id="gateMsg"></div>
     </section>
@@ -381,69 +366,37 @@
   document.getElementById("btnZh").onclick=function(){setLang("zh");};
   document.getElementById("btnEn").onclick=function(){setLang("en");};
 
-  // today's date (display only)
-  var d=new Date();
-  var ds=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-  document.getElementById("sigDate").value=ds;
-
   // prefill from prior signup if present
   try{
     var prof=JSON.parse(localStorage.getItem("minddo.parent")||"{}");
-    if(prof.name){document.getElementById("pGuardian").value=prof.name;document.getElementById("sigName").value="";}
+    if(prof.name){document.getElementById("pGuardian").value=prof.name;}
     if(prof.email){document.getElementById("pEmail").value=prof.email;}
   }catch(e){}
 
-  // mark a document as completed (green) when its checkbox is checked / media chosen
-  function refreshDocStates(){
-    document.querySelectorAll("details.doc").forEach(function(doc){
-      var ck=doc.querySelector(".ck");
-      var media=doc.querySelector(".ck-media");
-      var ok=false;
-      if(media){ ok = !!doc.querySelector(".ck-media:checked"); }
-      else if(ck){ ok = ck.checked; }
-      doc.setAttribute("data-ok", ok?"1":"0");
-    });
-  }
-
   var submitBtn=document.getElementById("submitBtn");
   var gateMsg=document.getElementById("gateMsg");
-
-  function allRequiredChecked(){
-    var reqs=document.querySelectorAll(".ck.req");
-    for(var i=0;i<reqs.length;i++){ if(!reqs[i].checked) return false; }
-    return true;
-  }
-  function mediaChosen(){ return !!document.querySelector(".ck-media:checked"); }
-  function signed(){ return document.getElementById("sigName").value.trim().length>=2; }
+  var ckAgree=document.getElementById("ckAgree");
+  var ckMedia=document.getElementById("ckMedia");
 
   function evaluate(){
-    refreshDocStates();
-    var ready = allRequiredChecked() && mediaChosen() && signed();
-    submitBtn.disabled = !ready;
-    if(ready){ gateMsg.textContent=""; return; }
-    var msgs={zh:[],en:[]};
-    if(!allRequiredChecked()){ msgs.zh.push("勾选全部必签文件"); msgs.en.push("check all required documents"); }
-    if(!mediaChosen()){ msgs.zh.push("在第五项选择是否授权肖像"); msgs.en.push("choose a media option in #5"); }
-    if(!signed()){ msgs.zh.push("键入电子签名"); msgs.en.push("type your signature"); }
-    gateMsg.textContent = (lang==="zh"?"还需：":"Still needed: ")+ (lang==="zh"?msgs.zh:msgs.en).join(" · ");
+    submitBtn.disabled = !ckAgree.checked;
+    gateMsg.textContent = ckAgree.checked ? "" :
+      (lang==="zh" ? "请勾选上方同意框以继续。" : "Please check the agreement box above to continue.");
   }
-
   document.addEventListener("change", evaluate);
-  document.getElementById("sigName").addEventListener("input", evaluate);
 
   submitBtn.addEventListener("click", function(){
     if(submitBtn.disabled) return;
     var record={
       guardian: document.getElementById("pGuardian").value,
-      relationship: document.getElementById("sigRel").value || document.getElementById("pRel").value,
+      relationship: document.getElementById("pRel").value,
       student: document.getElementById("pStudent").value,
-      signature: document.getElementById("sigName").value.trim(),
-      mediaConsent: (document.querySelector(".ck-media:checked")||{}).value || "deny",
+      agreed: true,
+      mediaConsent: ckMedia.checked ? "allow" : "deny",
       signedAt: new Date().toISOString(),
       documents: ["enrollment","billing","coppa","privacy","media","liability","conduct","esign"]
     };
     try{ localStorage.setItem("minddo.enrollmentSignature", JSON.stringify(record)); }catch(e){}
-    // proceed in the enrollment flow
     window.location.href="course-payment.html";
   });
 
