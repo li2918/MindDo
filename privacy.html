@@ -6,102 +6,77 @@
   <title>隐私政策 | Privacy Policy · MindDo</title>
   <meta name="description" content="MindDo 隐私政策：我们如何收集、使用和保护学员及家长信息。" />
   <meta name="author" content="MindDo AI Learning Center" />
-  <meta name="theme-color" content="#1a1a1a" />
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="MindDo" />
   <meta property="og:title" content="Privacy Policy · MindDo" />
   <meta property="og:description" content="How MindDo collects, uses, and protects student and parent information." />
-  <meta name="twitter:card" content="summary" />
   <link rel="canonical" href="privacy.html" />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-  <link rel="manifest" href="manifest.json" />
   <style>
-    :root { --bg:#FFF5D6; --sand:#FFE8AC; --card:rgba(240,249,255,0.94); --line:rgba(255,91,36,0.14); --text:#1a1a1a; --muted:#6b7280; --gold:#FFC824; --gold-deep:#E5B11D; --clay:#1a1a1a; --brown:#1a1a1a; }
-    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
-    body { font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif; color:var(--text); background:var(--bg); }
-    a { color:inherit; text-decoration:none; }
-    [data-lang] { display:none; }
-    html[lang="zh-CN"] [data-lang="zh"], html[lang="en"] [data-lang="en"] { display:inline; }
-    .skip-link { position:absolute; left:-999px; top:0; background:var(--clay); color:#fff; padding:10px 18px; border-radius:0 0 12px 0; z-index:1000; font-weight:700; }
-    .skip-link:focus { left:0; outline:3px solid var(--gold); }
-
-    .navbar { position:sticky; top:0; z-index:100; background:rgba(240,249,255,0.96); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:68px; }
-    .nav-brand { display:flex; align-items:center; gap:12px; }
-    .nav-brand img { height:48px; width:auto; max-width:180px; object-fit:contain; }
-    .nav-brand-name { font-size:22px; font-weight:800; color:var(--clay); }
-    .btn-primary { background:linear-gradient(135deg,#FFEFA8,var(--gold)); color:#1a1a1a; border:none; border-radius:999px; padding:10px 22px; font-size:14px; font-weight:700; text-decoration:none; box-shadow:0 4px 14px rgba(255,200,36,0.28); }
-
-    .page-hero { background:linear-gradient(145deg,#2a1408 0%,#1a1a1a 50%,#1a1a1a 100%); padding:56px 0 40px; color:#fffbeb; text-align:center; }
-    .page-hero-inner { max-width:900px; margin:0 auto; padding:0 48px; }
-    .page-tag { display:inline-flex; padding:6px 12px; border-radius:999px; background:rgba(255,200,36,0.18); border:1px solid rgba(255,200,36,0.3); color:#FFEFA8; font-size:11px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:14px; }
-    .page-hero h1 { font-size:clamp(28px,3.5vw,42px); font-weight:900; margin-bottom:10px; letter-spacing:-0.02em; }
-    .page-hero p { font-size:15px; color:rgba(254,243,199,0.75); line-height:1.7; max-width:600px; margin:0 auto; }
-    .updated { margin-top:12px; font-size:12px; color:rgba(254,243,199,0.55); }
-
-    main { padding:48px 0 80px; }
-    .content { max-width:860px; margin:0 auto; padding:0 48px; }
-    article h2 { font-size:22px; font-weight:800; color:var(--clay); margin:32px 0 14px; scroll-margin-top:84px; }
-    article h2:first-child { margin-top:0; }
-    article p { font-size:15px; color:var(--text); line-height:1.85; margin-bottom:14px; }
-    article ul { margin:0 0 16px 22px; }
-    article ul li { font-size:15px; color:var(--text); line-height:1.85; margin-bottom:6px; }
-    article strong { color:var(--clay); }
-
-    .toc { padding:20px 22px; border-radius:18px; background:var(--sand); border:1px solid var(--line); margin-bottom:36px; }
-    .toc strong { display:block; font-size:12px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
-    .toc ol { margin:0; padding-left:20px; color:var(--clay); }
-    .toc ol li { margin-bottom:4px; }
-    .toc a { color:var(--clay); font-weight:600; text-decoration:none; }
-    .toc a:hover { text-decoration:underline; }
-
-    .contact-card { margin-top:36px; padding:22px; border-radius:18px; background:linear-gradient(135deg,rgba(254,243,199,0.9),rgba(240,249,255,0.9)); border:1px solid rgba(229,177,29,0.24); }
-    .contact-card h3 { font-size:16px; font-weight:800; color:var(--clay); margin-bottom:8px; }
-    .contact-card p { margin-bottom:6px; }
-
-    .footer { background:var(--brown); color:rgba(240,249,255,0.78); padding:48px 48px 32px; margin-top:60px; }
-    .footer-inner { max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px; font-size:13px; }
-    .footer a { color:rgba(240,249,255,0.72); }
-    .footer a:hover { color:#fffbeb; }
-    .footer .links { display:flex; gap:18px; }
-
-    @media (max-width:700px) { .navbar { padding:0 20px; } .page-hero-inner, .content { padding:0 22px; } article h2 { font-size:19px; } }
+    :root{
+      --bg:#FFF5D6; --card:#fffdf7; --line:rgba(255,91,36,0.16); --text:#1a1a1a;
+      --muted:#6b7280; --gold:#FFC824; --gold-deep:#E5B11D; --brand:#FF5B24; --clay:#C2410C;
+      --shadow:0 18px 44px rgba(0,0,0,0.10);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+    html,body{max-width:100%;overflow-x:hidden;}
+    body{font-family:"Avenir Next","Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;
+      background:var(--bg);color:var(--text);line-height:1.65;overflow-wrap:anywhere;}
+    a{color:var(--clay);}
+    [data-lang]{display:none;}
+    body.zh [data-lang="zh"]{display:revert;}
+    body.en [data-lang="en"]{display:revert;}
+    /* header */
+    .top{position:sticky;top:0;z-index:50;background:linear-gradient(145deg,#2a1408,#1a1a1a);
+      color:#fffbeb;padding:14px 24px;box-shadow:var(--shadow);}
+    .top-row{max-width:920px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+    .top h1{font-size:17px;font-weight:900;flex:1;min-width:160px;}
+    .top h1 small{display:block;font-size:11px;font-weight:600;color:rgba(254,243,199,0.7);}
+    .lang-toggle{display:flex;border:1px solid rgba(254,243,199,0.3);border-radius:999px;overflow:hidden;}
+    .lang-toggle button{background:transparent;color:rgba(254,243,199,0.8);border:none;padding:6px 15px;
+      font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+    .lang-toggle button.on{background:var(--gold);color:#1a1a1a;}
+    /* content */
+    .wrap{max-width:920px;margin:0 auto;padding:24px 22px 90px;}
+    .doc{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:12px 0;box-shadow:var(--shadow);}
+    .doc-title{font-size:19px;font-weight:900;padding:18px 22px 12px;letter-spacing:-0.01em;}
+    .doc .body{padding:8px 22px 22px;border-top:1px solid var(--line);}
+    .doc .body p,.doc .body li{font-size:14px;color:#3a3a3a;margin:8px 0;line-height:1.8;}
+    .doc .body ul{padding-left:22px;}
+    .doc .body strong{color:var(--clay);}
+    .doc .body .lawref{font-size:12px;color:var(--muted);font-style:italic;}
+    .sec-h{font-size:15px;font-weight:900;margin:24px 0 8px;padding-top:16px;border-top:2px solid var(--line);color:var(--brand);scroll-margin-top:80px;}
+    .contact-card{margin-top:24px;padding:18px 20px;border-radius:12px;background:rgba(255,200,36,0.12);border:1px solid var(--line);}
+    .contact-card h4{font-size:14px;font-weight:800;color:var(--clay);margin-bottom:8px;}
+    .contact-card p{margin:4px 0;font-size:13.5px;}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;}
+    .btn{padding:11px 20px;border-radius:12px;font:inherit;font-size:14px;font-weight:800;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--text);}
+    .footer{max-width:920px;margin:0 auto;padding:0 22px 40px;font-size:12px;color:var(--muted);text-align:center;}
+    .footer a{margin:0 6px;}
+    @media print{ .top,.actions,.lang-toggle{display:none !important;} body{background:#fff;} }
+    @media(max-width:600px){ .top h1{font-size:16px;} }
   </style>
-  <link rel="stylesheet" href="assets/minddo-theme.css" />
-  <link rel="stylesheet" href="assets/minddo-responsive.css" />
 </head>
-<body>
-  <a href="#main" class="skip-link"><span data-lang="zh">跳到正文</span><span data-lang="en">Skip to content</span></a>
-  <nav class="navbar">
-    <a class="nav-brand" href="index.html"><img src="assets/logo.png" alt="MindDo" /></a>
-    <a class="btn-primary" href="index.html"><span data-lang="zh">返回首页 →</span><span data-lang="en">Back to Home →</span></a>
-  </nav>
-
-  <header class="page-hero">
-    <div class="page-hero-inner">
-      <div class="page-tag"><span data-lang="zh">法律条款</span><span data-lang="en">Legal</span></div>
-      <h1><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy Policy</span></h1>
-      <p><span data-lang="zh">我们尊重并保护学员与家长的个人信息。以下条款说明我们如何收集、使用和保护你的数据。</span><span data-lang="en">We respect and protect student and parent information. This policy explains how we collect, use, and safeguard your data.</span></p>
-      <div class="updated"><span data-lang="zh">最近更新：2026 年 4 月</span><span data-lang="en">Last updated: April 2026</span></div>
+<body class="zh">
+  <header class="top">
+    <div class="top-row">
+      <h1><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy Policy</span>
+        <small>MindDo AI Learning Center</small></h1>
+      <div class="lang-toggle" role="group" aria-label="language">
+        <button id="btnZh" class="on" type="button">中文</button>
+        <button id="btnEn" type="button">EN</button>
+      </div>
     </div>
   </header>
 
-  <main id="main" role="main">
-    <div class="content">
-      <nav class="toc" aria-label="Table of contents">
-        <strong><span data-lang="zh">目录</span><span data-lang="en">Contents</span></strong>
-        <ol>
-          <li><a href="#s1"><span data-lang="zh">我们收集的信息</span><span data-lang="en">Information We Collect</span></a></li>
-          <li><a href="#s2"><span data-lang="zh">信息如何使用</span><span data-lang="en">How We Use It</span></a></li>
-          <li><a href="#s3"><span data-lang="zh">Cookie 与本地存储</span><span data-lang="en">Cookies & Local Storage</span></a></li>
-          <li><a href="#s4"><span data-lang="zh">第三方服务</span><span data-lang="en">Third-Party Services</span></a></li>
-          <li><a href="#s5"><span data-lang="zh">儿童隐私 (COPPA)</span><span data-lang="en">Children's Privacy (COPPA)</span></a></li>
-          <li><a href="#s6"><span data-lang="zh">你的权利</span><span data-lang="en">Your Rights</span></a></li>
-          <li><a href="#s7"><span data-lang="zh">联系方式</span><span data-lang="en">Contact</span></a></li>
-        </ol>
-      </nav>
+  <main class="wrap">
+    <article class="doc">
+      <h2 class="doc-title"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy Policy</span></h2>
+      <div class="body">
+        <p class="lawref"><span data-lang="zh">最近更新：2026 年 4 月</span><span data-lang="en">Last updated: April 2026</span></p>
 
-      <article>
-        <h2 id="s1"><span data-lang="zh">1. 我们收集的信息</span><span data-lang="en">1. Information We Collect</span></h2>
+        <h3 class="sec-h" id="s1"><span data-lang="zh">1. 我们收集的信息</span><span data-lang="en">1. Information We Collect</span></h3>
         <p><span data-lang="zh">当你注册账户、预约试课或填写评估时，我们会收集：</span><span data-lang="en">When you sign up, book a trial, or complete an assessment, we collect:</span></p>
         <ul>
           <li><span data-lang="zh"><strong>账户信息：</strong>学员姓名、邮箱、密码（加盐哈希存储）、家长联系方式。</span><span data-lang="en"><strong>Account info:</strong> student name, email, password (stored as a salted hash), parent contact.</span></li>
@@ -109,7 +84,7 @@
           <li><span data-lang="zh"><strong>使用数据：</strong>设备类型、浏览器、页面访问路径（需你同意 Cookie 才会收集）。</span><span data-lang="en"><strong>Usage data:</strong> device type, browser, page visits (collected only after you accept cookies).</span></li>
         </ul>
 
-        <h2 id="s2"><span data-lang="zh">2. 信息如何使用</span><span data-lang="en">2. How We Use It</span></h2>
+        <h3 class="sec-h" id="s2"><span data-lang="zh">2. 信息如何使用</span><span data-lang="en">2. How We Use It</span></h3>
         <ul>
           <li><span data-lang="zh">安排试课、匹配合适的老师，并向你发送课程确认邮件。</span><span data-lang="en">Schedule trials, match a suitable instructor, and send confirmation emails.</span></li>
           <li><span data-lang="zh">提供学员中心、课堂反馈、学期报告与客服支持。</span><span data-lang="en">Operate the student hub, class feedback, semester reports, and customer support.</span></li>
@@ -117,55 +92,59 @@
           <li><span data-lang="zh">在你同意的前提下，向你发送新课程、优惠和活动通知。</span><span data-lang="en">With your consent, send you updates on new classes, promotions, and events.</span></li>
         </ul>
 
-        <h2 id="s3"><span data-lang="zh">3. Cookie 与本地存储</span><span data-lang="en">3. Cookies & Local Storage</span></h2>
+        <h3 class="sec-h" id="s3"><span data-lang="zh">3. Cookie 与本地存储</span><span data-lang="en">3. Cookies & Local Storage</span></h3>
         <p><span data-lang="zh">我们使用必要 Cookie 来保持你的登录状态和语言偏好；分析类 Cookie 仅在你选择"全部接受"后才会启用。你可以在页面底部的 Cookie 横幅中随时调整。</span><span data-lang="en">Essential cookies keep you signed in and remember your language. Analytics cookies activate only after you choose "Accept All". You can change this at any time via the banner at the bottom of any page.</span></p>
 
-        <h2 id="s4"><span data-lang="zh">4. 第三方服务</span><span data-lang="en">4. Third-Party Services</span></h2>
+        <h3 class="sec-h" id="s4"><span data-lang="zh">4. 第三方服务</span><span data-lang="en">4. Third-Party Services</span></h3>
         <p><span data-lang="zh">我们仅使用为实现产品功能所必需的第三方服务（例如支付、邮件服务），并通过合同要求这些服务方达到同等的数据保护水平。</span><span data-lang="en">We use third-party services only as needed to operate (e.g. payments, email delivery), and require contractual protections for equivalent data safeguards.</span></p>
 
-        <h2 id="s5"><span data-lang="zh">5. 儿童隐私 (COPPA)</span><span data-lang="en">5. Children's Privacy (COPPA)</span></h2>
+        <h3 class="sec-h" id="s5"><span data-lang="zh">5. 儿童隐私 (COPPA)</span><span data-lang="en">5. Children's Privacy (COPPA)</span></h3>
         <p><span data-lang="zh">MindDo 是面向 5–18 岁青少年的学习平台。对 13 岁以下的学员，我们在收集信息前将征得可验证的家长同意，仅收集与课程安排直接相关的信息，并限制对未成年人信息的使用范围。</span><span data-lang="en">MindDo serves students aged 5–18. For students under 13, we obtain verifiable parental consent before collecting information, limit collection to what is strictly necessary for course delivery, and restrict how minors' data is used.</span></p>
 
-        <h2 id="s6"><span data-lang="zh">6. 你的权利</span><span data-lang="en">6. Your Rights</span></h2>
+        <h3 class="sec-h" id="s6"><span data-lang="zh">6. 你的权利</span><span data-lang="en">6. Your Rights</span></h3>
         <ul>
           <li><span data-lang="zh">访问、更正或删除你的账户信息。</span><span data-lang="en">Access, correct, or delete your account information.</span></li>
           <li><span data-lang="zh">导出你的学习数据。</span><span data-lang="en">Export your learning data.</span></li>
           <li><span data-lang="zh">撤回同意并停止接收营销通讯。</span><span data-lang="en">Withdraw consent and unsubscribe from marketing.</span></li>
-          <li><span data-lang="zh">向监管机构（如 FTC、网信办）投诉。</span><span data-lang="en">File a complaint with a supervisory authority (e.g. FTC).</span></li>
+          <li><span data-lang="zh">向监管机构（如 FTC）投诉。</span><span data-lang="en">File a complaint with a supervisory authority (e.g. FTC).</span></li>
         </ul>
 
-        <h2 id="s7"><span data-lang="zh">7. 联系方式</span><span data-lang="en">7. Contact</span></h2>
+        <h3 class="sec-h" id="s7"><span data-lang="zh">7. 联系方式</span><span data-lang="en">7. Contact</span></h3>
         <p><span data-lang="zh">有任何隐私相关问题，请联系我们的数据保护负责人。</span><span data-lang="en">For any privacy-related question, please contact our data protection officer.</span></p>
-
         <div class="contact-card">
-          <h3><span data-lang="zh">MindDo 数据保护办公室</span><span data-lang="en">MindDo Data Protection Office</span></h3>
+          <h4><span data-lang="zh">MindDo 数据保护办公室</span><span data-lang="en">MindDo Data Protection Office</span></h4>
           <p>📧 privacy@minddo.example.com</p>
           <p>📍 5505 Alton Pkwy, Irvine, CA 92618</p>
           <p><span data-lang="zh">工作时间：周一至周五 9:00–17:00（太平洋时间）</span><span data-lang="en">Hours: Mon–Fri 9:00–17:00 PT</span></p>
         </div>
-      </article>
+      </div>
+    </article>
+
+    <div class="actions">
+      <button class="btn" type="button" onclick="window.print()"><span data-lang="zh">🖨 打印 / 保存 PDF</span><span data-lang="en">🖨 Print / Save PDF</span></button>
     </div>
   </main>
 
   <footer class="footer">
-    <div class="footer-inner">
-      <span>© 2026 MindDo Learning Center</span>
-      <div class="links">
-        <a href="privacy.html"><span data-lang="zh">隐私政策</span><span data-lang="en">Privacy</span></a>
-        <a href="terms.html"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a>
-        <a href="index.html"><span data-lang="zh">返回首页</span><span data-lang="en">Home</span></a>
-      </div>
-    </div>
+    <p>© 2026 MindDo AI Learning Center ·
+      <a href="terms.html"><span data-lang="zh">服务条款</span><span data-lang="en">Terms</span></a> ·
+      <a href="index.html"><span data-lang="zh">返回首页</span><span data-lang="en">Home</span></a></p>
   </footer>
 
-  <script src="assets/minddo-nav.js" defer></script>
-  <script src="assets/consent.js" defer></script>
   <script>
-    (function(){
-      var saved = localStorage.getItem("minddo_lang");
-      if (saved === "en") document.documentElement.setAttribute("lang", "en");
-    })();
+  (function(){
+    function setLang(l){
+      document.body.className=l;
+      document.getElementById("btnZh").classList.toggle("on", l==="zh");
+      document.getElementById("btnEn").classList.toggle("on", l==="en");
+      try{ localStorage.setItem("minddo_lang", l==="en"?"en":"zh"); }catch(e){}
+    }
+    document.getElementById("btnZh").onclick=function(){setLang("zh");};
+    document.getElementById("btnEn").onclick=function(){setLang("en");};
+    var saved="zh";
+    try{ if(localStorage.getItem("minddo_lang")==="en") saved="en"; }catch(e){}
+    setLang(saved);
+  })();
   </script>
-  <script src="assets/customer-service.js" defer></script>
 </body>
 </html>
