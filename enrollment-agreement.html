@@ -70,6 +70,7 @@
   .doc .body{padding:0 20px 18px;border-top:1px solid var(--line);}
   .doc .body h4{font-size:13.5px;font-weight:800;margin:14px 0 5px;color:var(--clay);}
   .bigdoc .sec-h{font-size:15px;font-weight:900;margin:24px 0 8px;padding-top:16px;border-top:2px solid var(--line);color:var(--brand);}
+  .doc-title{font-size:19px;font-weight:900;padding:18px 22px 12px;letter-spacing:-0.01em;}
   .doc .body p,.doc .body li{font-size:13px;color:#3a3a3a;margin:6px 0;}
   .doc .body ul{padding-left:20px;}
   .doc .body .lawref{font-size:11.5px;color:var(--muted);font-style:italic;}
@@ -136,10 +137,9 @@
 
     <!-- ============ DOCUMENTS ============ -->
 
-    <!-- ====== Single combined enrollment agreement ====== -->
-    <details class="doc bigdoc">
-      <summary><span class="chev">▶</span><span data-lang="zh">《MindDo 报名协议》· 全文（共八节）</span><span data-lang="en">MindDo Enrollment Agreement — full text (8 sections)</span>
-        <span class="tag req" data-lang="zh">点开阅读</span><span class="tag req" data-lang="en">Read</span></summary>
+    <!-- ====== Single combined enrollment agreement (document display) ====== -->
+    <article class="doc bigdoc">
+      <h2 class="doc-title"><span data-lang="zh">《MindDo 报名协议》· 全文（共八节）</span><span data-lang="en">MindDo Enrollment Agreement — Full Text (8 Sections)</span></h2>
       <div class="body">
         <p class="lawref"><span data-lang="zh">以下八节构成一份完整的报名协议。</span><span data-lang="en">The eight sections below form one complete enrollment agreement.</span></p>
         <h3 class="sec-h"><span data-lang="zh">第一节 · 报名与服务主协议</span><span data-lang="en">Section 1 · Enrollment & Services</span></h3>
@@ -244,7 +244,7 @@
         <p><span data-lang="zh">我同意以电子方式接收并签署本协议，<b>理解在报名/支付时勾选同意框即构成我具有法律约束力的签名</b>，与手写签名同等效力（勾选时间将一并记录）。我可向 support@minddo.ai 索取纸质副本，并可点击"打印/保存 PDF"留存本文件。</span>
            <span data-lang="en">I agree to receive and sign this Agreement electronically and <b>understand that ticking the agreement box during enrollment/payment constitutes my legally binding signature</b>, equivalent to a handwritten one (the time of the action is recorded). I may request a paper copy from support@minddo.ai and can use "Print / Save PDF" to retain these documents.</span></p>
       </div>
-    </details>
+    </article>
 
     <div class="actions">
       <button class="btn btn-ghost" type="button" onclick="window.print()"><span data-lang="zh">🖨 打印 / 保存 PDF</span><span data-lang="en">🖨 Print / Save PDF</span></button>
